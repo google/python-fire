@@ -1,0 +1,11 @@
+language: python
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+before_install:
+  - pip install --upgrade setuptools pip
+install:
+  - python setup.py develop
+script: nosetests --ignore-files=parser_fuzz_test.py

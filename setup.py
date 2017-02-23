@@ -17,13 +17,16 @@
 from setuptools import setup
 
 long_description = """
-Python Fire is a library for creating command line interfaces (CLIs) with a
-single line of code.
+Python Fire is a library for automatically generating command line interfaces
+(CLIs) with a single line of code.
 
 It will turn any Python module, class, object, function, etc. (any Python
 component will work!) into a CLI. It's called Fire because when you call Fire(),
 it fires off your command.
 """.strip()
+
+short_description = """
+A library for automatically generating commane line interfaces.""".strip()
 
 dependencies = [
     'ipython',
@@ -37,10 +40,10 @@ test_dependencies = [
 ]
 
 setup(
-    name='Python Fire',
+    name='fire',
     version='0.1.0',
 
-    description='A library for creating command line interfaces.',
+    description=short_description,
     long_description=long_description,
 
     url='https://github.com/google/python-fire',
