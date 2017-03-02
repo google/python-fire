@@ -16,7 +16,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import StringIO
+try:
+  from cStringIO import StringIO
+except ImportError:
+  from io import StringIO
 
 from fire import interact
 import mock
@@ -41,12 +44,12 @@ class InteractTest(unittest.TestCase):
     })
     self.assertTrue(mock_ipython.called)
 
-  @mock.patch('sys.stderr', new_callable=StringIO.StringIO)
-  @mock.patch('sys.stdout', new_callable=StringIO.StringIO)
+  @mock.patch('sys.stderr', new_callable=StringIO)
+  @mock.patch('sys.stdout', new_callable=StringIO)
   def testEmbedIPythonString(self, mock_stdout, mock_stderr):
-    argv = ['-c', 'print(x); exit()']
+    argv = ['-c', 'print(x);']
     interact._EmbedIPython({'x': 'This is a string.'}, argv=argv)
-    self.assertEqual('This is a string.\n', mock_stdout.getvalue())
+    self.assertIn('This is a string.\n', mock_stdout.getvalue())
     self.assertEqual(mock_stderr.getvalue(), '')
 
 if __name__ == '__main__':
