@@ -16,6 +16,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+try:
+  from cStringIO import StringIO
+except ImportError:
+  from io import StringIO
+
 from fire import interact
 import mock
 
@@ -24,21 +29,28 @@ import unittest
 
 class InteractTest(unittest.TestCase):
 
-  @mock.patch('IPython.embed')
-  def testInteract(self, mock_embed):
-    self.assertFalse(mock_embed.called)
+  @mock.patch('IPython.start_ipython')
+  def testInteract(self, mock_ipython):
+    self.assertFalse(mock_ipython.called)
     interact.Embed({})
-    self.assertTrue(mock_embed.called)
+    self.assertTrue(mock_ipython.called)
 
-  @mock.patch('IPython.embed')
-  def testInteractVariables(self, mock_embed):
-    self.assertFalse(mock_embed.called)
+  @mock.patch('IPython.start_ipython')
+  def testInteractVariables(self, mock_ipython):
+    self.assertFalse(mock_ipython.called)
     interact.Embed({
         'count': 10,
         'mock': mock,
     })
-    self.assertTrue(mock_embed.called)
+    self.assertTrue(mock_ipython.called)
 
+  @mock.patch('sys.stderr', new_callable=StringIO)
+  @mock.patch('sys.stdout', new_callable=StringIO)
+  def testEmbedIPythonString(self, mock_stdout, mock_stderr):
+    argv = ['-c', 'print(x);']
+    interact._EmbedIPython({'x': 'This is a string.'}, argv=argv)
+    self.assertIn('This is a string.\n', mock_stdout.getvalue())
+    self.assertEqual(mock_stderr.getvalue(), '')
 
 if __name__ == '__main__':
   unittest.main()
