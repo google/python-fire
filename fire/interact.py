@@ -74,16 +74,16 @@ def _AvailableString(variables, verbose=False):
   ).format(liststrs='\n'.join(liststrs))
 
 
-def _EmbedIPython(variables):
-  """Drops into an IPython REPL with variables available as local variables.
+def _EmbedIPython(variables, argv=None):
+  """Drops into an IPython REPL with variables available for use.
 
   Args:
     variables: A dict of variables to make available. Keys are variable names.
         Values are variable values.
+    argv: The argv to use for starting ipython. Defaults to an empty list.
   """
-  lcl = locals()
-  lcl.update(**variables)
-  IPython.embed()
+  argv = argv or []
+  IPython.start_ipython(argv=argv, user_ns=variables)
 
 
 def _EmbedCode(variables):
