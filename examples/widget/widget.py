@@ -28,7 +28,7 @@ class Widget(object):
     return '{noise} bang!'.format(noise=noise)
 
 
-def main()
+def main():
   fire.Fire(Widget(), name='widget')
 
 if __name__ == '__main__':

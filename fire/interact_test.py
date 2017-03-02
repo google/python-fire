@@ -24,21 +24,20 @@ import unittest
 
 class InteractTest(unittest.TestCase):
 
-  @mock.patch('IPython.embed')
-  def testInteract(self, mock_embed):
-    self.assertFalse(mock_embed.called)
+  @mock.patch('IPython.start_ipython')
+  def testInteract(self, mock_ipython):
+    self.assertFalse(mock_ipython.called)
     interact.Embed({})
-    self.assertTrue(mock_embed.called)
+    self.assertTrue(mock_ipython.called)
 
-  @mock.patch('IPython.embed')
-  def testInteractVariables(self, mock_embed):
-    self.assertFalse(mock_embed.called)
+  @mock.patch('IPython.start_ipython')
+  def testInteractVariables(self, mock_ipython):
+    self.assertFalse(mock_ipython.called)
     interact.Embed({
         'count': 10,
         'mock': mock,
     })
-    self.assertTrue(mock_embed.called)
-
+    self.assertTrue(mock_ipython.called)
 
 if __name__ == '__main__':
   unittest.main()

@@ -4,23 +4,25 @@
 
 ## Basic usage
 
-Every Fire command (even just running your Fire CLI with no arguments) always
-corresponds to a Python component.
+Every Fire command corresponds to a Python component.
 
-This can be any Python component, e.g. an object, a function, a class, or a
-module. To see what Python component a Fire command corresponds to, append
-`-- --help` to the command. For example, to see what Python component the
-command `widget whack` corresponds to, run `widget whack -- --help`. To see what
-Python component the command `widget whack 5` corresponds to, run
-`widget whack 5 -- --help`. To see what Python component the command `widget`
-corresponds to, run `widget -- --help`.
+The simplest Fire command consists of running your program with no additional
+arguments. This command corresponds to the Python component you called the
+`Fire` function on. If you did not supply an object in the call to `Fire`, then
+the context in which `Fire` was called will be used as the Python component.
 
-When you first go to use a Fire CLI you're unfamiliar with, let's say it is
-called `widget`, start by seeing what Python component the command corresponds
-to without any arguments, by calling `widget -- --help`.
+You can append `-- --help` to any command to see what Python component it
+corresponds to, as well as the various ways in which you can extend the command.
+Flags are always separated from the Fire command by an isolated `--` in order
+to distinguish between flags and named arguments.
 
-The following sections discuss how you can write a Fire command corresponding
-to whatever Python component you're looking for.
+Given a Fire command that corresponds to a Python object, you can extend that
+command to access a member of that object, call it with arguments if it is a
+function, instantiate it if it is a class, or index into it if it is a list.
+
+Read on to learn about how you can write a Fire command corresponding to
+whatever Python component you're looking for.
+
 
 ### Accessing members of an object
 
@@ -37,14 +39,15 @@ named high_score, then you can add the argument 'high-score' to your command,
 and the resulting new command corresponds to the value of the high_score
 property.
 
+
 ### Accessing members of a dict
 
 If your command corresponds to a dict, you can extend your command by adding
 the name of one of the dict's keys as an argument.
 
-For example,  `widget function-that-returns-dict key` will correspond to the
-value of the item with key "key" in the dict returned by
-function_that_returns_dict.
+For example, `widget function-that-returns-dict key` will correspond to the
+value of the item with key `key` in the dict returned by
+`function_that_returns_dict`.
 
 
 ### Accessing members of a list or tuple
@@ -77,8 +80,8 @@ You can force a function that takes a variable number of arguments to be
 evaluated by adding a separator (the default separator is the hyphen, "-"). This
 will prevent arguments to the right of the separator from being consumed for
 calling the function. This is useful if the function has arguments with default
-values, or if the function accepts *varargs, or if the function accepts
-**kwargs.
+values, or if the function accepts \*varargs, or if the function accepts
+\*\*kwargs.
 
 See also the section on [Changing the Separator](#separator-flag).
 
@@ -86,9 +89,9 @@ See also the section on [Changing the Separator](#separator-flag).
 ### Instantiating a class
 
 If your command corresponds to a class, you can extend your command by adding
-the arguments of the class's __init__ function. Arguments can be specified
-positionally, or by name. To specify an argument by name, use flag syntax. See
-the section on [calling a function](#calling-a-function) for more details.
+the arguments of the class's \_\_init\_\_ function. Arguments must be specified
+by name, using the flags syntax. See the section on
+[calling a function](#calling-a-function) for more details.
 
 
 ## Using Flags with Fire CLIs <a name="using-flags"></a>

@@ -52,7 +52,7 @@ def _caesar_shift_char(n=0, char=' '):
   return chr((ord(char) - ord('a') + n) % 26 + ord('a'))
 
 
-def main()
+def main():
   fire.Fire(name='cipher')
 
 if __name__ == '__main__':

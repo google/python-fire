@@ -96,7 +96,7 @@ class DiffLibWrapper(object):
         self._tofile, self.fromdate, self.todate, n=lines)
 
 
-def main()
+def main():
   fire.Fire(DiffLibWrapper, name='diff')
 
 if __name__ == '__main__':

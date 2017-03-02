@@ -31,7 +31,7 @@ class Collector(object):
     return [widget.Widget() for _ in xrange(self.desired_widget_count)]
 
 
-def main()
+def main():
   fire.Fire(Collector(), name='collector')
 
 if __name__ == '__main__':

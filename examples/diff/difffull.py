@@ -44,7 +44,7 @@ import difflib
 import fire
 
 
-def main()
+def main():
   fire.Fire(difflib, name='difffull')
 
 if __name__ == '__main__':
