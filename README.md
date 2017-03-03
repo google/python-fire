@@ -73,6 +73,8 @@ When you call `Fire`, it fires off (executes) your command.
 | [Verbose](doc/using-cli.md#verbose-flag) | `command -- --verbose` |
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 
+## Tests
+Run all tests `python -m unittest discover -s tests -p "*_test.py"`
 
 ## Disclaimer
 
