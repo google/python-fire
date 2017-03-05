@@ -75,6 +75,17 @@ class MixedDefaults(object):
   def identity(self, alpha, beta='0'):
     return alpha, beta
 
+class Annotations(object):
+
+  def double(self, count=0):
+    return 2 * count
+
+  def triple(self, count=0):
+    return 3 * count
+
+  double.__annotations__ = {'count': float}
+  triple.__annotations__ = {'count': float}
+
 
 class TypedProperties(object):
 
