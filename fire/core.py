@@ -168,13 +168,15 @@ def _PrintResult(component_trace, verbose=False):
   result = component_trace.GetResult()
 
 
-  if isinstance(result, (list, set, tuple, types.GeneratorType)):
+  if isinstance(result, (list, set, types.GeneratorType)):
     for i in result:
       print(_OneLineResult(i))
   elif inspect.isgeneratorfunction(result):
     raise NotImplementedError
   elif isinstance(result, dict):
     print(_DictAsString(result, verbose))
+  elif isinstance(result, tuple):
+    print(_OneLineResult(result))
   elif isinstance(result,
                   (bool, six.string_types, six.integer_types, float, complex)):
     print(result)
