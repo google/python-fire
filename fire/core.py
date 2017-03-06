@@ -193,6 +193,9 @@ def _DictAsString(result, verbose=False):
   Returns:
     A string representing the dict
   """
+  if not result:
+    return '{}'
+  
   longest_key = max(
       len(str(key)) for key in result.keys()
       if _ComponentVisible(key, verbose)
