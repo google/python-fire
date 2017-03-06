@@ -72,11 +72,18 @@ def GetArgSpec(fn):
   fn, skip_arg = _GetArgSpecFnInfo(fn)
 
   try:
-    argspec = inspect.getargspec(fn)
+
+    if six.PY2:
+      argspec = inspect.getargspec(fn)
+      keywords = argspec.keywords
+    else:
+      argspec = inspect.getfullargspec(fn)
+      keywords = argspec.varkw
+
     args = argspec.args
     defaults = argspec.defaults or ()
     varargs = argspec.varargs
-    keywords = argspec.keywords
+
   except TypeError:
     args = []
     defaults = ()

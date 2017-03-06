@@ -98,6 +98,10 @@ class FireTest(unittest.TestCase):
     self.assertEqual(
         fire.Fire(tc.MixedDefaults, 'identity --alpha 1'), (1, '0'))
 
+  def testFireAnnotatedArgs(self):
+    self.assertEqual(fire.Fire(tc.Annotations, 'double 5'), 10)
+    self.assertEqual(fire.Fire(tc.Annotations, 'triple 5'), 15)
+
   def testFireProperties(self):
     self.assertEqual(fire.Fire(tc.TypedProperties, 'alpha'), True)
     self.assertEqual(fire.Fire(tc.TypedProperties, 'beta'), (1, 2, 3))
