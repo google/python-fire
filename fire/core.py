@@ -198,7 +198,7 @@ def _DictAsString(result, verbose=False):
     A string representing the dict
   """
   if not result:
-    return "{}"
+    return '{}'
   
   longest_key = max(
       len(str(key)) for key in result.keys()
