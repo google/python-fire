@@ -57,6 +57,7 @@ import json
 import pipes
 import shlex
 import sys
+import types
 
 from fire import completion
 from fire import decorators
@@ -166,13 +167,8 @@ def _PrintResult(component_trace, verbose=False):
   # and move serialization to it's own module.
   result = component_trace.GetResult()
 
-  if isinstance(result, list):
-    for i in result:
-      print(_OneLineResult(i))
-  elif isinstance(result, set):
-    for i in result:
-      print(_OneLineResult(i))
-  elif inspect.isgenerator(result):
+
+  if isinstance(result, (list, set, types.GeneratorType)):
     for i in result:
       print(_OneLineResult(i))
   elif inspect.isgeneratorfunction(result):
