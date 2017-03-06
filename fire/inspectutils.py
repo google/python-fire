@@ -76,7 +76,7 @@ def GetArgSpec(fn):
     if six.PY2:
       argspec = inspect.getargspec(fn)
       keywords = argspec.keywords
-    elif six.PY3:
+    else:
       argspec = inspect.getfullargspec(fn)
       keywords = argspec.varkw
 
