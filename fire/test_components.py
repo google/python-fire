@@ -75,6 +75,7 @@ class MixedDefaults(object):
   def identity(self, alpha, beta='0'):
     return alpha, beta
 
+
 class Annotations(object):
 
   def double(self, count=0):

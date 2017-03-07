@@ -167,7 +167,6 @@ def _PrintResult(component_trace, verbose=False):
   # and move serialization to it's own module.
   result = component_trace.GetResult()
 
-
   if isinstance(result, (list, set, types.GeneratorType)):
     for i in result:
       print(_OneLineResult(i))
@@ -195,7 +194,7 @@ def _DictAsString(result, verbose=False):
   """
   if not result:
     return '{}'
-  
+
   longest_key = max(
       len(str(key)) for key in result.keys()
       if _ComponentVisible(key, verbose)
