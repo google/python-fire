@@ -28,6 +28,12 @@ class TestComponentsTest(unittest.TestCase):
     self.assertIsNotNone(tc.Empty)
     self.assertIsNotNone(tc.OldStyleEmpty)
 
+  def testNonComparable(self):
+    with self.assertRaises(ValueError):
+      tc.NonComparable() != 2  # pylint: disable=expression-not-assigned
+    with self.assertRaises(ValueError):
+      tc.NonComparable() == 2  # pylint: disable=expression-not-assigned
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Thie module has componenets that are used for testing Python Fire."""
+"""Thie module has components that are used for testing Python Fire."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -180,3 +180,12 @@ class ErrorRaiser(object):
 
   def fail(self):
     raise ValueError('This error is part of a test.')
+
+
+class NonComparable(object):
+
+  def __eq__(self, other):
+    raise ValueError('Instances of this class cannot be compared.')
+
+  def __ne__(self, other):
+    raise ValueError('Instances of this class cannot be compared.')

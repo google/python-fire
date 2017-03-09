@@ -317,6 +317,14 @@ class FireTest(unittest.TestCase):
     # The separator triggers a function call, but there aren't enough arguments.
     self.assertEqual(fire.Fire(tc.MixedDefaults, 'identity - _ +'), None)
 
+  def testNonComparable(self):
+    """Fire should work with classes that disallow comparisons."""
+    self.assertIsInstance(fire.Fire(tc.NonComparable, ''), tc.NonComparable)
+
+    # The first separator instantiates the NonComparable object.
+    # The second separator causes Fire to check if the separator was necessary.
+    self.assertIsInstance(fire.Fire(tc.NonComparable, '- -'), tc.NonComparable)
+
   def testExtraSeparators(self):
     self.assertEqual(
         fire.Fire(tc.ReturnsObj, 'get-obj arg1 arg2 - - as-bool True'), True)

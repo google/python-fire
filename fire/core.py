@@ -339,7 +339,7 @@ def _Fire(component, args, context, name=None):
         component_trace.AddError(error, initial_args)
         return component_trace
 
-      if last_component == initial_component:
+      if last_component is initial_component:
         # If the initial component is a class, keep an instance for use with -i.
         instance = component
 
@@ -419,13 +419,13 @@ def _Fire(component, args, context, name=None):
             or inspect.isroutine(last_component)):
         remaining_args = saved_args
         component_trace.AddSeparator()
-      elif component != last_component:
+      elif component is not last_component:
         remaining_args = [separator] + saved_args
       else:
         # It was an unnecessary separator.
         remaining_args = saved_args
 
-    if component == last_component and remaining_args == initial_args:
+    if component is last_component and remaining_args == initial_args:
       # We're making no progress.
       break
 
