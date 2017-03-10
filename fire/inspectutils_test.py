@@ -28,49 +28,82 @@ class InspectUtilsTest(unittest.TestCase):
   def testGetArgSpecReturnType(self):
     # Asserts that the named tuple returned by GetArgSpec has the appropriate
     # fields.
-    argspec = inspectutils.GetArgSpec(tc.identity)
-    args, varargs, keywords, defaults = argspec
-    self.assertEqual(argspec.args, args)
-    self.assertEqual(argspec.defaults, defaults)
-    self.assertEqual(argspec.varargs, varargs)
-    self.assertEqual(argspec.keywords, keywords)
+    spec = inspectutils.GetArgSpec(tc.identity)
+    args, varargs, varkw, defaults, kwonly, kwonlydefaults, annotations = spec
+
+    self.assertEqual(spec.args, args)
+    self.assertEqual(spec.defaults, defaults)
+    self.assertEqual(spec.varargs, varargs)
+    self.assertEqual(spec.varkw, varkw)
+    self.assertEqual(spec.kwonlyargs, kwonly)
+    self.assertEqual(spec.kwonlydefaults, kwonlydefaults)
+    self.assertEqual(spec.annotations, annotations)
 
   def testGetArgSpec(self):
-    args, varargs, keywords, defaults = inspectutils.GetArgSpec(tc.identity)
-    self.assertEqual(args, ['arg1', 'arg2'])
-    self.assertEqual(defaults, (10,))
-    self.assertEqual(varargs, 'arg3')
-    self.assertEqual(keywords, 'arg4')
+    spec = inspectutils.GetArgSpec(tc.identity)
+    args, varargs, varkw, defaults, kwonly, kwonlydefaults, annotations = spec
+
+    self.assertEqual(args, ['arg1', 'arg2', 'arg3', 'arg4'])
+    self.assertEqual(defaults, (10, 20))
+    self.assertEqual(varargs, 'arg5')
+    self.assertEqual(varkw, 'arg10')
+    if six.PY2:
+      self.assertEqual(kwonly, [])
+      self.assertEqual(kwonlydefaults, {})
+      self.assertEqual(annotations, {'arg2': int, 'arg4': int})
+    else:
+      self.assertEqual(kwonly, ['arg6', 'arg7', 'arg8', 'arg9'])
+      self.assertEqual(kwonlydefaults, {'arg8': 30, 'arg9': 40})
+      self.assertEqual(annotations,
+        {'arg2': int, 'arg4': int, 'arg7': int, 'arg9': int})
 
   def testGetArgSpecBuiltin(self):
-    args, varargs, keywords, defaults = inspectutils.GetArgSpec('test'.upper)
+    spec = inspectutils.GetArgSpec('test'.upper)
+    args, varargs, varkw, defaults, kwonly, kwonlydefaults, annotations = spec
+
     self.assertEqual(args, [])
     self.assertEqual(defaults, ())
     self.assertEqual(varargs, 'vars')
-    self.assertEqual(keywords, 'kwargs')
+    self.assertEqual(varkw, 'kwargs')
+    self.assertEqual(kwonly, [])
+    self.assertEqual(kwonlydefaults, {})
+    self.assertEqual(annotations, {})
 
   def testGetArgSpecSlotWrapper(self):
-    args, varargs, keywords, defaults = inspectutils.GetArgSpec(tc.NoDefaults)
+    spec = inspectutils.GetArgSpec(tc.NoDefaults)
+    args, varargs, varkw, defaults, kwonly, kwonlydefaults, annotations = spec
+
     self.assertEqual(args, [])
     self.assertEqual(defaults, ())
     self.assertEqual(varargs, None)
-    self.assertEqual(keywords, None)
+    self.assertEqual(varkw, None)
+    self.assertEqual(kwonly, [])
+    self.assertEqual(kwonlydefaults, {})
+    self.assertEqual(annotations, {})
 
   def testGetArgSpecClassNoInit(self):
-    args, varargs, keywords, defaults = inspectutils.GetArgSpec(
-        tc.OldStyleEmpty)
+    spec = inspectutils.GetArgSpec(tc.OldStyleEmpty)
+    args, varargs, varkw, defaults, kwonly, kwonlydefaults, annotations = spec
+
     self.assertEqual(args, [])
     self.assertEqual(defaults, ())
     self.assertEqual(varargs, None)
-    self.assertEqual(keywords, None)
+    self.assertEqual(varkw, None)
+    self.assertEqual(kwonly, [])
+    self.assertEqual(kwonlydefaults, {})
+    self.assertEqual(annotations, {})
 
   def testGetArgSpecMethod(self):
-    args, varargs, keywords, defaults = inspectutils.GetArgSpec(
-        tc.NoDefaults().double)
+    spec = inspectutils.GetArgSpec(tc.NoDefaults().double)
+    args, varargs, varkw, defaults, kwonly, kwonlydefaults, annotations = spec
+
     self.assertEqual(args, ['count'])
     self.assertEqual(defaults, ())
     self.assertEqual(varargs, None)
-    self.assertEqual(keywords, None)
+    self.assertEqual(varkw, None)
+    self.assertEqual(kwonly, [])
+    self.assertEqual(kwonlydefaults, {})
+    self.assertEqual(annotations, {})
 
   def testInfoOne(self):
     info = inspectutils.Info(1)
