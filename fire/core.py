@@ -398,11 +398,7 @@ def _Fire(component, args, context, name=None):
         component, consumed_args, remaining_args = _GetMember(
             component, remaining_args)
 
-        try:
-          filename, lineno = _GetFileAndLine(component)
-        except TypeError:
-          filename = None
-          lineno = None
+        filename, lineno = _GetFileAndLine(component)
 
         component_trace.AddAccessedProperty(
             component, target, consumed_args, filename, lineno)
@@ -469,14 +465,15 @@ def _GetFileAndLine(component):
   Returns:
     filename: The name of the file where component is defined.
     lineno: The line number where component is defined.
-  Raises:
-    TypeError: If component is not a module, class, method, function, traceback,
-        frame, or code object then the inspect module will raise this error.
   """
   if inspect.isbuiltin(component):
     return None, None
 
-  filename = inspect.getsourcefile(component)
+  try:
+    filename = inspect.getsourcefile(component)
+  except TypeError:
+    return None, None
+
   try:
     unused_code, lineindex = inspect.findsource(component)
     lineno = lineindex + 1
