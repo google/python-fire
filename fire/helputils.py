@@ -163,6 +163,14 @@ def _UsageStringFromFnDetails(command, args, varargs, varkw, defaults,
     help_flags.append('[{var} ...]'.format(var=varargs.upper()))
     help_positional.append('[{var} ...]'.format(var=varargs.upper()))
 
+  for arg in kwonlyargs:
+    if arg in kwonlydefaults:
+      arg_str = '[--{flag} {value}]'.format(flag=arg, value=arg.upper())
+    else:
+      arg_str = '--{flag} {value}'.format(flag=arg, value=arg.upper())
+    help_flags.append(arg_str)
+    help_positional.append(arg_str)
+
   if varkw:
     help_flags.append('[--{kwarg} ...]'.format(kwarg=varkw.upper()))
     help_positional.append('[--{kwarg} ...]'.format(kwarg=varkw.upper()))
