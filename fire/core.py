@@ -546,16 +546,19 @@ def _MakeParseFn(fn):
     can then be called with fn(*varargs, **kwargs). The remaining_args are
     the leftover args from the arguments to the parse function.
   """
-  fn_args, fn_varargs, fn_keywords, fn_defaults = inspectutils.GetArgSpec(fn)
+  (fn_args, fn_varargs, fn_keywords, fn_defaults, fn_kwonly,
+    fn_kwonlydefaults, fn_annotations) = inspectutils.GetArgSpec(fn)
   metadata = decorators.GetMetadata(fn)
 
-  # Note: num_required_args is the number of arguments without default values.
-  # All of these arguments are required.
+  # Note: num_required_args is the number of positional arguments
+  # without default values. All of these arguments are required.
   num_required_args = len(fn_args) - len(fn_defaults)
+  required_kwonly = set(fn_kwonly) - set(fn_kwonlydefaults)
 
   def _ParseFn(args):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
-    kwargs, remaining_args = _ParseKeywordArgs(args, fn_args, fn_keywords)
+    kwargs, remaining_args = _ParseKeywordArgs(args, fn_args + fn_kwonly,
+                                               fn_keywords)
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
@@ -566,8 +569,13 @@ def _MakeParseFn(fn):
       # If we're allowed *varargs or **kwargs, there's always capacity.
       capacity = True
 
-    if fn_keywords is None and kwargs:
-      raise FireError('Unexpected kwargs present', kwargs)
+    extra_kw = set(kwargs) - set(fn_kwonly)
+    if fn_keywords is None and extra_kw:
+      raise FireError('Unexpected kwargs present:', extra_kw)
+
+    missing_kwonly = set(required_kwonly) - set(kwargs)
+    if missing_kwonly:
+      raise FireError('Missing required flags:', missing_kwonly)
 
     # If we accept *varargs, then use all remaining arguments for *varargs.
     if fn_varargs is not None:
@@ -580,7 +588,7 @@ def _MakeParseFn(fn):
 
     varargs = parsed_args + varargs
 
-    consumed_args = args[:len(args)-len(remaining_args)]
+    consumed_args = args[:len(args) - len(remaining_args)]
     return (varargs, kwargs), consumed_args, remaining_args, capacity
 
   return _ParseFn

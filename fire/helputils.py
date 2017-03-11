@@ -126,7 +126,8 @@ def HelpString(component, trace=None, verbose=False):
   return '\n'.join(lines)
 
 
-def _UsageStringFromFnDetails(command, args, varargs, keywords, defaults):
+def _UsageStringFromFnDetails(command, args, varargs, varkw, defaults,
+                              kwonlyargs, kwonlydefaults, annotations):
   """Get a usage string from the function details for the given command.
 
   The strings look like:
@@ -136,8 +137,11 @@ def _UsageStringFromFnDetails(command, args, varargs, keywords, defaults):
     command: The command leading up to the function.
     args: The args accepted by the function.
     varargs: If not None, a string naming the *varargs variable used by the fn.
-    keywords: If not None, a string naming the **kwargs varargs used by the fn.
+    varkw: If not None, a string naming the **kwargs varargs used by the fn.
     defaults: The default values for args accepted by the function.
+    kwonlyargs: The args that must be passed by keyword.
+    kwonlydefaults: The default values for args that must be passed by keyword.
+    annotations: Dictionary of {'arg': type} for each annotated arg.
   Returns:
     The usage string for the function.
   """
@@ -159,9 +163,9 @@ def _UsageStringFromFnDetails(command, args, varargs, keywords, defaults):
     help_flags.append('[{var} ...]'.format(var=varargs.upper()))
     help_positional.append('[{var} ...]'.format(var=varargs.upper()))
 
-  if keywords:
-    help_flags.append('[--{kwarg} ...]'.format(kwarg=keywords.upper()))
-    help_positional.append('[--{kwarg} ...]'.format(kwarg=keywords.upper()))
+  if varkw:
+    help_flags.append('[--{kwarg} ...]'.format(kwarg=varkw.upper()))
+    help_positional.append('[--{kwarg} ...]'.format(kwarg=varkw.upper()))
 
   commands_flags = command + ' '.join(help_flags)
   commands_positional = command + ' '.join(help_positional)
@@ -178,8 +182,8 @@ def UsageString(component, trace=None, verbose=False):
   command = trace.GetCommand() + ' ' if trace else ''
 
   if inspect.isroutine(component) or inspect.isclass(component):
-    args, varargs, keywords, defaults = inspectutils.GetArgSpec(component)
-    return _UsageStringFromFnDetails(command, args, varargs, keywords, defaults)
+    spec = inspectutils.GetArgSpec(component)._asdict()
+    return _UsageStringFromFnDetails(command, **spec)
 
   elif isinstance(component, (list, tuple)):
     length = len(component)

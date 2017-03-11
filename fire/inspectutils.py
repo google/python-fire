@@ -22,6 +22,27 @@ import inspect
 
 import IPython
 import six
+from collections import namedtuple
+
+_FullArgTuple = namedtuple('FullArgSpec', ('args', 'varargs', 'varkw',
+  'defaults', 'kwonlyargs', 'kwonlydefaults', 'annotations'))
+
+
+class _FullArgSpec(_FullArgTuple):
+  """NamedTuple storing arguments of a callable, populated with defaults."""
+
+  def __new__(cls, args=None, varargs=None, varkw=None, defaults=None,
+    kwonlyargs=None, kwonlydefaults=None, annotations=None):
+    return super(_FullArgSpec, cls).__new__(
+      cls,
+      args or [],
+      varargs,
+      varkw,
+      defaults or (),
+      kwonlyargs or [],
+      kwonlydefaults or {},
+      annotations or {}
+    )
 
 
 def _GetArgSpecFnInfo(fn):
@@ -66,8 +87,11 @@ def GetArgSpec(fn):
     A named tuple of type inspect.ArgSpec with the following fields:
       args: A list of the argument names accepted by the function.
       varargs: The name of the *varargs argument or None if there isn't one.
-      keywords: The name of the **kwargs argument or None if there isn't one.
+      varkw: The name of the **kwargs argument or None if there isn't one.
       defaults: A tuple of the defaults for the arguments that accept defaults.
+      kwonlyargs: A list of argument names that must be passed with a keyword.
+      kwonlydefaults: A dictionary of keyword only arguments and their defaults.
+      annotations: A dictionary of arguments and their annotated types.
   """
   fn, skip_arg = _GetArgSpecFnInfo(fn)
 
@@ -75,34 +99,25 @@ def GetArgSpec(fn):
 
     if six.PY2:
       argspec = inspect.getargspec(fn)
-      keywords = argspec.keywords
+      args = argspec.args[1:] if skip_arg else argspec.args
+      annotations = getattr(fn, '__annotations__', None)
+      fullspec = _FullArgSpec(args, *argspec[1:], annotations=annotations)
     else:
       argspec = inspect.getfullargspec(fn)
-      keywords = argspec.varkw
-
-    args = argspec.args
-    defaults = argspec.defaults or ()
-    varargs = argspec.varargs
+      args = argspec.args[1:] if skip_arg else argspec.args
+      fullspec = _FullArgSpec(args, *argspec[1:])
 
   except TypeError:
-    args = []
-    defaults = ()
     # If we can't get the argspec, how do we know if the fn should take args?
     # 1. If it's a builtin, it can take args.
     # 2. If it's an implicit __init__ function (a 'slot wrapper'), take no args.
     # Are there other cases?
-    varargs = 'vars' if inspect.isbuiltin(fn) else None
-    keywords = 'kwargs' if inspect.isbuiltin(fn) else None
+    if inspect.isbuiltin(fn):
+      return _FullArgSpec(varargs='vars', varkw='kwargs')
+    else:
+      return _FullArgSpec()
 
-  if skip_arg:
-    args = args[1:]  # Remove self.
-
-  return inspect.ArgSpec(
-      args=args,
-      varargs=varargs,
-      keywords=keywords,
-      defaults=defaults)
-
+  return fullspec
 
 def Info(component):
   """Returns a dict with information about the given component.
