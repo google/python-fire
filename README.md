@@ -10,9 +10,11 @@ into a CLI. [[3]](doc/benefits.md#exploring)
 - Python Fire makes using a Python REPL easier by setting up the REPL with the
 modules and variables you'll need already imported and created. [[5]](doc/benefits.md#repl)
 
+
 ## Installation
 
 `pip install fire`
+
 
 ## Basic Usage
 
@@ -45,10 +47,17 @@ python calculator.py double --number=15  # 30
 To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn
 about Fire's other features, see the [Using a Fire CLI page](doc/using-cli.md).
 
+For additional examples, see [The Python Fire Guide](doc/guide.md).
+
 
 ## Why is it called Fire?
 
 When you call `Fire`, it fires off (executes) your command.
+
+
+## Where can I learn more?
+
+Please see [The Python Fire Guide](doc/guide.md).
 
 
 ## Reference
