@@ -8,4 +8,4 @@ before_install:
   - pip install --upgrade setuptools pip
 install:
   - python setup.py develop
-script: nosetests --ignore-files=parser_fuzz_test.py
+script: nosetests --ignore-files=parser_fuzz_test.py --exclude=test_components_py3.py

@@ -190,8 +190,9 @@ def UsageString(component, trace=None, verbose=False):
   command = trace.GetCommand() + ' ' if trace else ''
 
   if inspect.isroutine(component) or inspect.isclass(component):
-    spec = inspectutils.GetArgSpec(component)._asdict()
-    return _UsageStringFromFnDetails(command, **spec)
+    spec = inspectutils.GetArgSpec(component)
+    spec_dict = dict(zip(spec._fields, iter(spec)))
+    return _UsageStringFromFnDetails(command, **spec_dict)
 
   elif isinstance(component, (list, tuple)):
     length = len(component)
