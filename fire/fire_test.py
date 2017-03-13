@@ -20,9 +20,8 @@ import fire
 from fire import test_components as tc
 from fire import trace
 
-import sys
 import unittest
-
+import six
 
 class FireTest(unittest.TestCase):
 
@@ -103,13 +102,12 @@ class FireTest(unittest.TestCase):
     self.assertEqual(fire.Fire(tc.Annotations, 'double 5'), 10)
     self.assertEqual(fire.Fire(tc.Annotations, 'triple 5'), 15)
 
-  @unittest.skipIf(sys.version_info < (3, 0),
-                   "keyword only arguments not supported in python 2")
+  @unittest.skipIf(six.PY2, 'keyword only arguments not supported in python 2')
   def testFireKeywordOnlyArgs(self):
-    self.assertIsNone(fire.Fire(tc.KeywordOnly, 'double 5'))
+    self.assertIsNone(fire.Fire(tc.py3.KeywordOnly, 'double 5'))
 
-    self.assertEqual(fire.Fire(tc.KeywordOnly, 'double --count 5'), 10)
-    self.assertEqual(fire.Fire(tc.KeywordOnly, 'triple --count 5'), 15)
+    self.assertEqual(fire.Fire(tc.py3.KeywordOnly, 'double --count 5'), 10)
+    self.assertEqual(fire.Fire(tc.py3.KeywordOnly, 'triple --count 5'), 15)
 
   def testFireProperties(self):
     self.assertEqual(fire.Fire(tc.TypedProperties, 'alpha'), True)

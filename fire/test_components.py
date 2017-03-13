@@ -17,20 +17,17 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
 import six
 
 if six.PY3:
-  from .test_components_py3 import KeywordOnly  # pylint: disable=unused-import
+  from fire import test_components_py3 as py3  # pylint: disable=unused-import
 
 
-def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg10):
-  return arg1, arg2, arg3, arg4, arg5, arg10
+def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):
+  return arg1, arg2, arg3, arg4, arg5, arg6
 
 identity.__annotations__ = {'arg2': int, 'arg4': int}
-
-
-if six.PY3:
-  from .test_components_py3 import identity  # pylint: disable=unused-import
 
 
 class Empty(object):

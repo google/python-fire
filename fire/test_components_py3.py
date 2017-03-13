@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Thie module has components that use python 3 specific syntax."""
+"""This module has components that use Python 3 specific syntax."""
 
 
 def identity(arg1, arg2: int, arg3=10, arg4: int = 20, *arg5,
-  arg6, arg7: int, arg8=30, arg9: int = 40, **arg10):
+             arg6, arg7: int, arg8=30, arg9: int = 40, **arg10):
 
   return arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10
 
 
-class KeywordOnly:
+class KeywordOnly(object):
 
   def double(self, *, count):
     return count * 2

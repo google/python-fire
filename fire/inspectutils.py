@@ -22,30 +22,35 @@ import inspect
 
 import IPython
 import six
-from collections import namedtuple
-
-_FullArgTuple = namedtuple('FullArgSpec', ('args', 'varargs', 'varkw',
-  'defaults', 'kwonlyargs', 'kwonlydefaults', 'annotations'))
 
 
-class _FullArgSpec(_FullArgTuple):
-  """NamedTuple storing arguments of a callable, populated with defaults."""
+class Specification(object):
+  """A Specification represents the arguments of a function, in the manner
+  of inspect.ArgSpec or inspect.FullArgSpec.
 
-  def __new__(cls, args=None, varargs=None, varkw=None, defaults=None,
-    kwonlyargs=None, kwonlydefaults=None, annotations=None):
-    return super(_FullArgSpec, cls).__new__(
-      cls,
-      args or [],
-      varargs,
-      varkw,
-      defaults or (),
-      kwonlyargs or [],
-      kwonlydefaults or {},
-      annotations or {}
-    )
+  It contains the following attributes:
+  args: A list of the argument names accepted by the function.
+  varargs: The name of the *varargs argument or None if there isn't one.
+  varkw: The name of the **kwargs argument or None if there isn't one.
+  defaults: A tuple of the defaults for the arguments that accept defaults.
+  kwonlyargs: A list of argument names that must be passed with a keyword.
+  kwonlydefaults: A dictionary of keyword only arguments and their defaults.
+  annotations: A dictionary of arguments and their annotated types."""
 
 
-def _GetArgSpecFnInfo(fn):
+  def __init__(self, args=None, varargs=None, varkw=None, defaults=None,
+               kwonlyargs=None, kwonlydefaults=None, annotations=None):
+    """Constructs Specification with each provided attribute, or the default."""
+    self.args = args or []
+    self.varargs = varargs
+    self.varkw = varkw
+    self.defaults = defaults  or ()
+    self.kwonlyargs = kwonlyargs  or []
+    self.kwonlydefaults = kwonlydefaults  or {}
+    self.annotations = annotations  or {}
+
+
+def _GetSpecificationInfo(fn):
   """Gives information pertaining to computing the ArgSpec of fn.
 
   Determines if the first arg is supplied automatically when fn is called.
@@ -78,34 +83,20 @@ def _GetArgSpecFnInfo(fn):
   return fn, skip_arg
 
 
-def GetArgSpec(fn):
-  """Returns information about the function signature.
+def specification(fn):
+  """Returns a Specification describing the given callable."""
 
-  Args:
-    fn: The function to analyze.
-  Returns:
-    A named tuple of type inspect.ArgSpec with the following fields:
-      args: A list of the argument names accepted by the function.
-      varargs: The name of the *varargs argument or None if there isn't one.
-      varkw: The name of the **kwargs argument or None if there isn't one.
-      defaults: A tuple of the defaults for the arguments that accept defaults.
-      kwonlyargs: A list of argument names that must be passed with a keyword.
-      kwonlydefaults: A dictionary of keyword only arguments and their defaults.
-      annotations: A dictionary of arguments and their annotated types.
-  """
-  fn, skip_arg = _GetArgSpecFnInfo(fn)
+  fn, skip_arg = _GetSpecificationInfo(fn)
 
   try:
-
+    #pylint: disable-msg=deprecated-method
     if six.PY2:
-      argspec = inspect.getargspec(fn)
-      args = argspec.args[1:] if skip_arg else argspec.args
+      args, varargs, varkw, defaults = inspect.getargspec(fn)
+      kwonlyargs = kwonlydefaults = None
       annotations = getattr(fn, '__annotations__', None)
-      fullspec = _FullArgSpec(args, *argspec[1:], annotations=annotations)
     else:
-      argspec = inspect.getfullargspec(fn)
-      args = argspec.args[1:] if skip_arg else argspec.args
-      fullspec = _FullArgSpec(args, *argspec[1:])
+      (args, varargs, varkw, defaults,
+       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
@@ -113,11 +104,17 @@ def GetArgSpec(fn):
     # 2. If it's an implicit __init__ function (a 'slot wrapper'), take no args.
     # Are there other cases?
     if inspect.isbuiltin(fn):
-      return _FullArgSpec(varargs='vars', varkw='kwargs')
+      return Specification(varargs='vars', varkw='kwargs')
     else:
-      return _FullArgSpec()
+      return Specification()
 
-  return fullspec
+
+  if skip_arg and args:
+    args.pop(0)  # remove self or cls from list of arguments
+
+  return Specification(args, varargs, varkw, defaults,
+                       kwonlyargs, kwonlydefaults, annotations)
+
 
 def Info(component):
   """Returns a dict with information about the given component.
