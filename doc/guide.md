@@ -330,7 +330,7 @@ from airports import airports
 
 import fire
 
-class Airport(self):
+class Airport(object):
 
   def __init__(self, code):
     self.code = code
