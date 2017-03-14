@@ -546,12 +546,12 @@ def _MakeParseFn(fn):
     can then be called with fn(*varargs, **kwargs). The remaining_args are
     the leftover args from the arguments to the parse function.
   """
-  fn_spec = inspectutils.specification(fn)
+  fn_spec = inspectutils.GetFullArgSpec(fn)
   all_args = fn_spec.args + fn_spec.kwonlyargs
   metadata = decorators.GetMetadata(fn)
 
-  # Note: num_required_args is the number of positional arguments
-  # without default values. All of these arguments are required.
+  # Note: num_required_args is the number of positional arguments without
+  # default values. All of these arguments are required.
   num_required_args = len(fn_spec.args) - len(fn_spec.defaults)
   required_kwonly = set(fn_spec.kwonlyargs) - set(fn_spec.kwonlydefaults)
 

@@ -126,8 +126,8 @@ def HelpString(component, trace=None, verbose=False):
   return '\n'.join(lines)
 
 
-def _UsageStringFromFnDetails(command, spec):
-  """Get a usage string from the function details for the given command.
+def _UsageStringFromFullArgSpec(command, spec):
+  """Get a usage string from the FullArgSpec for the given command.
 
   The strings look like:
   command --arg ARG [--opt OPT] [VAR ...] [--KWARGS ...]
@@ -183,8 +183,8 @@ def UsageString(component, trace=None, verbose=False):
   command = trace.GetCommand() + ' ' if trace else ''
 
   if inspect.isroutine(component) or inspect.isclass(component):
-    spec = inspectutils.specification(component)
-    return _UsageStringFromFnDetails(command, spec)
+    spec = inspectutils.GetFullArgSpec(component)
+    return _UsageStringFromFullArgSpec(command, spec)
 
   elif isinstance(component, (list, tuple)):
     length = len(component)

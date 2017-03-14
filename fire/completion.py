@@ -157,7 +157,7 @@ def Completions(component, verbose=False):
     A list of completions for a command that would so far return the component.
   """
   if inspect.isroutine(component) or inspect.isclass(component):
-    spec = inspectutils.specification(component)
+    spec = inspectutils.GetFullArgSpec(component)
     return _CompletionsFromArgs(spec.args + spec.kwonlyargs)
 
   elif isinstance(component, (tuple, list)):

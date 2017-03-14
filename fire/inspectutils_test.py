@@ -25,9 +25,8 @@ from fire import test_components as tc
 
 class InspectUtilsTest(unittest.TestCase):
 
-  def testSpecification(self):
-    spec = inspectutils.specification(tc.identity)
-
+  def testGetFullArgSpec(self):
+    spec = inspectutils.GetFullArgSpec(tc.identity)
     self.assertEqual(spec.args, ['arg1', 'arg2', 'arg3', 'arg4'])
     self.assertEqual(spec.defaults, (10, 20))
     self.assertEqual(spec.varargs, 'arg5')
@@ -36,11 +35,9 @@ class InspectUtilsTest(unittest.TestCase):
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {'arg2': int, 'arg4': int})
 
-
   @unittest.skipIf(six.PY2, 'No keyword arguments in python 2')
-  def testSpecificationPy3(self):
-    spec = inspectutils.specification(tc.py3.identity)
-
+  def testGetFullArgSpecPy3(self):
+    spec = inspectutils.GetFullArgSpec(tc.py3.identity)
     self.assertEqual(spec.args, ['arg1', 'arg2', 'arg3', 'arg4'])
     self.assertEqual(spec.defaults, (10, 20))
     self.assertEqual(spec.varargs, 'arg5')
@@ -50,10 +47,8 @@ class InspectUtilsTest(unittest.TestCase):
     self.assertEqual(spec.annotations,
                      {'arg2': int, 'arg4': int, 'arg7': int, 'arg9': int})
 
-
-  def testSpecificationFromBuiltin(self):
-    spec = inspectutils.specification('test'.upper)
-
+  def testGetFullArgSpecFromBuiltin(self):
+    spec = inspectutils.GetFullArgSpec('test'.upper)
     self.assertEqual(spec.args, [])
     self.assertEqual(spec.defaults, ())
     self.assertEqual(spec.varargs, 'vars')
@@ -62,9 +57,8 @@ class InspectUtilsTest(unittest.TestCase):
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {})
 
-  def testSpecificationFromSlotWrapper(self):
-    spec = inspectutils.specification(tc.NoDefaults)
-
+  def testGetFullArgSpecFromSlotWrapper(self):
+    spec = inspectutils.GetFullArgSpec(tc.NoDefaults)
     self.assertEqual(spec.args, [])
     self.assertEqual(spec.defaults, ())
     self.assertEqual(spec.varargs, None)
@@ -73,9 +67,8 @@ class InspectUtilsTest(unittest.TestCase):
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {})
 
-  def testSpecificationFromClassNoInit(self):
-    spec = inspectutils.specification(tc.OldStyleEmpty)
-
+  def testGetFullArgSpecFromClassNoInit(self):
+    spec = inspectutils.GetFullArgSpec(tc.OldStyleEmpty)
     self.assertEqual(spec.args, [])
     self.assertEqual(spec.defaults, ())
     self.assertEqual(spec.varargs, None)
@@ -84,9 +77,8 @@ class InspectUtilsTest(unittest.TestCase):
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {})
 
-  def testSpecificationFromMethod(self):
-    spec = inspectutils.specification(tc.NoDefaults().double)
-
+  def testGetFullArgSpecFromMethod(self):
+    spec = inspectutils.GetFullArgSpec(tc.NoDefaults().double)
     self.assertEqual(spec.args, ['count'])
     self.assertEqual(spec.defaults, ())
     self.assertEqual(spec.varargs, None)

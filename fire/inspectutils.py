@@ -24,33 +24,32 @@ import IPython
 import six
 
 
-class Specification(object):
-  """A Specification represents the arguments of a function, in the manner
-  of inspect.ArgSpec or inspect.FullArgSpec.
-
-  It contains the following attributes:
-  args: A list of the argument names accepted by the function.
-  varargs: The name of the *varargs argument or None if there isn't one.
-  varkw: The name of the **kwargs argument or None if there isn't one.
-  defaults: A tuple of the defaults for the arguments that accept defaults.
-  kwonlyargs: A list of argument names that must be passed with a keyword.
-  kwonlydefaults: A dictionary of keyword only arguments and their defaults.
-  annotations: A dictionary of arguments and their annotated types."""
-
+class FullArgSpec(object):
+  """The arguments of a function, as in Python 3's inspect.FullArgSpec."""
 
   def __init__(self, args=None, varargs=None, varkw=None, defaults=None,
                kwonlyargs=None, kwonlydefaults=None, annotations=None):
-    """Constructs Specification with each provided attribute, or the default."""
+    """Constructs a FullArgSpec with each provided attribute, or the default.
+
+    Args:
+      args: A list of the argument names accepted by the function.
+      varargs: The name of the *varargs argument or None if there isn't one.
+      varkw: The name of the **kwargs argument or None if there isn't one.
+      defaults: A tuple of the defaults for the arguments that accept defaults.
+      kwonlyargs: A list of argument names that must be passed with a keyword.
+      kwonlydefaults: A dictionary of keyword only arguments and their defaults.
+      annotations: A dictionary of arguments and their annotated types.
+    """
     self.args = args or []
     self.varargs = varargs
     self.varkw = varkw
-    self.defaults = defaults  or ()
-    self.kwonlyargs = kwonlyargs  or []
-    self.kwonlydefaults = kwonlydefaults  or {}
-    self.annotations = annotations  or {}
+    self.defaults = defaults or ()
+    self.kwonlyargs = kwonlyargs or []
+    self.kwonlydefaults = kwonlydefaults or {}
+    self.annotations = annotations or {}
 
 
-def _GetSpecificationInfo(fn):
+def _GetArgSpecInfo(fn):
   """Gives information pertaining to computing the ArgSpec of fn.
 
   Determines if the first arg is supplied automatically when fn is called.
@@ -83,15 +82,14 @@ def _GetSpecificationInfo(fn):
   return fn, skip_arg
 
 
-def specification(fn):
-  """Returns a Specification describing the given callable."""
+def GetFullArgSpec(fn):
+  """Returns a FullArgSpec describing the given callable."""
 
-  fn, skip_arg = _GetSpecificationInfo(fn)
+  fn, skip_arg = _GetArgSpecInfo(fn)
 
   try:
-    #pylint: disable-msg=deprecated-method
     if six.PY2:
-      args, varargs, varkw, defaults = inspect.getargspec(fn)
+      args, varargs, varkw, defaults = inspect.getargspec(fn)  # pylint: disable=deprecated-method
       kwonlyargs = kwonlydefaults = None
       annotations = getattr(fn, '__annotations__', None)
     else:
@@ -104,16 +102,15 @@ def specification(fn):
     # 2. If it's an implicit __init__ function (a 'slot wrapper'), take no args.
     # Are there other cases?
     if inspect.isbuiltin(fn):
-      return Specification(varargs='vars', varkw='kwargs')
+      return FullArgSpec(varargs='vars', varkw='kwargs')
     else:
-      return Specification()
-
+      return FullArgSpec()
 
   if skip_arg and args:
-    args.pop(0)  # remove self or cls from list of arguments
+    args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.
 
-  return Specification(args, varargs, varkw, defaults,
-                       kwonlyargs, kwonlydefaults, annotations)
+  return FullArgSpec(args, varargs, varkw, defaults,
+                     kwonlyargs, kwonlydefaults, annotations)
 
 
 def Info(component):
