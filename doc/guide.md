@@ -287,7 +287,7 @@ class DigestionStage(object):
   def status(self):
     return 'Satiated.'
 
-class Pipeline(self):
+class Pipeline(object):
 
   def __init__(self):
     self.ingestion = IngestionStage()
