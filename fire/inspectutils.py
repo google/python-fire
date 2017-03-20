@@ -24,7 +24,32 @@ import IPython
 import six
 
 
-def _GetArgSpecFnInfo(fn):
+class FullArgSpec(object):
+  """The arguments of a function, as in Python 3's inspect.FullArgSpec."""
+
+  def __init__(self, args=None, varargs=None, varkw=None, defaults=None,
+               kwonlyargs=None, kwonlydefaults=None, annotations=None):
+    """Constructs a FullArgSpec with each provided attribute, or the default.
+
+    Args:
+      args: A list of the argument names accepted by the function.
+      varargs: The name of the *varargs argument or None if there isn't one.
+      varkw: The name of the **kwargs argument or None if there isn't one.
+      defaults: A tuple of the defaults for the arguments that accept defaults.
+      kwonlyargs: A list of argument names that must be passed with a keyword.
+      kwonlydefaults: A dictionary of keyword only arguments and their defaults.
+      annotations: A dictionary of arguments and their annotated types.
+    """
+    self.args = args or []
+    self.varargs = varargs
+    self.varkw = varkw
+    self.defaults = defaults or ()
+    self.kwonlyargs = kwonlyargs or []
+    self.kwonlydefaults = kwonlydefaults or {}
+    self.annotations = annotations or {}
+
+
+def _GetArgSpecInfo(fn):
   """Gives information pertaining to computing the ArgSpec of fn.
 
   Determines if the first arg is supplied automatically when fn is called.
@@ -57,51 +82,35 @@ def _GetArgSpecFnInfo(fn):
   return fn, skip_arg
 
 
-def GetArgSpec(fn):
-  """Returns information about the function signature.
+def GetFullArgSpec(fn):
+  """Returns a FullArgSpec describing the given callable."""
 
-  Args:
-    fn: The function to analyze.
-  Returns:
-    A named tuple of type inspect.ArgSpec with the following fields:
-      args: A list of the argument names accepted by the function.
-      varargs: The name of the *varargs argument or None if there isn't one.
-      keywords: The name of the **kwargs argument or None if there isn't one.
-      defaults: A tuple of the defaults for the arguments that accept defaults.
-  """
-  fn, skip_arg = _GetArgSpecFnInfo(fn)
+  fn, skip_arg = _GetArgSpecInfo(fn)
 
   try:
-
     if six.PY2:
-      argspec = inspect.getargspec(fn)
-      keywords = argspec.keywords
+      args, varargs, varkw, defaults = inspect.getargspec(fn)  # pylint: disable=deprecated-method
+      kwonlyargs = kwonlydefaults = None
+      annotations = getattr(fn, '__annotations__', None)
     else:
-      argspec = inspect.getfullargspec(fn)
-      keywords = argspec.varkw
-
-    args = argspec.args
-    defaults = argspec.defaults or ()
-    varargs = argspec.varargs
+      (args, varargs, varkw, defaults,
+       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)
 
   except TypeError:
-    args = []
-    defaults = ()
     # If we can't get the argspec, how do we know if the fn should take args?
     # 1. If it's a builtin, it can take args.
     # 2. If it's an implicit __init__ function (a 'slot wrapper'), take no args.
     # Are there other cases?
-    varargs = 'vars' if inspect.isbuiltin(fn) else None
-    keywords = 'kwargs' if inspect.isbuiltin(fn) else None
+    if inspect.isbuiltin(fn):
+      return FullArgSpec(varargs='vars', varkw='kwargs')
+    else:
+      return FullArgSpec()
 
-  if skip_arg:
-    args = args[1:]  # Remove self.
+  if skip_arg and args:
+    args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.
 
-  return inspect.ArgSpec(
-      args=args,
-      varargs=varargs,
-      keywords=keywords,
-      defaults=defaults)
+  return FullArgSpec(args, varargs, varkw, defaults,
+                     kwonlyargs, kwonlydefaults, annotations)
 
 
 def Info(component):

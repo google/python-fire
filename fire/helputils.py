@@ -126,26 +126,23 @@ def HelpString(component, trace=None, verbose=False):
   return '\n'.join(lines)
 
 
-def _UsageStringFromFnDetails(command, args, varargs, keywords, defaults):
-  """Get a usage string from the function details for the given command.
+def _UsageStringFromFullArgSpec(command, spec):
+  """Get a usage string from the FullArgSpec for the given command.
 
   The strings look like:
   command --arg ARG [--opt OPT] [VAR ...] [--KWARGS ...]
 
   Args:
     command: The command leading up to the function.
-    args: The args accepted by the function.
-    varargs: If not None, a string naming the *varargs variable used by the fn.
-    keywords: If not None, a string naming the **kwargs varargs used by the fn.
-    defaults: The default values for args accepted by the function.
+    spec: a FullArgSpec object describing the function.
   Returns:
     The usage string for the function.
   """
-  num_required_args = len(args) - len(defaults)
+  num_required_args = len(spec.args) - len(spec.defaults)
 
   help_flags = []
   help_positional = []
-  for index, arg in enumerate(args):
+  for index, arg in enumerate(spec.args):
     flag = arg.replace('_', '-')
     if index < num_required_args:
       help_flags.append('--{flag} {value}'.format(flag=flag, value=arg.upper()))
@@ -155,13 +152,21 @@ def _UsageStringFromFnDetails(command, args, varargs, keywords, defaults):
           flag=flag, value=arg.upper()))
       help_positional.append('[{value}]'.format(value=arg.upper()))
 
-  if varargs:
-    help_flags.append('[{var} ...]'.format(var=varargs.upper()))
-    help_positional.append('[{var} ...]'.format(var=varargs.upper()))
+  if spec.varargs:
+    help_flags.append('[{var} ...]'.format(var=spec.varargs.upper()))
+    help_positional.append('[{var} ...]'.format(var=spec.varargs.upper()))
 
-  if keywords:
-    help_flags.append('[--{kwarg} ...]'.format(kwarg=keywords.upper()))
-    help_positional.append('[--{kwarg} ...]'.format(kwarg=keywords.upper()))
+  for arg in spec.kwonlyargs:
+    if arg in spec.kwonlydefaults:
+      arg_str = '[--{flag} {value}]'.format(flag=arg, value=arg.upper())
+    else:
+      arg_str = '--{flag} {value}'.format(flag=arg, value=arg.upper())
+    help_flags.append(arg_str)
+    help_positional.append(arg_str)
+
+  if spec.varkw:
+    help_flags.append('[--{kwarg} ...]'.format(kwarg=spec.varkw.upper()))
+    help_positional.append('[--{kwarg} ...]'.format(kwarg=spec.varkw.upper()))
 
   commands_flags = command + ' '.join(help_flags)
   commands_positional = command + ' '.join(help_positional)
@@ -178,8 +183,8 @@ def UsageString(component, trace=None, verbose=False):
   command = trace.GetCommand() + ' ' if trace else ''
 
   if inspect.isroutine(component) or inspect.isclass(component):
-    args, varargs, keywords, defaults = inspectutils.GetArgSpec(component)
-    return _UsageStringFromFnDetails(command, args, varargs, keywords, defaults)
+    spec = inspectutils.GetFullArgSpec(component)
+    return _UsageStringFromFullArgSpec(command, spec)
 
   elif isinstance(component, (list, tuple)):
     length = len(component)

@@ -18,9 +18,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import six
 
-def identity(arg1, arg2=10, *arg3, **arg4):
-  return arg1, arg2, arg3, arg4
+if six.PY3:
+  from fire import test_components_py3 as py3  # pylint: disable=unused-import
+
+
+def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):
+  return arg1, arg2, arg3, arg4, arg5, arg6
+
+identity.__annotations__ = {'arg2': int, 'arg4': int}
 
 
 class Empty(object):
