@@ -92,9 +92,9 @@ def Fire(component=None, command=None, name=None):
     it's a class). When all arguments are consumed and there's no function left
     to call or class left to instantiate, the resulting current component is
     the final result.
-    If a Fire error is encountered, the Fire Trace is displayed to stdout and
-    None is returned.
     If the trace command line argument is supplied, the FireTrace is returned.
+  Raises:
+    FireExit: If a FireError is countered.
   """
   # Get args as a list.
   if command is None:
@@ -127,7 +127,7 @@ def Fire(component=None, command=None, name=None):
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    return None
+    raise FireExit(1, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
     print('Fire trace:\n{trace}\n'.format(trace=component_trace))
     result = component_trace.GetResult()
@@ -159,6 +159,20 @@ class FireError(Exception):
   These exceptions are not raised by the Fire function, but rather are caught
   and added to the FireTrace.
   """
+
+
+class FireExit(SystemExit):
+  """An exception raised by Fire to the client in the case of a FireError.
+
+  Contains the trace of the Fire program.
+
+  If not caught, then a FireExit will cause the program to exit with a non-zero
+  status code.
+  """
+
+  def __init__(self, status, data):
+    super(FireExit, self).__init__(status)
+    self.trace = data
 
 
 def _PrintResult(component_trace, verbose=False):
@@ -558,8 +572,8 @@ def _MakeParseFn(fn):
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
-        fn_spec.args, fn_spec.defaults, num_required_args, kwargs, remaining_args,
-        metadata)
+        fn_spec.args, fn_spec.defaults, num_required_args, kwargs,
+        remaining_args, metadata)
 
     if fn_spec.varargs or fn_spec.varkw:
       # If we're allowed *varargs or **kwargs, there's always capacity.

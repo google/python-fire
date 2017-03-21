@@ -67,7 +67,8 @@ class CoreTest(unittest.TestCase):
 
   def testImproperUseOfHelp(self):
     # This should produce a warning and return None.
-    self.assertIsNone(core.Fire(tc.TypedProperties, 'alpha --help'))
+    with self.assertRaises(core.FireExit):
+      core.Fire(tc.TypedProperties, 'alpha --help')
 
   def testErrorRaising(self):
     # Errors in user code should not be caught; they should surface as normal.
