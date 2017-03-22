@@ -27,13 +27,17 @@ import six
 from fire import core
 from fire import trace
 
+
 class BaseTestCase(unittest.TestCase):
   """Shared test case for fire tests"""
 
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp=None):
-    """Avoids some boiler plate to make it easier to check a system exit is
-        raised and regexp is matched"""
+    """Asserts that a FireExit error is raised in the context.
+
+    Allows tests to check that Fire's wrapper around SystemExit is raised
+    and that a regexp is matched in the output.
+    """
     if regexp is None:
       regexp = '.*'
     with self.assertRaises(core.FireExit):

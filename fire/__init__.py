@@ -19,6 +19,5 @@ from __future__ import division
 from __future__ import print_function
 
 from fire.core import Fire
-from fire.core import FireExit
 
-__all__ = ['Fire', 'FireExit']
+__all__ = ['Fire']

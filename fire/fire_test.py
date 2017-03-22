@@ -45,11 +45,11 @@ class FireTest(testutils.BaseTestCase):
 
   def testFireExceptions(self):
     # Exceptions of Fire are printed to stderr and a FireExit is raised.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.Empty, 'nomethod')  # Member doesn't exist.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.NoDefaults, 'double')  # Missing argument.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.TypedProperties, 'delta x')  # Missing key.
 
     # Exceptions of the target components are still raised.
@@ -96,10 +96,10 @@ class FireTest(testutils.BaseTestCase):
 
   def testFirePartialNamedArgsOneMissing(self):
     # Errors are written to standard out and a FireExit is raised.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.MixedDefaults, 'identity')  # Identity needs an arg.
 
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       # Identity needs a value for alpha.
       fire.Fire(tc.MixedDefaults, 'identity --beta 2')
 
@@ -113,7 +113,7 @@ class FireTest(testutils.BaseTestCase):
 
   @unittest.skipIf(six.PY2, 'Keyword-only arguments not in Python 2.')
   def testFireKeywordOnlyArgs(self):
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       # Keyword arguments must be passed with flag syntax.
       fire.Fire(tc.py3.KeywordOnly, 'double 5')
 
@@ -262,7 +262,7 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(fire.Fire(fn1, '--thing --nothing'), (True, True))
     self.assertEqual(fire.Fire(fn1, '--thing --nonothing'), (True, False))
 
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       # In this case nothing=False (since rightmost setting of a flag gets
       # precedence), but it errors because thing has no value.
       fire.Fire(fn1, '--nothing --nonothing')
@@ -272,7 +272,7 @@ class FireTest(testutils.BaseTestCase):
       return thing, kwargs
     self.assertEqual(fire.Fire(fn2, '--thing'), (True, {}))
     self.assertEqual(fire.Fire(fn2, '--nothing'), (False, {}))
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       # In this case, nothing=True, but it errors because thing has no value.
       fire.Fire(fn2, '--nothing=True')
     self.assertEqual(fire.Fire(fn2, '--nothing --nothing=True'),
@@ -382,33 +382,33 @@ class FireTest(testutils.BaseTestCase):
   def testClassInstantiation(self):
     self.assertIsInstance(fire.Fire(tc.InstanceVars, '--arg1=a1 --arg2=a2'),
                           tc.InstanceVars)
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       # Cannot instantiate a class with positional args.
       fire.Fire(tc.InstanceVars, 'a1 a2')
 
   def testTraceErrors(self):
     # Class needs additional value but runs out of args.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, 'a1')
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, '--arg1=a1')
 
     # Routine needs additional value but runs out of args.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, 'a1 a2 - run b1')
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, '--arg1=a1 --arg2=a2 - run b1')
 
     # Extra args cannot be consumed.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, 'a1 a2 - run b1 b2 b3')
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, '--arg1=a1 --arg2=a2 - run b1 b2 b3')
 
     # Cannot find member to access.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, 'a1 a2 - jog')
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, '--arg1=a1 --arg2=a2 - jog')
 
 

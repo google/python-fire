@@ -26,6 +26,7 @@ from fire import trace
 
 
 class CoreTest(testutils.BaseTestCase):
+
   def testOneLineResult(self):
     self.assertEqual(core._OneLineResult(1), '1')
     self.assertEqual(core._OneLineResult('hello'), 'hello')
@@ -66,12 +67,11 @@ class CoreTest(testutils.BaseTestCase):
     self.assertIsInstance(variables['trace'], trace.FireTrace)
 
   def testImproperUseOfHelp(self):
-    # This should produce a help message
+    # This should produce a warning explaining the proper use of help.
     with self.assertRaisesFireExit(2, 'The proper way to show help.*Usage:'):
       core.Fire(tc.TypedProperties, 'alpha --help')
 
   def testProperUseOfHelp(self):
-    # ape argparse
     with self.assertRaisesFireExit(0, 'Usage:.*upper'):
       core.Fire(tc.TypedProperties, 'gamma -- --help')
 
@@ -81,7 +81,7 @@ class CoreTest(testutils.BaseTestCase):
 
   def testErrorRaising(self):
     # Errors in user code should not be caught; they should surface as normal.
-    # (this will lead to exit status of 1 in client code)
+    # This will lead to exit status code 1 for the client program.
     with self.assertRaises(ValueError):
       core.Fire(tc.ErrorRaiser, 'fail')
 
