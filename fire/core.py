@@ -97,9 +97,8 @@ def Fire(component=None, command=None, name=None):
     If the trace command line argument is supplied, the FireTrace is returned
     and no FireExit is raised.
   Raises:
-    FireExit: If a FireError is encountered and trace command line argument is
-        not passed. FireExit will have `code` of 2, whereas code exceptions
-        will be bubbled up as exit status of 1.
+    FireExit: If a FireError (code 2) or exception in client code (code 1) is
+        encountered.
   """
   # Get args as a list.
   if command is None:
@@ -172,14 +171,16 @@ class FireExit(SystemExit):
 
   Contains the trace of the Fire program.
 
-  Attributes:
-    code (int): exit code for CLI
-    trace (FireTrace): the component trace generated from running the command.
   Note:
     Since this exception inherits from SystemExit/BaseException, you'll have to
     explicitly catch it with `except SystemExit` or `except FireExit`.
   """
   def __init__(self, code, trace):
+    """
+    Args:
+      code (int): exit code for CLI
+      trace (FireTrace): the component trace generated from running the command.
+    """
     super(FireExit, self).__init__(code)
     self.trace = trace
 

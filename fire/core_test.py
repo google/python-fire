@@ -92,7 +92,7 @@ class CoreTest(BaseTest):
   def testImproperUseOfHelp(self):
     # This should produce a help message
     with self.assertRaisesFireExit(2, 'The proper way to show help.*Usage:'):
-      self.assertIsNone(core.Fire(tc.TypedProperties, 'alpha --help'))
+      core.Fire(tc.TypedProperties, 'alpha --help')
 
   def testProperUseOfHelp(self):
     # ape argparse
