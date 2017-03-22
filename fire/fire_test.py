@@ -288,12 +288,12 @@ class FireTest(testutils.BaseTestCase):
                      ('value', {'nothing': False}))
 
   def testTraceFlag(self):
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- --trace'), trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- -t'), trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, '-- --trace'), trace.FireTrace)
+    with self.assertRaisesFireExit(0, 'Fire trace:\n'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- --trace')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- -t')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n'):
+      fire.Fire(tc.BoolConverter, '-- --trace')
 
   def testHelpFlag(self):
     with self.assertRaisesFireExit(0):
@@ -304,13 +304,12 @@ class FireTest(testutils.BaseTestCase):
       fire.Fire(tc.BoolConverter, '-- --help')
 
   def testHelpFlagAndTraceFlag(self):
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- --help --trace'),
-        trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- -h -t'), trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, '-- -h --trace'), trace.FireTrace)
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- --help --trace')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- -h -t')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+      fire.Fire(tc.BoolConverter, '-- -h --trace')
 
   def testTabCompletionNoName(self):
     with self.assertRaises(ValueError):

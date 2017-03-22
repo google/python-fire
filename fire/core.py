@@ -92,13 +92,14 @@ def Fire(component=None, command=None, name=None):
     it's a class). When all arguments are consumed and there's no function left
     to call or class left to instantiate, the resulting current component is
     the final result.
+    If the trace command line argument is supplied, the FireTrace is printed
+    and a zero.
     If a Fire error is encountered, the Fire Trace is displayed to stdout and
     a FireExit is raised.
-    If the trace command line argument is supplied, the FireTrace is returned
-    and no FireExit is raised.
   Raises:
     FireExit: If a FireError (code 2) or exception in client code (code 1) is
-        encountered.
+        encountered. When displaying help or trace, a FireExit with code of 0
+        will be raised.
   """
   # Get args as a list.
   if command is None:
@@ -137,10 +138,10 @@ def Fire(component=None, command=None, name=None):
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    return component_trace
+    raise FireExit(0, component_trace)
   elif component_trace.show_trace:
     print('Fire trace:\n{trace}'.format(trace=component_trace))
-    return component_trace
+    raise FireExit(0, component_trace)
   elif component_trace.show_help:
     result = component_trace.GetResult()
     print(
