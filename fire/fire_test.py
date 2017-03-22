@@ -297,11 +297,11 @@ class FireTest(testutils.BaseTestCase):
 
   def testHelpFlag(self):
     with self.assertRaisesFireExit(0):
-        fire.Fire(tc.BoolConverter, 'as-bool True -- --help')
+      fire.Fire(tc.BoolConverter, 'as-bool True -- --help')
     with self.assertRaisesFireExit(0):
-        fire.Fire(tc.BoolConverter, 'as-bool True -- -h')
+      fire.Fire(tc.BoolConverter, 'as-bool True -- -h')
     with self.assertRaisesFireExit(0):
-        fire.Fire(tc.BoolConverter, '-- --help')
+      fire.Fire(tc.BoolConverter, '-- --help')
 
   def testHelpFlagAndTraceFlag(self):
     self.assertIsInstance(

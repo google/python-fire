@@ -42,12 +42,13 @@ class BaseTestCase(unittest.TestCase):
         try:
           yield
         except core.FireExit as exc:
-          assert exc.code == code, 'Incorrect exit code: %r != %r' % (exc.code, code)
+          if exc.code != code:
+            raise AssertionError('Incorrect exit code: %r != %r' % (exc.code,
+                                                                    code))
           self.assertIsInstance(exc.trace, trace.FireTrace)
           stdout.flush()
           stdout.seek(0)
           value = stdout.getvalue()
-          assert re.search(regexp, value, re.DOTALL | re.MULTILINE), 'Expected %r to match %r' % (value, regexp)
+          if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
+            raise AssertionError('Expected %r to match %r' % (value, regexp))
           raise
-
-

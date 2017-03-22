@@ -24,7 +24,7 @@ class FireImportTest(unittest.TestCase):
 
   def testFire(self):
     with mock.patch.object(sys, 'argv', ['commandname']):
-        fire.Fire()
+      fire.Fire()
 
   def testFireMethods(self):
     self.assertIsNotNone(fire.Fire)
