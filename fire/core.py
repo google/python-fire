@@ -70,7 +70,7 @@ import six
 
 
 def Fire(component=None, command=None, name=None):
-  """This function, Fire, is the main entrypoint for Fire.
+  """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
   recursively traversing the target object `component`'s members consuming
@@ -92,14 +92,10 @@ def Fire(component=None, command=None, name=None):
     it's a class). When all arguments are consumed and there's no function left
     to call or class left to instantiate, the resulting current component is
     the final result.
-    If the trace command line argument is supplied, the FireTrace is printed
-    and a zero.
-    If a Fire error is encountered, the Fire Trace is displayed to stdout and
-    a FireExit is raised.
   Raises:
-    FireExit: If a FireError (code 2) or exception in client code (code 1) is
-        encountered. When displaying help or trace, a FireExit with code of 0
-        will be raised.
+    FireExit: When Fire encounters a FireError, Fire will raise a FireExit with
+        code 2. When used with the help or trace flags, Fire will raise a
+        FireExit with code 0 if successful.
   """
   # Get args as a list.
   if command is None:
