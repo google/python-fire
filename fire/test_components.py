@@ -110,6 +110,7 @@ class TypedProperties(object):
     }
     self.echo = ['alex', 'bethany']
     self.fox = ('carry', 'divide')
+    self.gamma = 'myexcitingstring'
 
 
 class VarArgs(object):

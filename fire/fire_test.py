@@ -19,17 +19,17 @@ from __future__ import print_function
 import fire
 from fire import test_components as tc
 from fire import trace
+from fire.core_test import BaseTest
 
 import six
 import unittest
 
 
-class FireTest(unittest.TestCase):
-
+class FireTest(BaseTest):
   def testFire(self):
-    fire.Fire(tc.Empty)
-    fire.Fire(tc.OldStyleEmpty)
-    fire.Fire(tc.WithInit)
+    fire.Fire(tc.Empty, '')
+    fire.Fire(tc.OldStyleEmpty, '')
+    fire.Fire(tc.WithInit, '')
     self.assertEqual(fire.Fire(tc.NoDefaults, 'double 2'), 4)
     self.assertEqual(fire.Fire(tc.NoDefaults, 'triple 4'), 12)
     self.assertEqual(fire.Fire(tc.WithDefaults, 'double 2'), 4)
@@ -293,9 +293,12 @@ class FireTest(unittest.TestCase):
         fire.Fire(tc.BoolConverter, '-- --trace'), trace.FireTrace)
 
   def testHelpFlag(self):
-    self.assertIsNone(fire.Fire(tc.BoolConverter, 'as-bool True -- --help'))
-    self.assertIsNone(fire.Fire(tc.BoolConverter, 'as-bool True -- -h'))
-    self.assertIsNone(fire.Fire(tc.BoolConverter, '-- --help'))
+    with self.assertRaisesFireExit(0):
+        fire.Fire(tc.BoolConverter, 'as-bool True -- --help')
+    with self.assertRaisesFireExit(0):
+        fire.Fire(tc.BoolConverter, 'as-bool True -- -h')
+    with self.assertRaisesFireExit(0):
+        fire.Fire(tc.BoolConverter, '-- --help')
 
   def testHelpFlagAndTraceFlag(self):
     self.assertIsInstance(

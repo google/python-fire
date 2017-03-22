@@ -19,13 +19,36 @@ from __future__ import print_function
 from fire import core
 from fire import test_components as tc
 from fire import trace
+import contextlib
 import mock
-
+import re
+import six
+import sys
 import unittest
 
 
-class CoreTest(unittest.TestCase):
+class BaseTest(unittest.TestCase):
+  @contextlib.contextmanager
+  def assertRaisesFireExit(self, code, regexp=None):
+    """Avoids some boiler plate to make it easier to check a system exit is
+        raised and regexp is matched"""
+    if regexp is None:
+      regexp = '.*'
+    with self.assertRaises(core.FireExit):
+      stdout = six.StringIO()
+      with mock.patch.object(sys, 'stdout', stdout):
+        try:
+          yield
+        except core.FireExit as exc:
+          assert exc.code == code, 'Incorrect exit code: %r != %r' % (exc.code, code)
+          stdout.flush()
+          stdout.seek(0)
+          value = stdout.getvalue()
+          assert re.search(regexp, value, re.DOTALL | re.MULTILINE), 'Expected %r to match %r' % (value, regexp)
+          raise
 
+
+class CoreTest(BaseTest):
   def testOneLineResult(self):
     self.assertEqual(core._OneLineResult(1), '1')
     self.assertEqual(core._OneLineResult('hello'), 'hello')
@@ -66,12 +89,22 @@ class CoreTest(unittest.TestCase):
     self.assertIsInstance(variables['trace'], trace.FireTrace)
 
   def testImproperUseOfHelp(self):
-    # This should produce a warning and return None.
-    with self.assertRaises(core.FireExit):
-      core.Fire(tc.TypedProperties, 'alpha --help')
+    # This should produce a help message
+    with self.assertRaisesFireExit(2, 'The proper way to show help.*Usage:'):
+      self.assertIsNone(core.Fire(tc.TypedProperties, 'alpha --help'))
+
+  def testProperUseOfHelp(self):
+    # ape argparse
+    with self.assertRaisesFireExit(0, 'Usage:.*upper'):
+      core.Fire(tc.TypedProperties, 'gamma -- --help')
+
+  def testInvalidParameterRaisesFireExit(self):
+    with self.assertRaisesFireExit(2, 'runmisspelled'):
+      core.Fire(tc.Kwargs, 'props --a=1 --b=2 runmisspelled')
 
   def testErrorRaising(self):
     # Errors in user code should not be caught; they should surface as normal.
+    # (this will lead to exit status of 1 in client code)
     with self.assertRaises(ValueError):
       core.Fire(tc.ErrorRaiser, 'fail')
 
