@@ -16,40 +16,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from fire import core
-from fire import test_components as tc
-from fire import trace
-import contextlib
 import mock
-import re
-import six
-import sys
 import unittest
 
-
-class BaseTest(unittest.TestCase):
-  @contextlib.contextmanager
-  def assertRaisesFireExit(self, code, regexp=None):
-    """Avoids some boiler plate to make it easier to check a system exit is
-        raised and regexp is matched"""
-    if regexp is None:
-      regexp = '.*'
-    with self.assertRaises(core.FireExit):
-      stdout = six.StringIO()
-      with mock.patch.object(sys, 'stdout', stdout):
-        try:
-          yield
-        except core.FireExit as exc:
-          assert exc.code == code, 'Incorrect exit code: %r != %r' % (exc.code, code)
-          self.assertIsInstance(exc.trace, trace.FireTrace)
-          stdout.flush()
-          stdout.seek(0)
-          value = stdout.getvalue()
-          assert re.search(regexp, value, re.DOTALL | re.MULTILINE), 'Expected %r to match %r' % (value, regexp)
-          raise
+from fire import core
+from fire import test_components as tc
+from fire import testutils
+from fire import trace
 
 
-class CoreTest(BaseTest):
+class CoreTest(testutils.BaseTestCase):
   def testOneLineResult(self):
     self.assertEqual(core._OneLineResult(1), '1')
     self.assertEqual(core._OneLineResult('hello'), 'hello')

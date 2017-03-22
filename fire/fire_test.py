@@ -18,14 +18,14 @@ from __future__ import print_function
 
 import fire
 from fire import test_components as tc
+from fire import testutils
 from fire import trace
-from fire.core_test import BaseTest
 
 import six
 import unittest
 
 
-class FireTest(BaseTest):
+class FireTest(testutils.BaseTestCase):
   def testFire(self):
     fire.Fire(tc.Empty, '')
     fire.Fire(tc.OldStyleEmpty, '')
@@ -335,7 +335,7 @@ class FireTest(BaseTest):
         ('-', '_'))
 
     # The separator triggers a function call, but there aren't enough arguments.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.MixedDefaults, 'identity - _ +')
 
   def testNonComparable(self):
