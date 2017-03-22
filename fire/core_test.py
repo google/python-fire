@@ -18,13 +18,14 @@ from __future__ import print_function
 
 from fire import core
 from fire import test_components as tc
+from fire import testutils
 from fire import trace
 import mock
 
 import unittest
 
 
-class CoreTest(unittest.TestCase):
+class CoreTest(testutils.BaseTestCase):
 
   def testOneLineResult(self):
     self.assertEqual(core._OneLineResult(1), '1')
@@ -66,11 +67,21 @@ class CoreTest(unittest.TestCase):
     self.assertIsInstance(variables['trace'], trace.FireTrace)
 
   def testImproperUseOfHelp(self):
-    # This should produce a warning and return None.
-    self.assertIsNone(core.Fire(tc.TypedProperties, 'alpha --help'))
+    # This should produce a warning explaining the proper use of help.
+    with self.assertRaisesFireExit(2, 'The proper way to show help.*Usage:'):
+      core.Fire(tc.TypedProperties, 'alpha --help')
+
+  def testProperUseOfHelp(self):
+    with self.assertRaisesFireExit(0, 'Usage:.*upper'):
+      core.Fire(tc.TypedProperties, 'gamma -- --help')
+
+  def testInvalidParameterRaisesFireExit(self):
+    with self.assertRaisesFireExit(2, 'runmisspelled'):
+      core.Fire(tc.Kwargs, 'props --a=1 --b=2 runmisspelled')
 
   def testErrorRaising(self):
     # Errors in user code should not be caught; they should surface as normal.
+    # This will lead to exit status code 1 for the client program.
     with self.assertRaises(ValueError):
       core.Fire(tc.ErrorRaiser, 'fail')
 

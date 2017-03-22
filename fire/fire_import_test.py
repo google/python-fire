@@ -12,16 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import fire
-
+import mock
+import sys
 import unittest
+
+import fire
 
 
 class FireImportTest(unittest.TestCase):
   """Tests importing Fire."""
 
   def testFire(self):
-    fire.Fire()
+    with mock.patch.object(sys, 'argv', ['commandname']):
+      fire.Fire()
 
   def testFireMethods(self):
     self.assertIsNotNone(fire.Fire)

@@ -70,7 +70,7 @@ import six
 
 
 def Fire(component=None, command=None, name=None):
-  """This function, Fire, is the main entrypoint for Fire.
+  """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
   recursively traversing the target object `component`'s members consuming
@@ -92,9 +92,10 @@ def Fire(component=None, command=None, name=None):
     it's a class). When all arguments are consumed and there's no function left
     to call or class left to instantiate, the resulting current component is
     the final result.
-    If a Fire error is encountered, the Fire Trace is displayed to stdout and
-    None is returned.
-    If the trace command line argument is supplied, the FireTrace is returned.
+  Raises:
+    FireExit: When Fire encounters a FireError, Fire will raise a FireExit with
+        code 2. When used with the help or trace flags, Fire will raise a
+        FireExit with code 0 if successful.
   """
   # Get args as a list.
   if command is None:
@@ -127,21 +128,21 @@ def Fire(component=None, command=None, name=None):
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    return None
+    raise FireExit(2, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
     print('Fire trace:\n{trace}\n'.format(trace=component_trace))
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    return component_trace
+    raise FireExit(0, component_trace)
   elif component_trace.show_trace:
     print('Fire trace:\n{trace}'.format(trace=component_trace))
-    return component_trace
+    raise FireExit(0, component_trace)
   elif component_trace.show_help:
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    return None
+    raise FireExit(0, component_trace)
   else:
     _PrintResult(component_trace, verbose=component_trace.verbose)
     result = component_trace.GetResult()
@@ -159,6 +160,27 @@ class FireError(Exception):
   These exceptions are not raised by the Fire function, but rather are caught
   and added to the FireTrace.
   """
+
+
+class FireExit(SystemExit):
+  """An exception raised by Fire to the client in the case of a FireError.
+
+  The trace of the Fire program is available on the `trace` property.
+
+  This exception inherits from SystemExit, so clients may explicitly catch it
+  with `except SystemExit` or `except FireExit`. If not caught, this exception
+  will cause the client program to exit without a stacktrace.
+  """
+
+  def __init__(self, code, component_trace):
+    """Constructs a FireExit exception.
+
+    Args:
+      code: (int) Exit code for the Fire CLI.
+      component_trace: (FireTrace) The trace for the Fire command.
+    """
+    super(FireExit, self).__init__(code)
+    self.trace = component_trace
 
 
 def _PrintResult(component_trace, verbose=False):
@@ -558,8 +580,8 @@ def _MakeParseFn(fn):
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
-        fn_spec.args, fn_spec.defaults, num_required_args, kwargs, remaining_args,
-        metadata)
+        fn_spec.args, fn_spec.defaults, num_required_args, kwargs,
+        remaining_args, metadata)
 
     if fn_spec.varargs or fn_spec.varkw:
       # If we're allowed *varargs or **kwargs, there's always capacity.
