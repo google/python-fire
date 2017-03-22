@@ -18,6 +18,7 @@ from __future__ import print_function
 
 import unittest
 import six
+import os
 
 from fire import inspectutils
 from fire import test_components as tc
@@ -97,7 +98,7 @@ class InspectUtilsTest(unittest.TestCase):
   def testInfoClass(self):
     info = inspectutils.Info(tc.NoDefaults)
     self.assertEqual(info.get('type_name'), 'type')
-    self.assertIn('fire/test_components.py', info.get('file'))
+    self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 
   def testInfoClassNoInit(self):
@@ -106,7 +107,7 @@ class InspectUtilsTest(unittest.TestCase):
       self.assertEqual(info.get('type_name'), 'classobj')
     else:
       self.assertEqual(info.get('type_name'), 'type')
-    self.assertIn('fire/test_components.py', info.get('file'))
+    self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 
 
