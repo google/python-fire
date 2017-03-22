@@ -121,7 +121,7 @@ class HelpUtilsTest(unittest.TestCase):
       self.assertIn('Type:        type\n', helpstring)
     self.assertIn('String form: ', helpstring)
     self.assertIn('fire.test_components.OldStyleEmpty', helpstring)
-    self.assertIn(os.path.join('fire', 'test_components.py\n'), helpstring)
+    self.assertIn(os.path.join('fire', 'test_components.py'), helpstring)
     self.assertIn('Line:        ', helpstring)
 
 
