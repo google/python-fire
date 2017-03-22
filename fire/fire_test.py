@@ -21,15 +21,18 @@ from fire import test_components as tc
 from fire import testutils
 from fire import trace
 
+import mock
 import six
+import sys
 import unittest
 
 
 class FireTest(testutils.BaseTestCase):
   def testFire(self):
-    fire.Fire(tc.Empty, '')
-    fire.Fire(tc.OldStyleEmpty, '')
-    fire.Fire(tc.WithInit, '')
+    with mock.patch.object(sys, 'argv', ['progname']):
+      fire.Fire(tc.Empty)
+      fire.Fire(tc.OldStyleEmpty)
+      fire.Fire(tc.WithInit)
     self.assertEqual(fire.Fire(tc.NoDefaults, 'double 2'), 4)
     self.assertEqual(fire.Fire(tc.NoDefaults, 'triple 4'), 12)
     self.assertEqual(fire.Fire(tc.WithDefaults, 'double 2'), 4)
