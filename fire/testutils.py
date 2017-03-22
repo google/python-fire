@@ -21,15 +21,15 @@ import re
 import sys
 import unittest
 
-import mock
-import six
-
 from fire import core
 from fire import trace
 
+import mock
+import six
+
 
 class BaseTestCase(unittest.TestCase):
-  """Shared test case for fire tests"""
+  """Shared test case for Python Fire tests."""
 
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp=None):
@@ -37,6 +37,12 @@ class BaseTestCase(unittest.TestCase):
 
     Allows tests to check that Fire's wrapper around SystemExit is raised
     and that a regexp is matched in the output.
+
+    Args:
+      code: The status code that the FireExit should contain.
+      regexp: stdout must match this regex.
+    Yields:
+      Yields to the wrapped context.
     """
     if regexp is None:
       regexp = '.*'
