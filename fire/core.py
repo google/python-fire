@@ -92,9 +92,14 @@ def Fire(component=None, command=None, name=None):
     it's a class). When all arguments are consumed and there's no function left
     to call or class left to instantiate, the resulting current component is
     the final result.
-    If the trace command line argument is supplied, the FireTrace is returned.
+    If the trace command line argument is supplied, the FireTrace is printed
+    and a zero.
+    If a Fire error is encountered, the Fire Trace is displayed to stdout and
+    a FireExit is raised.
   Raises:
-    FireExit: If a FireError is countered.
+    FireExit: If a FireError (code 2) or exception in client code (code 1) is
+        encountered. When displaying help or trace, a FireExit with code of 0
+        will be raised.
   """
   # Get args as a list.
   if command is None:
@@ -127,21 +132,22 @@ def Fire(component=None, command=None, name=None):
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    raise FireExit(1, component_trace)
+    raise FireExit(2, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
     print('Fire trace:\n{trace}\n'.format(trace=component_trace))
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    return component_trace
+    raise FireExit(0, component_trace)
   elif component_trace.show_trace:
     print('Fire trace:\n{trace}'.format(trace=component_trace))
-    return component_trace
+    raise FireExit(0, component_trace)
   elif component_trace.show_help:
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    return None
+    # ape argparse by exiting out quickly
+    raise FireExit(0, component_trace)
   else:
     _PrintResult(component_trace, verbose=component_trace.verbose)
     result = component_trace.GetResult()
@@ -164,15 +170,20 @@ class FireError(Exception):
 class FireExit(SystemExit):
   """An exception raised by Fire to the client in the case of a FireError.
 
-  Contains the trace of the Fire program.
+  The trace of the Fire program is available on the `trace` property.
 
-  If not caught, then a FireExit will cause the program to exit with a non-zero
-  status code.
+  Note:
+    Since this exception inherits from SystemExit/BaseException, you'll have to
+    explicitly catch it with `except SystemExit` or `except FireExit`.
   """
-
-  def __init__(self, status, data):
-    super(FireExit, self).__init__(status)
-    self.trace = data
+  def __init__(self, code, component_trace):
+    """
+    Args:
+      code (int): exit code for CLI
+      component_trace (FireTrace): the component trace generated from running the command.
+    """
+    super(FireExit, self).__init__(code)
+    self.trace = component_trace
 
 
 def _PrintResult(component_trace, verbose=False):

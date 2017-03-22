@@ -18,18 +18,21 @@ from __future__ import print_function
 
 import fire
 from fire import test_components as tc
+from fire import testutils
 from fire import trace
 
+import mock
 import six
+import sys
 import unittest
 
 
-class FireTest(unittest.TestCase):
-
+class FireTest(testutils.BaseTestCase):
   def testFire(self):
-    fire.Fire(tc.Empty)
-    fire.Fire(tc.OldStyleEmpty)
-    fire.Fire(tc.WithInit)
+    with mock.patch.object(sys, 'argv', ['progname']):
+      fire.Fire(tc.Empty)
+      fire.Fire(tc.OldStyleEmpty)
+      fire.Fire(tc.WithInit)
     self.assertEqual(fire.Fire(tc.NoDefaults, 'double 2'), 4)
     self.assertEqual(fire.Fire(tc.NoDefaults, 'triple 4'), 12)
     self.assertEqual(fire.Fire(tc.WithDefaults, 'double 2'), 4)
@@ -285,26 +288,28 @@ class FireTest(unittest.TestCase):
                      ('value', {'nothing': False}))
 
   def testTraceFlag(self):
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- --trace'), trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- -t'), trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, '-- --trace'), trace.FireTrace)
+    with self.assertRaisesFireExit(0, 'Fire trace:\n'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- --trace')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- -t')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n'):
+      fire.Fire(tc.BoolConverter, '-- --trace')
 
   def testHelpFlag(self):
-    self.assertIsNone(fire.Fire(tc.BoolConverter, 'as-bool True -- --help'))
-    self.assertIsNone(fire.Fire(tc.BoolConverter, 'as-bool True -- -h'))
-    self.assertIsNone(fire.Fire(tc.BoolConverter, '-- --help'))
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- --help')
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- -h')
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.BoolConverter, '-- --help')
 
   def testHelpFlagAndTraceFlag(self):
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- --help --trace'),
-        trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, 'as-bool True -- -h -t'), trace.FireTrace)
-    self.assertIsInstance(
-        fire.Fire(tc.BoolConverter, '-- -h --trace'), trace.FireTrace)
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- --help --trace')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+      fire.Fire(tc.BoolConverter, 'as-bool True -- -h -t')
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+      fire.Fire(tc.BoolConverter, '-- -h --trace')
 
   def testTabCompletionNoName(self):
     with self.assertRaises(ValueError):
@@ -332,7 +337,7 @@ class FireTest(unittest.TestCase):
         ('-', '_'))
 
     # The separator triggers a function call, but there aren't enough arguments.
-    with self.assertRaises(fire.FireExit):
+    with self.assertRaisesFireExit(2):
       fire.Fire(tc.MixedDefaults, 'identity - _ +')
 
   def testNonComparable(self):
