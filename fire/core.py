@@ -170,20 +170,20 @@ class FireError(Exception):
 class FireExit(SystemExit):
   """An exception raised by Fire to the client in the case of a FireError.
 
-  Contains the trace of the Fire program.
+  The trace of the Fire program is available on the `trace` property.
 
   Note:
     Since this exception inherits from SystemExit/BaseException, you'll have to
     explicitly catch it with `except SystemExit` or `except FireExit`.
   """
-  def __init__(self, code, trace):
+  def __init__(self, code, component_trace):
     """
     Args:
       code (int): exit code for CLI
-      trace (FireTrace): the component trace generated from running the command.
+      component_trace (FireTrace): the component trace generated from running the command.
     """
     super(FireExit, self).__init__(code)
-    self.trace = trace
+    self.trace = component_trace
 
 
 def _PrintResult(component_trace, verbose=False):
