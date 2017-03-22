@@ -132,7 +132,7 @@ def Fire(component=None, command=None, name=None):
     result = component_trace.GetResult()
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
-    raise FireExit(2, trace)
+    raise FireExit(2, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
     print('Fire trace:\n{trace}\n'.format(trace=component_trace))
     result = component_trace.GetResult()
@@ -147,7 +147,7 @@ def Fire(component=None, command=None, name=None):
     print(
         helputils.HelpString(result, component_trace, component_trace.verbose))
     # ape argparse by exiting out quickly
-    raise FireExit(0, None)
+    raise FireExit(0, component_trace)
   else:
     _PrintResult(component_trace, verbose=component_trace.verbose)
     result = component_trace.GetResult()

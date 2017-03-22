@@ -41,6 +41,7 @@ class BaseTest(unittest.TestCase):
           yield
         except core.FireExit as exc:
           assert exc.code == code, 'Incorrect exit code: %r != %r' % (exc.code, code)
+          self.assertIsInstance(exc.trace, trace.FireTrace)
           stdout.flush()
           stdout.seek(0)
           value = stdout.getvalue()
