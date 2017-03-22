@@ -167,15 +167,17 @@ class FireExit(SystemExit):
 
   The trace of the Fire program is available on the `trace` property.
 
-  Note:
-    Since this exception inherits from SystemExit/BaseException, you'll have to
-    explicitly catch it with `except SystemExit` or `except FireExit`.
+  This exception inherits from SystemExit, so clients may explicitly catch it
+  with `except SystemExit` or `except FireExit`. If not caught, this exception
+  will cause the client program to exit without a stacktrace.
   """
+
   def __init__(self, code, component_trace):
-    """
+    """Constructs a FireExit exception.
+
     Args:
-      code (int): exit code for CLI
-      component_trace (FireTrace): the component trace generated from running the command.
+      code: (int) Exit code for the Fire CLI.
+      component_trace: (FireTrace) The trace for the Fire command.
     """
     super(FireExit, self).__init__(code)
     self.trace = component_trace
