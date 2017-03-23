@@ -567,7 +567,7 @@ of any argument we give it:
 
 ```python
 import fire
-fire.Fire(lambda obj: type(x).__name__)
+fire.Fire(lambda obj: type(obj).__name__)
 ```
 
 And we'll use it like so:
