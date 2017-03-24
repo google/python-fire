@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Thie module has components that are used for testing Python Fire."""
+"""This module has components that are used for testing Python Fire."""
 
 from __future__ import absolute_import
 from __future__ import division
