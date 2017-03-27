@@ -34,7 +34,7 @@ class Empty(object):
   pass
 
 
-class OldStyleEmpty:  # pylint: disable=old-style-class
+class OldStyleEmpty:  # pylint: disable=old-style-class,no-init
   pass
 
 
@@ -62,7 +62,7 @@ class WithDefaults(object):
     return 3 * count
 
 
-class OldStyleWithDefaults:  # pylint: disable=old-style-class
+class OldStyleWithDefaults:  # pylint: disable=old-style-class,no-init
 
   def double(self, count=0):
     return 2 * count

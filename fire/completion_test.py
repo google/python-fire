@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the completion module."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -31,7 +33,7 @@ class TabCompletionTest(testutils.BaseTestCase):
         ['halt'],
         ['halt', '--now'],
     ]
-    script = completion._Script(name='command', commands=commands)
+    script = completion._Script(name='command', commands=commands)  # pylint: disable=protected-access
     self.assertIn('command', script)
     self.assertIn('halt', script)
     self.assertIn('"$start" == "command"', script)

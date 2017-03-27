@@ -94,7 +94,7 @@ def GetFullArgSpec(fn):
       annotations = getattr(fn, '__annotations__', None)
     else:
       (args, varargs, varkw, defaults,
-       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)
+       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)  # pylint: disable=no-member
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
