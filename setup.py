@@ -16,7 +16,8 @@
 
 from setuptools import setup
 
-long_description = """
+
+LONG_DESCRIPTION = """
 Python Fire is a library for automatically generating command line interfaces
 (CLIs) with a single line of code.
 
@@ -25,15 +26,15 @@ component will work!) into a CLI. It's called Fire because when you call Fire(),
 it fires off your command.
 """.strip()
 
-short_description = """
+SHORT_DESCRIPTION = """
 A library for automatically generating commane line interfaces.""".strip()
 
-dependencies = [
+DEPENDENCIES = [
     'ipython',
     'six',
 ]
 
-test_dependencies = [
+TEST_DEPENDENCIES = [
     'hypothesis',
     'mock',
     'python-Levenshtein',
@@ -43,8 +44,8 @@ setup(
     name='fire',
     version='0.1.0',
 
-    description=short_description,
-    long_description=long_description,
+    description=SHORT_DESCRIPTION,
+    long_description=LONG_DESCRIPTION,
 
     url='https://github.com/google/python-fire',
 
@@ -79,6 +80,6 @@ setup(
 
     packages=['fire'],
 
-    install_requires=dependencies,
-    tests_require=test_dependencies,
+    install_requires=DEPENDENCIES,
+    tests_require=TEST_DEPENDENCIES,
 )

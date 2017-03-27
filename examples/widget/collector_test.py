@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the collector module."""
+
 from fire import testutils
 
-from fire.examples.widget import collector
-from fire.examples.widget import widget
+from examples.widget import collector
+from examples.widget import widget
 
 
 class CollectorTest(testutils.BaseTestCase):
@@ -26,11 +28,11 @@ class CollectorTest(testutils.BaseTestCase):
 
   def testCollectorWantsMoreWidgets(self):
     col = collector.Collector()
-    self.assertEquals(col.desired_widget_count, 10)
+    self.assertEqual(col.desired_widget_count, 10)
 
   def testCollectorGetsWantedWidgets(self):
     col = collector.Collector()
-    self.assertEquals(len(col.collect_widgets()), 10)
+    self.assertEqual(len(col.collect_widgets()), 10)
 
 
 if __name__ == '__main__':
