@@ -22,8 +22,6 @@ from fire import testutils
 from fire import trace
 import mock
 
-import unittest
-
 
 class CoreTest(testutils.BaseTestCase):
 
@@ -94,4 +92,4 @@ class CoreTest(testutils.BaseTestCase):
     self.assertIsNotNone(error)
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

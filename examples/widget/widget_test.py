@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from fire import testutils
+
 from fire.examples.widget import widget
 
-import unittest
 
-
-class WidgetTest(unittest.TestCase):
+class WidgetTest(testutils.BaseTestCase):
 
   def testWidgetWhack(self):
     toy = widget.Widget()
@@ -31,4 +31,4 @@ class WidgetTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

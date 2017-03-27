@@ -18,8 +18,7 @@ from __future__ import print_function
 
 from fire import core
 from fire import decorators
-
-import unittest
+from fire import testutils
 
 
 class A(object):
@@ -88,7 +87,7 @@ class F(object):
     return arg1, arg2, varargs, kwargs
 
 
-class FireDecoratorsTest(unittest.TestCase):
+class FireDecoratorsTest(testutils.BaseTestCase):
 
   def testSetParseFnsNamedArgs(self):
     self.assertEqual(core.Fire(A, 'double 2'), 4)
@@ -147,4 +146,4 @@ class FireDecoratorsTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

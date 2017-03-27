@@ -16,12 +16,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from fire import testutils
 from fire import trace
 
-import unittest
 
-
-class FireTraceTest(unittest.TestCase):
+class FireTraceTest(testutils.BaseTestCase):
 
   def testFireTraceInitialization(self):
     t = trace.FireTrace(10)
@@ -100,7 +99,7 @@ class FireTraceTest(unittest.TestCase):
     self.assertEqual(t.GetCommand(), "--example='spaced arg'")
 
 
-class FireTraceElementTest(unittest.TestCase):
+class FireTraceElementTest(testutils.BaseTestCase):
 
   def testFireTraceElementHasError(self):
     el = trace.FireTraceElement()
@@ -136,4 +135,4 @@ class FireTraceElementTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Utilities for Python Fire's tests."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -62,3 +64,7 @@ class BaseTestCase(unittest.TestCase):
           if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
             raise AssertionError('Expected %r to match %r' % (value, regexp))
           raise
+
+
+def main():
+  unittest.main()

@@ -14,13 +14,13 @@
 
 import tempfile
 
+from fire import testutils
+
 from fire.examples.diff import diff
 from fire.examples.diff import difffull
 
-import unittest
 
-
-class DiffTest(unittest.TestCase):
+class DiffTest(testutils.BaseTestCase):
   """The purpose of these tests is to ensure the difflib wrappers works.
 
   It is not the goal of these tests to exhaustively test difflib functionality.
@@ -90,4 +90,4 @@ class DiffTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

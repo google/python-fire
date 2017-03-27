@@ -414,4 +414,4 @@ class FireTest(testutils.BaseTestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

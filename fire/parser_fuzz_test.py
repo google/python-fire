@@ -17,6 +17,7 @@ from __future__ import division
 from __future__ import print_function
 
 from fire import parser
+from fire import testutils
 from hypothesis import example
 from hypothesis import given
 from hypothesis import settings
@@ -24,10 +25,8 @@ from hypothesis import strategies as st
 import Levenshtein
 import six
 
-import unittest
 
-
-class ParserFuzzTest(unittest.TestCase):
+class ParserFuzzTest(testutils.BaseTestCase):
 
   @given(st.text(min_size=1), settings=settings.Settings(max_examples=10000))
   @example('True')
@@ -94,4 +93,4 @@ class ParserFuzzTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()
