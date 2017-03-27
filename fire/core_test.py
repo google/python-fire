@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the core module."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -22,16 +24,14 @@ from fire import testutils
 from fire import trace
 import mock
 
-import unittest
-
 
 class CoreTest(testutils.BaseTestCase):
 
   def testOneLineResult(self):
-    self.assertEqual(core._OneLineResult(1), '1')
-    self.assertEqual(core._OneLineResult('hello'), 'hello')
-    self.assertEqual(core._OneLineResult({}), '{}')
-    self.assertEqual(core._OneLineResult({'x': 'y'}), '{"x": "y"}')
+    self.assertEqual(core._OneLineResult(1), '1')  # pylint: disable=protected-access
+    self.assertEqual(core._OneLineResult('hello'), 'hello')  # pylint: disable=protected-access
+    self.assertEqual(core._OneLineResult({}), '{}')  # pylint: disable=protected-access
+    self.assertEqual(core._OneLineResult({'x': 'y'}), '{"x": "y"}')  # pylint: disable=protected-access
 
   @mock.patch('fire.interact.Embed')
   def testInteractiveMode(self, mock_embed):
@@ -94,4 +94,4 @@ class CoreTest(testutils.BaseTestCase):
     self.assertIsNotNone(error)
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

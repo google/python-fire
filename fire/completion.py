@@ -226,4 +226,3 @@ def _Commands(component, depth=3):
 
     for command in _Commands(member, depth - 1):
       yield (member_name,) + command
-

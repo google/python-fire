@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the fire module."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -414,4 +416,4 @@ class FireTest(testutils.BaseTestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

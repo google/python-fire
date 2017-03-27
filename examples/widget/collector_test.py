@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from fire import testutils
+
 from fire.examples.widget import collector
 from fire.examples.widget import widget
 
-import unittest
 
-
-class CollectorTest(unittest.TestCase):
+class CollectorTest(testutils.BaseTestCase):
 
   def testCollectorHasWidget(self):
     col = collector.Collector()
@@ -34,4 +34,4 @@ class CollectorTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

@@ -12,17 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the interact module."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 from fire import interact
+from fire import testutils
+
 import mock
 
-import unittest
 
-
-class InteractTest(unittest.TestCase):
+class InteractTest(testutils.BaseTestCase):
 
   @mock.patch('IPython.start_ipython')
   def testInteract(self, mock_ipython):
@@ -40,4 +42,4 @@ class InteractTest(unittest.TestCase):
     self.assertTrue(mock_ipython.called)
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

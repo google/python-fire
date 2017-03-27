@@ -12,17 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the completion module."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 from fire import completion
 from fire import test_components as tc
+from fire import testutils
 
-import unittest
 
-
-class TabCompletionTest(unittest.TestCase):
+class TabCompletionTest(testutils.BaseTestCase):
 
   def testCompletionScript(self):
     # A sanity check test to make sure the completion script satisfies some
@@ -32,7 +33,7 @@ class TabCompletionTest(unittest.TestCase):
         ['halt'],
         ['halt', '--now'],
     ]
-    script = completion._Script(name='command', commands=commands)
+    script = completion._Script(name='command', commands=commands)  # pylint: disable=protected-access
     self.assertIn('command', script)
     self.assertIn('halt', script)
     self.assertIn('"$start" == "command"', script)
@@ -135,4 +136,4 @@ class TabCompletionTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

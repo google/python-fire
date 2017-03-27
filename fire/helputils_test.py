@@ -12,19 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the helputils module."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from fire import helputils
-from fire import test_components as tc
-import six
-
-import unittest
 import os
 
+from fire import helputils
+from fire import test_components as tc
+from fire import testutils
+import six
 
-class HelpUtilsTest(unittest.TestCase):
+
+class HelpUtilsTest(testutils.BaseTestCase):
 
   def testHelpStringClass(self):
     helpstring = helputils.HelpString(tc.NoDefaults)
@@ -126,4 +128,4 @@ class HelpUtilsTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+"""Tests importing the fire module."""
+
 import sys
-import unittest
 
 import fire
+from fire import testutils
+import mock
 
 
-class FireImportTest(unittest.TestCase):
+class FireImportTest(testutils.BaseTestCase):
   """Tests importing Fire."""
 
   def testFire(self):
@@ -35,4 +37,4 @@ class FireImportTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()

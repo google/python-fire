@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the inspectutils module."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -21,11 +23,12 @@ import unittest
 
 from fire import inspectutils
 from fire import test_components as tc
+from fire import testutils
 
 import six
 
 
-class InspectUtilsTest(unittest.TestCase):
+class InspectUtilsTest(testutils.BaseTestCase):
 
   def testGetFullArgSpec(self):
     spec = inspectutils.GetFullArgSpec(tc.identity)
@@ -113,4 +116,4 @@ class InspectUtilsTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  testutils.main()
