@@ -210,11 +210,19 @@ def _Commands(component, depth=3):
     Tuples, each tuple representing one possible command for this CLI.
     Only traverses the member DAG up to a depth of depth.
   """
+  def seen(p, m={}):
+    if p in m:
+        return True
+    m[p] = True
+    
   if depth < 1:
     return
 
   for member_name, member in _Members(component):
-    # TODO: Also skip components we've already seen.
+    # Also skip components we've already seen.
+    if seen(p):
+        continue
+    
     member_name = _FormatForCommand(member_name)
 
     yield (member_name,)
