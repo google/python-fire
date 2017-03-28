@@ -220,7 +220,7 @@ def _Commands(component, depth=3):
 
   for member_name, member in _Members(component):
     # Also skip components we've already seen.
-    if seen(p):
+    if seen(member_name):
         continue
     
     member_name = _FormatForCommand(member_name)
