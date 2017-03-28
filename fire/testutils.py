@@ -32,6 +32,15 @@ import six
 
 class BaseTestCase(unittest.TestCase):
   """Shared test case for Python Fire tests."""
+  @contextlib.contextmanager
+  def assertStdoutMatches(self, regexp):
+    """Asserts the context generates stdout matching regexp"""
+    stdout = six.StringIO()
+    with mock.patch.object(sys, 'stdout', stdout):
+      yield
+    value = stdout.getvalue()
+    if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
+      raise AssertionError('Expected %r to match %r' % (value, regexp))
 
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp=None):

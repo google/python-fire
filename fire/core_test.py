@@ -93,5 +93,12 @@ class CoreTest(testutils.BaseTestCase):
     error = core.FireError('Example error', 'value')
     self.assertIsNotNone(error)
 
+  def testPrintEmptyDict(self):
+    with self.assertStdoutMatches('{}'):
+      core.Fire(tc.EmptyDictOutput, 'totally_empty')
+    with self.assertStdoutMatches('{}'):
+      core.Fire(tc.EmptyDictOutput, 'nothing_printable')
+
+
 if __name__ == '__main__':
   testutils.main()
