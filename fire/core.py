@@ -214,21 +214,20 @@ def _DictAsString(result, verbose=False):
   Returns:
     A string representing the dict
   """
+  result = {key: value for key, value in result.items()
+            if _ComponentVisible(key, verbose)}
+
   if not result:
     return '{}'
 
-  longest_key = max(
-      len(str(key)) for key in result.keys()
-      if _ComponentVisible(key, verbose)
-  )
+  longest_key = max(len(str(key)) for key in result.keys())
   format_string = '{{key:{padding}s}} {{value}}'.format(padding=longest_key + 1)
 
   lines = []
   for key, value in result.items():
-    if _ComponentVisible(key, verbose):
-      line = format_string.format(
-          key=str(key) + ':', value=_OneLineResult(value))
-      lines.append(line)
+    line = format_string.format(key=str(key) + ':',
+                                value=_OneLineResult(value))
+    lines.append(line)
   return '\n'.join(lines)
 
 

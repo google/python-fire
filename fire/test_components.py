@@ -197,3 +197,11 @@ class NonComparable(object):
 
   def __ne__(self, other):
     raise ValueError('Instances of this class cannot be compared.')
+
+
+class EmptyDictOutput(object):
+  def totally_empty(self):
+    return {}
+
+  def nothing_printable(self):
+    return {'__do_not_print_me': 1}
