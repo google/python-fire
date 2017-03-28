@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the diff and difffull modules."""
+
 import tempfile
 
 from fire import testutils
 
-from fire.examples.diff import diff
-from fire.examples.diff import difffull
+from examples.diff import diff
+from examples.diff import difffull
 
 
 class DiffTest(testutils.BaseTestCase):
@@ -30,8 +32,8 @@ class DiffTest(testutils.BaseTestCase):
     self.file1 = file1 = tempfile.NamedTemporaryFile()
     self.file2 = file2 = tempfile.NamedTemporaryFile()
 
-    file1.write('test\ntest1\n')
-    file2.write('test\ntest2\nextraline\n')
+    file1.write(b'test\ntest1\n')
+    file2.write(b'test\ntest2\nextraline\n')
 
     file1.flush()
     file2.flush()

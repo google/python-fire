@@ -21,7 +21,7 @@ from __future__ import print_function
 import six
 
 if six.PY3:
-  from fire import test_components_py3 as py3  # pylint: disable=unused-import
+  from fire import test_components_py3 as py3  # pylint: disable=unused-import,no-name-in-module
 
 
 def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):

@@ -21,7 +21,7 @@ class Widget(object):
 
   def whack(self, n=1):
     """Prints "whack!" n times."""
-    return ' '.join('whack!' for _ in xrange(n))
+    return ' '.join('whack!' for _ in range(n))
 
   def bang(self, noise='bang'):
     """Makes a loud noise."""

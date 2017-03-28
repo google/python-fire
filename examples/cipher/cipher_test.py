@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the cipher module."""
+
 from fire import testutils
 
-from fire.examples.cipher import cipher
+from examples.cipher import cipher
 
 
 class CipherTest(testutils.BaseTestCase):

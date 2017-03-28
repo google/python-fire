@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Tests for the widget module."""
+
 from fire import testutils
 
-from fire.examples.widget import widget
+from examples.widget import widget
 
 
 class WidgetTest(testutils.BaseTestCase):

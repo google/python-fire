@@ -95,7 +95,7 @@ class-rgx=[A-Z_][a-zA-Z0-9]+$
 function-rgx=^(?:(?P<camel_case>_?[A-Z][a-zA-Z0-9]*)|(?P<snake_case>_?[a-z][a-z0-9_]*))$
 
 # Regular expression which should only match correct method names
-method-rgx=^(?:(?P<exempt>__[a-z0-9_]+__|next)|(?P<camel_case>_{0,2}(test)?[A-Z][a-zA-Z0-9]*)|(?P<snake_case>_{0,2}[a-z][a-z0-9_]*))$
+method-rgx=^(?:(?P<exempt>__[a-z0-9_]+__|next)|(?P<camel_case>_{0,2}(?:test|assert)?[A-Z][a-zA-Z0-9]*)|(?:_{0,2}[a-z][a-z0-9_]*))$
 
 # Regular expression which should only match correct instance attribute names
 attr-rgx=^_{0,2}[a-z][a-z0-9_]*$

@@ -16,7 +16,7 @@
 
 import fire
 
-from fire.examples.widget import widget
+from examples.widget import widget
 
 
 class Collector(object):
@@ -28,7 +28,7 @@ class Collector(object):
 
   def collect_widgets(self):
     """Returns all the widgets the Collector wants."""
-    return [widget.Widget() for _ in xrange(self.desired_widget_count)]
+    return [widget.Widget() for _ in range(self.desired_widget_count)]
 
 
 def main():

@@ -6,6 +6,9 @@ python:
   - "3.6"
 before_install:
   - pip install --upgrade setuptools pip
+  - pip install --upgrade pylint pytest pytest-pylint pytest-runner
 install:
   - python setup.py develop
-script: nosetests --ignore-files=parser_fuzz_test.py --exclude=test_components_py3.py
+script:
+  - python -m pytest
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py; fi
