@@ -216,7 +216,7 @@ def _Commands(component, depth=3):
     Tuples, each tuple representing one possible command for this CLI.
     Only traverses the member DAG up to a depth of depth.
   """
-  
+
   if depth < 1:
     return
 
