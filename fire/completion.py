@@ -195,12 +195,12 @@ def _FormatForCommand(token):
   else:
     return token.replace('_', '-')
 
-m={}
+M = {}
 
-def seen(p):
-  if p in m:
+def _Seen(p):
+  if p in M:
     return True
-  m[p] = True
+  M[p] = True
 
 def _Commands(component, depth=3):
   """Yields tuples representing commands.
@@ -223,8 +223,8 @@ def _Commands(component, depth=3):
   for member_name, member in _Members(component):
     # Also skip components we've already seen.
     if seen(id(component)):
-        continue
-    
+      continue
+
     member_name = _FormatForCommand(member_name)
 
     yield (member_name,)
