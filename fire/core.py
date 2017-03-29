@@ -401,7 +401,7 @@ def _Fire(component, args, context, name=None):
             break
         if not found_target:
           error = FireError(
-              'Cannot find target in dict', target, component)
+              'Cannot find target in dict:', target, component)
           component_trace.AddError(error, initial_args)
           return component_trace
 
@@ -448,7 +448,7 @@ def _Fire(component, args, context, name=None):
 
   if remaining_args:
     component_trace.AddError(
-        FireError('Could not consume arguments', remaining_args),
+        FireError('Could not consume arguments:', remaining_args),
         initial_args)
     return component_trace
 
@@ -531,7 +531,7 @@ def _GetMember(component, args):
     if arg_name in members:
       return members[arg_name], [arg], args[1:]
 
-  raise FireError('Could not consume arg', arg)
+  raise FireError('Could not consume arg:', arg)
 
 
 def _CallCallable(fn, args):

@@ -200,6 +200,7 @@ class NonComparable(object):
 
 
 class EmptyDictOutput(object):
+
   def totally_empty(self):
     return {}
 

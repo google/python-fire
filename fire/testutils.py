@@ -32,9 +32,10 @@ import six
 
 class BaseTestCase(unittest.TestCase):
   """Shared test case for Python Fire tests."""
+
   @contextlib.contextmanager
   def assertStdoutMatches(self, regexp):
-    """Asserts the context generates stdout matching regexp"""
+    """Asserts that the context generates stdout matching regexp."""
     stdout = six.StringIO()
     with mock.patch.object(sys, 'stdout', stdout):
       yield
