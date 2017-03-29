@@ -540,7 +540,7 @@ $ python example.py dog cat elephant upper
 cat dog upper elephant
 ```
 
-You can change the separator with the `--sparator` flag. Flags are always
+You can change the separator with the `--separator` flag. Flags are always
 separated from your Fire command by an isolated `--`. Here's an example where we
 change the separator.
 
@@ -678,7 +678,7 @@ separating the flags from the Fire command, but may not always be able to, since
 `help` is a valid argument name. Use this feature like this:
 `python example.py -- --help`.
 
-The complete set of flags avaiable is shown below, in the reference section.
+The complete set of flags available is shown below, in the reference section.
 
 
 ### Reference
