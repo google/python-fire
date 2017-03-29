@@ -83,6 +83,19 @@ Please see [The Python Fire Guide](doc/guide.md).
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 
 
+## Known Issues
+
+The following python module names are likely cause an error. 
+* sys.py
+* linecache.py
+* cmd.py
+* bdb.py
+* repr.py
+* os.py
+* re.py
+* pprint.py
+* traceback.py
+
 ## Disclaimer
 
 This is not an official Google product.
