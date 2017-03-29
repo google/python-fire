@@ -83,9 +83,11 @@ Please see [The Python Fire Guide](doc/guide.md).
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 
 
-## Known Issues
+## Troubleshooting
 
-The following python module names are likely cause an error. 
+Specific python module names have been known to throw errors. IPython contains several builtin modules. If a user-created module of the same name exists on the pythonpath in front of the builtin modules it 'covers' the orgional file. This results in the wrong module being imported and the consequential error seen. 
+
+If you are incountering an error and your module is named any of the following: 
 * sys.py
 * linecache.py
 * cmd.py
@@ -95,6 +97,8 @@ The following python module names are likely cause an error.
 * re.py
 * pprint.py
 * traceback.py
+
+The recommended course of action is to alter your filename.
 
 ## Disclaimer
 
