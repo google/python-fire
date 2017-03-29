@@ -196,7 +196,7 @@ def _FormatForCommand(token):
     return token.replace('_', '-')
 
 
-def _Commands(component, depth=3):
+def _Commands(component, depth=3, m={}):
   """Yields tuples representing commands.
 
   To use the command from Python, insert '.' between each element of the tuple.
@@ -210,7 +210,7 @@ def _Commands(component, depth=3):
     Tuples, each tuple representing one possible command for this CLI.
     Only traverses the member DAG up to a depth of depth.
   """
-  def seen(p, m={}):
+  def seen(p):
     if p in m:
         return True
     m[p] = True
@@ -220,7 +220,7 @@ def _Commands(component, depth=3):
 
   for member_name, member in _Members(component):
     # Also skip components we've already seen.
-    if seen(member_name):
+    if seen(id(component)):
         continue
     
     member_name = _FormatForCommand(member_name)
