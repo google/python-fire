@@ -196,10 +196,9 @@ def _FormatForCommand(token):
     return token.replace('_', '-')
 
 def _Commands(component):
-  seen = set()
-  return _CommandsHelper(component, seen)
-  
-def _CommandsHelper(component, seen):
+  return _CommandsHelper(component)
+
+def _CommandsHelper(component,seen=set()):
   seen.add(id(component))
 
   for member_name, member in _Members(component):
@@ -207,14 +206,14 @@ def _CommandsHelper(component, seen):
       continue
     member_name = _FormatForCommand(member_name)
     yield (member_name,)
-    
+
     if inspect.isroutine(member) or inspect.isclass(member):
       for completion in Completions(member):
         yield (member_name, completion)
       continue  # Don't descend into routines.
- 
+
     for command in _CommandsHelper(member, seen):
       yield (member_name,) + command
-  
+
   seen.remove(id(component))
 
