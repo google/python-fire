@@ -195,28 +195,16 @@ def _FormatForCommand(token):
   else:
     return token.replace('_', '-')
 
+def _Commands(component):
+  return _CommandsHelper(component)
 
-def _Commands(component, depth=3):
-  """Yields tuples representing commands.
-
-  To use the command from Python, insert '.' between each element of the tuple.
-  To use the command from the command line, insert ' ' between each element of
-  the tuple.
-
-  Args:
-    component: The component considered to be the root of the yielded commands.
-    depth: The maximum depth with which to traverse the member DAG for commands.
-  Yields:
-    Tuples, each tuple representing one possible command for this CLI.
-    Only traverses the member DAG up to a depth of depth.
-  """
-  if depth < 1:
-    return
+def _CommandsHelper(component,seen=set()):
+  seen.add(id(component))
 
   for member_name, member in _Members(component):
-    # TODO: Also skip components we've already seen.
+    if id(member) in seen:
+      continue
     member_name = _FormatForCommand(member_name)
-
     yield (member_name,)
 
     if inspect.isroutine(member) or inspect.isclass(member):
@@ -224,5 +212,8 @@ def _Commands(component, depth=3):
         yield (member_name, completion)
       continue  # Don't descend into routines.
 
-    for command in _Commands(member, depth - 1):
+    for command in _CommandsHelper(member, seen):
       yield (member_name,) + command
+
+  seen.remove(id(component))
+
