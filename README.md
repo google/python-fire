@@ -80,6 +80,7 @@ Please see [The Python Fire Guide](doc/guide.md).
 | [Completion](doc/using-cli.md#completion-flag) | `command -- --completion` | Generate a completion script for the CLI.
 | [Trace](doc/using-cli.md#trace-flag) | `command -- --trace` | Gets a Fire trace for the command.
 | [Verbose](doc/using-cli.md#verbose-flag) | `command -- --verbose` |
+
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 
 
