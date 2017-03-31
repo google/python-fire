@@ -210,6 +210,12 @@ def _Commands(component, depth=3):
     Tuples, each tuple representing one possible command for this CLI.
     Only traverses the member DAG up to a depth of depth.
   """
+  if inspect.isroutine(component) or inspect.isclass(component):
+    for completion in Completions(component):
+      yield (completion,)
+  if inspect.isroutine(component):
+    return  # Don't descend into routines.
+
   if depth < 1:
     return
 
@@ -218,11 +224,6 @@ def _Commands(component, depth=3):
     member_name = _FormatForCommand(member_name)
 
     yield (member_name,)
-
-    if inspect.isroutine(member) or inspect.isclass(member):
-      for completion in Completions(member):
-        yield (member_name, completion)
-      continue  # Don't descend into routines.
 
     for command in _Commands(member, depth - 1):
       yield (member_name,) + command

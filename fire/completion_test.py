@@ -98,6 +98,21 @@ class TabCompletionTest(testutils.BaseTestCase):
     self.assertIn('level3', script)
     self.assertNotIn('level4', script)  # The default depth is 3.
 
+  def testFnScript(self):
+    script = completion.Script('identity', tc.identity)
+    self.assertIn('--arg1', script)
+    self.assertIn('--arg2', script)
+    self.assertIn('--arg3', script)
+    self.assertIn('--arg4', script)
+
+  def testClassScript(self):
+    script = completion.Script('', tc.MixedDefaults)
+    self.assertIn('ten', script)
+    self.assertIn('sum', script)
+    self.assertIn('identity', script)
+    self.assertIn('--alpha', script)
+    self.assertIn('--beta', script)
+
   def testNonStringDictCompletions(self):
     completions = completion.Completions({
         10: 'green',
