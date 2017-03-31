@@ -20,7 +20,6 @@ from __future__ import print_function
 
 import inspect
 
-import IPython
 import six
 
 
@@ -132,6 +131,7 @@ def Info(component):
   Returns:
     A dict with information about the component.
   """
+  import IPython  # pylint: disable=g-import-not-at-top
   inspector = IPython.core.oinspect.Inspector()
   info = inspector.info(component)
 

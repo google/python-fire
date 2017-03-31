@@ -18,10 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import code
 import inspect
-
-import IPython
 
 
 def Embed(variables, verbose=False):
@@ -33,7 +30,11 @@ def Embed(variables, verbose=False):
     verbose: Whether to include 'hidden' members, those keys starting with _.
   """
   print(_AvailableString(variables, verbose))
-  _EmbedIPython(variables)
+
+  try:
+    _EmbedIPython(variables)
+  except ImportError:
+    _EmbedCode(variables)
 
 
 def _AvailableString(variables, verbose=False):
@@ -82,9 +83,11 @@ def _EmbedIPython(variables, argv=None):
         Values are variable values.
     argv: The argv to use for starting ipython. Defaults to an empty list.
   """
+  import IPython  # pylint: disable=g-import-not-at-top
   argv = argv or []
   IPython.start_ipython(argv=argv, user_ns=variables)
 
 
 def _EmbedCode(variables):
+  import code  # pylint: disable=g-import-not-at-top
   code.InteractiveConsole(variables).interact()
