@@ -32,6 +32,14 @@ class CoreTest(testutils.BaseTestCase):
     self.assertEqual(core._OneLineResult('hello'), 'hello')  # pylint: disable=protected-access
     self.assertEqual(core._OneLineResult({}), '{}')  # pylint: disable=protected-access
     self.assertEqual(core._OneLineResult({'x': 'y'}), '{"x": "y"}')  # pylint: disable=protected-access
+    self.assertEqual(core._OneLineResult(self.createCircularRefObject()),
+                     "{'y': {...}} [ Error:Circular reference detected]")  # pylint: disable=protected-access
+
+  @staticmethod
+  def createCircularRefObject():
+    x = {}
+    x['y'] = x
+    return x
 
   @mock.patch('fire.interact.Embed')
   def testInteractiveMode(self, mock_embed):

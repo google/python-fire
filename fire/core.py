@@ -247,9 +247,10 @@ def _OneLineResult(result):
 
   try:
     return json.dumps(result)
-  except TypeError:
-    return str(result).replace('\n', ' ')
-
+  except (TypeError, ValueError) as e:
+    return "{value} [ Error:{error_message}]".format(value=str(result)
+                                                     .replace('\n', ' '),
+                                                     error_message=str(e))
 
 def _Fire(component, args, context, name=None):
   """Execute a Fire command on a target component using the args supplied.
