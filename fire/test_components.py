@@ -206,3 +206,11 @@ class EmptyDictOutput(object):
 
   def nothing_printable(self):
     return {'__do_not_print_me': 1}
+
+
+class CircularReference(object):
+
+  def create(self):
+    x = {}
+    x['y'] = x
+    return x

@@ -250,6 +250,7 @@ def _OneLineResult(result):
   except (TypeError, ValueError):
     return str(result).replace('\n', ' ')
 
+
 def _Fire(component, args, context, name=None):
   """Execute a Fire command on a target component using the args supplied.
 

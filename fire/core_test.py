@@ -32,14 +32,12 @@ class CoreTest(testutils.BaseTestCase):
     self.assertEqual(core._OneLineResult('hello'), 'hello')  # pylint: disable=protected-access
     self.assertEqual(core._OneLineResult({}), '{}')  # pylint: disable=protected-access
     self.assertEqual(core._OneLineResult({'x': 'y'}), '{"x": "y"}')  # pylint: disable=protected-access
-    self.assertEqual(core._OneLineResult(self.createCircularRefObject()), # pylint: disable=protected-access
-                     "{'y': {...}}")
 
-  @staticmethod
-  def createCircularRefObject():
-    x = {}
-    x['y'] = x
-    return x
+
+  def testOneLineResultCircularRef(self):
+    circular_reference = tc.CircularReference()
+    self.assertEqual(core._OneLineResult(circular_reference.create()),# pylint: disable=protected-access
+                     "{'y': {...}}")
 
   @mock.patch('fire.interact.Embed')
   def testInteractiveMode(self, mock_embed):
