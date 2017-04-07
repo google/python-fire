@@ -36,7 +36,7 @@ class CoreTest(testutils.BaseTestCase):
 
   def testOneLineResultCircularRef(self):
     circular_reference = tc.CircularReference()
-    self.assertEqual(core._OneLineResult(circular_reference.create()),# pylint: disable=protected-access
+    self.assertEqual(core._OneLineResult(circular_reference.create()),  # pylint: disable=protected-access
                      "{'y': {...}}")
 
   @mock.patch('fire.interact.Embed')
