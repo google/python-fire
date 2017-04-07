@@ -96,5 +96,5 @@ ENV/
 # mkdocs documentation
 /site
 
-# pycharm or intelliJ
+# PyCharm IDE
 .idea/
