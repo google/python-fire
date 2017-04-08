@@ -18,6 +18,8 @@ from __future__ import print_function
 
 import sys
 
+import six
+
 from fire import testutils
 
 class TestTestUtils(testutils.BaseTestCase):
@@ -29,15 +31,15 @@ class TestTestUtils(testutils.BaseTestCase):
         raise ValueError()
 
   def test_check_stdout_or_stderr_none(self):
-    with self.assertRaisesRegex(AssertionError, 'stdout:'):
+    with six.assertRaisesRegex(self, AssertionError, 'stdout:'):
       with self.assertOutputMatches(stdout=None):
         print('blah')
 
-    with self.assertRaisesRegex(AssertionError, 'stderr:'):
+    with six.assertRaisesRegex(self, AssertionError, 'stderr:'):
       with self.assertOutputMatches(stderr=None):
         print('blah', file=sys.stderr)
 
-    with self.assertRaisesRegex(AssertionError, 'stderr:'):
+    with six.assertRaisesRegex(self, AssertionError, 'stderr:'):
       with self.assertOutputMatches(stdout='apple', stderr=None):
         print('apple')
         print('blah', file=sys.stderr)
