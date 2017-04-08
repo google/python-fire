@@ -34,12 +34,13 @@ class BaseTestCase(unittest.TestCase):
   """Shared test case for Python Fire tests."""
 
   @contextlib.contextmanager
-  def assertOutputMatches(self, stdout='.*', stderr='.*'):
+  def assertOutputMatches(self, stdout='.*', stderr='.*', capture=True):
     """Asserts that the context generates stdout and stderr matching regexps.
 
     Args:
       stdout (str): regexp to match against stdout (None will check no stdout)
       stderr (str): regexp to match against stderr (None will check no stderr)
+      capture (bool, default True): do not bubble up stdout or stderr
     Note:
       If wrapped code raises an exception, stdout and stderr will not be
       checked.
@@ -51,8 +52,9 @@ class BaseTestCase(unittest.TestCase):
         with mock.patch.object(sys, 'stderr', stderr_fp):
           yield
     finally:
-      sys.stdout.write(stdout_fp.getvalue())
-      sys.stderr.write(stderr_fp.getvalue())
+      if not capture:
+        sys.stdout.write(stdout_fp.getvalue())
+        sys.stderr.write(stderr_fp.getvalue())
 
     for name, regexp, fp in [('stdout', stdout, stdout_fp),
                             ('stderr', stderr, stderr_fp)]:
