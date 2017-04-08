@@ -48,8 +48,8 @@ class TestTestUtils(testutils.BaseTestCase):
         print('blah', file=sys.stderr)
 
   def testCorrectOrderingOfAssertRaises(self):
-    # check to make sure FireExit tests are correct
-    with self.assertOutputMatches(stdout='confirmed.*not working'):
+    # Check to make sure FireExit tests are correct
+    with self.assertOutputMatches(stdout='Yep.*first.*second'):
       with self.assertRaises(ValueError):
-        print('''Yep, we've confirmed it.\nThe receiver is not working. :(''')
+        print('Yep, this is the first line.\nIt should match to the second')
         raise ValueError()
