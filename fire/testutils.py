@@ -57,14 +57,16 @@ class BaseTestCase(unittest.TestCase):
         sys.stderr.write(stderr_fp.getvalue())
 
     for name, regexp, fp in [('stdout', stdout, stdout_fp),
-                            ('stderr', stderr, stderr_fp)]:
+                             ('stderr', stderr, stderr_fp)]:
       value = fp.getvalue()
       if regexp is None:
         if value:
-          raise AssertionError('%s: Expected no output. Got: %r' % (name, value))
+          raise AssertionError('%s: Expected no output. Got: %r' %
+                               (name, value))
       else:
         if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
-          raise AssertionError('%s: Expected %r to match %r' % (name, value, regexp))
+          raise AssertionError('%s: Expected %r to match %r' %
+                               (name, value, regexp))
 
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp=None):
