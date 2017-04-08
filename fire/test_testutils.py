@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Test the test utilities for Fire's tests"""
+"""Test the test utilities for Fire's tests."""
 
 from __future__ import print_function
 
@@ -22,8 +22,9 @@ import six
 
 from fire import testutils
 
+
 class TestTestUtils(testutils.BaseTestCase):
-  """Let's get meta"""
+  """Let's get meta."""
 
   def test_no_check_on_exception(self):
     with self.assertRaises(ValueError):
