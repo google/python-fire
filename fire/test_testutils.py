@@ -29,15 +29,15 @@ class TestTestUtils(testutils.BaseTestCase):
         raise ValueError()
 
   def test_check_stdout_or_stderr_none(self):
-    with self.assertRaisesRegexp(AssertionError, 'stdout:'):
+    with self.assertRaisesRegex(AssertionError, 'stdout:'):
       with self.assertOutputMatches(stdout=None):
         print('blah')
 
-    with self.assertRaisesRegexp(AssertionError, 'stderr:'):
+    with self.assertRaisesRegex(AssertionError, 'stderr:'):
       with self.assertOutputMatches(stderr=None):
         print('blah', file=sys.stderr)
 
-    with self.assertRaisesRegexp(AssertionError, 'stderr:'):
+    with self.assertRaisesRegex(AssertionError, 'stderr:'):
       with self.assertOutputMatches(stdout='apple', stderr=None):
         print('apple')
         print('blah', file=sys.stderr)
