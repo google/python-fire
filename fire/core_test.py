@@ -100,9 +100,9 @@ class CoreTest(testutils.BaseTestCase):
     self.assertIsNotNone(error)
 
   def testPrintEmptyDict(self):
-    with self.assertOutputMatches(stdout='{}', stderr=''):
+    with self.assertOutputMatches(stdout='{}', stderr=None):
       core.Fire(tc.EmptyDictOutput, 'totally_empty')
-    with self.assertOutputMatches(stdout='{}', stderr=''):
+    with self.assertOutputMatches(stdout='{}', stderr=None):
       core.Fire(tc.EmptyDictOutput, 'nothing_printable')
 
 
