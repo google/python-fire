@@ -37,13 +37,13 @@ class BaseTestCase(unittest.TestCase):
   def assertOutputMatches(self, stdout='.*', stderr='.*', capture=True):
     """Asserts that the context generates stdout and stderr matching regexps.
 
+    Note: If wrapped code raises an exception, stdout and stderr will not be
+      checked.
+
     Args:
       stdout (str): regexp to match against stdout (None will check no stdout)
       stderr (str): regexp to match against stderr (None will check no stderr)
       capture (bool, default True): do not bubble up stdout or stderr
-    Note:
-      If wrapped code raises an exception, stdout and stderr will not be
-      checked.
     Yields:
       Yields to the wrapped context.
     """
