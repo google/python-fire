@@ -14,6 +14,8 @@
 
 """Test the test utilities for Fire's tests."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 
 import sys
@@ -26,12 +28,12 @@ from fire import testutils
 class TestTestUtils(testutils.BaseTestCase):
   """Let's get meta."""
 
-  def test_no_check_on_exception(self):
+  def testNoCheckOnException(self):
     with self.assertRaises(ValueError):
       with self.assertOutputMatches(stdout='blah'):
         raise ValueError()
 
-  def test_check_stdout_or_stderr_none(self):
+  def testCheckStdoutOrStderrNone(self):
     with six.assertRaisesRegex(self, AssertionError, 'stdout:'):
       with self.assertOutputMatches(stdout=None):
         print('blah')
@@ -45,7 +47,7 @@ class TestTestUtils(testutils.BaseTestCase):
         print('apple')
         print('blah', file=sys.stderr)
 
-  def test_correct_ordering_of_assert_raises(self):
+  def testCorrectOrderingOfAssertRaises(self):
     # check to make sure FireExit tests are correct
     with self.assertOutputMatches(stdout='confirmed.*not working'):
       with self.assertRaises(ValueError):

@@ -71,7 +71,7 @@ class BaseTestCase(unittest.TestCase):
                                (name, value, regexp))
 
   @contextlib.contextmanager
-  def assertRaisesFireExit(self, code, regexp=None):
+  def assertRaisesFireExit(self, code, regexp='.*'):
     """Asserts that a FireExit error is raised in the context.
 
     Allows tests to check that Fire's wrapper around SystemExit is raised
@@ -83,8 +83,6 @@ class BaseTestCase(unittest.TestCase):
     Yields:
       Yields to the wrapped context.
     """
-    if regexp is None:
-      regexp = '.*'
     with self.assertOutputMatches(stderr=regexp):
       with self.assertRaises(core.FireExit):
         try:
