@@ -44,6 +44,8 @@ class BaseTestCase(unittest.TestCase):
     Note:
       If wrapped code raises an exception, stdout and stderr will not be
       checked.
+    Yields:
+      Yields to the wrapped context.
     """
     stdout_fp = six.StringIO()
     stderr_fp = six.StringIO()
