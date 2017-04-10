@@ -699,12 +699,13 @@ The complete set of flags available is shown below, in the reference section.
 
 | Using a CLI    | Command                    | Notes
 | :------------- | :------------------------- | :---------
-| [Help](using-cli.md#help-flag) | `command -- --help` |Show help and usage information for the command.
+| [Help](using-cli.md#help-flag) | `command -- --help` | Show help and usage information for the command.
 | [REPL](using-cli.md#interactive-flag) | `command -- --interactive` | Enter interactive mode.
 | [Separator](using-cli.md#separator-flag) | `command -- --separator=X` | This sets the separator to `X`. The default separator is `-`.
 | [Completion](using-cli.md#completion-flag) | `command -- --completion` | Generate a completion script for the CLI.
 | [Trace](using-cli.md#trace-flag) | `command -- --trace` | Gets a Fire trace for the command.
 | [Verbose](using-cli.md#verbose-flag) | `command -- --verbose` | Include private members in the output.
+
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 
 
