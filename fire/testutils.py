@@ -41,9 +41,9 @@ class BaseTestCase(unittest.TestCase):
       checked.
 
     Args:
-      stdout (str): regexp to match against stdout (None will check no stdout)
-      stderr (str): regexp to match against stderr (None will check no stderr)
-      capture (bool, default True): do not bubble up stdout or stderr
+      stdout: (str) regexp to match against stdout (None will check no stdout)
+      stderr: (str) regexp to match against stderr (None will check no stderr)
+      capture: (bool, default True) do not bubble up stdout or stderr
     Yields:
       Yields to the wrapped context.
     """
