@@ -122,26 +122,33 @@ def Fire(component=None, command=None, name=None):
       if help_flag in component_trace.elements[-1].args:
         command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
         print(('WARNING: The proper way to show help is {cmd}.\n'
-               'Showing help anyway.\n').format(cmd=pipes.quote(command)))
+               'Showing help anyway.\n').format(cmd=pipes.quote(command)),
+              file=sys.stderr)
 
-    print('Fire trace:\n{trace}\n'.format(trace=component_trace))
+    print('Fire trace:\n{trace}\n'.format(trace=component_trace),
+          file=sys.stderr)
     result = component_trace.GetResult()
     print(
-        helputils.HelpString(result, component_trace, component_trace.verbose))
+        helputils.HelpString(result, component_trace, component_trace.verbose),
+        file=sys.stderr)
     raise FireExit(2, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
-    print('Fire trace:\n{trace}\n'.format(trace=component_trace))
+    print('Fire trace:\n{trace}\n'.format(trace=component_trace),
+          file=sys.stderr)
     result = component_trace.GetResult()
     print(
-        helputils.HelpString(result, component_trace, component_trace.verbose))
+        helputils.HelpString(result, component_trace, component_trace.verbose),
+        file=sys.stderr)
     raise FireExit(0, component_trace)
   elif component_trace.show_trace:
-    print('Fire trace:\n{trace}'.format(trace=component_trace))
+    print('Fire trace:\n{trace}'.format(trace=component_trace),
+          file=sys.stderr)
     raise FireExit(0, component_trace)
   elif component_trace.show_help:
     result = component_trace.GetResult()
     print(
-        helputils.HelpString(result, component_trace, component_trace.verbose))
+        helputils.HelpString(result, component_trace, component_trace.verbose),
+        file=sys.stderr)
     raise FireExit(0, component_trace)
   else:
     _PrintResult(component_trace, verbose=component_trace.verbose)

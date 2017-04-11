@@ -34,17 +34,44 @@ class BaseTestCase(unittest.TestCase):
   """Shared test case for Python Fire tests."""
 
   @contextlib.contextmanager
-  def assertStdoutMatches(self, regexp):
-    """Asserts that the context generates stdout matching regexp."""
-    stdout = six.StringIO()
-    with mock.patch.object(sys, 'stdout', stdout):
-      yield
-    value = stdout.getvalue()
-    if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
-      raise AssertionError('Expected %r to match %r' % (value, regexp))
+  def assertOutputMatches(self, stdout='.*', stderr='.*', capture=True):
+    """Asserts that the context generates stdout and stderr matching regexps.
+
+    Note: If wrapped code raises an exception, stdout and stderr will not be
+      checked.
+
+    Args:
+      stdout: (str) regexp to match against stdout (None will check no stdout)
+      stderr: (str) regexp to match against stderr (None will check no stderr)
+      capture: (bool, default True) do not bubble up stdout or stderr
+    Yields:
+      Yields to the wrapped context.
+    """
+    stdout_fp = six.StringIO()
+    stderr_fp = six.StringIO()
+    try:
+      with mock.patch.object(sys, 'stdout', stdout_fp):
+        with mock.patch.object(sys, 'stderr', stderr_fp):
+          yield
+    finally:
+      if not capture:
+        sys.stdout.write(stdout_fp.getvalue())
+        sys.stderr.write(stderr_fp.getvalue())
+
+    for name, regexp, fp in [('stdout', stdout, stdout_fp),
+                             ('stderr', stderr, stderr_fp)]:
+      value = fp.getvalue()
+      if regexp is None:
+        if value:
+          raise AssertionError('%s: Expected no output. Got: %r' %
+                               (name, value))
+      else:
+        if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
+          raise AssertionError('%s: Expected %r to match %r' %
+                               (name, value, regexp))
 
   @contextlib.contextmanager
-  def assertRaisesFireExit(self, code, regexp=None):
+  def assertRaisesFireExit(self, code, regexp='.*'):
     """Asserts that a FireExit error is raised in the context.
 
     Allows tests to check that Fire's wrapper around SystemExit is raised
@@ -56,11 +83,8 @@ class BaseTestCase(unittest.TestCase):
     Yields:
       Yields to the wrapped context.
     """
-    if regexp is None:
-      regexp = '.*'
-    with self.assertRaises(core.FireExit):
-      stdout = six.StringIO()
-      with mock.patch.object(sys, 'stdout', stdout):
+    with self.assertOutputMatches(stderr=regexp):
+      with self.assertRaises(core.FireExit):
         try:
           yield
         except core.FireExit as exc:
@@ -68,11 +92,6 @@ class BaseTestCase(unittest.TestCase):
             raise AssertionError('Incorrect exit code: %r != %r' % (exc.code,
                                                                     code))
           self.assertIsInstance(exc.trace, trace.FireTrace)
-          stdout.flush()
-          stdout.seek(0)
-          value = stdout.getvalue()
-          if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
-            raise AssertionError('Expected %r to match %r' % (value, regexp))
           raise
 
 
