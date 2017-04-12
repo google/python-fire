@@ -1,4 +1,6 @@
 # Python Fire
+
+[![Join the chat at https://gitter.im/google/python-fire](https://badges.gitter.im/google/python-fire.svg)](https://gitter.im/google/python-fire?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 _Python Fire is a library for creating command line interfaces (CLIs) from
 absolutely any Python object._
 
