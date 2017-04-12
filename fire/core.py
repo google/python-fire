@@ -54,6 +54,7 @@ from __future__ import print_function
 
 import inspect
 import json
+import os
 import pipes
 import shlex
 import sys
@@ -100,7 +101,7 @@ def Fire(component=None, command=None, name=None):
   # Get args as a list.
   if command is None:
     # Use the command line args by default if no command is specified.
-    name = name or sys.argv[0]
+    name = name or os.path.basename(sys.argv[0])
     args = sys.argv[1:]
   else:
     # Otherwise use the specified command.

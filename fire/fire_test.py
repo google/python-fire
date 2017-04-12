@@ -43,6 +43,19 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(fire.Fire(tc.OldStyleWithDefaults, 'double 2'), 4)
     self.assertEqual(fire.Fire(tc.OldStyleWithDefaults, 'triple 4'), 12)
 
+  def testFireDefaultBaseName(self):
+    with mock.patch.object(sys, 'argv',
+                           ['/github/python-fire/fire/base_filename.py']):
+      # positive case
+      with self.assertOutputMatches(stdout='Usage:       base_filename.py',
+                                    stderr=None):
+        fire.Fire(tc.Empty)
+      # negative case
+      with self.assertRaises(AssertionError):
+        with self.assertOutputMatches(stdout='Usage:fire/base_filename.py',
+                                      stderr=None):
+          fire.Fire(tc.Empty)
+
   def testFireNoArgs(self):
     self.assertEqual(fire.Fire(tc.MixedDefaults, 'ten'), 10)
 
