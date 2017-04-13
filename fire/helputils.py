@@ -186,17 +186,15 @@ def UsageString(component, trace=None, verbose=False):
     spec = inspectutils.GetFullArgSpec(component)
     return _UsageStringFromFullArgSpec(command, spec)
 
-  elif isinstance(component, (list, tuple)):
+  if isinstance(component, (list, tuple)):
     length = len(component)
     if length == 0:
       return command
-    elif length == 1:
+    if length == 1:
       return command + '[0]'
-    else:
-      return command + '[0..{cap}]'.format(cap=length - 1)
+    return command + '[0..{cap}]'.format(cap=length - 1)
 
-  else:
-    completions = completion.Completions(component, verbose)
-    if command:
-      completions = [''] + completions
-    return '\n'.join(command + end for end in completions)
+  completions = completion.Completions(component, verbose)
+  if command:
+    completions = [''] + completions
+  return '\n'.join(command + end for end in completions)

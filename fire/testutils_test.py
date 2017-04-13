@@ -20,9 +20,9 @@ from __future__ import print_function
 
 import sys
 
-import six
-
 from fire import testutils
+
+import six
 
 
 class TestTestUtils(testutils.BaseTestCase):
@@ -48,8 +48,12 @@ class TestTestUtils(testutils.BaseTestCase):
         print('blah', file=sys.stderr)
 
   def testCorrectOrderingOfAssertRaises(self):
-    # Check to make sure FireExit tests are correct
+    # Check to make sure FireExit tests are correct.
     with self.assertOutputMatches(stdout='Yep.*first.*second'):
       with self.assertRaises(ValueError):
-        print('Yep, this is the first line.\nIt should match to the second')
+        print('Yep, this is the first line.\nThis is the second.')
         raise ValueError()
+
+
+if __name__ == '__main__':
+  testutils.main()

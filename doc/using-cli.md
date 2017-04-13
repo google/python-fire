@@ -1,7 +1,5 @@
 # Using a Fire CLI
 
-
-
 ## Basic usage
 
 Every Fire command corresponds to a Python component.

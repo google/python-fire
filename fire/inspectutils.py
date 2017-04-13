@@ -102,8 +102,7 @@ def GetFullArgSpec(fn):
     # Are there other cases?
     if inspect.isbuiltin(fn):
       return FullArgSpec(varargs='vars', varkw='kwargs')
-    else:
-      return FullArgSpec()
+    return FullArgSpec()
 
   if skip_arg and args:
     args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.

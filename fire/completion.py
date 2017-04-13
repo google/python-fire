@@ -160,18 +160,17 @@ def Completions(component, verbose=False):
     spec = inspectutils.GetFullArgSpec(component)
     return _CompletionsFromArgs(spec.args + spec.kwonlyargs)
 
-  elif isinstance(component, (tuple, list)):
+  if isinstance(component, (tuple, list)):
     return [str(index) for index in range(len(component))]
 
-  elif inspect.isgenerator(component):
+  if inspect.isgenerator(component):
     # TODO: There are currently no commands available for generators.
     return []
 
-  else:
-    return [
-        _FormatForCommand(member_name)
-        for member_name, unused_member in _Members(component, verbose)
-    ]
+  return [
+      _FormatForCommand(member_name)
+      for member_name, unused_member in _Members(component, verbose)
+  ]
 
 
 def _FormatForCommand(token):
@@ -192,8 +191,8 @@ def _FormatForCommand(token):
 
   if token.startswith('_'):
     return token
-  else:
-    return token.replace('_', '-')
+
+  return token.replace('_', '-')
 
 
 def _Commands(component, depth=3):
