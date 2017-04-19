@@ -101,11 +101,12 @@ def Fire(component=None, command=None, name=None):
   # Get args as a list.
   if command is None:
     # Use the command line args by default if no command is specified.
-    name = name or os.path.basename(sys.argv[0])
     args = sys.argv[1:]
   else:
     # Otherwise use the specified command.
     args = shlex.split(command)
+
+  name = name or os.path.basename(sys.argv[0])
 
   # Determine the calling context.
   caller = inspect.stack()[1]

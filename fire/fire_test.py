@@ -324,8 +324,9 @@ class FireTest(testutils.BaseTestCase):
       fire.Fire(tc.BoolConverter, '-- -h --trace')
 
   def testTabCompletionNoName(self):
-    with self.assertRaises(ValueError):
-      fire.Fire(tc.NoDefaults, '-- --completion')
+    completion_script = fire.Fire(tc.NoDefaults, '-- --completion')
+    self.assertIn('double', completion_script)
+    self.assertIn('triple', completion_script)
 
   def testTabCompletion(self):
     completion_script = fire.Fire(tc.NoDefaults, '-- --completion', name='c')
