@@ -14,10 +14,9 @@
 
 """Tests for the collector module."""
 
-from fire import testutils
-
 from examples.widget import collector
 from examples.widget import widget
+from tests import testutils
 
 
 class CollectorTest(testutils.BaseTestCase):

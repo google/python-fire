@@ -20,10 +20,10 @@ from __future__ import print_function
 
 import os
 
-from fire import helputils
-from fire import test_components as tc
-from fire import testutils
 import six
+
+from fire import helputils
+from tests import testutils, test_components as tc
 
 
 class HelpUtilsTest(testutils.BaseTestCase):

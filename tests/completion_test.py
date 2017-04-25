@@ -19,8 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 from fire import completion
-from fire import test_components as tc
-from fire import testutils
+from tests import testutils, test_components as tc
 
 
 class TabCompletionTest(testutils.BaseTestCase):

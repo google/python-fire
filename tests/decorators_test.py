@@ -20,7 +20,7 @@ from __future__ import print_function
 
 from fire import core
 from fire import decorators
-from fire import testutils
+from tests import testutils
 
 
 class NoDefaults(object):

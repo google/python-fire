@@ -18,11 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from fire import core
-from fire import test_components as tc
-from fire import testutils
-from fire import trace
 import mock
+
+from fire import core
+from fire import trace
+from tests import testutils, test_components as tc
 
 
 class CoreTest(testutils.BaseTestCase):

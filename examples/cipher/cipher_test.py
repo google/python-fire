@@ -14,9 +14,8 @@
 
 """Tests for the cipher module."""
 
-from fire import testutils
-
 from examples.cipher import cipher
+from tests import testutils
 
 
 class CipherTest(testutils.BaseTestCase):

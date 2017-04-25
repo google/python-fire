@@ -14,9 +14,8 @@
 
 """Tests for the widget module."""
 
-from fire import testutils
-
 from examples.widget import widget
+from tests import testutils
 
 
 class WidgetTest(testutils.BaseTestCase):

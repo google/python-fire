@@ -21,11 +21,10 @@ from __future__ import print_function
 import os
 import unittest
 
-from fire import inspectutils
-from fire import test_components as tc
-from fire import testutils
-
 import six
+
+from fire import inspectutils
+from tests import testutils, test_components as tc
 
 
 class InspectUtilsTest(testutils.BaseTestCase):
