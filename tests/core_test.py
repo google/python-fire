@@ -22,7 +22,8 @@ import mock
 
 from fire import core
 from fire import trace
-from tests import testutils, test_components as tc
+from tests import testutils
+from tests import test_components as tc
 
 
 class CoreTest(testutils.BaseTestCase):

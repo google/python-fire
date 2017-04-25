@@ -23,7 +23,8 @@ import os
 import six
 
 from fire import helputils
-from tests import testutils, test_components as tc
+from tests import testutils
+from tests import test_components as tc
 
 
 class HelpUtilsTest(testutils.BaseTestCase):
