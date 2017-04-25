@@ -18,7 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tests import testutils, test_components as tc
+from tests import testutils
+from tests import test_components as tc
 
 
 class TestComponentsTest(testutils.BaseTestCase):
