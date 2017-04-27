@@ -102,7 +102,7 @@ class InspectUtilsTest(testutils.BaseTestCase):
   def testInfoClass(self):
     info = inspectutils.Info(tc.NoDefaults)
     self.assertEqual(info.get('type_name'), 'type')
-    self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
+    self.assertIn(os.path.join('tests', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 
   def testInfoClassNoInit(self):
@@ -111,7 +111,7 @@ class InspectUtilsTest(testutils.BaseTestCase):
       self.assertEqual(info.get('type_name'), 'classobj')
     else:
       self.assertEqual(info.get('type_name'), 'type')
-    self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
+    self.assertIn(os.path.join('tests', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 
 
