@@ -32,7 +32,7 @@ class HelpUtilsTest(testutils.BaseTestCase):
   def testHelpStringClass(self):
     helpstring = helputils.HelpString(tc.NoDefaults)
     self.assertIn('Type:        type', helpstring)
-    self.assertIn("String form: <class 'fire.test_components.NoDefaults'>",
+    self.assertIn("String form: <class 'tests.test_components.NoDefaults'>",
                   helpstring)
     self.assertIn('test_components.py', helpstring)
     self.assertIn('Line:        ', helpstring)
@@ -42,7 +42,7 @@ class HelpUtilsTest(testutils.BaseTestCase):
     obj = tc.NoDefaults()
     helpstring = helputils.HelpString(obj)
     self.assertIn('Type:        NoDefaults', helpstring)
-    self.assertIn('String form: <fire.test_components.NoDefaults object at ',
+    self.assertIn('String form: <tests.test_components.NoDefaults object at ',
                   helpstring)
     self.assertIn('test_components.py', helpstring)
     self.assertIn('Usage:       double\n'
@@ -57,7 +57,7 @@ class HelpUtilsTest(testutils.BaseTestCase):
       self.assertIn('Type:        method\n', helpstring)
     self.assertIn(
         'String form: <bound method NoDefaults.double of '
-        '<fire.test_components.NoDefaults object',
+        '<tests.test_components.NoDefaults object',
         helpstring)
     self.assertIn('test_components.py', helpstring)
     self.assertIn('Line:        ', helpstring)
@@ -73,7 +73,7 @@ class HelpUtilsTest(testutils.BaseTestCase):
       self.assertIn('Type:        method\n', helpstring)
     self.assertIn(
         'String form: <bound method WithDefaults.triple of '
-        '<fire.test_components.WithDefaults object',
+        '<tests.test_components.WithDefaults object',
         helpstring)
     self.assertIn('test_components.py', helpstring)
     self.assertIn('Line:        ', helpstring)
@@ -123,8 +123,8 @@ class HelpUtilsTest(testutils.BaseTestCase):
     else:
       self.assertIn('Type:        type\n', helpstring)
     self.assertIn('String form: ', helpstring)
-    self.assertIn('fire.test_components.OldStyleEmpty', helpstring)
-    self.assertIn(os.path.join('fire', 'test_components.py'), helpstring)
+    self.assertIn('tests.test_components.OldStyleEmpty', helpstring)
+    self.assertIn(os.path.join('tests', 'test_components.py'), helpstring)
     self.assertIn('Line:        ', helpstring)
 
 
