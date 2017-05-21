@@ -30,6 +30,7 @@ def CreateParser():
   parser.add_argument('--completion', action='store_true')
   parser.add_argument('--help', '-h', action='store_true')
   parser.add_argument('--trace', '-t', action='store_true')
+  parser.add_argument('--debug', '-d', action='store_true')
   # TODO: Consider allowing name to be passed as an argument.
   return parser
 
