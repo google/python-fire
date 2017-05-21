@@ -30,7 +30,6 @@ SHORT_DESCRIPTION = """
 A library for automatically generating command line interfaces.""".strip()
 
 DEPENDENCIES = [
-    'ipython<6.0',
     'six',
 ]
 
