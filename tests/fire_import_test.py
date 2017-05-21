@@ -12,26 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for the collector module."""
+"""Tests importing the fire module."""
 
-from examples.widget import collector
-from examples.widget import widget
+import sys
+
+import mock
+
+import fire
 from tests import testutils
 
 
-class CollectorTest(testutils.BaseTestCase):
+class FireImportTest(testutils.BaseTestCase):
+  """Tests importing Fire."""
 
-  def testCollectorHasWidget(self):
-    col = collector.Collector()
-    self.assertIsInstance(col.widget, widget.Widget)
+  def testFire(self):
+    with mock.patch.object(sys, 'argv', ['commandname']):
+      fire.Fire()
 
-  def testCollectorWantsMoreWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(col.desired_widget_count, 10)
+  def testFireMethods(self):
+    self.assertIsNotNone(fire.Fire)
 
-  def testCollectorGetsWantedWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(len(col.collect_widgets()), 10)
+  def testNoPrivateMethods(self):
+    self.assertTrue(hasattr(fire, 'Fire'))
+    self.assertFalse(hasattr(fire, '_Fire'))
 
 
 if __name__ == '__main__':

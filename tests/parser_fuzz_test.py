@@ -18,14 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from fire import parser
-from fire import testutils
+import Levenshtein
+import six
 from hypothesis import example
 from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies as st
-import Levenshtein
-import six
+
+from fire import parser
+from tests import testutils
 
 
 class ParserFuzzTest(testutils.BaseTestCase):

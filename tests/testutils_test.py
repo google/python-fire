@@ -20,9 +20,9 @@ from __future__ import print_function
 
 import sys
 
-from fire import testutils
-
 import six
+
+from tests import testutils
 
 
 class TestTestUtils(testutils.BaseTestCase):

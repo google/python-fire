@@ -22,12 +22,12 @@ import os
 import sys
 import unittest
 
-import fire
-from fire import test_components as tc
-from fire import testutils
-
 import mock
 import six
+
+import fire
+from tests import testutils
+from tests import test_components as tc
 
 
 class FireTest(testutils.BaseTestCase):

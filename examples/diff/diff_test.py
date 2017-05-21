@@ -16,10 +16,9 @@
 
 import tempfile
 
-from fire import testutils
-
 from examples.diff import diff
 from examples.diff import difffull
+from tests import testutils
 
 
 class DiffTest(testutils.BaseTestCase):

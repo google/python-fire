@@ -12,29 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests importing the fire module."""
-
-import sys
-
-import fire
-from fire import testutils
-import mock
-
-
-class FireImportTest(testutils.BaseTestCase):
-  """Tests importing Fire."""
-
-  def testFire(self):
-    with mock.patch.object(sys, 'argv', ['commandname']):
-      fire.Fire()
-
-  def testFireMethods(self):
-    self.assertIsNotNone(fire.Fire)
-
-  def testNoPrivateMethods(self):
-    self.assertTrue(hasattr(fire, 'Fire'))
-    self.assertFalse(hasattr(fire, '_Fire'))
-
-
-if __name__ == '__main__':
-  testutils.main()
+"""The Python Fire Test module."""

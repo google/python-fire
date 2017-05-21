@@ -21,11 +21,11 @@ from __future__ import print_function
 import os
 import unittest
 
-from fire import inspectutils
-from fire import test_components as tc
-from fire import testutils
-
 import six
+
+from fire import inspectutils
+from tests import testutils
+from tests import test_components as tc
 
 
 class InspectUtilsTest(testutils.BaseTestCase):
@@ -102,7 +102,7 @@ class InspectUtilsTest(testutils.BaseTestCase):
   def testInfoClass(self):
     info = inspectutils.Info(tc.NoDefaults)
     self.assertEqual(info.get('type_name'), 'type')
-    self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
+    self.assertIn(os.path.join('tests', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 
   def testInfoClassNoInit(self):
@@ -111,7 +111,7 @@ class InspectUtilsTest(testutils.BaseTestCase):
       self.assertEqual(info.get('type_name'), 'classobj')
     else:
       self.assertEqual(info.get('type_name'), 'type')
-    self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
+    self.assertIn(os.path.join('tests', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 
 
