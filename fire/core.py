@@ -552,6 +552,7 @@ def _CallCallable(fn, args, mortem):
   Args:
     fn: The function to call or class to instantiate.
     args: Args from which to consume for calling the function.
+    mortem: Boolean flag whether to enter a pdb post mortem session on err
   Returns:
     component: The object that is the result of the function call.
     consumed_args: The args that were consumed for the function call.
