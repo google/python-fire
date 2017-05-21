@@ -23,6 +23,7 @@ import ast
 
 
 def CreateParser():
+  """Create cli argv parser for special flags to Fire."""
   parser = argparse.ArgumentParser(add_help=False)
   parser.add_argument('--verbose', '-v', action='store_true')
   parser.add_argument('--interactive', '-i', action='store_true')
