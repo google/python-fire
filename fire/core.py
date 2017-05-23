@@ -70,7 +70,7 @@ from fire import trace
 import six
 
 
-def Fire(component=None, command=None, name=None):
+def Fire(component=None, command=None, name=None, formatter=None):
   """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
@@ -153,7 +153,10 @@ def Fire(component=None, command=None, name=None):
         file=sys.stderr)
     raise FireExit(0, component_trace)
   else:
-    _PrintResult(component_trace, verbose=component_trace.verbose)
+    if formatter:
+      formatter(component_trace, verbose=component_trace.verbose)
+    else:
+      _PrintResult(component_trace, verbose=component_trace.verbose)
     result = component_trace.GetResult()
     return result
 
