@@ -85,6 +85,7 @@ def Fire(component=None, command=None, name=None, formatter=None):
         supplied, then the command is taken from sys.argv instead.
     name: Optional. The name of the command as entered at the command line.
         Used in interactive mode and for generating the completion script.
+    formatter: Optional. Function to be called for output formatting. (result object passed to formatter)
   Returns:
     The result of executing the Fire command. Execution begins with the initial
     target component. The component is updated by using the command arguments
@@ -153,11 +154,11 @@ def Fire(component=None, command=None, name=None, formatter=None):
         file=sys.stderr)
     raise FireExit(0, component_trace)
   else:
+    result = component_trace.GetResult()
     if formatter:
-      formatter(component_trace, verbose=component_trace.verbose)
+      formatter(result)
     else:
       _PrintResult(component_trace, verbose=component_trace.verbose)
-    result = component_trace.GetResult()
     return result
 
 
