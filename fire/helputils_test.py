@@ -43,7 +43,8 @@ class HelpUtilsTest(testutils.BaseTestCase):
     self.assertIn('Type:        NoDefaults', helpstring)
     self.assertIn('String form: <fire.test_components.NoDefaults object at ',
                   helpstring)
-    self.assertIn('test_components.py', helpstring)
+    # TODO: We comment this out since it only works with IPython:
+    # self.assertIn('test_components.py', helpstring)
     self.assertIn('Usage:       double\n'
                   '             triple', helpstring)
 
