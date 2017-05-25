@@ -111,6 +111,33 @@ def GetFullArgSpec(fn):
                      kwonlyargs, kwonlydefaults, annotations)
 
 
+def GetFileAndLine(component):
+  """Returns the filename and line number of component.
+
+  Args:
+    component: A component to find the source information for, usually a class
+        or routine.
+  Returns:
+    filename: The name of the file where component is defined.
+    lineno: The line number where component is defined.
+  """
+  if inspect.isbuiltin(component):
+    return None, None
+
+  try:
+    filename = inspect.getsourcefile(component)
+  except TypeError:
+    return None, None
+
+  try:
+    unused_code, lineindex = inspect.findsource(component)
+    lineno = lineindex + 1
+  except IOError:
+    lineno = None
+
+  return filename, lineno
+
+
 def Info(component):
   """Returns a dict with information about the given component.
 
@@ -130,14 +157,48 @@ def Info(component):
   Returns:
     A dict with information about the component.
   """
-  import IPython  # pylint: disable=g-import-not-at-top
-  inspector = IPython.core.oinspect.Inspector()
-  info = inspector.info(component)
+  try:
+    from IPython.core import oinspect  # pylint: disable=g-import-not-at-top
+    inspector = oinspect.Inspector()
+    info = inspector.info(component)
+  except ImportError:
+    info = _InfoBackup(component)
 
   try:
     unused_code, lineindex = inspect.findsource(component)
     info['line'] = lineindex + 1
   except (TypeError, IOError):
     info['line'] = None
+
+  return info
+
+
+def _InfoBackup(component):
+  """Returns a dict with information about the given component.
+
+  This function is to be called only in the case that IPython's
+  oinspect module is not available. The info dict it produces may
+  contain less information that contained in the info dict produced
+  by oinspect.
+
+  Args:
+    component: The component to analyze.
+  Returns:
+    A dict with information about the component.
+  """
+  info = {}
+
+  info['type_name'] = type(component).__name__
+  info['string_form'] = str(component)
+
+  filename, lineno = GetFileAndLine(component)
+  info['file'] = filename
+  info['line'] = lineno
+  info['docstring'] = inspect.getdoc(component)
+
+  try:
+    info['length'] = str(len(component))
+  except (TypeError, AttributeError):
+    pass
 
   return info

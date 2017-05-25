@@ -24,22 +24,29 @@ from fire import testutils
 import mock
 
 
+try:
+  import IPython  # pylint: disable=unused-import, g-import-not-at-top
+  INTERACT_METHOD = 'IPython.start_ipython'
+except ImportError:
+  INTERACT_METHOD = 'code.InteractiveConsole'
+
+
 class InteractTest(testutils.BaseTestCase):
 
-  @mock.patch('IPython.start_ipython')
-  def testInteract(self, mock_ipython):
-    self.assertFalse(mock_ipython.called)
+  @mock.patch(INTERACT_METHOD)
+  def testInteract(self, mock_interact_method):
+    self.assertFalse(mock_interact_method.called)
     interact.Embed({})
-    self.assertTrue(mock_ipython.called)
+    self.assertTrue(mock_interact_method.called)
 
-  @mock.patch('IPython.start_ipython')
-  def testInteractVariables(self, mock_ipython):
-    self.assertFalse(mock_ipython.called)
+  @mock.patch(INTERACT_METHOD)
+  def testInteractVariables(self, mock_interact_method):
+    self.assertFalse(mock_interact_method.called)
     interact.Embed({
         'count': 10,
         'mock': mock,
     })
-    self.assertTrue(mock_ipython.called)
+    self.assertTrue(mock_interact_method.called)
 
 if __name__ == '__main__':
   testutils.main()

@@ -352,7 +352,7 @@ def _Fire(component, args, context, name=None):
 
       try:
         target = component.__name__
-        filename, lineno = _GetFileAndLine(component)
+        filename, lineno = inspectutils.GetFileAndLine(component)
 
         component, consumed_args, remaining_args, capacity = _CallCallable(
             component, remaining_args)
@@ -428,7 +428,7 @@ def _Fire(component, args, context, name=None):
         component, consumed_args, remaining_args = _GetMember(
             component, remaining_args)
 
-        filename, lineno = _GetFileAndLine(component)
+        filename, lineno = inspectutils.GetFileAndLine(component)
 
         component_trace.AddAccessedProperty(
             component, target, consumed_args, filename, lineno)
@@ -484,33 +484,6 @@ def _Fire(component, args, context, name=None):
     component_trace.AddInteractiveMode()
 
   return component_trace
-
-
-def _GetFileAndLine(component):
-  """Returns the filename and line number of component.
-
-  Args:
-    component: A component to find the source information for, usually a class
-        or routine.
-  Returns:
-    filename: The name of the file where component is defined.
-    lineno: The line number where component is defined.
-  """
-  if inspect.isbuiltin(component):
-    return None, None
-
-  try:
-    filename = inspect.getsourcefile(component)
-  except TypeError:
-    return None, None
-
-  try:
-    unused_code, lineindex = inspect.findsource(component)
-    lineno = lineindex + 1
-  except IOError:
-    lineno = None
-
-  return filename, lineno
 
 
 def _GetMember(component, args):
