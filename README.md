@@ -15,6 +15,10 @@ modules and variables you'll need already imported and created. [[5]](doc/benefi
 
 `pip install fire`
 
+OR
+
+`conda install fire -c conda-forge`
+
 
 ## Basic Usage
 
