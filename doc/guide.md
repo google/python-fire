@@ -567,26 +567,26 @@ of any argument we give it:
 
 ```python
 import fire
-fire.Fire(lambda obj: type(obj).__name__)
+fire.Fire(lambda obj: print(type(obj).__name__, repr(obj)))
 ```
 
 And we'll use it like so:
 
 ```bash
 $ python example.py 10
-int
+int 10
 $ python example.py 10.0
-float
+float 10.0
 $ python example.py hello
-str
+str 'hello'
 $ python example.py '(1,2)'
-tuple
+tuple (1, 2)
 $ python example.py [1,2]
-list
+list [1, 2]
 $ python example.py True
-bool
-$ python example.py {name: David}
-dict
+bool True
+$ python example.py '{name: David}'
+dict {'name': 'David'}
 ```
 
 You'll notice in that last example that bare-words are automatically replaced
@@ -600,15 +600,15 @@ Fire will interpret it as a number.
 
 ```bash
 $ python example.py 10
-int
+int 10
 $ python example.py "10"
-int
+int 10
 $ python example.py '"10"'
-str
+str '10'
 $ python example.py "'10'"
-str
+str '10'
 $ python example.py \"10\"
-str
+str '10'
 ```
 
 Be careful with your quotes! Remember that Bash processes your arguments first,
@@ -618,15 +618,15 @@ might try this:
 
 ```bash
 $ python example.py '{"name": "David Bieber"}'  # Good! Do this.
-dict
+dict {'name': 'David Bieber'}
 $ python example.py {"name":'"David Bieber"'}  # Okay.
-dict
+dict {'name': 'David Bieber'}
 $ python example.py {"name":"David Bieber"}  # Wrong. This is parsed as a string.
-str
+str '{name:David Bieber}'
 $ python example.py {"name": "David Bieber"}  # Wrong. This isn't even treated as a single argument.
 <error>
 $ python example.py '{"name": "Justin Bieber"}'  # Wrong. This is not the Bieber you're looking for. (The syntax is fine though :))
-dict
+dict {'name': 'Justin Bieber'}
 ```
 
 ##### Boolean Arguments
@@ -640,13 +640,13 @@ Continuing the previous example, we could run any of the following:
 
 ```bash
 $ python example.py --obj=True
-bool
+bool True
 $ python example.py --obj=False
-bool
+bool False
 $ python example.py --obj
-bool
+bool True
 $ python example.py --noobj
-bool
+bool False
 ```
 
 Be careful with boolean flags! If a token other than another flag immediately
