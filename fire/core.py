@@ -155,8 +155,10 @@ def Fire(component=None, command=None, name=None, formatter=None):
     raise FireExit(0, component_trace)
   else:
     result = component_trace.GetResult()
-    if formatter:
+    if formatter and args:
       formatter(result)
+    elif formatter and not args:
+      print(helputils.HelpString(result, component_trace, verbose))
     else:
       _PrintResult(component_trace, verbose=component_trace.verbose)
     return result
