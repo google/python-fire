@@ -23,6 +23,7 @@ from __future__ import division
 from __future__ import print_function
 
 import inspect
+import os
 
 from fire import completion
 from fire import inspectutils
@@ -113,12 +114,20 @@ def HelpString(component, trace=None, verbose=False):
   format_string = '{{field:{max_size}s}} {{value}}'.format(max_size=max_size)
 
   lines = []
+  source_filepath = None
   for field in fields:
     value = _DisplayValue(info, field, padding=max_size + 1)
+    if field == 'file':
+      source_filepath = value  # assumes that 'file' comes before usage (See 'fields' above)
     if value:
       if lines and field == 'usage':
         lines.append('')  # Ensure a blank line before usage.
 
+        # use package_name if file called is __main__.py
+        if source_filepath and source_filepath.endswith('__main__.py'):
+          package_path, _ = os.path.split(source_filepath)
+          _, package_name = os.path.split(package_path)
+          value = value.replace('__main__.py', package_name)
       lines.append(format_string.format(
           field=_NormalizeField(field) + ':',
           value=value,
