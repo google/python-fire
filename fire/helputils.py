@@ -106,7 +106,15 @@ def HelpString(component, trace=None, verbose=False):
 
       'usage',
   ]
+  display_fields = [
+      'docstring',
+      'init_docstring',
+      'class_docstring',
+      'call_docstring',
+      'length',
 
+      'usage',
+  ]
   max_size = max(
       len(_NormalizeField(field)) + 1
       for field in fields
@@ -119,7 +127,7 @@ def HelpString(component, trace=None, verbose=False):
     value = _DisplayValue(info, field, padding=max_size + 1)
     if field == 'file':
       source_filepath = value  # assumes that 'file' comes before usage (See 'fields' above)
-    if value:
+    if value and field in display_fields:
       if lines and field == 'usage':
         lines.append('')  # Ensure a blank line before usage.
 
