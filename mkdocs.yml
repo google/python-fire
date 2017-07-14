@@ -1,0 +1,11 @@
+site_name: Python Fire
+theme: readthedocs
+markdown_extensions: [fenced_code]
+pages:
+    - Overview: index.md
+    - Installation: installation.md
+    - Benefits: benefits.md
+    - The Python Fire Guide: guide.md
+    - Using a CLI: using-cli.md
+    - Troubleshooting: troubleshooting.md
+    - Reference: api.md

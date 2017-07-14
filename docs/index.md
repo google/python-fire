@@ -2,13 +2,13 @@
 _Python Fire is a library for automatically generating command line interfaces
 (CLIs) from absolutely any Python object._
 
-- Python Fire is a simple way to create a CLI in Python. [[1]](docs/benefits.md#simple-cli)
-- Python Fire is a helpful tool for developing and debugging Python code. [[2]](docs/benefits.md#debugging)
+- Python Fire is a simple way to create a CLI in Python. [[1]](benefits.md#simple-cli)
+- Python Fire is a helpful tool for developing and debugging Python code. [[2]](benefits.md#debugging)
 - Python Fire helps with exploring existing code or turning other people's code
-into a CLI. [[3]](docs/benefits.md#exploring)
-- Python Fire makes transitioning between Bash and Python easier. [[4]](docs/benefits.md#bash)
+into a CLI. [[3]](benefits.md#exploring)
+- Python Fire makes transitioning between Bash and Python easier. [[4]](benefits.md#bash)
 - Python Fire makes using a Python REPL easier by setting up the REPL with the
-modules and variables you'll need already imported and created. [[5]](docs/benefits.md#repl)
+modules and variables you'll need already imported and created. [[5]](benefits.md#repl)
 
 
 ## Installation
@@ -50,9 +50,9 @@ python calculator.py double --number=15  # 30
 ```
 
 To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn
-about Fire's other features, see the [Using a Fire CLI page](docs/using-cli.md).
+about Fire's other features, see the [Using a Fire CLI page](using-cli.md).
 
-For additional examples, see [The Python Fire Guide](docs/guide.md).
+For additional examples, see [The Python Fire Guide](guide.md).
 
 
 ## Why is it called Fire?
@@ -62,7 +62,7 @@ When you call `Fire`, it fires off (executes) your command.
 
 ## Where can I learn more?
 
-Please see [The Python Fire Guide](docs/guide.md).
+Please see [The Python Fire Guide](guide.md).
 
 
 ## Reference
@@ -79,12 +79,12 @@ Please see [The Python Fire Guide](docs/guide.md).
 
 | Using a CLI    | Command                    | Notes
 | :------------- | :------------------------- | :---------
-| [Help](docs/using-cli.md#help-flag) | `command -- --help` |
-| [REPL](docs/using-cli.md#interactive-flag) | `command -- --interactive` | Enters interactive mode.
-| [Separator](docs/using-cli.md#separator-flag) | `command -- --separator=X` | This sets the separator to `X`. The default separator is `-`.
-| [Completion](docs/using-cli.md#completion-flag) | `command -- --completion` | Generate a completion script for the CLI.
-| [Trace](docs/using-cli.md#trace-flag) | `command -- --trace` | Gets a Fire trace for the command.
-| [Verbose](docs/using-cli.md#verbose-flag) | `command -- --verbose` |
+| [Help](using-cli.md#help-flag) | `command -- --help` |
+| [REPL](using-cli.md#interactive-flag) | `command -- --interactive` | Enters interactive mode.
+| [Separator](using-cli.md#separator-flag) | `command -- --separator=X` | This sets the separator to `X`. The default separator is `-`.
+| [Completion](using-cli.md#completion-flag) | `command -- --completion` | Generate a completion script for the CLI.
+| [Trace](using-cli.md#trace-flag) | `command -- --trace` | Gets a Fire trace for the command.
+| [Verbose](using-cli.md#verbose-flag) | `command -- --verbose` |
 
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 

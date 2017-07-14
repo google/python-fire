@@ -489,7 +489,7 @@ $ python example.py --name="Sherrerd Hall" climb_stairs --stairs-per-story 10
 $ python example.py climb-stairs --stairs-per-story 10 --name="Sherrerd Hall"
 ```
 
-You'll notice that hyphens and underscores (`-` and `_`) are interchangable in
+You'll notice that hyphens and underscores (`-` and `_`) are interchangeable in
 member names and flag names.
 
 You'll also notice that the constructor's arguments can come after the

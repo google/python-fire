@@ -1,13 +1,14 @@
 # Benefits of Python Fire
 
-## Python Fire is a simple way to create a CLI in Python. <a name="simple-cli"></a>
+<a name="simple-cli"></a>
+## Create CLIs in Python
 
 It's dead simple. Simply write the functionality you want exposed at the command
 line as a function / module / class, and then call Fire. With this addition of a
 single-line call to Fire, your CLI is ready to go.
 
-
-## Python Fire is a helpful tool for developing and debugging Python code. <a name="debugging"></a>
+<a name="debugging"></a>
+## Develop and debug Python code
 
 When you're writing a Python library, you probably want to try it out as you go.
 You could write a main method to check the functionality you're interested in,
@@ -23,8 +24,8 @@ a main method. And if you use the `--interactive` flag to enter an IPython REPL
 then you don't need to load the imports or create your variables; they'll
 already be ready for use as soon as you start the REPL.
 
-
-## Python Fire helps with exploring existing code or turning other people's code into a CLI. <a name="exploring"></a>
+<a name="exploring"></a>
+## Explore existing code; turn other people's code into a CLI
 
 You can take an existing module, maybe even one that you don't have access to
 the source code for, and call `Fire` on it. This lets you easily see what
@@ -40,8 +41,8 @@ The auto-generated help strings that Fire provides when you run a Fire CLI
 allow you to see all the functionality these modules provide in a concise
 manner.
 
-
-## Python Fire makes transitioning between Bash and Python easier. <a name="bash"></a>
+<a name="bash"></a>
+## Transition between Bash and Python
 
 Using Fire lets you call Python directly from Bash. So you can mix your Python
 functions with the unix tools you know and love, like `grep`, `xargs`, `wc`,
@@ -51,8 +52,8 @@ Additionally since writing CLIs in Python requires only a single call to Fire,
 it is now easy to write even one-off scripts that would previously have been in
 Bash, in Python.
 
-
-## Python Fire makes using a Python REPL easier by setting up the REPL with the modules and variables you'll need already imported and created. <a name="repl"></a>
+<a name="repl"></a>
+## Explore code in a Python REPL
 
 When you use the `--interactive` flag to enter an IPython REPL, it starts with
 variables and modules already defined for you. You don't need to waste time
