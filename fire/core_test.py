@@ -40,19 +40,19 @@ class CoreTest(testutils.BaseTestCase):
 
   @mock.patch('fire.interact.Embed')
   def testInteractiveMode(self, mock_embed):
-    core.Fire(tc.TypedProperties, 'alpha')
+    core.Fire(tc.TypedProperties, command=['alpha'])
     self.assertFalse(mock_embed.called)
-    core.Fire(tc.TypedProperties, 'alpha -- -i')
+    core.Fire(tc.TypedProperties, command=['alpha', '--', '-i'])
     self.assertTrue(mock_embed.called)
 
   @mock.patch('fire.interact.Embed')
   def testInteractiveModeFullArgument(self, mock_embed):
-    core.Fire(tc.TypedProperties, 'alpha -- --interactive')
+    core.Fire(tc.TypedProperties, command=['alpha', '--', '--interactive'])
     self.assertTrue(mock_embed.called)
 
   @mock.patch('fire.interact.Embed')
   def testInteractiveModeVariables(self, mock_embed):
-    core.Fire(tc.WithDefaults, 'double 2 -- -i')
+    core.Fire(tc.WithDefaults, command=['double', '2', '--', '-i'])
     self.assertTrue(mock_embed.called)
     (variables, verbose), unused_kwargs = mock_embed.call_args
     self.assertFalse(verbose)
@@ -62,7 +62,8 @@ class CoreTest(testutils.BaseTestCase):
 
   @mock.patch('fire.interact.Embed')
   def testInteractiveModeVariablesWithName(self, mock_embed):
-    core.Fire(tc.WithDefaults, 'double 2 -- -i -v', name='D')
+    core.Fire(tc.WithDefaults,
+              command=['double', '2', '--', '-i', '-v'], name='D')
     self.assertTrue(mock_embed.called)
     (variables, verbose), unused_kwargs = mock_embed.call_args
     self.assertTrue(verbose)
@@ -74,21 +75,21 @@ class CoreTest(testutils.BaseTestCase):
   def testImproperUseOfHelp(self):
     # This should produce a warning explaining the proper use of help.
     with self.assertRaisesFireExit(2, 'The proper way to show help.*Usage:'):
-      core.Fire(tc.TypedProperties, 'alpha --help')
+      core.Fire(tc.TypedProperties, command=['alpha', '--help'])
 
   def testProperUseOfHelp(self):
     with self.assertRaisesFireExit(0, 'Usage:.*upper'):
-      core.Fire(tc.TypedProperties, 'gamma -- --help')
+      core.Fire(tc.TypedProperties, command=['gamma', '--', '--help'])
 
   def testInvalidParameterRaisesFireExit(self):
     with self.assertRaisesFireExit(2, 'runmisspelled'):
-      core.Fire(tc.Kwargs, 'props --a=1 --b=2 runmisspelled')
+      core.Fire(tc.Kwargs, command=['props', '--a=1', '--b=2', 'runmisspelled'])
 
   def testErrorRaising(self):
     # Errors in user code should not be caught; they should surface as normal.
     # This will lead to exit status code 1 for the client program.
     with self.assertRaises(ValueError):
-      core.Fire(tc.ErrorRaiser, 'fail')
+      core.Fire(tc.ErrorRaiser, command=['fail'])
 
   def testFireError(self):
     error = core.FireError('Example error')
@@ -100,9 +101,9 @@ class CoreTest(testutils.BaseTestCase):
 
   def testPrintEmptyDict(self):
     with self.assertOutputMatches(stdout='{}', stderr=None):
-      core.Fire(tc.EmptyDictOutput, 'totally_empty')
+      core.Fire(tc.EmptyDictOutput, command=['totally_empty'])
     with self.assertOutputMatches(stdout='{}', stderr=None):
-      core.Fire(tc.EmptyDictOutput, 'nothing_printable')
+      core.Fire(tc.EmptyDictOutput, command=['nothing_printable'])
 
 
 if __name__ == '__main__':

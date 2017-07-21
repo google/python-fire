@@ -82,7 +82,8 @@ def Fire(component=None, command=None, name=None):
   Args:
     component: The initial target component.
     command: Optional. If supplied, this is the command executed. If not
-        supplied, then the command is taken from sys.argv instead.
+        supplied, then the command is taken from sys.argv instead. This can be
+        a string or a list of strings; a list of strings is preferred.
     name: Optional. The name of the command as entered at the command line.
         Used in interactive mode and for generating the completion script.
   Returns:
@@ -94,19 +95,25 @@ def Fire(component=None, command=None, name=None):
     to call or class left to instantiate, the resulting current component is
     the final result.
   Raises:
+    ValueError: If the command argument is supplied, but not a string or a
+        sequence of arguments.
     FireExit: When Fire encounters a FireError, Fire will raise a FireExit with
         code 2. When used with the help or trace flags, Fire will raise a
         FireExit with code 0 if successful.
   """
+  name = name or os.path.basename(sys.argv[0])
+
   # Get args as a list.
-  if command is None:
+  if isinstance(command, six.string_types):
+    args = shlex.split(command)
+  elif isinstance(command, (list, tuple)):
+    args = command
+  elif command is None:
     # Use the command line args by default if no command is specified.
     args = sys.argv[1:]
   else:
-    # Otherwise use the specified command.
-    args = shlex.split(command)
-
-  name = name or os.path.basename(sys.argv[0])
+    raise ValueError('The command argument must be a string or a sequence of '
+                     'arguments.')
 
   # Determine the calling context.
   caller = inspect.stack()[1]
