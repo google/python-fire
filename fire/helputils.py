@@ -23,6 +23,7 @@ from __future__ import division
 from __future__ import print_function
 
 import inspect
+
 from fire import completion
 from fire import inspectutils
 
@@ -106,13 +107,13 @@ def HelpString(component, trace=None, verbose=False):
     ]
 
     default_fields = [
+        'string_form',
         'docstring',
         'init_docstring',
         'class_docstring',
         'call_docstring',
         'length',
         'usage',
-        'string_form',
     ]
     # level.debug, level.verbose
     fields = debug_fields if verbose else default_fields
