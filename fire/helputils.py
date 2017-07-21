@@ -111,7 +111,8 @@ def HelpString(component, trace=None, verbose=False):
         'class_docstring',
         'call_docstring',
         'length',
-        'usage'
+        'usage',
+        'string_form',
     ]
     # level.debug, level.verbose
     fields = debug_fields if verbose else default_fields
