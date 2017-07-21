@@ -29,183 +29,172 @@ from fire import inspectutils
 
 
 def _NormalizeField(field):
-    """Takes a field name and turns it into a human readable name for display.
+  """Takes a field name and turns it into a human readable name for display.
 
-    Args:
-      field: The field name, used to index into the inspection dict.
-    Returns:
-      The human readable name, suitable for display in a help string.
-    """
-    if field == 'type_name':
-        field = 'type'
-    return (field[0].upper() + field[1:]).replace('_', ' ')
+  Args:
+    field: The field name, used to index into the inspection dict.
+  Returns:
+    The human readable name, suitable for display in a help string.
+  """
+  if field == 'type_name':
+    field = 'type'
+  return (field[0].upper() + field[1:]).replace('_', ' ')
 
 
 def _DisplayValue(info, field, padding):
-    """Gets the value of field from the dict info for display.
+  """Gets the value of field from the dict info for display.
 
-    Args:
-      info: The dict with information about the component.
-      field: The field to access for display.
-      padding: Number of spaces to indent text to line up with first-line text.
-    Returns:
-      The value of the field for display, or None if no value should be displayed.
-    """
-    value = info.get(field)
+  Args:
+    info: The dict with information about the component.
+    field: The field to access for display.
+    padding: Number of spaces to indent text to line up with first-line text.
+  Returns:
+    The value of the field for display, or None if no value should be displayed.
+  """
+  value = info.get(field)
 
-    if value is None:
-        return
+  if value is None:
+    return
 
-    skip_doc_types = ('dict', 'list', 'unicode', 'int', 'float', 'bool')
+  skip_doc_types = ('dict', 'list', 'unicode', 'int', 'float', 'bool')
 
-    if field == 'docstring':
-        if info.get('type_name') in skip_doc_types:
-            # Don't show the boring default docstrings for these types.
-            return None
-        elif value == '<no docstring>':
-            return None
+  if field == 'docstring':
+    if info.get('type_name') in skip_doc_types:
+      # Don't show the boring default docstrings for these types.
+      return None
+    elif value == '<no docstring>':
+      return None
 
-    elif field == 'usage':
-        lines = []
-        for index, line in enumerate(value.split('\n')):
-            if index > 0:
-                line = ' ' * padding + line
-            lines.append(line)
-        return '\n'.join(lines)
+  elif field == 'usage':
+    lines = []
+    for index, line in enumerate(value.split('\n')):
+      if index > 0:
+        line = ' ' * padding + line
+      lines.append(line)
+    return '\n'.join(lines)
 
-    return value
+  return value
 
 
 def HelpString(component, trace=None, verbose=False):
-    """Returns a help string for a supplied component.
+  """Returns a help string for a supplied component.
 
-    The component can be any Python class, object, function, module, etc.
+  The component can be any Python class, object, function, module, etc.
 
-    Args:
-      component: The component to determine the help string for.
-      trace: The Fire trace leading to this component.
-      verbose: Whether to include private members in the help string.
-    Returns:
-      String suitable for display giving information about the component.
-    """
-    info = inspectutils.Info(component)
-    info['usage'] = UsageString(component, trace, verbose)
+  Args:
+    component: The component to determine the help string for.
+    trace: The Fire trace leading to this component.
+    verbose: Whether to include private members in the help string.
+  Returns:
+    String suitable for display giving information about the component.
+  """
+  info = inspectutils.Info(component)
+  info['usage'] = UsageString(component, trace, verbose)
 
-    debug_fields = [
-        'type_name',
-        'string_form',
-        'file',
-        'line',
+  fields = [
+      'type_name',
+      'string_form',
+      'file',
+      'line',
 
-        'docstring',
-        'init_docstring',
-        'class_docstring',
-        'call_docstring',
-        'length',
+      'docstring',
+      'init_docstring',
+      'class_docstring',
+      'call_docstring',
+      'length',
 
-        'usage',
-    ]
+      'usage',
+  ]
 
-    default_fields = [
-        'string_form',
-        'docstring',
-        'init_docstring',
-        'class_docstring',
-        'call_docstring',
-        'length',
-        'usage',
-    ]
-    # level.debug, level.verbose
-    fields = debug_fields if verbose else default_fields
-    max_size = max(
-        len(_NormalizeField(field)) + 1
-        for field in fields
-        if field in info and info[field])
-    format_string = '{{field:{max_size}s}} {{value}}'.format(max_size=max_size)
+  max_size = max(
+      len(_NormalizeField(field)) + 1
+      for field in fields
+      if field in info and info[field])
+  format_string = '{{field:{max_size}s}} {{value}}'.format(max_size=max_size)
 
-    lines = []
-    for field in fields:
-        value = _DisplayValue(info, field, padding=max_size + 1)
-        if value:
-            if lines and field == 'usage':
-                lines.append('')  # Ensure a blank line before usage.
+  lines = []
+  for field in fields:
+    value = _DisplayValue(info, field, padding=max_size + 1)
+    if value:
+      if lines and field == 'usage':
+        lines.append('')  # Ensure a blank line before usage.
 
-            lines.append(format_string.format(
-                field=_NormalizeField(field) + ':',
-                value=value,
-            ))
-    return '\n'.join(lines)
+      lines.append(format_string.format(
+          field=_NormalizeField(field) + ':',
+          value=value,
+      ))
+  return '\n'.join(lines)
 
 
 def _UsageStringFromFullArgSpec(command, spec):
-    """Get a usage string from the FullArgSpec for the given command.
+  """Get a usage string from the FullArgSpec for the given command.
 
-    The strings look like:
-    command --arg ARG [--opt OPT] [VAR ...] [--KWARGS ...]
+  The strings look like:
+  command --arg ARG [--opt OPT] [VAR ...] [--KWARGS ...]
 
-    Args:
-      command: The command leading up to the function.
-      spec: a FullArgSpec object describing the function.
-    Returns:
-      The usage string for the function.
-    """
-    num_required_args = len(spec.args) - len(spec.defaults)
+  Args:
+    command: The command leading up to the function.
+    spec: a FullArgSpec object describing the function.
+  Returns:
+    The usage string for the function.
+  """
+  num_required_args = len(spec.args) - len(spec.defaults)
 
-    help_flags = []
-    help_positional = []
-    for index, arg in enumerate(spec.args):
-        flag = arg.replace('_', '-')
-        if index < num_required_args:
-            help_flags.append('--{flag} {value}'.format(flag=flag, value=arg.upper()))
-            help_positional.append('{value}'.format(value=arg.upper()))
-        else:
-            help_flags.append('[--{flag} {value}]'.format(
-                flag=flag, value=arg.upper()))
-            help_positional.append('[{value}]'.format(value=arg.upper()))
+  help_flags = []
+  help_positional = []
+  for index, arg in enumerate(spec.args):
+    flag = arg.replace('_', '-')
+    if index < num_required_args:
+      help_flags.append('--{flag} {value}'.format(flag=flag, value=arg.upper()))
+      help_positional.append('{value}'.format(value=arg.upper()))
+    else:
+      help_flags.append('[--{flag} {value}]'.format(
+          flag=flag, value=arg.upper()))
+      help_positional.append('[{value}]'.format(value=arg.upper()))
 
-    if spec.varargs:
-        help_flags.append('[{var} ...]'.format(var=spec.varargs.upper()))
-        help_positional.append('[{var} ...]'.format(var=spec.varargs.upper()))
+  if spec.varargs:
+    help_flags.append('[{var} ...]'.format(var=spec.varargs.upper()))
+    help_positional.append('[{var} ...]'.format(var=spec.varargs.upper()))
 
-    for arg in spec.kwonlyargs:
-        if arg in spec.kwonlydefaults:
-            arg_str = '[--{flag} {value}]'.format(flag=arg, value=arg.upper())
-        else:
-            arg_str = '--{flag} {value}'.format(flag=arg, value=arg.upper())
-        help_flags.append(arg_str)
-        help_positional.append(arg_str)
+  for arg in spec.kwonlyargs:
+    if arg in spec.kwonlydefaults:
+      arg_str = '[--{flag} {value}]'.format(flag=arg, value=arg.upper())
+    else:
+      arg_str = '--{flag} {value}'.format(flag=arg, value=arg.upper())
+    help_flags.append(arg_str)
+    help_positional.append(arg_str)
 
-    if spec.varkw:
-        help_flags.append('[--{kwarg} ...]'.format(kwarg=spec.varkw.upper()))
-        help_positional.append('[--{kwarg} ...]'.format(kwarg=spec.varkw.upper()))
+  if spec.varkw:
+    help_flags.append('[--{kwarg} ...]'.format(kwarg=spec.varkw.upper()))
+    help_positional.append('[--{kwarg} ...]'.format(kwarg=spec.varkw.upper()))
 
-    commands_flags = command + ' '.join(help_flags)
-    commands_positional = command + ' '.join(help_positional)
-    commands = [commands_positional]
+  commands_flags = command + ' '.join(help_flags)
+  commands_positional = command + ' '.join(help_positional)
+  commands = [commands_positional]
 
-    if commands_flags != commands_positional:
-        commands.append(commands_flags)
+  if commands_flags != commands_positional:
+    commands.append(commands_flags)
 
-    return '\n'.join(commands)
+  return '\n'.join(commands)
 
 
 def UsageString(component, trace=None, verbose=False):
-    """Returns a string showing how to use the component as a Fire command."""
-    command = trace.GetCommand() + ' ' if trace else ''
+  """Returns a string showing how to use the component as a Fire command."""
+  command = trace.GetCommand() + ' ' if trace else ''
 
-    if inspect.isroutine(component) or inspect.isclass(component):
-        spec = inspectutils.GetFullArgSpec(component)
-        return _UsageStringFromFullArgSpec(command, spec)
+  if inspect.isroutine(component) or inspect.isclass(component):
+    spec = inspectutils.GetFullArgSpec(component)
+    return _UsageStringFromFullArgSpec(command, spec)
 
-    if isinstance(component, (list, tuple)):
-        length = len(component)
-        if length == 0:
-            return command
-        if length == 1:
-            return command + '[0]'
-        return command + '[0..{cap}]'.format(cap=length - 1)
+  if isinstance(component, (list, tuple)):
+    length = len(component)
+    if length == 0:
+      return command
+    if length == 1:
+      return command + '[0]'
+    return command + '[0..{cap}]'.format(cap=length - 1)
 
-    completions = completion.Completions(component, verbose)
-    if command:
-        completions = [''] + completions
-    return '\n'.join(command + end for end in completions)
+  completions = completion.Completions(component, verbose)
+  if command:
+    completions = [''] + completions
+  return '\n'.join(command + end for end in completions)
