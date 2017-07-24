@@ -41,8 +41,6 @@ TEST_DEPENDENCIES = [
 
 VERSION = '0.1.2'
 URL = 'https://github.com/google/python-fire'
-DOWNLOAD_URL = ('https://github.com/google/python-fire/archive/'
-                'v{version}.tar.gz').format(version=VERSION)
 
 setup(
     name='fire',
