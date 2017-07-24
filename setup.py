@@ -39,18 +39,21 @@ TEST_DEPENDENCIES = [
     'python-Levenshtein',
 ]
 
+VERSION = '0.1.2'
+URL = 'https://github.com/google/python-fire'
+DOWNLOAD_URL = ('https://github.com/google/python-fire/archive/'
+                'v{version}.tar.gz').format(version=VERSION)
+
 setup(
     name='fire',
-    version='0.1.1',
-
+    version=VERSION,
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
-
-    url='https://github.com/google/python-fire',
+    url=URL,
+    download_url=DOWNLOAD_URL,
 
     author='David Bieber',
     author_email='dbieber@google.com',
-
     license='Apache Software License',
 
     classifiers=[
@@ -81,4 +84,5 @@ setup(
 
     install_requires=DEPENDENCIES,
     tests_require=TEST_DEPENDENCIES,
+    data_files=[('', ['LICENSE'])],
 )
