@@ -84,5 +84,4 @@ setup(
 
     install_requires=DEPENDENCIES,
     tests_require=TEST_DEPENDENCIES,
-    data_files=[('', ['LICENSE'])],
 )
