@@ -50,7 +50,6 @@ setup(
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     url=URL,
-    download_url=DOWNLOAD_URL,
 
     author='David Bieber',
     author_email='dbieber@google.com',
