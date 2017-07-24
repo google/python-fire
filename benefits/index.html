@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Benefits - Python Fire</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Benefits";
+    var mkdocs_page_input_path = "benefits.md";
+    var mkdocs_page_url = "/benefits/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Python Fire</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">Installation</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Benefits</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#benefits-of-python-fire">Benefits of Python Fire</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#create-clis-in-python">Create CLIs in Python</a></li>
+        
+            <li><a class="toctree-l3" href="#develop-and-debug-python-code">Develop and debug Python code</a></li>
+        
+            <li><a class="toctree-l3" href="#explore-existing-code-turn-other-peoples-code-into-a-cli">Explore existing code; turn other people's code into a CLI</a></li>
+        
+            <li><a class="toctree-l3" href="#transition-between-bash-and-python">Transition between Bash and Python</a></li>
+        
+            <li><a class="toctree-l3" href="#explore-code-in-a-python-repl">Explore code in a Python REPL</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../guide/">The Python Fire Guide</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../using-cli/">Using a CLI</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../troubleshooting/">Troubleshooting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../api/">Reference</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Python Fire</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Benefits</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="benefits-of-python-fire">Benefits of Python Fire</h1>
+<p><a name="simple-cli"></a></p>
+<h2 id="create-clis-in-python">Create CLIs in Python</h2>
+<p>It's dead simple. Simply write the functionality you want exposed at the command
+line as a function / module / class, and then call Fire. With this addition of a
+single-line call to Fire, your CLI is ready to go.</p>
+<p><a name="debugging"></a></p>
+<h2 id="develop-and-debug-python-code">Develop and debug Python code</h2>
+<p>When you're writing a Python library, you probably want to try it out as you go.
+You could write a main method to check the functionality you're interested in,
+but then you have to change the main method with every new experiment you're
+interested in testing, and constantly updating the main method is a hassle.
+You could also open an IPython REPL and import your library there and test it,
+but then you have to deal with reloading your imports every time you change
+something.</p>
+<p>If you simply call Fire in your library, then you can run all of it's
+functionality from the command line without having to keep making changes to
+a main method. And if you use the <code>--interactive</code> flag to enter an IPython REPL
+then you don't need to load the imports or create your variables; they'll
+already be ready for use as soon as you start the REPL.</p>
+<p><a name="exploring"></a></p>
+<h2 id="explore-existing-code-turn-other-peoples-code-into-a-cli">Explore existing code; turn other people's code into a CLI</h2>
+<p>You can take an existing module, maybe even one that you don't have access to
+the source code for, and call <code>Fire</code> on it. This lets you easily see what
+functionality this code exposes, without you having to read through all the
+code.</p>
+<p>This technique can be a very simple way to create very powerful CLIs. Call
+<code>Fire</code> on the difflib library and you get a powerful diffing tool. Call <code>Fire</code>
+on the Python Imaging Library (PIL) module and you get a powerful image
+manipulation command line tool, very similar in nature to ImageMagick.</p>
+<p>The auto-generated help strings that Fire provides when you run a Fire CLI
+allow you to see all the functionality these modules provide in a concise
+manner.</p>
+<p><a name="bash"></a></p>
+<h2 id="transition-between-bash-and-python">Transition between Bash and Python</h2>
+<p>Using Fire lets you call Python directly from Bash. So you can mix your Python
+functions with the unix tools you know and love, like <code>grep</code>, <code>xargs</code>, <code>wc</code>,
+etc.</p>
+<p>Additionally since writing CLIs in Python requires only a single call to Fire,
+it is now easy to write even one-off scripts that would previously have been in
+Bash, in Python.</p>
+<p><a name="repl"></a></p>
+<h2 id="explore-code-in-a-python-repl">Explore code in a Python REPL</h2>
+<p>When you use the <code>--interactive</code> flag to enter an IPython REPL, it starts with
+variables and modules already defined for you. You don't need to waste time
+importing the modules you care about or defining the variables you're going to
+use, since Fire has already done so for you.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../guide/" class="btn btn-neutral float-right" title="The Python Fire Guide">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../installation/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../installation/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../guide/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>

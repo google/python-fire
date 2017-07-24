@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="None">
+  
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <title>Overview - Python Fire</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="./css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Overview";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/";
+  </script>
+  
+  <script src="./js/jquery-2.1.1.min.js"></script>
+  <script src="./js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> Python Fire</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Overview</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#python-fire">Python Fire</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#installation">Installation</a></li>
+        
+            <li><a class="toctree-l3" href="#basic-usage">Basic Usage</a></li>
+        
+            <li><a class="toctree-l3" href="#why-is-it-called-fire">Why is it called Fire?</a></li>
+        
+            <li><a class="toctree-l3" href="#where-can-i-learn-more">Where can I learn more?</a></li>
+        
+            <li><a class="toctree-l3" href="#reference">Reference</a></li>
+        
+            <li><a class="toctree-l3" href="#disclaimer">Disclaimer</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="installation/">Installation</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="benefits/">Benefits</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="guide/">The Python Fire Guide</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="using-cli/">Using a CLI</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="troubleshooting/">Troubleshooting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="api/">Reference</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">Python Fire</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Overview</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="python-fire">Python Fire</h1>
+<p><em>Python Fire is a library for automatically generating command line interfaces
+(CLIs) from absolutely any Python object.</em></p>
+<ul>
+<li>Python Fire is a simple way to create a CLI in Python. <a href="benefits/#simple-cli">[1]</a></li>
+<li>Python Fire is a helpful tool for developing and debugging Python code. <a href="benefits/#debugging">[2]</a></li>
+<li>Python Fire helps with exploring existing code or turning other people's code
+into a CLI. <a href="benefits/#exploring">[3]</a></li>
+<li>Python Fire makes transitioning between Bash and Python easier. <a href="benefits/#bash">[4]</a></li>
+<li>Python Fire makes using a Python REPL easier by setting up the REPL with the
+modules and variables you'll need already imported and created. <a href="benefits/#repl">[5]</a></li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>To install Python Fire with pip, run: <code>pip install fire</code></p>
+<p>To install Python Fire with conda, run: <code>conda install fire -c conda-forge</code></p>
+<p>To install Python Fire from source, first clone the repository and then run:
+<code>python setup.py install</code></p>
+<h2 id="basic-usage">Basic Usage</h2>
+<p>You can call <code>Fire</code> on any Python object:<br>
+functions, classes, modules, objects, dictionaries, lists, tuples, etc.
+They all work!</p>
+<p>Here's an example of calling Fire on a class.</p>
+<pre><code class="python">import fire
+
+class Calculator(object):
+  &quot;&quot;&quot;A simple calculator class.&quot;&quot;&quot;
+
+  def double(self, number):
+    return 2 * number
+
+if __name__ == '__main__':
+  fire.Fire(Calculator)
+</code></pre>
+
+<p>Then, from the command line, you can run:</p>
+<pre><code class="bash">python calculator.py double 10  # 20
+python calculator.py double --number=15  # 30
+</code></pre>
+
+<p>To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn
+about Fire's other features, see the <a href="using-cli/">Using a Fire CLI page</a>.</p>
+<p>For additional examples, see <a href="guide/">The Python Fire Guide</a>.</p>
+<h2 id="why-is-it-called-fire">Why is it called Fire?</h2>
+<p>When you call <code>Fire</code>, it fires off (executes) your command.</p>
+<h2 id="where-can-i-learn-more">Where can I learn more?</h2>
+<p>Please see <a href="guide/">The Python Fire Guide</a>.</p>
+<h2 id="reference">Reference</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Setup</th>
+<th align="left">Command</th>
+<th align="left">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">install</td>
+<td align="left"><code>pip install fire</code></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th align="left">Creating a CLI</th>
+<th align="left">Command</th>
+<th align="left">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">import</td>
+<td align="left"><code>import fire</code></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">Call</td>
+<td align="left"><code>fire.Fire()</code></td>
+<td align="left">Turns the current module into a Fire CLI.</td>
+</tr>
+<tr>
+<td align="left">Call</td>
+<td align="left"><code>fire.Fire(component)</code></td>
+<td align="left">Turns <code>component</code> into a Fire CLI.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th align="left">Using a CLI</th>
+<th align="left">Command</th>
+<th align="left">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><a href="using-cli/#help-flag">Help</a></td>
+<td align="left"><code>command -- --help</code></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><a href="using-cli/#interactive-flag">REPL</a></td>
+<td align="left"><code>command -- --interactive</code></td>
+<td align="left">Enters interactive mode.</td>
+</tr>
+<tr>
+<td align="left"><a href="using-cli/#separator-flag">Separator</a></td>
+<td align="left"><code>command -- --separator=X</code></td>
+<td align="left">This sets the separator to <code>X</code>. The default separator is <code>-</code>.</td>
+</tr>
+<tr>
+<td align="left"><a href="using-cli/#completion-flag">Completion</a></td>
+<td align="left"><code>command -- --completion</code></td>
+<td align="left">Generate a completion script for the CLI.</td>
+</tr>
+<tr>
+<td align="left"><a href="using-cli/#trace-flag">Trace</a></td>
+<td align="left"><code>command -- --trace</code></td>
+<td align="left">Gets a Fire trace for the command.</td>
+</tr>
+<tr>
+<td align="left"><a href="using-cli/#verbose-flag">Verbose</a></td>
+<td align="left"><code>command -- --verbose</code></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note that flags are separated from the Fire command by an isolated <code>--</code> arg.</em></p>
+<h2 id="disclaimer">Disclaimer</h2>
+<p>This is not an official Google product.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+        <span style="margin-left: 15px"><a href="installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="./js/theme.js"></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 0.16.3
+Build Date UTC : 2017-07-24 18:13:30
+-->

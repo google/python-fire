@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Using a CLI - Python Fire</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Using a CLI";
+    var mkdocs_page_input_path = "using-cli.md";
+    var mkdocs_page_url = "/using-cli/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Python Fire</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">Installation</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../benefits/">Benefits</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../guide/">The Python Fire Guide</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Using a CLI</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#using-a-fire-cli">Using a Fire CLI</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#basic-usage">Basic usage</a></li>
+        
+            <li><a class="toctree-l3" href="#using-flags-with-fire-clis">Using Flags with Fire CLIs </a></li>
+        
+            <li><a class="toctree-l3" href="#python-fires-flags">Python Fire's Flags</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../troubleshooting/">Troubleshooting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../api/">Reference</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Python Fire</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Using a CLI</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="using-a-fire-cli">Using a Fire CLI</h1>
+<h2 id="basic-usage">Basic usage</h2>
+<p>Every Fire command corresponds to a Python component.</p>
+<p>The simplest Fire command consists of running your program with no additional
+arguments. This command corresponds to the Python component you called the
+<code>Fire</code> function on. If you did not supply an object in the call to <code>Fire</code>, then
+the context in which <code>Fire</code> was called will be used as the Python component.</p>
+<p>You can append <code>-- --help</code> to any command to see what Python component it
+corresponds to, as well as the various ways in which you can extend the command.
+Flags are always separated from the Fire command by an isolated <code>--</code> in order
+to distinguish between flags and named arguments.</p>
+<p>Given a Fire command that corresponds to a Python object, you can extend that
+command to access a member of that object, call it with arguments if it is a
+function, instantiate it if it is a class, or index into it if it is a list.</p>
+<p>Read on to learn about how you can write a Fire command corresponding to
+whatever Python component you're looking for.</p>
+<h3 id="accessing-members-of-an-object">Accessing members of an object</h3>
+<p>If your command corresponds to an object, you can extend your command by adding
+the name of a member of that object as a new argument to the command. The
+resulting command will correspond to that member.</p>
+<p>For example, if the object your command corresponds to has a method defined on
+it named 'whack', then you can add the argument 'whack' to your command, and the
+resulting new command corresponds to the whack method.</p>
+<p>As another example, if the object your command corresponds to has a property
+named high_score, then you can add the argument 'high-score' to your command,
+and the resulting new command corresponds to the value of the high_score
+property.</p>
+<h3 id="accessing-members-of-a-dict">Accessing members of a dict</h3>
+<p>If your command corresponds to a dict, you can extend your command by adding
+the name of one of the dict's keys as an argument.</p>
+<p>For example, <code>widget function-that-returns-dict key</code> will correspond to the
+value of the item with key <code>key</code> in the dict returned by
+<code>function_that_returns_dict</code>.</p>
+<h3 id="accessing-members-of-a-list-or-tuple">Accessing members of a list or tuple</h3>
+<p>If your command corresponds to a list or tuple, you can extend your command by
+adding the index of an element of the component to your command as an argument.</p>
+<p>For example, <code>widget function-that-returns-list 2</code> will correspond to item 2 of
+the result of function_that_returns_list.</p>
+<h3 id="calling-a-function">Calling a function</h3>
+<p>If your command corresponds to a function, you can extend your command by adding
+the arguments of this function. Arguments can be specified positionally, or by
+name. To specify an argument by name, use flag syntax.</p>
+<p>For example, suppose your <code>command</code> corresponds to the function <code>double</code>:</p>
+<pre><code class="python">def double(value=0):
+  return 2 * value
+</code></pre>
+
+<p>Then you can extend your command using named arguments as <code>command --value 5</code>,
+or using positional arguments as <code>command 5</code>. In both cases, the new command
+corresponds to the result of the function, in this case the number 10.</p>
+<p>You can force a function that takes a variable number of arguments to be
+evaluated by adding a separator (the default separator is the hyphen, "-"). This
+will prevent arguments to the right of the separator from being consumed for
+calling the function. This is useful if the function has arguments with default
+values, or if the function accepts *varargs, or if the function accepts
+**kwargs.</p>
+<p>See also the section on <a href="#separator-flag">Changing the Separator</a>.</p>
+<h3 id="instantiating-a-class">Instantiating a class</h3>
+<p>If your command corresponds to a class, you can extend your command by adding
+the arguments of the class's __init__ function. Arguments must be specified
+by name, using the flags syntax. See the section on
+<a href="#calling-a-function">calling a function</a> for more details.</p>
+<h2 id="using-flags-with-fire-clis">Using Flags with Fire CLIs <a name="using-flags"></a></h2>
+<p>Command line arguments to a Fire CLI are normally consumed by Fire, as described
+in the <a href="#basic-usage">Basic Usage</a> section. In order to set Flags, put the flags
+after the final standalone <code>--</code> argument. (If there is no <code>--</code> argument, then no
+arguments are used for flags.)</p>
+<p>For example, to set the alsologtostderr flag, you could run the command:
+<code>widget bang --noise=boom -- --alsologtostderr</code>. The --noise argument is
+consumed by Fire, but the --alsologtostderr argument is treated as a normal
+Flag.</p>
+<p>All CLIs built with Python Fire share some flags, as described in the next
+sections.</p>
+<h2 id="python-fires-flags">Python Fire's Flags</h2>
+<p>As described in the <a href="#using-flags">Using Flags</a> section, you must add an
+isolated <code>--</code> argument in order to have arguments treated as Flags rather than
+be consumed by Python Fire. All arguments to a Fire CLI after the final
+standalone <code>--</code> argument are treated as Flags.</p>
+<p>The following flags are accepted by all Fire CLIs:
+<a href="#interactive-flag"><code>--interactive</code>/<code>-i</code></a>,
+<a href="#help-flag"><code>--help</code>/<code>-h</code></a>,
+<a href="#separator-flag"><code>--separator</code></a>,
+<a href="#completion-flag"><code>--completion</code></a>,
+<a href="#trace-flag"><code>--trace</code></a>,
+and <a href="#verbose-flag"><code>--verbose</code>/<code>-v</code></a>,
+as described in the following sections.</p>
+<h3 id="-interactive-interactive-mode"><code>--interactive</code>: Interactive mode <a name="interactive-flag"></a></h3>
+<p>Call <code>widget -- --interactive</code> or <code>widget -- -i</code> to enter interactive mode. This
+will put you in an IPython REPL, with the variable <code>widget</code> already defined.</p>
+<p>You can then explore the Python object that <code>widget</code> corresponds to
+interactively using Python.</p>
+<h3 id="-completion-generating-a-completion-script"><code>--completion</code>: Generating a completion script <a name="completion-flag"></a></h3>
+<p>Call <code>widget -- --completion</code> to generate a completion script for the Fire CLI
+<code>widget</code>. To save the completion script to your home directory, you could e.g.
+run <code>widget -- --completion &gt; ~/.widget-completion</code>. You should then source this
+file; to get permanent completion, source this file from your .bashrc file.</p>
+<p>If the commands available in the Fire CLI change, you'll have to regenerate the
+completion script and source it again.</p>
+<h3 id="-help-getting-help"><code>--help</code>: Getting help <a name="help-flag"></a></h3>
+<p>Let say you have a command line tool named <code>widget</code> that was made with Fire. How
+do you use this Fire CLI?</p>
+<p>The simplest way to get started is to run <code>widget -- --help</code>. This will give you
+usage information for your CLI. You can always append <code>-- --help</code> to any Fire
+command in order to get usage information for that command and any subcommands.</p>
+<p>Additionally, help will be displayed if you hit an error using Fire. For
+example, if you try to pass too many or too few arguments to a function, then
+help will be displayed. Similarly, if you try to access a member that does not
+exist, or if you index into a list with too high an index, then help will be
+displayed.</p>
+<p>The displayed help shows information about which Python component your command
+corresponds to, as well as usage information for how to extend that command.</p>
+<h3 id="-trace-getting-a-fire-trace"><code>--trace</code>: Getting a Fire trace <a name="trace-flag"></a></h3>
+<p>In order to understand what is happening when you call Python Fire, it can be
+useful to request a trace. This is done via the --trace flag, e.g.
+<code>widget whack 5 -- --trace</code>.</p>
+<p>A trace provides step by step information about how the Fire command was
+executed. In includes which actions were taken, starting with the initial
+component, leading to the final component represented by the command.</p>
+<p>A trace is also shown alongside the help if your Fire command reaches an error.</p>
+<h3 id="-separator-changing-the-separator"><code>--separator</code>: Changing the separator <a name="separator-flag"></a></h3>
+<p>As described in <a href="#calling-a-function">Calling a Function</a>, you can use a
+separator argument when writing a command that corresponds to calling a
+function. The separator will cause the function to be evaluated or the class to
+be instantiated using only the arguments left of the separator. Arguments right
+of the separator will then be applied to the result of the function call or to
+the instantiated object.</p>
+<p>The default separator is <code>-</code>.</p>
+<p>If you want to supply the string "-" as an argument, then you will have to
+change the separator. You can choose a new separator by supplying the
+<code>--separator</code> flag to Fire.</p>
+<p>Here's an example to demonstrate separator usage. Let's say you have a function
+that takes a variable number of args, and you want to call that function, and
+then upper case the result. Here's how to do it:</p>
+<pre><code class="python"># Here's the Python function
+def display(arg1, arg2='!'):
+  return arg1 + arg2
+</code></pre>
+
+<pre><code class="bash"># Here's what you can do from Bash (Note: the default separator is the hyphen -)
+display hello                         # hello!
+display hello upper                   # helloupper
+display hello - upper                 # HELLO!
+display - SEP upper -- --separator SEP    # -!
+</code></pre>
+
+<p>Notice how in the third and fourth lines, the separator caused the display
+function to be called with the default value for arg2. In the fourth example,
+we change the separator to the string "SEP" so that we can pass '-' as an
+argument.</p>
+<h3 id="-verbose-verbose-usage"><code>--verbose</code>: Verbose usage <a name="verbose-flag"></a></h3>
+<p>Adding the <code>-v</code> or <code>--verbose</code> flag turns on verbose mode. This will eg
+reveal private members in the usage string. Often these members will not
+actually be usable from the command line tool. As such, verbose mode should be
+considered a debugging tool, but not fully supported yet.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../troubleshooting/" class="btn btn-neutral float-right" title="Troubleshooting">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../guide/" class="btn btn-neutral" title="The Python Fire Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../guide/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../troubleshooting/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>
