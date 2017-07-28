@@ -254,6 +254,7 @@ def _OneLineResult(result):
   if isinstance(result, six.string_types):
     return str(result).replace('\n', ' ')
 
+
   try:
     return json.dumps(result, ensure_ascii=False)
   except (TypeError, ValueError):
