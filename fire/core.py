@@ -256,7 +256,7 @@ def _OneLineResult(result):
 
 
   try:
-    return json.dumps(result, ensure_ascii=False)
+    return json.dumps(result)
   except (TypeError, ValueError):
     return str(result).replace('\n', ' ')
 
