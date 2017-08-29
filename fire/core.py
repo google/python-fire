@@ -262,7 +262,7 @@ def _OneLineResult(result):
     return str(result).replace('\n', ' ')
 
   try:
-    # non-forced to ascii convert
+    # Don't force conversion to ascii.
     return json.dumps(result, ensure_ascii=False)
   except (TypeError, ValueError):
     return str(result).replace('\n', ' ')
