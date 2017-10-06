@@ -321,6 +321,7 @@ def _Fire(component, args, context, name=None):
   show_completion = parsed_flag_args.completion
   show_help = parsed_flag_args.help
   show_trace = parsed_flag_args.trace
+  use_environment = parsed_flag_args.use_environment
 
   # component can be a module, class, routine, object, etc.
   if component is None:
@@ -363,7 +364,7 @@ def _Fire(component, args, context, name=None):
         filename, lineno = inspectutils.GetFileAndLine(component)
 
         component, consumed_args, remaining_args, capacity = _CallCallable(
-            component, remaining_args)
+            component, remaining_args, use_environment)
 
         # Update the trace.
         if isclass:
@@ -524,7 +525,7 @@ def _GetMember(component, args):
   raise FireError('Could not consume arg:', arg)
 
 
-def _CallCallable(fn, args):
+def _CallCallable(fn, args, use_environment=None):
   """Calls the function fn by consuming args from args.
 
   Args:
@@ -536,14 +537,14 @@ def _CallCallable(fn, args):
     remaining_args: The remaining args that haven't been consumed yet.
     capacity: Whether the call could have taken additional args.
   """
-  parse = _MakeParseFn(fn)
+  parse = _MakeParseFn(fn, use_environment=use_environment)
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
 
   result = fn(*varargs, **kwargs)
   return result, consumed_args, remaining_args, capacity
 
 
-def _MakeParseFn(fn):
+def _MakeParseFn(fn, use_environment=None):
   """Creates a parse function for fn.
 
   Args:
@@ -566,6 +567,16 @@ def _MakeParseFn(fn):
   def _ParseFn(args):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
     kwargs, remaining_args = _ParseKeywordArgs(args, all_args, fn_spec.varkw)
+
+    # Enrich with environment variables
+    if use_environment is not None:
+        for arg in fn_spec.args[len(remaining_args):]:
+            env_var_name = use_environment + arg
+            env_var_name_upper = use_environment + arg.upper()
+            env_value = os.environ.get(env_var_name,
+                                       os.environ.get(env_var_name_upper))
+            if arg not in kwargs and env_value:
+                kwargs[arg] = env_value
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(

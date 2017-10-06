@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+
 from fire import core
 from fire import test_components as tc
 from fire import testutils
@@ -71,6 +73,24 @@ class CoreTest(testutils.BaseTestCase):
     self.assertIsInstance(variables['self'], tc.WithDefaults)
     self.assertEqual(variables['D'], tc.WithDefaults)
     self.assertIsInstance(variables['trace'], trace.FireTrace)
+
+  def testUsingEnvironment(self):
+    os.environ['count'] = '4'
+    res = core.Fire(tc.WithDefaults,
+                    command=['double', '--', '--use_environment'])
+    assert res == 8
+
+  def testUsingEnvironmentDefaultsToUpper(self):
+    os.environ['COUNT'] = '4'
+    res = core.Fire(tc.WithDefaults,
+                    command=['double', '--', '--use_environment'])
+    assert res == 8
+
+  def testUsingEnvironmentNamespaced(self):
+    os.environ['TEST_NS_count'] = '5'
+    res = core.Fire(tc.WithDefaults,
+                    command=['double', '--', '--use_environment', 'TEST_NS_'])
+    assert res == 10
 
   def testImproperUseOfHelp(self):
     # This should produce a warning explaining the proper use of help.
