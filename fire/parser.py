@@ -95,7 +95,7 @@ def _LiteralEval(value):
   """
   root = ast.parse(value, mode='eval')
   if isinstance(root.body, ast.BinOp):
-    return value
+    raise ValueError(value)
 
   for node in ast.walk(root):
     for field, child in ast.iter_fields(node):
