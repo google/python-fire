@@ -69,10 +69,12 @@ class ParserTest(testutils.BaseTestCase):
 
   def testDefaultParseValueNumbers(self):
     self.assertEqual(parser.DefaultParseValue('23'), 23)
+    self.assertEqual(parser.DefaultParseValue('-23'), -23)
     self.assertEqual(parser.DefaultParseValue('23.0'), 23.0)
     self.assertIsInstance(parser.DefaultParseValue('23'), int)
     self.assertIsInstance(parser.DefaultParseValue('23.0'), float)
     self.assertEqual(parser.DefaultParseValue('23.5'), 23.5)
+    self.assertEqual(parser.DefaultParseValue('-23.5'), -23.5)
 
   def testDefaultParseValueStringNumbers(self):
     self.assertEqual(parser.DefaultParseValue("'23'"), '23')
@@ -127,13 +129,15 @@ class ParserTest(testutils.BaseTestCase):
     # If it can't be parsed, we treat it as a string. This behavior may change.
     self.assertEqual(
         parser.DefaultParseValue('[(A, 2, "3"), 5'), '[(A, 2, "3"), 5')
-
     self.assertEqual(parser.DefaultParseValue('x=10'), 'x=10')
 
   def testDefaultParseValueSyntaxError(self):
     # If it can't be parsed, we treat it as a string.
     self.assertEqual(parser.DefaultParseValue('"'), '"')
 
+  def testDefaultParseValueIgnoreBinOp(self):
+    self.assertEqual(parser.DefaultParseValue('2017-10-10'), '2017-10-10')
+    self.assertEqual(parser.DefaultParseValue('1+1'), '1+1')
 
 if __name__ == '__main__':
   testutils.main()
