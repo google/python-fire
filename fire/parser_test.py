@@ -127,13 +127,15 @@ class ParserTest(testutils.BaseTestCase):
     # If it can't be parsed, we treat it as a string. This behavior may change.
     self.assertEqual(
         parser.DefaultParseValue('[(A, 2, "3"), 5'), '[(A, 2, "3"), 5')
-
     self.assertEqual(parser.DefaultParseValue('x=10'), 'x=10')
 
   def testDefaultParseValueSyntaxError(self):
     # If it can't be parsed, we treat it as a string.
     self.assertEqual(parser.DefaultParseValue('"'), '"')
 
+  def testDefaultParseValueIgnoreBinOp(self):
+    self.assertEqual(parser.DefaultParseValue('2017-10-10'), '2017-10-10')
+    self.assertEqual(parser.DefaultParseValue('1+1'), '1+1')
 
 if __name__ == '__main__':
   testutils.main()
