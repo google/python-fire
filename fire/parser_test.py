@@ -69,10 +69,12 @@ class ParserTest(testutils.BaseTestCase):
 
   def testDefaultParseValueNumbers(self):
     self.assertEqual(parser.DefaultParseValue('23'), 23)
+    self.assertEqual(parser.DefaultParseValue('-23'), -23)
     self.assertEqual(parser.DefaultParseValue('23.0'), 23.0)
     self.assertIsInstance(parser.DefaultParseValue('23'), int)
     self.assertIsInstance(parser.DefaultParseValue('23.0'), float)
     self.assertEqual(parser.DefaultParseValue('23.5'), 23.5)
+    self.assertEqual(parser.DefaultParseValue('-23.5'), -23.5)
 
   def testDefaultParseValueStringNumbers(self):
     self.assertEqual(parser.DefaultParseValue("'23'"), '23')
