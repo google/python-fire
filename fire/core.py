@@ -565,7 +565,7 @@ def _MakeParseFn(fn):
 
   def _ParseFn(args):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
-    kwargs, remaining_args = _ParseKeywordArgs(args, all_args, fn_spec.varkw)
+    kwargs, unconsumed_named_args, remaining_args = _ParseKeywordArgs(args, all_args, fn_spec.varkw)
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
@@ -594,6 +594,7 @@ def _MakeParseFn(fn):
       varargs[index] = _ParseValue(value, None, None, metadata)
 
     varargs = parsed_args + varargs
+    remaining_args += unconsumed_named_args
 
     consumed_args = args[:len(args) - len(remaining_args)]
     return (varargs, kwargs), consumed_args, remaining_args, capacity
@@ -684,6 +685,7 @@ def _ParseKeywordArgs(args, fn_args, fn_keywords):
     remaining_args: A list of the unused arguments from the original args.
   """
   kwargs = {}
+  unconsumed_named_args = []
   if args:
     remaining_args = []
     skip_argument = False
@@ -730,7 +732,9 @@ def _ParseKeywordArgs(args, fn_args, fn_keywords):
         if got_argument and (keyword in fn_args or fn_keywords):
           kwargs[keyword] = value
           skip_argument = not contains_equals and not is_bool_syntax
-          arg_consumed = True
+        else:
+          unconsumed_named_args.append(argument)
+        arg_consumed = True
 
       if not arg_consumed:
         # The argument was not consumed, so it is still a remaining argument.
@@ -738,7 +742,7 @@ def _ParseKeywordArgs(args, fn_args, fn_keywords):
   else:
     remaining_args = args
 
-  return kwargs, remaining_args
+  return kwargs, unconsumed_named_args, remaining_args
 
 
 def _ParseValue(value, index, arg, metadata):
