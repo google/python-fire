@@ -570,13 +570,13 @@ def _MakeParseFn(fn, use_environment=None):
 
     # Enrich with environment variables
     if use_environment is not None:
-        for arg in fn_spec.args[len(remaining_args):]:
-            env_var_name = use_environment + arg
-            env_var_name_upper = use_environment + arg.upper()
-            env_value = os.environ.get(env_var_name,
-                                       os.environ.get(env_var_name_upper))
-            if arg not in kwargs and env_value:
-                kwargs[arg] = env_value
+      for arg in fn_spec.args[len(remaining_args):]:
+        env_var_name = use_environment + arg
+        env_var_name_upper = use_environment + arg.upper()
+        env_value = os.environ.get(env_var_name,
+                                   os.environ.get(env_var_name_upper))
+        if arg not in kwargs and env_value:
+          kwargs[arg] = env_value
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
