@@ -23,6 +23,12 @@ import ast
 
 
 def CreateParser():
+  """Creates the parser for the flags for Python fire
+
+  Returns:
+    An instance of argparse.ArgumentParser with the flags already added.
+
+  """
   parser = argparse.ArgumentParser(add_help=False)
   parser.add_argument('--verbose', '-v', action='store_true')
   parser.add_argument('--interactive', '-i', action='store_true')
