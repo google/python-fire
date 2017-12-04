@@ -30,7 +30,7 @@ A Fire CLI command is run by consuming the arguments in the command in order to
 access a member of current component, call the current component (if it's a
 function), or instantiate the current component (if it's a class). The target
 component begins as Component, and at each operation the component becomes the
-result of the preceeding operation.
+result of the preceding operation.
 
 For example "command fn arg1 arg2" might access the "fn" property of the initial
 target component, and then call that function with arguments 'arg1' and 'arg2'.
@@ -565,8 +565,8 @@ def _MakeParseFn(fn):
 
   def _ParseFn(args):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
-    kwargs, remaining_kwargs, remaining_args = \
-        _ParseKeywordArgs(args, all_args, fn_spec.varkw)
+    kwargs, remaining_kwargs, remaining_args = _ParseKeywordArgs(
+        args, all_args, fn_spec.varkw)
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
