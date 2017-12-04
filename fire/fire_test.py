@@ -368,10 +368,15 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.MixedDefaults,
                   command=['identity', 'True', '10']), (True, 10))
 
-    # Note: Does not return ('--test', '0').
-    self.assertEqual(fire.Fire(tc.MixedDefaults,
-                               command=['identity', '--alpha', '--test']),
-                     (True, '--test'))
+    # Note: Does not return (True, '--test') or ('--test', 0).
+    with self.assertRaisesFireExit(2):
+      fire.Fire(tc.MixedDefaults, command=['identity', '--alpha', '--test'])
+
+    self.assertEqual(
+        fire.Fire(
+            tc.MixedDefaults,
+            command=['identity', '--alpha', 'True', '"--test"']),
+        (True, '--test'))
     # To get ('--test', '0'), use one of the following:
     self.assertEqual(fire.Fire(tc.MixedDefaults,
                                command=['identity', '--alpha=--test']),

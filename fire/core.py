@@ -565,7 +565,8 @@ def _MakeParseFn(fn):
 
   def _ParseFn(args):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
-    kwargs, remaining_args = _ParseKeywordArgs(args, all_args, fn_spec.varkw)
+    kwargs, remaining_kwargs, remaining_args = \
+        _ParseKeywordArgs(args, all_args, fn_spec.varkw)
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
@@ -594,6 +595,7 @@ def _MakeParseFn(fn):
       varargs[index] = _ParseValue(value, None, None, metadata)
 
     varargs = parsed_args + varargs
+    remaining_args += remaining_kwargs
 
     consumed_args = args[:len(args) - len(remaining_args)]
     return (varargs, kwargs), consumed_args, remaining_args, capacity
@@ -681,64 +683,72 @@ def _ParseKeywordArgs(args, fn_args, fn_keywords):
     fn_keywords: The argument name for **kwargs, or None if **kwargs not used
   Returns:
     kwargs: A dictionary mapping keywords to values.
+    remaining_kwargs: A list of the unused kwargs from the original args.
     remaining_args: A list of the unused arguments from the original args.
   """
   kwargs = {}
-  if args:
-    remaining_args = []
-    skip_argument = False
+  remaining_kwargs = []
+  remaining_args = []
 
-    for index, argument in enumerate(args):
-      if skip_argument:
-        skip_argument = False
-        continue
+  if not args:
+    return kwargs, remaining_kwargs, remaining_args
 
-      arg_consumed = False
-      if argument.startswith('--'):
-        # This is a named argument; get its value from this arg or the next.
-        got_argument = False
+  skip_argument = False
 
-        keyword = argument[2:]
-        contains_equals = '=' in keyword
-        is_bool_syntax = (
-            not contains_equals and
-            (index + 1 == len(args) or args[index + 1].startswith('--')))
-        if contains_equals:
-          keyword, value = keyword.split('=', 1)
-          got_argument = True
-        elif is_bool_syntax:
-          # Since there's no next arg or the next arg is a Flag, we consider
-          # this flag to be a boolean.
-          got_argument = True
-          if keyword in fn_args:
-            value = 'True'
-          elif keyword.startswith('no'):
-            keyword = keyword[2:]
-            value = 'False'
-          else:
-            value = 'True'
+  for index, argument in enumerate(args):
+    if skip_argument:
+      skip_argument = False
+      continue
+
+    arg_consumed = False
+    if argument.startswith('--'):
+      # This is a named argument; get its value from this arg or the next.
+      got_argument = False
+
+      keyword = argument[2:]
+      contains_equals = '=' in keyword
+      is_bool_syntax = (
+          not contains_equals and
+          (index + 1 == len(args) or args[index + 1].startswith('--')))
+      if contains_equals:
+        keyword, value = keyword.split('=', 1)
+        got_argument = True
+      elif is_bool_syntax:
+        # Since there's no next arg or the next arg is a Flag, we consider
+        # this flag to be a boolean.
+        got_argument = True
+        if keyword in fn_args:
+          value = 'True'
+        elif keyword.startswith('no'):
+          keyword = keyword[2:]
+          value = 'False'
         else:
-          if index + 1 < len(args):
-            value = args[index + 1]
-            got_argument = True
+          value = 'True'
+      else:
+        if index + 1 < len(args):
+          value = args[index + 1]
+          got_argument = True
 
-        keyword = keyword.replace('-', '_')
+      keyword = keyword.replace('-', '_')
 
-        # In order for us to consume the argument as a keyword arg, we either:
-        # Need to be explicitly expecting the keyword, or we need to be
-        # accepting **kwargs.
-        if got_argument and (keyword in fn_args or fn_keywords):
+      # In order for us to consume the argument as a keyword arg, we either:
+      # Need to be explicitly expecting the keyword, or we need to be
+      # accepting **kwargs.
+      if got_argument:
+        skip_argument = not contains_equals and not is_bool_syntax
+        arg_consumed = True
+        if keyword in fn_args or fn_keywords:
           kwargs[keyword] = value
-          skip_argument = not contains_equals and not is_bool_syntax
-          arg_consumed = True
+        else:
+          remaining_kwargs.append(argument)
+          if skip_argument:
+            remaining_kwargs.append(args[index + 1])
 
-      if not arg_consumed:
-        # The argument was not consumed, so it is still a remaining argument.
-        remaining_args.append(argument)
-  else:
-    remaining_args = args
+    if not arg_consumed:
+      # The argument was not consumed, so it is still a remaining argument.
+      remaining_args.append(argument)
 
-  return kwargs, remaining_args
+  return kwargs, remaining_kwargs, remaining_args
 
 
 def _ParseValue(value, index, arg, metadata):
