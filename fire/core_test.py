@@ -38,6 +38,87 @@ class CoreTest(testutils.BaseTestCase):
     self.assertEqual(core._OneLineResult(circular_reference.create()),  # pylint: disable=protected-access
                      "{'y': {...}}")
 
+  # pylint: disable=protected-access
+  def testDictAsString(self):
+    nested_dict = tc.NestedDict()
+    self.assertEqual(core._DictAsString({}, set()), '{}')
+    self.assertEqual(core._DictAsString({'key': 'value'}, set()), 'key: value')
+    self.assertEqual(core._DictAsString(nested_dict.elements(1), set()),
+                     'key: \n  key0: value0')
+
+  # pylint: disable=protected-access
+  def testDictAsStringCircularRef(self):
+    circular_reference = tc.CircularReference().create()
+    self.assertEqual(core._DictAsString(circular_reference, set()),
+                     'y: <circular reference to {\'y\': {...}}')
+
+  # pylint: disable=protected-access
+  def testIterableAsString(self):
+    nested_list = tc.NestedList()
+    self.assertEqual(core._IterableAsString([], set()), '[]')
+    self.assertEqual(core._IterableAsString(['value1', 'value2'], set()),
+                     '["value1", "value2"]')
+    self.assertEqual(
+        core._IterableAsString(nested_list.elements(3), set()),
+        '["value", ["value0", "value1", "value2"]]')
+    self.assertEqual(
+        core._IterableAsString(nested_list.elements(20), set()),
+        'value\n\n  ' + '\n  '.join('value{}'.format(i) for i in range(20)))
+
+  # pylint: disable=protected-access
+  def testIterableAsStringCircularRef(self):
+    circular_reference = ['value', tc.CircularReference().create()]
+    self.assertEqual(core._IterableAsString(circular_reference, set()),
+                     "['value', {'y': {...}}]")
+
+  # pylint: disable=protected-access
+  def testSerializeResult(self):
+    nested_list = tc.NestedList()
+    nested_dict = tc.NestedDict()
+
+    complex_object = nested_dict.elements(10)
+    complex_object['list'] = ['another_value'] + nested_list.elements(20)
+    complex_object_serialized = (
+        'key:  \n'
+        '  {dict}\n'
+        'list: \n'
+        '  another_value\n'
+        '  value\n  \n'
+        '    {list}'.format(
+            dict='\n  '.join('key{0}: value{0}'.format(i) for i in range(10)),
+            list='\n    '.join('value{}'.format(i) for i in range(20))
+        )
+    )
+
+    self.assertEqual(core._SerializeResult(1, set()), '1')
+    self.assertEqual(core._SerializeResult(1.0, set()), '1.0')
+    self.assertEqual(core._SerializeResult(1 + 2j, set()), '(1+2j)')
+    self.assertEqual(core._SerializeResult(True, set()), 'True')
+    self.assertEqual(core._SerializeResult('text', set()), 'text')
+
+    self.assertEqual(core._SerializeResult(['value1', 'value2'], set()),
+                     '["value1", "value2"]')
+    self.assertEqual(
+        core._SerializeResult(nested_list.elements(3), set()),
+        '["value", ["value0", "value1", "value2"]]')
+    self.assertEqual(
+        core._SerializeResult(nested_list.elements(20), set()),
+        'value\n\n  ' + '\n  '.join('value{}'.format(i) for i in range(20)))
+
+    self.assertEqual(core._SerializeResult({}, set()), '{}')
+    self.assertEqual(core._SerializeResult({'key': 'value'}, set()),
+                     'key: value')
+    self.assertEqual(core._SerializeResult(nested_dict.elements(1), set()),
+                     'key: \n  key0: value0')
+    self.assertEqual(core._SerializeResult(complex_object, set()),
+                     complex_object_serialized)
+
+  # pylint: disable=protected-access
+  def testSerializeResultCircularRef(self):
+    circular_reference = ['value', tc.CircularReference().create()]
+    self.assertEqual(core._SerializeResult(circular_reference, set()),
+                     "['value', {'y': {...}}]")
+
   @mock.patch('fire.interact.Embed')
   def testInteractiveMode(self, mock_embed):
     core.Fire(tc.TypedProperties, command=['alpha'])

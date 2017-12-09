@@ -98,3 +98,6 @@ ENV/
 
 # PyCharm IDE
 .idea/
+
+# Sublime Text 3 project
+*.sublime-*

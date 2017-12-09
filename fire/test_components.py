@@ -215,3 +215,19 @@ class CircularReference(object):
     x = {}
     x['y'] = x
     return x
+
+
+class NestedList(object):
+
+  def elements(self, length=100):
+    return ['value', ['value{}'.format(i) for i in range(length)]]
+
+
+class NestedDict(object):
+
+  def elements(self, length=100):
+    return {
+        'key': {
+            'key{}'.format(i): 'value{}'.format(i) for i in range(length)
+        }
+    }

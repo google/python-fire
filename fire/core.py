@@ -69,6 +69,8 @@ from fire import parser
 from fire import trace
 import six
 
+MAX_LINE_LENGTH = 120
+INDENTATION_FORMAT_STRING = '{{_:{indent_char}<{indentation}s}}'
 
 def Fire(component=None, command=None, name=None):
   """This function, Fire, is the main entrypoint for Python Fire.
@@ -203,48 +205,157 @@ def _PrintResult(component_trace, verbose=False):
   """Prints the result of the Fire call to stdout in a human readable way."""
   # TODO: Design human readable deserializable serialization method
   # and move serialization to it's own module.
+  seen = set()
   result = component_trace.GetResult()
+  try:
+    print(_SerializeResult(result, seen))
+  except TypeError:
+    if result is not None:
+      print(helputils.HelpString(result, component_trace, verbose))
 
-  if isinstance(result, (list, set, types.GeneratorType)):
-    for i in result:
-      print(_OneLineResult(i))
+
+def _IsIterable(value):
+  return isinstance(value, (tuple, list, set, types.GeneratorType))
+
+
+def _SerializeResult(result, seen, verbose=False, level=0, indent=2,
+                     indent_char=' '):
+  """Returns a result as a human readable string.
+
+  Args:
+    result: The result to convert to a string
+    seen: References seen until now
+    verbose: Whether to include 'hidden' members, those keys starting with _.
+    level: Indentation level
+    indent: Number of `indent_char`s to use for indentation
+    indent_char: Character to use for indentation
+  Returns:
+    A string representing the result
+  """
+  if _IsIterable(result) or isinstance(result, dict):
+    ref = id(result)
+    if ref in seen:
+      serialized = str(result)
+      if len(serialized) > 15:
+        return '<circular reference to {begin}...{end}'.format(
+            begin=serialized[:5], end=serialized[-5:])
+      return '<circular reference to ' + serialized
+    seen.add(ref)
+
+  if _IsIterable(result):
+    return _IterableAsString(result, seen, level=level,
+                             indent=indent, indent_char=indent_char)
   elif inspect.isgeneratorfunction(result):
     raise NotImplementedError
   elif isinstance(result, dict):
-    print(_DictAsString(result, verbose))
-  elif isinstance(result, tuple):
-    print(_OneLineResult(result))
+    return _DictAsString(result, seen, verbose=verbose, level=level,
+                         indent=indent, indent_char=indent_char)
   elif isinstance(result,
                   (bool, six.string_types, six.integer_types, float, complex)):
-    print(result)
-  elif result is not None:
-    print(helputils.HelpString(result, component_trace, verbose))
+    return str(result)
+  elif level > 0:
+    return str(result)
+  else:
+    raise TypeError(
+        'Serialization not implemented for {t}'.format(t=type(result)))
 
 
-def _DictAsString(result, verbose=False):
+def _IterableAsString(result, seen, level=0, indent=2, indent_char=' '):
+  """Returns an iterable as a string.
+
+  Args:
+    result: The iterable to convert to a string
+    seen: References seen until now
+    level: Indentation level
+    indent: Number of `indent_char`s to use for indentation
+    indent_char: Character to use for indentation
+  Returns:
+    A string representing the iterable
+  """
+  if not result:
+    return str(result)
+
+  one_line_result = _OneLineResult(result)
+  if len(one_line_result) <= MAX_LINE_LENGTH:
+    return one_line_result
+
+  format_string = _IndentFormatString('{{value}}',
+                                      level=level, indent=indent,
+                                      indent_char=indent_char)
+
+  lines = []
+  for value in result:
+    serialized = _SerializeResult(value, seen, level=level + 1,
+                                  indent=indent, indent_char=indent_char)
+
+    if _ShouldBeOnTheNextLine(value, serialized):
+      serialized = '\n' + serialized
+    line = format_string.format(value=serialized, _='')
+
+    lines.append(line)
+
+  return '\n'.join(lines)
+
+
+def _DictAsString(result, seen, verbose=False, level=0, indent=2,
+                  indent_char=' '):
   """Returns a dict as a string.
 
   Args:
     result: The dict to convert to a string
+    seen: References seen until now
     verbose: Whether to include 'hidden' members, those keys starting with _.
+    level: Indentation level
+    indent: Number of `indent_char`s to use for indentation
+    indent_char: Character to use for indentation
   Returns:
     A string representing the dict
   """
-  result = {key: value for key, value in result.items()
-            if _ComponentVisible(key, verbose)}
+  filtered_result = {key: value for key, value in result.items()
+                     if _ComponentVisible(key, verbose)}
 
-  if not result:
+  if not filtered_result:
     return '{}'
 
-  longest_key = max(len(str(key)) for key in result.keys())
-  format_string = '{{key:{padding}s}} {{value}}'.format(padding=longest_key + 1)
+  longest_key = max(len(str(key)) for key in filtered_result.keys())
+  format_string = _IndentFormatString('{{key:{padding}s}} {{value}}',
+                                      level=level, indent=indent,
+                                      indent_char=indent_char,
+                                      padding=longest_key + 1)
 
   lines = []
-  for key, value in result.items():
-    line = format_string.format(key=str(key) + ':',
-                                value=_OneLineResult(value))
+  for key, value in filtered_result.items():
+    if id(value) in seen and value is result:
+      format_string = '{value}'
+
+    serialized = _SerializeResult(value, seen, verbose=verbose, level=level + 1,
+                                  indent=indent, indent_char=indent_char)
+
+    if _ShouldBeOnTheNextLine(value, serialized):
+      serialized = '\n' + serialized
+
+    line = format_string.format(key=str(key) + ':', value=serialized, _='')
     lines.append(line)
+
   return '\n'.join(lines)
+
+
+def _ShouldBeOnTheNextLine(value, serialized):
+  return (
+      (
+          isinstance(value, dict) and
+          '<circular reference to' not in serialized
+      ) or
+      (serialized and '\n' in serialized))
+
+
+def _IndentFormatString(fmt, level=0, indent=2, indent_char=' ', **kwargs):
+  if level == 0:
+    return fmt.format(**kwargs)
+
+  format_string = INDENTATION_FORMAT_STRING + fmt
+  return format_string.format(indentation=(level * indent),
+                              indent_char=indent_char, **kwargs)
 
 
 def _ComponentVisible(component, verbose=False):
@@ -257,7 +368,6 @@ def _ComponentVisible(component, verbose=False):
 
 def _OneLineResult(result):
   """Returns result serialized to a single line string."""
-  # TODO: Ensure line is fewer than eg 120 characters.
   if isinstance(result, six.string_types):
     return str(result).replace('\n', ' ')
 
