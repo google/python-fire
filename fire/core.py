@@ -343,6 +343,7 @@ def _DictAsString(result, seen, verbose=False, level=0, indent=2,
 def _ShouldBeOnTheNextLine(value, serialized):
   return (
       (
+          value and
           isinstance(value, dict) and
           '<circular reference to' not in serialized
       ) or
