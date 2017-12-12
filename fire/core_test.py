@@ -75,18 +75,20 @@ class CoreTest(testutils.BaseTestCase):
   def testSerializeResult(self):
     nested_list = tc.NestedList()
     nested_dict = tc.NestedDict()
+    nested_dict_with_list = tc.NestedDictWithList()
 
-    complex_object = nested_dict.elements(10)
-    complex_object['list'] = ['another_value'] + nested_list.elements(20)
+    dict_length = 10
+    list_length = 20
+
+    complex_object = nested_dict_with_list.elements(dict_length=dict_length, list_length=list_length)
     complex_object_serialized = (
         'key:  \n'
         '  {dict}\n'
         'list: \n'
-        '  another_value\n'
         '  value\n  \n'
         '    {list}'.format(
-            dict='\n  '.join('key{0}: value{0}'.format(i) for i in range(10)),
-            list='\n    '.join('value{}'.format(i) for i in range(20))
+            dict='\n  '.join('key{0}: value{0}'.format(i) for i in range(dict_length)),
+            list='\n    '.join('value{}'.format(i) for i in range(list_length))
         )
     )
 
@@ -102,8 +104,9 @@ class CoreTest(testutils.BaseTestCase):
         core._SerializeResult(nested_list.elements(3), set()),
         '["value", ["value0", "value1", "value2"]]')
     self.assertEqual(
-        core._SerializeResult(nested_list.elements(20), set()),
-        'value\n\n  ' + '\n  '.join('value{}'.format(i) for i in range(20)))
+        core._SerializeResult(nested_list.elements(list_length), set()),
+        'value\n\n  ' + '\n  '.join(
+            'value{}'.format(i) for i in range(list_length)))
 
     self.assertEqual(core._SerializeResult({}, set()), '{}')
     self.assertEqual(core._SerializeResult({'key': 'value'}, set()),

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from collections import OrderedDict
+
 import six
 
 if six.PY3:
@@ -219,15 +221,23 @@ class CircularReference(object):
 
 class NestedList(object):
 
-  def elements(self, length=100):
+  def elements(self, length=10):
     return ['value', ['value{}'.format(i) for i in range(length)]]
 
 
 class NestedDict(object):
 
-  def elements(self, length=100):
-    return {
-        'key': {
-            'key{}'.format(i): 'value{}'.format(i) for i in range(length)
-        }
-    }
+  def elements(self, length=10):
+    return OrderedDict([
+        ('key', OrderedDict([
+            ('key{}'.format(i), 'value{}'.format(i)) for i in range(length)
+        ]))
+    ])
+
+class NestedDictWithList(object):
+
+  def elements(self, dict_length=10, list_length=10):
+    return OrderedDict(
+        list(NestedDict().elements(dict_length).items()) +
+        [('list', NestedList().elements(list_length))]
+    )

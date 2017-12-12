@@ -52,6 +52,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from collections import OrderedDict
 import inspect
 import json
 import os
@@ -311,8 +312,8 @@ def _DictAsString(result, seen, verbose=False, level=0, indent=2,
   Returns:
     A string representing the dict
   """
-  filtered_result = {key: value for key, value in result.items()
-                     if _ComponentVisible(key, verbose)}
+  filtered_result = OrderedDict((key, value) for key, value in result.items()
+                                if _ComponentVisible(key, verbose))
 
   if not filtered_result:
     return '{}'
