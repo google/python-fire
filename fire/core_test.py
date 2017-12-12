@@ -80,14 +80,16 @@ class CoreTest(testutils.BaseTestCase):
     dict_length = 10
     list_length = 20
 
-    complex_object = nested_dict_with_list.elements(dict_length=dict_length, list_length=list_length)
+    complex_object = nested_dict_with_list.elements(dict_length=dict_length,
+                                                    list_length=list_length)
     complex_object_serialized = (
         'key:  \n'
         '  {dict}\n'
         'list: \n'
         '  value\n  \n'
         '    {list}'.format(
-            dict='\n  '.join('key{0}: value{0}'.format(i) for i in range(dict_length)),
+            dict='\n  '.join(
+                'key{0}: value{0}'.format(i) for i in range(dict_length)),
             list='\n    '.join('value{}'.format(i) for i in range(list_length))
         )
     )
