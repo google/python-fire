@@ -7,10 +7,10 @@ import sys
 
 import fire
 
-def main():
-  module_name = sys.argv[1]
+def main(args):
+  module_name = args[1]
   module = importlib.import_module(module_name)
-  fire.Fire(module, name=module_name, command=sys.argv[2:])
+  fire.Fire(module, name=module_name, command=args[2:])
 
 if __name__ == '__main__':
-  main()
+  main(sys.argv)
