@@ -24,7 +24,7 @@ if six.PY3:
   from fire import test_components_py3 as py3  # pylint: disable=unused-import,no-name-in-module,g-import-not-at-top
 
 
-def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):
+def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=keyword-arg-before-vararg
   return arg1, arg2, arg3, arg4, arg5, arg6
 
 identity.__annotations__ = {'arg2': int, 'arg4': int}
@@ -96,6 +96,7 @@ class Annotations(object):
 
 
 class TypedProperties(object):
+  """Test class for testing Python Fire with properties of various types."""
 
   def __init__(self):
     self.alpha = True
@@ -114,7 +115,7 @@ class TypedProperties(object):
 
 
 class VarArgs(object):
-  """Test class G for testing Python Fire."""
+  """Test class for testing Python Fire with a property with varargs."""
 
   def cumsums(self, *items):
     total = None
@@ -127,7 +128,7 @@ class VarArgs(object):
       sums.append(total)
     return sums
 
-  def varchars(self, alpha=0, beta=0, *chars):
+  def varchars(self, alpha=0, beta=0, *chars):  # pylint: disable=keyword-arg-before-vararg
     return alpha, beta, ''.join(chars)
 
 

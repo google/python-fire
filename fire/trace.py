@@ -76,6 +76,7 @@ class FireTrace(object):
     for element in reversed(self.elements):
       if not element.HasError():
         return element
+    return None
 
   def HasError(self):
     """Returns whether the Fire execution encountered a Fire usage error."""

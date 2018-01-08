@@ -24,6 +24,7 @@ from fire import testutils
 
 
 class NoDefaults(object):
+  """A class for testing decorated functions without default values."""
 
   @decorators.SetParseFns(count=int)
   def double(self, count):
@@ -85,7 +86,7 @@ class WithKwargs(object):
 class WithVarArgs(object):
 
   @decorators.SetParseFn(str)
-  def example7(self, arg1, arg2=None, *varargs, **kwargs):
+  def example7(self, arg1, arg2=None, *varargs, **kwargs):  # pylint: disable=keyword-arg-before-vararg
     return arg1, arg2, varargs, kwargs
 
 

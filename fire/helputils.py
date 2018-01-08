@@ -54,7 +54,7 @@ def _DisplayValue(info, field, padding):
   value = info.get(field)
 
   if value is None:
-    return
+    return None
 
   skip_doc_types = ('dict', 'list', 'unicode', 'int', 'float', 'bool')
 
