@@ -15,8 +15,9 @@ class TestAsMainModule(testutils.BaseTestCase):
       try:
         __main__.main(['__main__.py', 'tempfile'])
       except FireExit as e:
-        self.assertEqual(e.component_trace.name, 'tempfile')
+        self.assertEqual(e.trace.name, 'tempfile')
         raise
+      assert False, 'should have raised FireExit'
   def test_arg_passing(self):
     expected = os.path.join('part1', 'part2', 'part3')
     with self.assertOutputMatches('%s\n' % expected):
