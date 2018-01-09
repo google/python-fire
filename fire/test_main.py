@@ -9,7 +9,6 @@ from fire import testutils
 class TestAsMainModule(testutils.BaseTestCase):
   def test_name_setting(self):
     # confirm one of the usage lines has tempfile gettempdir
-    # with self.assertRaisesFireExit(2, 'tempfile gettempdir'):
     with self.assertOutputMatches('tempfile gettempdir'):
       __main__.main(['__main__.py', 'tempfile'])
   def test_arg_passing(self):
