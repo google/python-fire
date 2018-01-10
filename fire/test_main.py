@@ -1,6 +1,4 @@
-"""
-Test using fire via python -m fire
-"""
+"""Test using fire via python -m fire"""
 import os
 
 from fire import __main__
