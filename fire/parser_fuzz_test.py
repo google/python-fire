@@ -30,7 +30,8 @@ import six
 
 class ParserFuzzTest(testutils.BaseTestCase):
 
-  @given(st.text(min_size=1), settings=settings.Settings(max_examples=10000))
+  @settings(max_examples=10000)
+  @given(st.text(min_size=1))
   @example('True')
   @example(r'"test\t\t\a\\a"')
   @example(r' "test\t\t\a\\a"   ')
