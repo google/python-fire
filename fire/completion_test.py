@@ -25,18 +25,31 @@ from fire import testutils
 
 class TabCompletionTest(testutils.BaseTestCase):
 
-  def testCompletionScript(self):
-    # A sanity check test to make sure the completion script satisfies some
-    # basic assumptions.
+  def testCompletionBashScript(self):
+    # A sanity check test to make sure the bash completion script satisfies
+    # some basic assumptions.
     commands = [
         ['run'],
         ['halt'],
         ['halt', '--now'],
     ]
-    script = completion._Script(name='command', commands=commands)  # pylint: disable=protected-access
+    script = completion._BashScript(name='command', commands=commands)  # pylint: disable=protected-access
     self.assertIn('command', script)
     self.assertIn('halt', script)
     self.assertIn('"$start" == "command"', script)
+
+  def testCompletionFishScript(self):
+    # A sanity check test to make sure the fish completion script satisfies
+    # some basic assumptions.
+    commands = [
+        ['run'],
+        ['halt'],
+        ['halt', '--now'],
+    ]
+    script = completion._FishScript(name='command', commands=commands)  # pylint: disable=protected-access
+    self.assertIn('command', script)
+    self.assertIn('halt', script)
+    self.assertIn('-l now', script)
 
   def testFnCompletions(self):
     def example(one, two, three):
@@ -112,6 +125,29 @@ class TabCompletionTest(testutils.BaseTestCase):
     self.assertIn('identity', script)
     self.assertIn('--alpha', script)
     self.assertIn('--beta', script)
+
+  def testDeepDictFishScript(self):
+    deepdict = {'level1': {'level2': {'level3': {'level4': {}}}}}
+    script = completion.Script('deepdict', deepdict, shell='fish')
+    self.assertIn('level1', script)
+    self.assertIn('level2', script)
+    self.assertIn('level3', script)
+    self.assertNotIn('level4', script)  # The default depth is 3.
+
+  def testFnFishScript(self):
+    script = completion.Script('identity', tc.identity, shell='fish')
+    self.assertIn('arg1', script)
+    self.assertIn('arg2', script)
+    self.assertIn('arg3', script)
+    self.assertIn('arg4', script)
+
+  def testClassFishScript(self):
+    script = completion.Script('', tc.MixedDefaults, shell='fish')
+    self.assertIn('ten', script)
+    self.assertIn('sum', script)
+    self.assertIn('identity', script)
+    self.assertIn('alpha', script)
+    self.assertIn('beta', script)
 
   def testNonStringDictCompletions(self):
     completions = completion.Completions({

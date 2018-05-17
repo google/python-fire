@@ -140,6 +140,9 @@ Call `widget -- --completion` to generate a completion script for the Fire CLI
 run `widget -- --completion > ~/.widget-completion`. You should then source this
 file; to get permanent completion, source this file from your .bashrc file.
 
+Call `widget -- --completion fish` to generate a completion script for the Fish
+shell. Source this file from your fish.config.
+
 If the commands available in the Fire CLI change, you'll have to regenerate the
 completion script and source it again.
 
