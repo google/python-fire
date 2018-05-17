@@ -133,23 +133,23 @@ def _FishScript(name, commands, default_options=None):
     return 1
 end
 """
-  subcommand_template = """complete -c {name} -n '__fish_using_command {start}' -f -a {subcommand}
-"""
-  flag_template = """complete -c {name} -n '__fish_using_command {start}' -l {option}
-"""
+  subcommand_template = "complete -c {name} -n " \
+          "'__fish_using_command {start}' -f -a {subcommand}\n"
+  flag_template = "complete -c {name} -n " \
+          "'__fish_using_command {start}' -l {option}\n"
   for start in options_map:
     for option in sorted(options_map[start]):
       if option.startswith('--'):
         fish_source += flag_template.format(
-          name=name,
-          start=start,
-          option=option[2:]
+            name=name,
+            start=start,
+            option=option[2:]
         )
       else:
         fish_source += subcommand_template.format(
-          name=name,
-          start=start,
-          subcommand=option
+            name=name,
+            start=start,
+            subcommand=option
         )
   return fish_source
 
