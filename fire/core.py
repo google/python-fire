@@ -44,6 +44,7 @@ The available flags for all Fire CLIs are:
   -h --help: Provide help and usage information for the command.
   -i --interactive: Drop into a Python REPL after running the command.
   --completion: Write the Bash completion script for the tool to stdout.
+  --completion fish: Write the Fish completion script for the tool to stdout.
   --separator SEPARATOR: Use SEPARATOR in place of the default separator, '-'.
   --trace: Get the Fire Trace for the command.
 """
@@ -165,9 +166,9 @@ def Fire(component=None, command=None, name=None):
     return result
 
 
-def CompletionScript(name, component):
-  """Returns the text of the Bash completion script for a Fire CLI."""
-  return completion.Script(name, component)
+def CompletionScript(name, component, shell):
+  """Returns the text of the completion script for a Fire CLI."""
+  return completion.Script(name, component, shell=shell)
 
 
 class FireError(Exception):
@@ -338,7 +339,7 @@ def _Fire(component, args, context, name=None):
     initial_args = remaining_args
 
     if not remaining_args and (show_help or interactive or show_trace
-                               or show_completion):
+                               or show_completion is not None):
       # Don't initialize the final class or call the final function unless
       # there's a separator after it, and instead process the current component.
       break
@@ -469,10 +470,10 @@ def _Fire(component, args, context, name=None):
         initial_args)
     return component_trace
 
-  if show_completion:
+  if show_completion is not None:
     if name is None:
       raise ValueError('Cannot make completion script without command name')
-    script = CompletionScript(name, initial_component)
+    script = CompletionScript(name, initial_component, shell=show_completion)
     component_trace.AddCompletionScript(script)
 
   if interactive:

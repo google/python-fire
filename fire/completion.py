@@ -26,11 +26,13 @@ from fire import inspectutils
 import six
 
 
-def Script(name, component, default_options=None):
-  return _Script(name, _Commands(component), default_options)
+def Script(name, component, default_options=None, shell='bash'):
+  if shell == 'fish':
+    return _FishScript(name, _Commands(component), default_options)
+  return _BashScript(name, _Commands(component), default_options)
 
 
-def _Script(name, commands, default_options=None):
+def _BashScript(name, commands, default_options=None):
   """Returns a Bash script registering a completion function for the commands.
 
   Args:
@@ -95,6 +97,61 @@ complete -F _complete-{identifier} {command}
           identifier=name.replace('/', '').replace('.', '').replace(',', '')
       )
   )
+
+
+def _FishScript(name, commands, default_options=None):
+  """Returns a Fish script registering a completion function for the commands.
+
+  Args:
+    name: The first token in the commands, also the name of the command.
+    commands: A list of all possible commands that tab completion can complete
+        to. Each command is a list or tuple of the string tokens that make up
+        that command.
+    default_options: A dict of options that can be used with any command. Use
+        this if there are flags that can always be appended to a command.
+  Returns:
+    A string which is the Fish script. Source the fish script to enable tab
+    completion in Fish.
+  """
+  default_options = default_options or set()
+  options_map = defaultdict(lambda: copy(default_options))
+  for command in commands:
+    start = (name + ' ' + ' '.join(command[:-1])).strip()
+    completion = _FormatForCommand(command[-1])
+    options_map[start].add(completion)
+    options_map[start.replace('_', '-')].add(completion)
+  fish_source = """function __fish_using_command
+    set cmd (commandline -opc)
+    if [ (count $cmd) -eq (count $argv) ]
+        for i in (seq (count $argv))
+            if [ $cmd[$i] != $argv[$i] ]
+                return 1
+            end
+        end
+        return 0
+    end
+    return 1
+end
+"""
+  subcommand_template = "complete -c {name} -n " \
+          "'__fish_using_command {start}' -f -a {subcommand}\n"
+  flag_template = "complete -c {name} -n " \
+          "'__fish_using_command {start}' -l {option}\n"
+  for start in options_map:
+    for option in sorted(options_map[start]):
+      if option.startswith('--'):
+        fish_source += flag_template.format(
+            name=name,
+            start=start,
+            option=option[2:]
+        )
+      else:
+        fish_source += subcommand_template.format(
+            name=name,
+            start=start,
+            subcommand=option
+        )
+  return fish_source
 
 
 def _IncludeMember(name, verbose):

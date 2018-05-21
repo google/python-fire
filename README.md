@@ -82,7 +82,7 @@ Please see [The Python Fire Guide](docs/guide.md).
 | [Help](docs/using-cli.md#help-flag) | `command -- --help` |
 | [REPL](docs/using-cli.md#interactive-flag) | `command -- --interactive` | Enters interactive mode.
 | [Separator](docs/using-cli.md#separator-flag) | `command -- --separator=X` | This sets the separator to `X`. The default separator is `-`.
-| [Completion](docs/using-cli.md#completion-flag) | `command -- --completion` | Generate a completion script for the CLI.
+| [Completion](docs/using-cli.md#completion-flag) | `command -- --completion [shell]` | Generate a completion script for the CLI.
 | [Trace](docs/using-cli.md#trace-flag) | `command -- --trace` | Gets a Fire trace for the command.
 | [Verbose](docs/using-cli.md#verbose-flag) | `command -- --verbose` |
 
