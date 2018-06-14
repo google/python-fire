@@ -27,3 +27,9 @@ class KeywordOnly(object):
 
   def triple(self, *, count):
     return count * 3
+
+
+class WithAsyncio(object):
+
+  async def double(self, count=0):
+    return 2 * count

@@ -248,6 +248,11 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.Kwargs, command=['run', 'Hello', '--cell', 'ok']),
         ('Hello', None, {'cell': 'ok'}))
 
+  @unittest.skipUnless(six.PY34, 'Asyncio only available in Python 3.4+')
+  def testFireAsyncio(self):
+    self.assertEqual(fire.Fire(tc.py3.WithAsyncio,
+                               command=['double', '--count', '5']), 10)
+
   def testFireObject(self):
     self.assertEqual(
         fire.Fire(tc.WithDefaults(), command=['double', '--count', '5']), 10)
