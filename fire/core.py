@@ -541,7 +541,7 @@ def _CallCallable(fn, args):
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
 
   if six.PY34:
-    import asyncio
+    import asyncio  # pylint: disable=import-error
     if asyncio.iscoroutinefunction(fn):
       loop = asyncio.get_event_loop()
       result = loop.run_until_complete(fn(*varargs, **kwargs))
