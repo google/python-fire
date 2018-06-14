@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """This module has components that use Python 3 specific syntax."""
+import six
 
 
 def identity(arg1, arg2: int, arg3=10, arg4: int = 20, *arg5,
@@ -29,7 +30,11 @@ class KeywordOnly(object):
     return count * 3
 
 
-class WithAsyncio(object):
+if six.PY34:
+  import asyncio
 
-  async def double(self, count=0):
-    return 2 * count
+  class WithAsyncio(object):
+
+    @asyncio.coroutine
+    def double(self, count=0):
+      return 2 * count
