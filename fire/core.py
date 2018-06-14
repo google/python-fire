@@ -543,7 +543,8 @@ def _CallCallable(fn, args):
   if six.PY34:
     import asyncio
     if asyncio.iscoroutinefunction(fn):
-      result = asyncio.get_event_loop().run_until_complete(fn(*varargs, **kwargs))
+      loop = asyncio.get_event_loop()
+      result = loop.run_until_complete(fn(*varargs, **kwargs))
     else:
       result = fn(*varargs, **kwargs)
   else:
