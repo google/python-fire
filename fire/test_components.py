@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
+
 import six
 
 if six.PY3:
@@ -28,6 +30,10 @@ def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=ke
   return arg1, arg2, arg3, arg4, arg5, arg6
 
 identity.__annotations__ = {'arg2': int, 'arg4': int}
+
+
+def function_with_help(help=True):  # pylint: disable=redefined-builtin
+  return help
 
 
 class Empty(object):
@@ -42,6 +48,21 @@ class WithInit(object):
 
   def __init__(self):
     pass
+
+
+class ErrorInConstructor(object):
+
+  def __init__(self, value='value'):
+    self.value = value
+    raise ValueError('Error in constructor')
+
+
+class WithHelpArg(object):
+  """Test class for testing when class has a help= arg."""
+
+  def __init__(self, help=True):  # pylint: disable=redefined-builtin
+    self.has_help = help
+    self.dictionary = {'__help': 'help in a dict'}
 
 
 class NoDefaults(object):
@@ -215,3 +236,15 @@ class CircularReference(object):
     x = {}
     x['y'] = x
     return x
+
+
+class OrderedDictionary(object):
+
+  def empty(self):
+    return collections.OrderedDict()
+
+  def non_empty(self):
+    ordered_dict = collections.OrderedDict()
+    ordered_dict['A'] = 'A'
+    ordered_dict[2] = 2
+    return ordered_dict

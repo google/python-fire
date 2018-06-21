@@ -200,6 +200,41 @@ class FireExit(SystemExit):
     self.trace = component_trace
 
 
+def _IsHelpShortcut(component_trace, remaining_args):
+  """Determines if the user is trying to access help without '--' separator.
+
+  For example, mycmd.py --help instead of mycmd.py -- --help.
+
+  Args:
+    component_trace: (FireTrace) The trace for the Fire command.
+    remaining_args: List of remaining args that haven't been consumed yet.
+  Returns:
+    True if help is requested, False otherwise.
+  """
+  show_help = False
+  if remaining_args:
+    target = remaining_args[0]
+    if target == '-h':
+      show_help = True
+    elif target == '--help':
+      # Check if --help would be consumed as a keyword argument, or is a member.
+      component = component_trace.GetResult()
+      if inspect.isclass(component) or inspect.isroutine(component):
+        fn_spec = inspectutils.GetFullArgSpec(component)
+        _, remaining_kwargs, _ = _ParseKeywordArgs(remaining_args, fn_spec)
+        show_help = target in remaining_kwargs
+      else:
+        members = dict(inspect.getmembers(component))
+        show_help = target not in members
+
+  if show_help:
+    component_trace.show_help = True
+    command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
+    print('INFO: Showing help with the command {cmd}.\n'.format(
+        cmd=pipes.quote(command)), file=sys.stderr)
+  return show_help
+
+
 def _PrintResult(component_trace, verbose=False):
   """Prints the result of the Fire call to stdout in a human readable way."""
   # TODO: Design human readable deserializable serialization method
@@ -231,20 +266,25 @@ def _DictAsString(result, verbose=False):
   Returns:
     A string representing the dict
   """
-  result = {key: value for key, value in result.items()
-            if _ComponentVisible(key, verbose)}
 
-  if not result:
+  # We need to do 2 iterations over the items in the result dict
+  # 1) Getting visible items and the longest key for output formatting
+  # 2) Actually construct the output lines
+  result_visible = {key: value for key, value in result.items()
+                    if _ComponentVisible(key, verbose)}
+
+  if not result_visible:
     return '{}'
 
-  longest_key = max(len(str(key)) for key in result.keys())
+  longest_key = max(len(str(key)) for key in result_visible.keys())
   format_string = '{{key:{padding}s}} {{value}}'.format(padding=longest_key + 1)
 
   lines = []
   for key, value in result.items():
-    line = format_string.format(key=str(key) + ':',
-                                value=_OneLineResult(value))
-    lines.append(line)
+    if _ComponentVisible(key, verbose):
+      line = format_string.format(key=str(key) + ':',
+                                  value=_OneLineResult(value))
+      lines.append(line)
   return '\n'.join(lines)
 
 
@@ -342,6 +382,10 @@ def _Fire(component, args, context, name=None):
                                or show_completion is not None):
       # Don't initialize the final class or call the final function unless
       # there's a separator after it, and instead process the current component.
+      break
+
+    if _IsHelpShortcut(component_trace, remaining_args):
+      remaining_args = []
       break
 
     saved_args = []
@@ -556,7 +600,6 @@ def _MakeParseFn(fn):
     the leftover args from the arguments to the parse function.
   """
   fn_spec = inspectutils.GetFullArgSpec(fn)
-  all_args = fn_spec.args + fn_spec.kwonlyargs
   metadata = decorators.GetMetadata(fn)
 
   # Note: num_required_args is the number of positional arguments without
@@ -566,8 +609,7 @@ def _MakeParseFn(fn):
 
   def _ParseFn(args):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
-    kwargs, remaining_kwargs, remaining_args = _ParseKeywordArgs(
-        args, all_args, fn_spec.varkw)
+    kwargs, remaining_kwargs, remaining_args = _ParseKeywordArgs(args, fn_spec)
 
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
@@ -663,7 +705,7 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
   return parsed_args, kwargs, remaining_args, capacity
 
 
-def _ParseKeywordArgs(args, fn_args, fn_keywords):
+def _ParseKeywordArgs(args, fn_spec):
   """Parses the supplied arguments for keyword arguments.
 
   Given a list of arguments, finds occurences of --name value, and uses 'name'
@@ -677,11 +719,8 @@ def _ParseKeywordArgs(args, fn_args, fn_keywords):
   _ParseArgs, which converts them to the appropriate type.
 
   Args:
-    args: A list of arguments
-    fn_args: A list of argument names that the target function accepts,
-        including positional and named arguments, but not the varargs or kwargs
-        names.
-    fn_keywords: The argument name for **kwargs, or None if **kwargs not used
+    args: A list of arguments.
+    fn_spec: The inspectutils.FullArgSpec describing the given callable.
   Returns:
     kwargs: A dictionary mapping keywords to values.
     remaining_kwargs: A list of the unused kwargs from the original args.
@@ -690,6 +729,8 @@ def _ParseKeywordArgs(args, fn_args, fn_keywords):
   kwargs = {}
   remaining_kwargs = []
   remaining_args = []
+  fn_keywords = fn_spec.varkw
+  fn_args = fn_spec.args + fn_spec.kwonlyargs
 
   if not args:
     return kwargs, remaining_kwargs, remaining_args
