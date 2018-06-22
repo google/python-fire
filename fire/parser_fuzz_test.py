@@ -68,8 +68,8 @@ class ParserFuzzTest(testutils.BaseTestCase):
       raise
 
     try:
-      uvalue = unicode(value)
-      uresult = unicode(result)
+      uvalue = six.text_type(value)
+      uresult = six.text_type(result)
     except UnicodeDecodeError:
       # This is not what we're testing.
       return
