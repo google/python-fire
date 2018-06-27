@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class CoreTest(testutils.BaseTestCase):
     self.assertEqual(variables['D'], tc.WithDefaults)
     self.assertIsInstance(variables['trace'], trace.FireTrace)
 
-  # TODO: Use parameterized tests to break up repetitive tests.
+  # TODO(dbieber): Use parameterized tests to break up repetitive tests.
   def testHelpWithClass(self):
     with self.assertRaisesFireExit(0, 'Usage:.*ARG1'):
       core.Fire(tc.InstanceVars, command=['--', '--help'])
@@ -134,11 +134,19 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertOutputMatches(stdout='{}', stderr=None):
       core.Fire(tc.EmptyDictOutput, command=['nothing_printable'])
 
-  def testPrintDict(self):
+  def testPrintOrderedDict(self):
     with self.assertOutputMatches(stdout=r'A:\s+A\s+2:\s+2\s+', stderr=None):
       core.Fire(tc.OrderedDictionary, command=['non_empty'])
     with self.assertOutputMatches(stdout='{}'):
       core.Fire(tc.OrderedDictionary, command=['empty'])
+
+  def testCallable(self):
+    with self.assertOutputMatches(stdout=r'foo:\s+foo\s+', stderr=None):
+      core.Fire(tc.CallableWithKeywordArgument(), command=['--foo=foo'])
+    with self.assertOutputMatches(stdout=r'foo\s+', stderr=None):
+      core.Fire(tc.CallableWithKeywordArgument(), command=['print_msg', 'foo'])
+    with self.assertOutputMatches(stdout=r'', stderr=None):
+      core.Fire(tc.CallableWithKeywordArgument(), command=[])
 
 
 if __name__ == '__main__':

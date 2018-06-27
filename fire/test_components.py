@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -248,3 +248,14 @@ class OrderedDictionary(object):
     ordered_dict['A'] = 'A'
     ordered_dict[2] = 2
     return ordered_dict
+
+
+class CallableWithKeywordArgument(object):
+  """Test class for supporting callable."""
+
+  def __call__(self, **kwargs):
+    for key, value in kwargs.items():
+      print('%s: %s' % (key, value))
+
+  def print_msg(self, msg):
+    print(msg)

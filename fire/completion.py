@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -221,7 +221,7 @@ def Completions(component, verbose=False):
     return [str(index) for index in range(len(component))]
 
   if inspect.isgenerator(component):
-    # TODO: There are currently no commands available for generators.
+    # TODO(dbieber): There are currently no commands available for generators.
     return []
 
   return [
@@ -276,7 +276,7 @@ def _Commands(component, depth=3):
     return
 
   for member_name, member in _Members(component):
-    # TODO: Also skip components we've already seen.
+    # TODO(dbieber): Also skip components we've already seen.
     member_name = _FormatForCommand(member_name)
 
     yield (member_name,)

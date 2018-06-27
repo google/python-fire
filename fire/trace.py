@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import pipes
 INITIAL_COMPONENT = 'Initial component'
 INSTANTIATED_CLASS = 'Instantiated class'
 CALLED_ROUTINE = 'Called routine'
+CALLED_CALLABLE = 'Called callable'
 ACCESSED_PROPERTY = 'Accessed property'
 COMPLETION_SCRIPT = 'Generated completion script'
 INTERACTIVE_MODE = 'Entered interactive mode'
@@ -90,6 +91,29 @@ class FireTrace(object):
         args=args,
         filename=filename,
         lineno=lineno,
+    )
+    self.elements.append(element)
+
+  def AddCalledCallable(self, component, target, args, filename, lineno,
+                        capacity):
+    """Adds an element to the trace indicating that a callable was called.
+
+    Args:
+      component: The result of calling the callable.
+      target: The name of the callable.
+      args: The args consumed in order to call this callable.
+      filename: The file in which the callable is defined, or None if N/A.
+      lineno: The line number on which the callable is defined, or None if N/A.
+      capacity: (bool) Whether the callable could have accepted additional args.
+    """
+    element = FireTraceElement(
+        component=component,
+        action=CALLED_CALLABLE,
+        target=target,
+        args=args,
+        filename=filename,
+        lineno=lineno,
+        capacity=capacity,
     )
     self.elements.append(element)
 

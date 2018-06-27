@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class HelpUtilsTest(testutils.BaseTestCase):
     self.assertIn('Type:        NoDefaults', helpstring)
     self.assertIn('String form: <fire.test_components.NoDefaults object at ',
                   helpstring)
-    # TODO: We comment this out since it only works with IPython:
+    # TODO(dbieber): We comment this out since it only works with IPython:
     # self.assertIn('test_components.py', helpstring)
     self.assertIn('Usage:       double\n'
                   '             triple', helpstring)

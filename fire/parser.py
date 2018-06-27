@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ def CreateParser():
   parser.add_argument('--completion', nargs='?', const='bash', type=str)
   parser.add_argument('--help', '-h', action='store_true')
   parser.add_argument('--trace', '-t', action='store_true')
-  # TODO: Consider allowing name to be passed as an argument.
+  # TODO(dbieber): Consider allowing name to be passed as an argument.
   return parser
 
 

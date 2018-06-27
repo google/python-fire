@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -237,7 +237,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
 
 def _PrintResult(component_trace, verbose=False):
   """Prints the result of the Fire call to stdout in a human readable way."""
-  # TODO: Design human readable deserializable serialization method
+  # TODO(dbieber): Design human readable deserializable serialization method
   # and move serialization to it's own module.
   result = component_trace.GetResult()
 
@@ -298,7 +298,7 @@ def _ComponentVisible(component, verbose=False):
 
 def _OneLineResult(result):
   """Returns result serialized to a single line string."""
-  # TODO: Ensure line is fewer than eg 120 characters.
+  # TODO(dbieber): Ensure line is fewer than eg 120 characters.
   if isinstance(result, six.string_types):
     return str(result).replace('\n', ' ')
 
@@ -404,20 +404,12 @@ def _Fire(component, args, context, name=None):
       isclass = inspect.isclass(component)
 
       try:
-        target = component.__name__
-        filename, lineno = inspectutils.GetFileAndLine(component)
-
-        component, consumed_args, remaining_args, capacity = _CallCallable(
-            component, remaining_args)
-
-        # Update the trace.
-        if isclass:
-          component_trace.AddInstantiatedClass(
-              component, target, consumed_args, filename, lineno, capacity)
-        else:
-          component_trace.AddCalledRoutine(
-              component, target, consumed_args, filename, lineno, capacity)
-
+        component, remaining_args = _CallAndUpdateTrace(
+            component,
+            remaining_args,
+            component_trace,
+            treatment='class' if isclass else 'routine',
+            target=component.__name__)
       except FireError as error:
         component_trace.AddError(error, initial_args)
         return component_trace
@@ -454,7 +446,7 @@ def _Fire(component, args, context, name=None):
       else:
         # The target isn't present in the dict as a string, but maybe it is as
         # another type.
-        # TODO: Consider alternatives for accessing non-string keys.
+        # TODO(dbieber): Consider alternatives for accessing non-string keys.
         found_target = False
         for key, value in component.items():
           if target == str(key):
@@ -487,8 +479,19 @@ def _Fire(component, args, context, name=None):
             component, target, consumed_args, filename, lineno)
 
       except FireError as error:
-        component_trace.AddError(error, initial_args)
-        return component_trace
+        if not callable(component):
+          component_trace.AddError(error, initial_args)
+          return component_trace
+
+        # If we can't access the member, we try to treat component as a callable
+        try:
+          component, remaining_args = _CallAndUpdateTrace(component,
+                                                          remaining_args,
+                                                          component_trace,
+                                                          treatment='callable')
+        except FireError as error:
+          component_trace.AddError(error, initial_args)
+          return component_trace
 
     if used_separator:
       # Add back in the arguments from after the separator.
@@ -567,6 +570,48 @@ def _GetMember(component, args):
       return members[arg_name], [arg], args[1:]
 
   raise FireError('Could not consume arg:', arg)
+
+
+def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
+                        target=None):
+  """Call the component and update FireTrace.
+
+  The component could a class, a routine, or a callable object. This function
+  will attempt to call the callable and add corresponding action trace to
+  component_trace if the invocation is successful. If not, raise FireError.
+
+  Args:
+    component: The component to call
+    args: Args for calling the component
+    component_trace: FireTrace object that contains action trace
+    treatment: Type of treatment used. Indicating whether we treat the component
+               as a class, a routine, or a callable.
+    target: Target in FireTrace element, default is None. If the value is None,
+            the component itself will be used as target.
+  Returns:
+    component: The object that is the result of the callable call.
+    remaining_args: The remaining args that haven't been consumed yet.
+  """
+  if not target:
+    target = component
+  filename, lineno = inspectutils.GetFileAndLine(component)
+  component, consumed_args, remaining_args, capacity = _CallCallable(
+      component.__call__ if treatment == 'callable' else component, args)
+
+  # TODO(joejoevictor): Consolidate AddInstantiatedClass, AddCalledRoutine, and
+  # AddCalledCallable into one method since the only different between those
+  # methods is the 'action' attribute of the FireTraceElement they created.
+  if treatment == 'class':
+    component_trace.AddInstantiatedClass(
+        component, target, consumed_args, filename, lineno, capacity)
+  elif treatment == 'routine':
+    component_trace.AddCalledRoutine(
+        component, target, consumed_args, filename, lineno, capacity)
+  else:
+    component_trace.AddCalledCallable(
+        component, target, consumed_args, filename, lineno, capacity)
+
+  return component, remaining_args
 
 
 def _CallCallable(fn, args):
