@@ -56,7 +56,9 @@ from __future__ import print_function
 import inspect
 import json
 import os
+import pdb
 import pipes
+import traceback
 import shlex
 import sys
 import types
@@ -362,6 +364,7 @@ def _Fire(component, args, context, name=None):
   show_completion = parsed_flag_args.completion
   show_help = parsed_flag_args.help
   show_trace = parsed_flag_args.trace
+  post_mortem = parsed_flag_args.debug
 
   # component can be a module, class, routine, object, etc.
   if component is None:
@@ -408,7 +411,7 @@ def _Fire(component, args, context, name=None):
         filename, lineno = inspectutils.GetFileAndLine(component)
 
         component, consumed_args, remaining_args, capacity = _CallCallable(
-            component, remaining_args)
+            component, remaining_args, post_mortem)
 
         # Update the trace.
         if isclass:
@@ -569,12 +572,13 @@ def _GetMember(component, args):
   raise FireError('Could not consume arg:', arg)
 
 
-def _CallCallable(fn, args):
+def _CallCallable(fn, args, mortem):
   """Calls the function fn by consuming args from args.
 
   Args:
     fn: The function to call or class to instantiate.
     args: Args from which to consume for calling the function.
+    mortem: Boolean flag whether to enter a pdb post mortem session on err
   Returns:
     component: The object that is the result of the function call.
     consumed_args: The args that were consumed for the function call.
@@ -584,7 +588,14 @@ def _CallCallable(fn, args):
   parse = _MakeParseFn(fn)
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
 
-  result = fn(*varargs, **kwargs)
+  try:
+    result = fn(*varargs, **kwargs)
+  except Exception:
+    if mortem:
+      traceback.print_exc()
+      pdb.post_mortem(sys.exc_info()[-1])
+    raise
+
   return result, consumed_args, remaining_args, capacity
 
 

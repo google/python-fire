@@ -23,6 +23,7 @@ import ast
 
 
 def CreateParser():
+  """Create cli argv parser for special flags to Fire."""
   parser = argparse.ArgumentParser(add_help=False)
   parser.add_argument('--verbose', '-v', action='store_true')
   parser.add_argument('--interactive', '-i', action='store_true')
@@ -30,6 +31,7 @@ def CreateParser():
   parser.add_argument('--completion', nargs='?', const='bash', type=str)
   parser.add_argument('--help', '-h', action='store_true')
   parser.add_argument('--trace', '-t', action='store_true')
+  parser.add_argument('--debug', '-d', action='store_true')
   # TODO: Consider allowing name to be passed as an argument.
   return parser
 
