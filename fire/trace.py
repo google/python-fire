@@ -94,9 +94,11 @@ class FireTrace(object):
     )
     self.elements.append(element)
 
-  def AddCalledCallable(self, component, target, args, filename, lineno,
-                        capacity):
-    """Adds an element to the trace indicating that a callable was called.
+  def AddCalledComponent(self, component, target, args, filename, lineno,
+                         capacity, action=CALLED_CALLABLE):
+    """Adds an element to the trace indicating that a component was called.
+
+    Also applies to instantiating a class.
 
     Args:
       component: The result of calling the callable.
@@ -105,56 +107,11 @@ class FireTrace(object):
       filename: The file in which the callable is defined, or None if N/A.
       lineno: The line number on which the callable is defined, or None if N/A.
       capacity: (bool) Whether the callable could have accepted additional args.
+      action: The value to include as the action in the FireTraceElement.
     """
     element = FireTraceElement(
         component=component,
-        action=CALLED_CALLABLE,
-        target=target,
-        args=args,
-        filename=filename,
-        lineno=lineno,
-        capacity=capacity,
-    )
-    self.elements.append(element)
-
-  def AddCalledRoutine(self, component, target, args, filename, lineno,
-                       capacity):
-    """Adds an element to the trace indicating that a routine was called.
-
-    Args:
-      component: The result of calling the routine.
-      target: The name of the routine.
-      args: The args consumed in order to call this routine.
-      filename: The file in which the routine is defined, or None if N/A.
-      lineno: The line number on which the routine is defined, or None if N/A.
-      capacity: (bool) Whether the routine could have accepted additional args.
-    """
-    element = FireTraceElement(
-        component=component,
-        action=CALLED_ROUTINE,
-        target=target,
-        args=args,
-        filename=filename,
-        lineno=lineno,
-        capacity=capacity,
-    )
-    self.elements.append(element)
-
-  def AddInstantiatedClass(self, component, target, args, filename, lineno,
-                           capacity):
-    """Adds an element to the trace indicating that a class was instantiated.
-
-    Args:
-      component: The result of instantiating the class.
-      target: The name of the class.
-      args: The args consumed in order to instantiate the class.
-      filename: The file in which the class is defined, or None if N/A.
-      lineno: The line number on which the class is defined, or None if N/A.
-      capacity: (bool) Whether cls.__init__ could have accepted additional args.
-    """
-    element = FireTraceElement(
-        component=component,
-        action=INSTANTIATED_CLASS,
+        action=action,
         target=target,
         args=args,
         filename=filename,

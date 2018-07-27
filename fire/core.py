@@ -598,18 +598,15 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   component, consumed_args, remaining_args, capacity = _CallCallable(
       component.__call__ if treatment == 'callable' else component, args)
 
-  # TODO(joejoevictor): Consolidate AddInstantiatedClass, AddCalledRoutine, and
-  # AddCalledCallable into one method since the only different between those
-  # methods is the 'action' attribute of the FireTraceElement they created.
   if treatment == 'class':
-    component_trace.AddInstantiatedClass(
-        component, target, consumed_args, filename, lineno, capacity)
+    action = trace.INSTANTIATED_CLASS
   elif treatment == 'routine':
-    component_trace.AddCalledRoutine(
-        component, target, consumed_args, filename, lineno, capacity)
+    action = trace.CALLED_ROUTINE
   else:
-    component_trace.AddCalledCallable(
-        component, target, consumed_args, filename, lineno, capacity)
+    action = trace.CALLED_CALLABLE
+  component_trace.AddCalledComponent(
+      component, target, consumed_args, filename, lineno, capacity,
+      action=action)
 
   return component, remaining_args
 
