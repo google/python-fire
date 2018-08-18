@@ -74,9 +74,9 @@ class DiffLibWrapper(object):
 
     self.fromdate = time.ctime(os.stat(fromfile).st_mtime)
     self.todate = time.ctime(os.stat(tofile).st_mtime)
-    with open(fromfile, 'U') as f:
+    with open(fromfile) as f:
       self.fromlines = f.readlines()
-    with open(tofile, 'U') as f:
+    with open(tofile) as f:
       self.tolines = f.readlines()
 
   def unified_diff(self, lines=3):
