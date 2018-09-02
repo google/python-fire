@@ -16,15 +16,8 @@
 
 from setuptools import setup
 
-
-LONG_DESCRIPTION = """
-Python Fire is a library for automatically generating command line interfaces
-(CLIs) with a single line of code.
-
-It will turn any Python module, class, object, function, etc. (any Python
-component will work!) into a CLI. It's called Fire because when you call Fire(),
-it fires off your command.
-""".strip()
+with open('README.md', 'r') as readme:
+    LONG_DESCRIPTION = readme.read()
 
 SHORT_DESCRIPTION = """
 A library for automatically generating command line interfaces.""".strip()
@@ -47,6 +40,7 @@ setup(
     version=VERSION,
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    long_description_content_type = 'text/markdown',
     url=URL,
 
     author='David Bieber',
