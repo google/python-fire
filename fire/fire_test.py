@@ -385,6 +385,21 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.MixedDefaults, command=r'identity --alpha \"--test\"'),
         ('--test', '0'))
 
+  def testBoolShortcutParsing(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a']), (True, '0'))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '--beta=10']), (True, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '-b']), (True, True))
+    with self.assertRaisesFireExit(2):
+      # This test attempts to use a boolean shortcut on a function with
+      # a naming conflict for the shortcut, triggering a FireError
+      fire.Fire(tc.SimilarArgNames, command=['identity', '-b'])
+
   def testBoolParsingWithNo(self):
     # In these examples --nothing always refers to the nothing argument:
     def fn1(thing, nothing):

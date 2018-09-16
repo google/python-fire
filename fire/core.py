@@ -60,6 +60,7 @@ import pipes
 import shlex
 import sys
 import types
+import re
 
 from fire import completion
 from fire import decorators
@@ -750,7 +751,7 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
 def _ParseKeywordArgs(args, fn_spec):
   """Parses the supplied arguments for keyword arguments.
 
-  Given a list of arguments, finds occurences of --name value, and uses 'name'
+  Given a list of arguments, finds occurrences of --name value, and uses 'name'
   as the keyword and 'value' as the value. Constructs and returns a dictionary
   of these keyword arguments, and returns a list of the remaining arguments.
 
@@ -767,6 +768,9 @@ def _ParseKeywordArgs(args, fn_spec):
     kwargs: A dictionary mapping keywords to values.
     remaining_kwargs: A list of the unused kwargs from the original args.
     remaining_args: A list of the unused arguments from the original args.
+  Raises:
+    FireError: if a boolean shortcut arg is passed that could refer to multiple
+        args
   """
   kwargs = {}
   remaining_kwargs = []
@@ -793,7 +797,7 @@ def _ParseKeywordArgs(args, fn_spec):
       contains_equals = '=' in keyword
       is_bool_syntax = (
           not contains_equals and
-          (index + 1 == len(args) or args[index + 1].startswith('--')))
+          (index + 1 == len(args) or args[index + 1].startswith('--') or re.match('^\-[a-z]$', args[index + 1])))
       if contains_equals:
         keyword, value = keyword.split('=', 1)
         got_argument = True
@@ -827,6 +831,16 @@ def _ParseKeywordArgs(args, fn_spec):
           remaining_kwargs.append(argument)
           if skip_argument:
             remaining_kwargs.append(args[index + 1])
+
+    # catch boolean shortcut args
+    elif re.match('^\-[a-z]$',argument):
+      keychar = argument[1]
+      potential_args = [arg for arg in fn_args if arg[0] == keychar]
+      if len(potential_args) == 1:
+        arg_consumed = True
+        kwargs[potential_args[0]] = 'True'
+      elif len(potential_args) > 1:
+        raise FireError("The argument '{}' is ambiguous as it could refer to any of the following arguments: {}".format(argument, potential_args))
 
     if not arg_consumed:
       # The argument was not consumed, so it is still a remaining argument.

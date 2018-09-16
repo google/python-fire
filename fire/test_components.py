@@ -104,6 +104,12 @@ class MixedDefaults(object):
     return alpha, beta
 
 
+class SimilarArgNames(object):
+
+  def identity(self, bool_one=False, bool_two=False):
+    return bool_one, bool_two
+
+
 class Annotations(object):
 
   def double(self, count=0):
