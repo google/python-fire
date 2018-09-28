@@ -798,7 +798,7 @@ def _ParseKeywordArgs(args, fn_spec):
       is_bool_syntax = (not contains_equals and
                         (index + 1 == len(args) or
                         args[index + 1].startswith('--') or
-                        re.match('^\-[a-z]$', args[index + 1])))
+                        re.match('^-[a-z]$', args[index + 1])))
       if contains_equals:
         keyword, value = keyword.split('=', 1)
         got_argument = True
@@ -834,7 +834,7 @@ def _ParseKeywordArgs(args, fn_spec):
             remaining_kwargs.append(args[index + 1])
 
     # catch boolean shortcut args
-    elif re.match('^\-[a-z]$',argument):
+    elif re.match('^-[a-z]$', argument):
       keychar = argument[1]
       potential_args = [arg for arg in fn_args if arg[0] == keychar]
       if len(potential_args) == 1:
@@ -843,7 +843,7 @@ def _ParseKeywordArgs(args, fn_spec):
       elif len(potential_args) > 1:
         raise FireError("The argument '{}' is ambiguous as it could "
                         "refer to any of the following arguments: {}".format(
-                        argument, potential_args))
+                            argument, potential_args))
 
     if not arg_consumed:
       # The argument was not consumed, so it is still a remaining argument.
