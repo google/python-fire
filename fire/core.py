@@ -795,9 +795,10 @@ def _ParseKeywordArgs(args, fn_spec):
 
       keyword = argument[2:]
       contains_equals = '=' in keyword
-      is_bool_syntax = (
-          not contains_equals and
-          (index + 1 == len(args) or args[index + 1].startswith('--') or re.match('^\-[a-z]$', args[index + 1])))
+      is_bool_syntax = (not contains_equals and
+                        (index + 1 == len(args) or
+                        args[index + 1].startswith('--') or
+                        re.match('^\-[a-z]$', args[index + 1])))
       if contains_equals:
         keyword, value = keyword.split('=', 1)
         got_argument = True
@@ -840,7 +841,9 @@ def _ParseKeywordArgs(args, fn_spec):
         arg_consumed = True
         kwargs[potential_args[0]] = 'True'
       elif len(potential_args) > 1:
-        raise FireError("The argument '{}' is ambiguous as it could refer to any of the following arguments: {}".format(argument, potential_args))
+        raise FireError("The argument '{}' is ambiguous as it could "
+                        "refer to any of the following arguments: {}".format(
+                        argument, potential_args))
 
     if not arg_consumed:
       # The argument was not consumed, so it is still a remaining argument.
