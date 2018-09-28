@@ -797,8 +797,8 @@ def _ParseKeywordArgs(args, fn_spec):
       contains_equals = '=' in keyword
       is_bool_syntax = (not contains_equals and
                         (index + 1 == len(args) or
-                        args[index + 1].startswith('--') or
-                        re.match('^-[a-z]$', args[index + 1])))
+                         args[index + 1].startswith('--') or
+                         re.match('^-[a-z]$', args[index + 1])))
       if contains_equals:
         keyword, value = keyword.split('=', 1)
         got_argument = True
