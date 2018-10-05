@@ -802,7 +802,7 @@ def _ParseKeywordArgs(args, fn_spec):
         elif len(potential_args) > 1:
           raise FireError("The argument '{}' is ambiguous as it could "
                           "refer to any of the following arguments: {}".format(
-            argument, potential_args))
+                              argument, potential_args))
 
       else:
         keyword = argument[2:]
