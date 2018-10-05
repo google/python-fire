@@ -130,7 +130,8 @@ def _CommonHelpText(info, trace=None):
   Returns:
     String suitable for display giving information about the component.
   """
-  # TODO(joejoevictor): Improve this further.
+  # TODO(joejoevictor): Currently this is just a copy of existing HelpString
+  # method. We will reimplement this further in later CLs.
   fields = _GetFields(trace)
 
   try:

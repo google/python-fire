@@ -860,7 +860,7 @@ def _IsFlag(argument):
 
 def _IsSingleCharFlag(argument):
   """Determines if the argument is a single char flag (e.g. '-a')."""
-  return re.match('^-[a-z]$', argument)
+  return re.match('^-[a-zA-Z]$', argument)
 
 
 def _IsMultiCharFlag(argument):

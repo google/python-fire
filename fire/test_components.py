@@ -110,6 +110,12 @@ class SimilarArgNames(object):
     return bool_one, bool_two
 
 
+class CapitalizedArgNames(object):
+
+  def sum(self, Delta=1.0, Gamma=2.0):  # pylint: disable=invalid-name
+    return Delta + Gamma
+
+
 class Annotations(object):
 
   def double(self, count=0):
