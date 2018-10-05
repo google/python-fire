@@ -863,7 +863,7 @@ def _IsSingleCharFlag(argument):
 
 
 def _IsMultiCharFlag(argument):
-  """Determines if the argument is a multi char flag (e.g. '-alpha')"""
+  """Determines if the argument is a multi char flag (e.g. '--alpha')"""
   return argument.startswith('--')
 
 
