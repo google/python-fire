@@ -395,6 +395,15 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(
         fire.Fire(tc.MixedDefaults,
                   command=['identity', '-a', '-b']), (True, True))
+    self.assertEqual(
+      fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '42', '-b']), (42, True))
+    self.assertEqual(
+      fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '42', '-b', '10']), (42, 10))
+    self.assertEqual(
+      fire.Fire(tc.MixedDefaults,
+                  command=['identity', '--alpha', 'True', '-b', '10']), (True, 10))
     with self.assertRaisesFireExit(2):
       # This test attempts to use a boolean shortcut on a function with
       # a naming conflict for the shortcut, triggering a FireError
