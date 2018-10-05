@@ -798,7 +798,7 @@ def _ParseKeywordArgs(args, fn_spec):
 
       keyword = ''
       if _IsSingleCharFlag(argument):
-        keychar = argument[1]
+        keychar = argument.lstrip('-')
         potential_args = [arg for arg in fn_args if arg[0] == keychar]
         if len(potential_args) == 1:
           keyword = potential_args[0]
@@ -807,7 +807,7 @@ def _ParseKeywordArgs(args, fn_spec):
                           "refer to any of the following arguments: {}".format(
                               argument, potential_args))
       else:
-        keyword = argument[2:]
+        keyword = argument.lstrip('-')
 
       contains_equals = '=' in keyword
       is_bool_syntax = (not contains_equals and
@@ -865,7 +865,7 @@ def _IsSingleCharFlag(argument):
 
 def _IsMultiCharFlag(argument):
   """Determines if the argument is a multi char flag (e.g. '--alpha')."""
-  return argument.startswith('--')
+  return argument.startswith('--') or re.match('^-[a-zA-Z]', argument)
 
 
 def _ParseValue(value, index, arg, metadata):

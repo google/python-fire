@@ -92,11 +92,29 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.OldStyleWithDefaults, command=['triple', '--count', '5']),
         15)
 
+  def testFireNamedArgsSingleHyphen(self):
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['double', '-count', '5']), 10)
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['triple', '-count', '5']), 15)
+    self.assertEqual(
+        fire.Fire(tc.OldStyleWithDefaults, command=['double', '-count', '5']),
+        10)
+    self.assertEqual(
+        fire.Fire(tc.OldStyleWithDefaults, command=['triple', '-count', '5']),
+        15)
+
   def testFireNamedArgsWithEquals(self):
     self.assertEqual(fire.Fire(tc.WithDefaults,
                                command=['double', '--count=5']), 10)
     self.assertEqual(fire.Fire(tc.WithDefaults,
                                command=['triple', '--count=5']), 15)
+
+  def testFireNamedArgsWithEqualsSingleHyphen(self):
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['double', '-count=5']), 10)
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['triple', '-count=5']), 15)
 
   def testFireAllNamedArgs(self):
     self.assertEqual(fire.Fire(tc.MixedDefaults, command=['sum', '1', '2']), 5)
@@ -354,6 +372,23 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.MixedDefaults, command=['identity', '10', '--beta']),
         (10, True))
 
+  def testBoolParsingSingleHyphen(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha=False', '10']), (False, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha', '-beta', '10']), (True, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha', '-beta=10']), (True, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-noalpha', '-beta']), (False, True))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha', '-10', '-beta']), (-10, True))
+
   def testBoolParsingLessExpectedCases(self):
     # Note: Does not return (True, 10).
     self.assertEqual(
@@ -559,6 +594,11 @@ class FireTest(testutils.BaseTestCase):
                   command=['get-obj', 'arg1', '$$', 'as-bool', 'True', '--',
                            '--separator', '$$']),
         True)
+
+  def testNegativeNumbers(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['sum', '--alpha', '-3', '--beta', '-4']), -11)
 
   def testFloatForExpectedInt(self):
     self.assertEqual(
