@@ -851,15 +851,19 @@ def _ParseKeywordArgs(args, fn_spec):
 
   return kwargs, remaining_kwargs, remaining_args
 
+
 def _IsFlag(argument):
+  """Determines if the argument is a flag argument"""
   return _IsSingleCharFlag(argument) or _IsMultiCharFlag(argument)
 
 
 def _IsSingleCharFlag(argument):
+  """Determines if the argument is a single char flag (e.g. '-a')"""
   return re.match('^-[a-z]$', argument)
 
 
 def _IsMultiCharFlag(argument):
+  """Determines if the argument is a multi char flag (e.g. '-alpha')"""
   return argument.startswith('--')
 
 
