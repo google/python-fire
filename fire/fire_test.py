@@ -539,7 +539,7 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.ReturnsObj,
                   command=['get-obj', 'arg1', 'arg2', 'as-bool', 'True']),
         tc.BoolConverter)
-    # With a separator only the preceeding args are consumed by get_obj.
+    # With a separator only the preceding args are consumed by get_obj.
     self.assertEqual(
         fire.Fire(
             tc.ReturnsObj,

@@ -57,10 +57,10 @@ import inspect
 import json
 import os
 import pipes
+import re
 import shlex
 import sys
 import types
-import re
 
 from fire import completion
 from fire import decorators
@@ -135,13 +135,7 @@ def Fire(component=None, command=None, name=None):
         print(('WARNING: The proper way to show help is {cmd}.\n'
                'Showing help anyway.\n').format(cmd=pipes.quote(command)),
               file=sys.stderr)
-
-    print('Fire trace:\n{trace}\n'.format(trace=component_trace),
-          file=sys.stderr)
-    result = component_trace.GetResult()
-    print(
-        helputils.HelpString(result, component_trace, component_trace.verbose),
-        file=sys.stderr)
+    _PrintError(component_trace)
     raise FireExit(2, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
     print('Fire trace:\n{trace}\n'.format(trace=component_trace),
@@ -256,6 +250,15 @@ def _PrintResult(component_trace, verbose=False):
     print(result)
   elif result is not None:
     print(helputils.HelpString(result, component_trace, verbose))
+
+
+def _PrintError(component_trace):
+  """Prints the Fire trace and the error to stdout."""
+  print('Fire trace:\n{trace}\n'.format(trace=component_trace), file=sys.stderr)
+  result = component_trace.GetResult()
+  print(
+      helputils.HelpString(result, component_trace, component_trace.verbose),
+      file=sys.stderr)
 
 
 def _DictAsString(result, verbose=False):
@@ -713,7 +716,7 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
     remaining_args: A list of the supplied args that have not been used yet.
     capacity: Whether the call could have taken args in place of defaults.
   Raises:
-    FireError: if additional positional arguments are expected, but none are
+    FireError: If additional positional arguments are expected, but none are
         available.
   """
   accepts_positional_args = metadata.get(decorators.ACCEPTS_POSITIONAL_ARGS)
@@ -769,8 +772,8 @@ def _ParseKeywordArgs(args, fn_spec):
     remaining_kwargs: A list of the unused kwargs from the original args.
     remaining_args: A list of the unused arguments from the original args.
   Raises:
-    FireError: if a boolean shortcut arg is passed that could refer to multiple
-        args
+    FireError: If a single-character flag is passed that could refer to multiple
+        possible args.
   """
   kwargs = {}
   remaining_kwargs = []
@@ -803,7 +806,6 @@ def _ParseKeywordArgs(args, fn_spec):
           raise FireError("The argument '{}' is ambiguous as it could "
                           "refer to any of the following arguments: {}".format(
                               argument, potential_args))
-
       else:
         keyword = argument[2:]
 
@@ -844,7 +846,6 @@ def _ParseKeywordArgs(args, fn_spec):
           if skip_argument:
             remaining_kwargs.append(args[index + 1])
 
-
     if not arg_consumed:
       # The argument was not consumed, so it is still a remaining argument.
       remaining_args.append(argument)
@@ -853,17 +854,17 @@ def _ParseKeywordArgs(args, fn_spec):
 
 
 def _IsFlag(argument):
-  """Determines if the argument is a flag argument"""
+  """Determines if the argument is a flag argument."""
   return _IsSingleCharFlag(argument) or _IsMultiCharFlag(argument)
 
 
 def _IsSingleCharFlag(argument):
-  """Determines if the argument is a single char flag (e.g. '-a')"""
+  """Determines if the argument is a single char flag (e.g. '-a')."""
   return re.match('^-[a-z]$', argument)
 
 
 def _IsMultiCharFlag(argument):
-  """Determines if the argument is a multi char flag (e.g. '--alpha')"""
+  """Determines if the argument is a multi char flag (e.g. '--alpha')."""
   return argument.startswith('--')
 
 

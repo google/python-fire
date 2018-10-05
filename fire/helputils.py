@@ -76,6 +76,23 @@ def _DisplayValue(info, field, padding):
   return value
 
 
+def _GetFields(trace=None):
+  """Returns the field names to include in the help text for a component."""
+  del trace  # Unused.
+  return [
+      'type_name',
+      'string_form',
+      'file',
+      'line',
+      'docstring',
+      'init_docstring',
+      'class_docstring',
+      'call_docstring',
+      'length',
+      'usage',
+  ]
+
+
 def HelpString(component, trace=None, verbose=False):
   """Returns a help string for a supplied component.
 
@@ -91,26 +108,39 @@ def HelpString(component, trace=None, verbose=False):
   info = inspectutils.Info(component)
   info['usage'] = UsageString(component, trace, verbose)
 
-  fields = [
-      'type_name',
-      'string_form',
-      'file',
-      'line',
+  is_error_screen = False
+  if trace:
+    is_error_screen = trace.HasError()
 
-      'docstring',
-      'init_docstring',
-      'class_docstring',
-      'call_docstring',
-      'length',
+  if is_error_screen:
+    return _ErrorText(info, trace)
+  else:
+    return _HelpText(info, trace)
 
-      'usage',
-  ]
 
-  max_size = max(
-      len(_NormalizeField(field)) + 1
-      for field in fields
-      if field in info and info[field])
-  format_string = '{{field:{max_size}s}} {{value}}'.format(max_size=max_size)
+def _CommonHelpText(info, trace=None):
+  """Returns help text.
+
+  This was a copy of previous HelpString function and will be removed once the
+  correct text formatters are implemented.
+
+  Args:
+    info: The IR object containing metadata of an object.
+    trace: The Fire trace object containing all metadata of current execution.
+  Returns:
+    String suitable for display giving information about the component.
+  """
+  # TODO(joejoevictor): Improve this further.
+  fields = _GetFields(trace)
+
+  try:
+    max_size = max(
+        len(_NormalizeField(field)) + 1
+        for field in fields
+        if field in info and info[field])
+    format_string = '{{field:{max_size}s}} {{value}}'.format(max_size=max_size)
+  except ValueError:
+    return ''
 
   lines = []
   for field in fields:
@@ -124,6 +154,39 @@ def HelpString(component, trace=None, verbose=False):
           value=value,
       ))
   return '\n'.join(lines)
+
+
+def _ErrorText(info, trace=None):
+  """Returns help text for error screen.
+
+  Construct help text for error screen to inform the user about error occurred
+  and correct syntax for invoking the object.
+
+  Args:
+    info: The IR object containing metadata of an object.
+    trace: The Fire trace object containing all metadata of current execution.
+  Returns:
+    String suitable for display in error screen.
+  """
+  # TODO(joejoevictor): Implement real error text construction.
+  return _CommonHelpText(info, trace)
+
+
+def _HelpText(info, trace=None):
+  """Returns help text for extensive help screen.
+
+  Construct help text for help screen when user explicitly requesting help by
+  having -h, --help in the command sequence.
+
+  Args:
+    info: The IR object containing metadata of an object.
+    trace: The Fire trace object containing all metadata of current execution.
+  Returns:
+    String suitable for display in extensive help screen.
+  """
+
+  # TODO(joejoevictor): Implement real help text construction.
+  return _CommonHelpText(info, trace)
 
 
 def _UsageStringFromFullArgSpec(command, spec):
@@ -180,7 +243,15 @@ def _UsageStringFromFullArgSpec(command, spec):
 
 def UsageString(component, trace=None, verbose=False):
   """Returns a string showing how to use the component as a Fire command."""
-  command = trace.GetCommand() + ' ' if trace else ''
+  if trace:
+    command = trace.GetCommand()
+  else:
+    command = None
+
+  if command:
+    command += ' '
+  else:
+    command = ''
 
   if inspect.isroutine(component) or inspect.isclass(component):
     spec = inspectutils.GetFullArgSpec(component)
