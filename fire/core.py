@@ -575,6 +575,19 @@ def _GetMember(component, args):
 
   raise FireError('Could not consume arg:', arg)
 
+def _TryClassMethod(component, args):
+  """Reads first argument and if it is a classmethod returns it as a new component
+  """
+  if not args:
+    return component, 'class', args
+  attrs = inspect.classify_class_attrs(component)
+  class_methods = {a.name for a in attrs if a.kind == 'class method' or a.kind == 'static method'}
+  arg_name = args[0].replace('-', '_')
+  if arg_name in class_methods:
+    return getattr(component, arg_name), 'routine', args[1:]
+  else:
+    return component, 'class', args
+
 
 def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
                         target=None):
@@ -598,6 +611,10 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   """
   if not target:
     target = component
+
+  if treatment == 'class':
+    component, treatment, args = _TryClassMethod(component, args)
+
   filename, lineno = inspectutils.GetFileAndLine(component)
   component, consumed_args, remaining_args, capacity = _CallCallable(
       component.__call__ if treatment == 'callable' else component, args)
