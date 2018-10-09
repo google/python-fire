@@ -109,6 +109,9 @@ class SimilarArgNames(object):
   def identity(self, bool_one=False, bool_two=False):
     return bool_one, bool_two
 
+  def identity2(self, a=None, alpha=None):
+    return a, alpha
+
 
 class CapitalizedArgNames(object):
 

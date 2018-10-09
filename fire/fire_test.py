@@ -462,6 +462,23 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.MixedDefaults,
                   command=['identity', '-a=42', '-b', '10']), (42, 10))
 
+  def testSingleCharFlagParsingExactMatch(self):
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-a']), (True, None))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-a=10']), (10, None))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '--a']), (True, None))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-alpha']), (None, True))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-a', '-alpha']), (True, True))
+
   def testSingleCharFlagParsingCapitalLetter(self):
     self.assertEqual(
         fire.Fire(tc.CapitalizedArgNames,
