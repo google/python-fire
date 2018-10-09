@@ -575,11 +575,10 @@ def _GetMember(component, args):
 
 def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
                         target=None):
-  """Call the component and update FireTrace.
+  """Call the component by consuming args from args, and update the FireTrace.
 
-  The component could a class, a routine, or a callable object. This function
-  will attempt to call the callable and add corresponding action trace to
-  component_trace if the invocation is successful. If not, raise FireError.
+  The component could be a class, a routine, or a callable object. This function
+  calls the component and adds the appropriate action to component_trace.
 
   Args:
     component: The component to call
@@ -596,8 +595,10 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   if not target:
     target = component
   filename, lineno = inspectutils.GetFileAndLine(component)
-  component, consumed_args, remaining_args, capacity = _CallCallable(
-      component.__call__ if treatment == 'callable' else component, args)
+  fn = component.__call__ if treatment == 'callable' else component
+  parse = _MakeParseFn(fn)
+  (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
+  component = fn(*varargs, **kwargs)
 
   if treatment == 'class':
     action = trace.INSTANTIATED_CLASS
@@ -610,25 +611,6 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
       action=action)
 
   return component, remaining_args
-
-
-def _CallCallable(fn, args):
-  """Calls the function fn by consuming args from args.
-
-  Args:
-    fn: The function to call or class to instantiate.
-    args: Args from which to consume for calling the function.
-  Returns:
-    component: The object that is the result of the function call.
-    consumed_args: The args that were consumed for the function call.
-    remaining_args: The remaining args that haven't been consumed yet.
-    capacity: Whether the call could have taken additional args.
-  """
-  parse = _MakeParseFn(fn)
-  (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
-
-  result = fn(*varargs, **kwargs)
-  return result, consumed_args, remaining_args, capacity
 
 
 def _MakeParseFn(fn):
