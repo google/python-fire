@@ -129,12 +129,11 @@ def Fire(component=None, command=None, name=None):
   component_trace = _Fire(component, args, context, name)
 
   if component_trace.HasError():
-    for help_flag in ['-h', '--help']:
+    for help_flag in ('-h', '--help'):
       if help_flag in component_trace.elements[-1].args:
         command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
-        print(('WARNING: The proper way to show help is {cmd}.\n'
-               'Showing help anyway.\n').format(cmd=pipes.quote(command)),
-              file=sys.stderr)
+        print('INFO: Showing help with the command {cmd}.\n'.format(
+            cmd=pipes.quote(command)), file=sys.stderr)
     _PrintError(component_trace)
     raise FireExit(2, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
@@ -209,9 +208,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
   show_help = False
   if remaining_args:
     target = remaining_args[0]
-    if target == '-h':
-      show_help = True
-    elif target == '--help':
+    if target in ('-h', '--help'):
       # Check if --help would be consumed as a keyword argument, or is a member.
       component = component_trace.GetResult()
       if inspect.isclass(component) or inspect.isroutine(component):
@@ -487,7 +484,7 @@ def _Fire(component, args, context, name=None):
           component_trace.AddError(error, initial_args)
           return component_trace
 
-        # If we can't access the member, we try to treat component as a callable
+        # If we can't access the member, try to treat component as a callable.
         try:
           component, remaining_args = _CallAndUpdateTrace(component,
                                                           remaining_args,
@@ -589,9 +586,9 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
     args: Args for calling the component
     component_trace: FireTrace object that contains action trace
     treatment: Type of treatment used. Indicating whether we treat the component
-               as a class, a routine, or a callable.
+        as a class, a routine, or a callable.
     target: Target in FireTrace element, default is None. If the value is None,
-            the component itself will be used as target.
+        the component itself will be used as target.
   Returns:
     component: The object that is the result of the callable call.
     remaining_args: The remaining args that haven't been consumed yet.
@@ -791,33 +788,53 @@ def _ParseKeywordArgs(args, fn_spec):
       skip_argument = False
       continue
 
-    arg_consumed = False
     if _IsFlag(argument):
-      # This is a named argument; get its value from this arg or the next.
-      got_argument = False
+      # This is a named argument. We get its value from this arg or the next.
 
-      keyword = ''
-      if _IsSingleCharFlag(argument):
-        keychar = argument.lstrip('-')
-        potential_args = [arg for arg in fn_args if arg[0] == keychar]
-        if len(potential_args) == 1:
-          keyword = potential_args[0]
-        elif len(potential_args) > 1:
-          raise FireError("The argument '{}' is ambiguous as it could "
-                          "refer to any of the following arguments: {}".format(
-                              argument, potential_args))
+      # Terminology:
+      # argument: A full token from the command line, e.g. '--alpha=10'
+      # stripped_argument: An argument without leading hyphens.
+      # key: The contents of the stripped argument up to the first equal sign.
+      # "shortcut flag": refers to an argument where the key is just the first
+      #   letter of a longer keyword.
+      # keyword: The Python function argument being set by this argument.
+      # value: The unparsed value for that Python function argument.
+      contains_equals = '=' in argument
+      stripped_argument = argument.lstrip('-')
+      if contains_equals:
+        key, value = stripped_argument.split('=', 1)
       else:
-        keyword = argument.lstrip('-')
+        key = stripped_argument
 
-      contains_equals = '=' in keyword
+      key = key.replace('-', '_')
       is_bool_syntax = (not contains_equals and
                         (index + 1 == len(args) or _IsFlag(args[index + 1])))
-      if contains_equals:
-        keyword, value = keyword.split('=', 1)
+
+      # Determine the keyword.
+      keyword = ''  # Indicates no valid keyword has been found yet.
+      if (key in fn_args
+          or (is_bool_syntax and key.startswith('no') and key[2:] in fn_args)
+          or fn_keywords):
+        keyword = key
+      elif len(key) == 1:
+        # This may be a shortcut flag.
+        matching_fn_args = [arg for arg in fn_args if arg[0] == key]
+        if len(matching_fn_args) == 1:
+          keyword = matching_fn_args[0]
+        elif len(matching_fn_args) > 1:
+          raise FireError("The argument '{}' is ambiguous as it could "
+                          "refer to any of the following arguments: {}".format(
+                              argument, matching_fn_args))
+
+      # Determine the value.
+      if not keyword:
+        got_argument = False
+      elif contains_equals:
+        # Already got the value above.
         got_argument = True
       elif is_bool_syntax:
-        # Since there's no next arg or the next arg is a Flag, we consider
-        # this flag to be a boolean.
+        # There's no next arg or the next arg is a Flag, so we consider this
+        # flag to be a boolean.
         got_argument = True
         if keyword in fn_args:
           value = 'True'
@@ -827,40 +844,44 @@ def _ParseKeywordArgs(args, fn_spec):
         else:
           value = 'True'
       else:
-        if index + 1 < len(args):
-          value = args[index + 1]
-          got_argument = True
-
-      keyword = keyword.replace('-', '_')
+        # The assert should pass. Otherwise either contains_equals or
+        # is_bool_syntax would have been True.
+        assert index + 1 < len(args)
+        value = args[index + 1]
+        got_argument = True
 
       # In order for us to consume the argument as a keyword arg, we either:
       # Need to be explicitly expecting the keyword, or we need to be
       # accepting **kwargs.
+      skip_argument = not contains_equals and not is_bool_syntax
       if got_argument:
-        skip_argument = not contains_equals and not is_bool_syntax
-        arg_consumed = True
-        if keyword in fn_args or fn_keywords:
-          kwargs[keyword] = value
-        else:
-          remaining_kwargs.append(argument)
-          if skip_argument:
-            remaining_kwargs.append(args[index + 1])
-
-    if not arg_consumed:
-      # The argument was not consumed, so it is still a remaining argument.
+        kwargs[keyword] = value
+      else:
+        remaining_kwargs.append(argument)
+        if skip_argument:
+          remaining_kwargs.append(args[index + 1])
+    else:  # not _IsFlag(argument)
       remaining_args.append(argument)
 
   return kwargs, remaining_kwargs, remaining_args
 
 
 def _IsFlag(argument):
-  """Determines if the argument is a flag argument."""
+  """Determines if the argument is a flag argument.
+
+  If it starts with a hyphen and isn't a negative number, it's a flag.
+
+  Args:
+    argument: A command line argument that may or may not be a flag.
+  Returns:
+    A boolean indicating whether the argument is a flag.
+  """
   return _IsSingleCharFlag(argument) or _IsMultiCharFlag(argument)
 
 
 def _IsSingleCharFlag(argument):
   """Determines if the argument is a single char flag (e.g. '-a')."""
-  return re.match('^-[a-zA-Z]$', argument)
+  return re.match('^-[a-zA-Z]$', argument) or re.match('^-[a-zA-Z]=', argument)
 
 
 def _IsMultiCharFlag(argument):

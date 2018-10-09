@@ -441,9 +441,26 @@ class FireTest(testutils.BaseTestCase):
                   command=['identity', '--alpha', 'True', '-b', '10']),
         (True, 10))
     with self.assertRaisesFireExit(2):
-      # This test attempts to use a boolean shortcut on a function with
-      # a naming conflict for the shortcut, triggering a FireError
+      # This test attempts to use an ambiguous shortcut flag on a function with
+      # a naming conflict for the shortcut, triggering a FireError.
       fire.Fire(tc.SimilarArgNames, command=['identity', '-b'])
+
+  def testSingleCharFlagParsingEqualSign(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=True']), (True, '0'))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=3', '--beta=10']), (3, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=False', '-b=15']), (False, 15))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '42', '-b=12']), (42, 12))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=42', '-b', '10']), (42, 10))
 
   def testSingleCharFlagParsingCapitalLetter(self):
     self.assertEqual(
