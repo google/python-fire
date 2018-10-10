@@ -47,12 +47,30 @@ def _BashScript(name, commands, default_options=None):
     completion in Bash.
   """
   default_options = default_options or set()
-  options_map = collections.defaultdict(lambda: copy.copy(default_options))
+  global_options = copy(default_options)
+  options_map = defaultdict(lambda: copy(default_options))
+  subcommands_map = defaultdict(lambda: set())
+
   for command in commands:
-    start = (name + ' ' + ' '.join(command[:-1])).strip()
-    completion = _FormatForCommand(command[-1])
-    options_map[start].add(completion)
-    options_map[start.replace('_', '-')].add(completion)
+    if len(command) == 1:
+
+      if _isOption(command[0]):
+        global_options.add(command[0])
+      else:
+        subcommands_map[name].add(command[0])
+
+    elif len(command) != 0:
+
+      subcommand = command[-2]
+      arg = _FormatForCommand(command[-1])
+
+      if _isOption(arg):
+        args_map = options_map
+      else:
+        args_map = subcommands_map
+
+      args_map[subcommand].add(arg)
+      args_map[subcommand.replace('_', '-')].add(arg)
 
   bash_completion_template = """# bash completion support for {name}
 # DO NOT EDIT.
@@ -60,41 +78,70 @@ def _BashScript(name, commands, default_options=None):
 
 _complete-{identifier}()
 {{
-  local start cur opts
+  local cur opts lastcommand
   COMPREPLY=()
-  start="${{COMP_WORDS[@]:0:COMP_CWORD}}"
   cur="${{COMP_WORDS[COMP_CWORD]}}"
+  lastcommand=$(get_lastcommand)
 
   opts="{default_options}"
+  GLOBAL_OPTIONS="{global_options}"
 
-{start_checks}
+{checks}
 
   COMPREPLY=( $(compgen -W "${{opts}}" -- ${{cur}}) )
   return 0
 }}
 
+get_lastcommand()
+{{
+  local lastcommand i
+
+  lastcommand=
+  for ((i=0; i < ${{#COMP_WORDS[@]}}; ++i)); do
+    if [[ ${{COMP_WORDS[i]}} != -* ]] && [[ -n ${{COMP_WORDS[i]}} ]] && [[
+      ${{COMP_WORDS[i]}} != $cur ]]; then
+      lastcommand=${{COMP_WORDS[i]}}
+    fi
+  done
+
+  echo $lastcommand
+}}
+
 complete -F _complete-{identifier} {command}
 """
-  start_check_template = """
-  if [[ "$start" == "{start}" ]] ; then
-    opts="{completions}"
-  fi"""
 
-  start_checks = '\n'.join(
-      start_check_template.format(
-          start=start,
-          completions=' '.join(sorted(options_map[start]))
-      )
-      for start in options_map
+  check_wrapper = """
+  case "${{lastcommand}}" in
+  {lastcommand_checks}
+  esac"""
+
+  lastcommand_check_template = """
+    {command})
+      opts="{options} ${{GLOBAL_OPTIONS}}"
+    ;;"""
+
+  lastcommand_checks = '\n'.join(
+    lastcommand_check_template.format(
+      command=command,
+      options=' '.join(sorted(
+        options_map[command].union(subcommands_map[command])
+      ))
+    )
+    for command in subcommands_map.keys() + options_map.keys()
+  )
+
+  checks = check_wrapper.format(
+    lastcommand_checks=lastcommand_checks,
   )
 
   return (
       bash_completion_template.format(
           name=name,
           command=name,
-          start_checks=start_checks,
+          checks=checks,
           default_options=' '.join(default_options),
-          identifier=name.replace('/', '').replace('.', '').replace(',', '')
+          identifier=name.replace('/', '').replace('.', '').replace(',', ''),
+          global_options=' '.join(global_options),
       )
   )
 
@@ -302,3 +349,7 @@ def _Commands(component, depth=3):
 
     for command in _Commands(member, depth - 1):
       yield (member_name,) + command
+
+
+def _isOption(arg):
+  return arg.startswith('-')
