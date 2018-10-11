@@ -46,31 +46,11 @@ def _BashScript(name, commands, default_options=None):
     A string which is the Bash script. Source the bash script to enable tab
     completion in Bash.
   """
+
   default_options = default_options or set()
-  global_options = copy(default_options)
-  options_map = defaultdict(lambda: copy(default_options))
-  subcommands_map = defaultdict(lambda: set())
-
-  for command in commands:
-    if len(command) == 1:
-
-      if _isOption(command[0]):
-        global_options.add(command[0])
-      else:
-        subcommands_map[name].add(command[0])
-
-    elif len(command) != 0:
-
-      subcommand = command[-2]
-      arg = _FormatForCommand(command[-1])
-
-      if _isOption(arg):
-        args_map = options_map
-      else:
-        args_map = subcommands_map
-
-      args_map[subcommand].add(arg)
-      args_map[subcommand.replace('_', '-')].add(arg)
+  global_options, options_map, subcommands_map = _GetMaps(
+    name, commands, default_options
+  )
 
   bash_completion_template = """# bash completion support for {name}
 # DO NOT EDIT.
@@ -353,3 +333,31 @@ def _Commands(component, depth=3):
 
 def _isOption(arg):
   return arg.startswith('-')
+
+def _GetMaps(name, commands, default_options):
+  global_options = copy(default_options)
+  options_map = defaultdict(lambda: copy(default_options))
+  subcommands_map = defaultdict(lambda: set())
+
+  for command in commands:
+    if len(command) == 1:
+
+      if _isOption(command[0]):
+        global_options.add(command[0])
+      else:
+        subcommands_map[name].add(command[0])
+
+    elif len(command) != 0:
+
+      subcommand = command[-2]
+      arg = _FormatForCommand(command[-1])
+
+      if _isOption(arg):
+        args_map = options_map
+      else:
+        args_map = subcommands_map
+
+      args_map[subcommand].add(arg)
+      args_map[subcommand.replace('_', '-')].add(arg)
+
+  return global_options, options_map, subcommands_map
