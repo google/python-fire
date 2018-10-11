@@ -141,43 +141,47 @@ def _FishScript(name, commands, default_options=None):
     completion in Fish.
   """
   default_options = default_options or set()
-  options_map = collections.defaultdict(lambda: copy.copy(default_options))
-  for command in commands:
-    start = (name + ' ' + ' '.join(command[:-1])).strip()
-    completion = _FormatForCommand(command[-1])
-    options_map[start].add(completion)
-    options_map[start.replace('_', '-')].add(completion)
+  global_options, options_map, subcommands_map = _GetMaps(
+    name, commands, default_options
+  )
+
   fish_source = """function __fish_using_command
     set cmd (commandline -opc)
-    if [ (count $cmd) -eq (count $argv) ]
-        for i in (seq (count $argv))
-            if [ $cmd[$i] != $argv[$i] ]
+    for i in (seq (count $cmd) 1)
+        switch $cmd[$i]
+        case "-*"
+        case "*"
+            if [ $cmd[$i] = $argv[1] ]
+                return 0
+            else
                 return 1
             end
         end
-        return 0
     end
     return 1
 end
 """
-  subcommand_template = ("complete -c {name} -n '__fish_using_command {start}' "
-                         "-f -a {subcommand}\n")
+
+  subcommand_template = ("complete -c {name} -n '__fish_using_command "
+                         "{command}' -f -a {subcommand}\n")
   flag_template = ("complete -c {name} -n "
-                   "'__fish_using_command {start}' -l {option}\n")
-  for start in options_map:
-    for option in sorted(options_map[start]):
-      if option.startswith('--'):
-        fish_source += flag_template.format(
-            name=name,
-            start=start,
-            option=option[2:]
-        )
-      else:
-        fish_source += subcommand_template.format(
-            name=name,
-            start=start,
-            subcommand=option
-        )
+                   "'__fish_using_command {command}' -l {option}\n")
+
+  for command in subcommands_map.keys() + options_map.keys():
+    for subcommand in subcommands_map[command]:
+      fish_source += subcommand_template.format(
+        name=name,
+        command=command,
+        subcommand=subcommand,
+      )
+
+    for option in options_map[command].union(global_options):
+      fish_source += flag_template.format(
+        name=name,
+        command=command,
+        option=option.lstrip("--"),
+      )
+
   return fish_source
 
 
