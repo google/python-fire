@@ -87,6 +87,32 @@ get_lastcommand()
   echo $lastcommand
 }}
 
+filter_options()
+{{
+  local opts
+  opts=""
+  for opt in "$@"
+  do
+    if ! option_already_entered $opt; then
+      opts="$opts $opt"
+    fi
+  done
+
+  echo $opts
+}}
+
+option_already_entered()
+{{
+  local opt
+  for opt in ${{COMP_WORDS[@]:0:COMP_CWORD}}
+  do
+    if [ $1 == $opt ]; then
+      return 0
+    fi
+  done
+  return 1
+}}
+
 complete -F _complete-{identifier} {command}
 """
 
@@ -98,6 +124,7 @@ complete -F _complete-{identifier} {command}
   lastcommand_check_template = """
     {command})
       opts="{options} ${{GLOBAL_OPTIONS}}"
+      opts=$(filter_options $opts)
     ;;"""
 
   lastcommand_checks = '\n'.join(
@@ -160,12 +187,26 @@ def _FishScript(name, commands, default_options=None):
     end
     return 1
 end
+
+function __option_entered_check
+    set cmd (commandline -opc)
+    for i in (seq (count $cmd))
+        switch $cmd[$i]
+        case "-*"
+            if [ $cmd[$i] = $argv[1] ]
+                return 1
+            end
+        end
+    end
+    return 0
+end
 """
 
   subcommand_template = ("complete -c {name} -n '__fish_using_command "
                          "{command}' -f -a {subcommand}\n")
   flag_template = ("complete -c {name} -n "
-                   "'__fish_using_command {command}' -l {option}\n")
+       "'__fish_using_command {command}; and __option_entered_check --{option}'"
+                   " -l {option}\n")
 
   for command in subcommands_map.keys() + options_map.keys():
     for subcommand in subcommands_map[command]:
