@@ -58,8 +58,9 @@ def _BashScript(name, commands, default_options=None):
 
 _complete-{identifier}()
 {{
-  local cur opts lastcommand
+  local cur prev opts lastcommand
   COMPREPLY=()
+  prev="${{COMP_WORDS[COMP_CWORD-1]}}"
   cur="${{COMP_WORDS[COMP_CWORD]}}"
   lastcommand=$(get_lastcommand)
 
@@ -113,6 +114,18 @@ option_already_entered()
   return 1
 }}
 
+is_prev_global()
+{{
+  local opt
+  for opt in $GLOBAL_OPTIONS
+  do
+    if [ $opt == $prev ]; then
+      return 0
+    fi
+  done
+  return 1
+}}
+
 complete -F _complete-{identifier} {command}
 """
 
@@ -123,16 +136,34 @@ complete -F _complete-{identifier} {command}
 
   lastcommand_check_template = """
     {command})
-      opts="{options} ${{GLOBAL_OPTIONS}}"
+      {opts_assignment}
       opts=$(filter_options $opts)
     ;;"""
+
+  opts_assignment_subcommand_template = """
+      if is_prev_global; then
+        opts="${{GLOBAL_OPTIONS}}"
+      else
+        opts="{options} ${{GLOBAL_OPTIONS}}"
+      fi"""
+
+  opts_assignment_main_command_template = """
+      opts="{options} ${{GLOBAL_OPTIONS}}" """
+
+  def get_opts_assignment_template(command):
+    if command == name:
+      return opts_assignment_main_command_template
+    else:
+      return opts_assignment_subcommand_template
 
   lastcommand_checks = '\n'.join(
     lastcommand_check_template.format(
       command=command,
-      options=' '.join(sorted(
-        options_map[command].union(subcommands_map[command])
-      ))
+      opts_assignment=get_opts_assignment_template(command).format(
+        options=' '.join(sorted(
+          options_map[command].union(subcommands_map[command])
+        )),
+      ),
     )
     for command in subcommands_map.keys() + options_map.keys()
   )
@@ -200,14 +231,30 @@ function __option_entered_check
     end
     return 0
 end
+
+function __is_prev_global
+    set cmd (commandline -opc)
+    set global_options {global_options}
+    set prev (count $cmd)
+
+    for opt in $global_options
+        if [ "--$opt" = $cmd[$prev] ]
+            echo $prev
+            return 0
+        end
+    end
+    return 1
+end
+
 """
 
   subcommand_template = ("complete -c {name} -n '__fish_using_command "
                          "{command}' -f -a {subcommand}\n")
   flag_template = ("complete -c {name} -n "
-       "'__fish_using_command {command}; and __option_entered_check --{option}'"
+       "'__fish_using_command {command};{prev_global_check} and __option_entered_check --{option}'"
                    " -l {option}\n")
 
+  prev_global_check = " and __is_prev_global;"
   for command in subcommands_map.keys() + options_map.keys():
     for subcommand in subcommands_map[command]:
       fish_source += subcommand_template.format(
@@ -217,13 +264,20 @@ end
       )
 
     for option in options_map[command].union(global_options):
+      check_needed = command != name
       fish_source += flag_template.format(
         name=name,
         command=command,
+        prev_global_check=prev_global_check if check_needed else "",
         option=option.lstrip("--"),
       )
 
-  return fish_source
+  return fish_source.format(
+    global_options=' '.join(
+      '"{option}"'.format(option=option)
+      for option in global_options
+    )
+  )
 
 
 def _IncludeMember(name, verbose):
