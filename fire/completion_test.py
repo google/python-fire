@@ -38,7 +38,7 @@ class TabCompletionTest(testutils.BaseTestCase):
     self.assertIn('halt', script)
 
     assert_template = "{command})"
-    for last_command in ['command', 'run', 'halt']:
+    for last_command in ['command', 'halt']:
         self.assertIn(assert_template.format(command=last_command), script)
 
   def testCompletionFishScript(self):
