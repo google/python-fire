@@ -165,7 +165,7 @@ complete -F _complete-{identifier} {command}
         )),
       ),
     )
-    for command in subcommands_map.keys() + options_map.keys()
+    for command in set(subcommands_map.keys()).union(set(options_map.keys()))
   )
 
   checks = check_wrapper.format(
@@ -255,7 +255,7 @@ end
                    " -l {option}\n")
 
   prev_global_check = " and __is_prev_global;"
-  for command in subcommands_map.keys() + options_map.keys():
+  for command in set(subcommands_map.keys()).union(set(options_map.keys())):
     for subcommand in subcommands_map[command]:
       fish_source += subcommand_template.format(
         name=name,
