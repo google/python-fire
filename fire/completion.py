@@ -450,9 +450,9 @@ def _GetMaps(name, commands, default_options):
     options_map: A dict storing set of options for each subcommand.
   """
 
-  global_options = copy(default_options)
-  options_map = defaultdict(lambda: copy(default_options))
-  subcommands_map = defaultdict(set())
+  global_options = copy.copy(default_options)
+  options_map = collections.defaultdict(lambda: copy.copy(default_options))
+  subcommands_map = collections.defaultdict(set)
 
   for command in commands:
     if len(command) == 1:
