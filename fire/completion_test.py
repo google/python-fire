@@ -39,7 +39,7 @@ class TabCompletionTest(testutils.BaseTestCase):
 
     assert_template = "{command})"
     for last_command in ['command', 'halt']:
-        self.assertIn(assert_template.format(command=last_command), script)
+      self.assertIn(assert_template.format(command=last_command), script)
 
   def testCompletionFishScript(self):
     # A sanity check test to make sure the fish completion script satisfies

@@ -49,7 +49,7 @@ def _BashScript(name, commands, default_options=None):
 
   default_options = default_options or set()
   global_options, options_map, subcommands_map = _GetMaps(
-    name, commands, default_options
+      name, commands, default_options
   )
 
   bash_completion_template = """# bash completion support for {name}
@@ -150,26 +150,26 @@ complete -F _complete-{identifier} {command}
   opts_assignment_main_command_template = """
       opts="{options} ${{GLOBAL_OPTIONS}}" """
 
-  def get_opts_assignment_template(command):
+  def _GetOptsAssignmentTemplate(command):
     if command == name:
       return opts_assignment_main_command_template
     else:
       return opts_assignment_subcommand_template
 
   lastcommand_checks = '\n'.join(
-    lastcommand_check_template.format(
-      command=command,
-      opts_assignment=get_opts_assignment_template(command).format(
-        options=' '.join(sorted(
-          options_map[command].union(subcommands_map[command])
-        )),
-      ),
-    )
-    for command in set(subcommands_map.keys()).union(set(options_map.keys()))
+      lastcommand_check_template.format(
+          command=command,
+          opts_assignment=_GetOptsAssignmentTemplate(command).format(
+              options=' '.join(sorted(
+                  options_map[command].union(subcommands_map[command])
+              )),
+          ),
+      )
+      for command in set(subcommands_map.keys()).union(set(options_map.keys()))
   )
 
   checks = check_wrapper.format(
-    lastcommand_checks=lastcommand_checks,
+      lastcommand_checks=lastcommand_checks,
   )
 
   return (
@@ -200,7 +200,7 @@ def _FishScript(name, commands, default_options=None):
   """
   default_options = default_options or set()
   global_options, options_map, subcommands_map = _GetMaps(
-    name, commands, default_options
+      name, commands, default_options
   )
 
   fish_source = """function __fish_using_command
@@ -251,32 +251,32 @@ end
   subcommand_template = ("complete -c {name} -n '__fish_using_command "
                          "{command}' -f -a {subcommand}\n")
   flag_template = ("complete -c {name} -n "
-       "'__fish_using_command {command};{prev_global_check} and __option_entered_check --{option}'"
-                   " -l {option}\n")
+                   "'__fish_using_command {command};{prev_global_check} and "
+                   "__option_entered_check --{option}' -l {option}\n")
 
   prev_global_check = " and __is_prev_global;"
   for command in set(subcommands_map.keys()).union(set(options_map.keys())):
     for subcommand in subcommands_map[command]:
       fish_source += subcommand_template.format(
-        name=name,
-        command=command,
-        subcommand=subcommand,
+          name=name,
+          command=command,
+          subcommand=subcommand,
       )
 
     for option in options_map[command].union(global_options):
       check_needed = command != name
       fish_source += flag_template.format(
-        name=name,
-        command=command,
-        prev_global_check=prev_global_check if check_needed else "",
-        option=option.lstrip("--"),
+          name=name,
+          command=command,
+          prev_global_check=prev_global_check if check_needed else "",
+          option=option.lstrip("--"),
       )
 
   return fish_source.format(
-    global_options=' '.join(
-      '"{option}"'.format(option=option)
-      for option in global_options
-    )
+      global_options=' '.join(
+          '"{option}"'.format(option=option)
+          for option in global_options
+      )
   )
 
 
@@ -430,28 +430,44 @@ def _Commands(component, depth=3):
       yield (member_name,) + command
 
 
-def _isOption(arg):
+def _IsOption(arg):
   return arg.startswith('-')
 
 def _GetMaps(name, commands, default_options):
+  """Returns sets of subcommands and options for each command.
+
+  Args:
+    name: The first token in the commands, also the name of the command.
+    commands: A list of all possible commands that tab completion can complete
+        to. Each command is a list or tuple of the string tokens that make up
+        that command.
+    default_options: A dict of options that can be used with any command. Use
+        this if there are flags that can always be appended to a command.
+  Returns:
+    global_options: A set of all options of the first token of the command.
+    subcommands_map: A dict storing set of subcommands for each
+        command/subcommand.
+    options_map: A dict storing set of options for each subcommand.
+  """
+
   global_options = copy(default_options)
   options_map = defaultdict(lambda: copy(default_options))
-  subcommands_map = defaultdict(lambda: set())
+  subcommands_map = defaultdict(set())
 
   for command in commands:
     if len(command) == 1:
 
-      if _isOption(command[0]):
+      if _IsOption(command[0]):
         global_options.add(command[0])
       else:
         subcommands_map[name].add(command[0])
 
-    elif len(command) != 0:
+    elif command:
 
       subcommand = command[-2]
       arg = _FormatForCommand(command[-1])
 
-      if _isOption(arg):
+      if _IsOption(arg):
         args_map = options_map
       else:
         args_map = subcommands_map
