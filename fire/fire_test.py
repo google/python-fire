@@ -703,6 +703,11 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, command=['--arg1=a1', '--arg2=a2', '-', 'jog'])
 
+  def testClassWithDefaultMethod(self):
+    self.assertEqual(
+        fire.Fire(tc.DefaultMethod, command=['double', '10']), 20
+    )
+
 
 if __name__ == '__main__':
   testutils.main()
