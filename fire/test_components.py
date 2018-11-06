@@ -505,6 +505,6 @@ class DefaultMethod(object):
     return 2 * number
 
   def __getattr__(self, name):
-    def _missing(*args, **kwargs):
+    def _missing():
       return "Undefined Function"
     return _missing
