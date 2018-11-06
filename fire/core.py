@@ -632,7 +632,7 @@ def _GetMember(component, args):
   Raises:
     FireError: If we cannot consume an argument to get a member.
   """
-  members = dict(inspect.getmembers(component))
+  members = dir(component)
   arg = args[0]
   arg_names = [
       arg,
@@ -641,7 +641,7 @@ def _GetMember(component, args):
 
   for arg_name in arg_names:
     if arg_name in members:
-      return members[arg_name], [arg], args[1:]
+      return getattr(component, arg_name), [arg], args[1:]
 
   raise FireError('Could not consume arg:', arg)
 
