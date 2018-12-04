@@ -8,6 +8,7 @@ before_install:
   - pip install --upgrade setuptools pip
   - pip install --upgrade pylint pytest pytest-pylint pytest-runner
 install:
+  - pip install hypothesis
   - python setup.py develop
 script:
   - python -m pytest  # Run the tests without IPython.

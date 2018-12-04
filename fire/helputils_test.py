@@ -19,10 +19,12 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import textwrap
 
 from fire import helputils
 from fire import test_components as tc
 from fire import testutils
+from fire import trace
 import six
 
 
@@ -127,6 +129,123 @@ class HelpUtilsTest(testutils.BaseTestCase):
     self.assertIn(os.path.join('fire', 'test_components.py'), helpstring)
     self.assertIn('Line:        ', helpstring)
 
+
+class UsageTest(testutils.BaseTestCase):
+
+  def testUsageOutput(self):
+    component = tc.NoDefaults()
+    t = trace.FireTrace(component, name='NoDefaults')
+    usage_output = helputils.UsageText(component, trace=t, verbose=False)
+    expected_output = '''
+    Usage: NoDefaults <commands>
+    available commands: double | triple
+
+    For detailed information on this command, run:
+    NoDefaults --help
+    '''
+
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
+  @testutils.skip('The functionality is not implemented yet')
+  def testUsageOutputVerbose(self):
+    component = tc.NoDefaults()
+    t = trace.FireTrace(component, name='NoDefaults')
+    usage_output = helputils.UsageText(component, trace=t, verbose=True)
+    expected_output = '''
+    Usage: NoDefaults <groups|commands|values>
+    available groups:   __delattr__ | __dict__ | __doc__ | __getattribute__ | __hash__ | __init__ | __repr__ | __setattr__ | __str__ | __weakref__
+    available commands: __class__ | __format__ | __new__ | __reduce__ | __reduce_ex__ | __sizeof__ | __subclasshook__ | double | triple
+    available values:   __module__
+
+    For detailed information on this command, run:
+    NoDefaults --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
+  def testUsageOutputMethod(self):
+    component = tc.NoDefaults().double
+    t = trace.FireTrace(component, name='NoDefaults')
+    t.AddAccessedProperty(component, 'double', ['double'], None, None)
+    usage_output = helputils.UsageText(component, trace=t, verbose=True)
+    expected_output = '''
+    Usage: NoDefaults double COUNT
+
+    For detailed information on this command, run:
+    NoDefaults double --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
+  def testUsageOutputFunctionWithHelp(self):
+    component = tc.function_with_help
+    t = trace.FireTrace(component, name='function_with_help')
+    usage_output = helputils.UsageText(component, trace=t, verbose=True)
+    expected_output = '''
+    Usage: function_with_help <flags>
+
+    Available flags: --help
+
+    For detailed information on this command, run:
+    function_with_help -- --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
+  def testUsageOutputFunctionWithDocstring(self):
+    component = tc.multiplier_with_docstring
+    t = trace.FireTrace(component, name='multiplier_with_docstring')
+    usage_output = helputils.UsageText(component, trace=t, verbose=True)
+    expected_output = '''
+    Usage: multiplier_with_docstring NUM <flags>
+
+    Available flags: --rate
+
+    For detailed information on this command, run:
+    multiplier_with_docstring --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
+  @testutils.skip('The functionality is not implemented yet')
+  def testUsageOutputCallable(self):
+    # This is both a group and a command!
+    component = tc.CallableWithKeywordArgument
+    t = trace.FireTrace(component, name='CallableWithKeywordArgument')
+    usage_output = helputils.UsageText(component, trace=t, verbose=True)
+    # TODO(zuhaohen): We need to handle the case for keyword args as well
+    # i.e. __call__ method of CallableWithKeywordArgument
+    expected_output = '''
+    Usage: CallableWithKeywordArgument <commands>
+
+    Available commands: print_msg
+
+    For detailed information on this command, run:
+    CallableWithKeywordArgument -- --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
+  def testUsageOutputConstructorWithParameter(self):
+    component = tc.InstanceVars
+    t = trace.FireTrace(component, name='InstanceVars')
+    usage_output = helputils.UsageText(component, trace=t, verbose=True)
+    expected_output = '''
+    Usage: InstanceVars ARG1 ARG2
+
+    For detailed information on this command, run:
+    InstanceVars --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
 
 if __name__ == '__main__':
   testutils.main()

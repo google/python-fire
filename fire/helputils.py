@@ -25,7 +25,9 @@ from __future__ import print_function
 import inspect
 
 from fire import completion
+from fire import docstrings
 from fire import inspectutils
+from fire import value_types
 
 
 def _NormalizeField(field):
@@ -106,14 +108,17 @@ def HelpString(component, trace=None, verbose=False):
     String suitable for display giving information about the component.
   """
   info = inspectutils.Info(component)
+  # TODO(dbieber): Stop using UsageString in favor of UsageText.
   info['usage'] = UsageString(component, trace, verbose)
+  info['docstring_info'] = docstrings.parse(info['docstring'])
 
   is_error_screen = False
   if trace:
     is_error_screen = trace.HasError()
 
   if is_error_screen:
-    return _ErrorText(info, trace)
+    # TODO(dbieber): Call UsageText instead of CommonHelpText once ready.
+    return _CommonHelpText(info, trace)
   else:
     return _HelpText(info, trace)
 
@@ -157,20 +162,141 @@ def _CommonHelpText(info, trace=None):
   return '\n'.join(lines)
 
 
-def _ErrorText(info, trace=None):
-  """Returns help text for error screen.
+def UsageText(component, trace=None, verbose=False):
+  if inspect.isroutine(component) or inspect.isclass(component):
+    return UsageTextForFunction(component, trace)
+  else:
+    return UsageTextForObject(component, trace, verbose)
 
-  Construct help text for error screen to inform the user about error occurred
-  and correct syntax for invoking the object.
+
+def UsageTextForFunction(component, trace=None):
+  """Returns usage text for function objects.
 
   Args:
-    info: The IR object containing metadata of an object.
+    component: The component to determine the usage text for.
     trace: The Fire trace object containing all metadata of current execution.
+
   Returns:
     String suitable for display in error screen.
   """
-  # TODO(joejoevictor): Implement real error text construction.
-  return _CommonHelpText(info, trace)
+
+  output_template = """Usage: {current_command} {args_and_flags}
+{availability_lines}
+For detailed information on this command, run:
+{current_command}{hyphen_hyphen} --help
+"""
+
+  if trace:
+    command = trace.GetCommand()
+    is_help_an_arg = trace.NeedsSeparatingHyphenHyphen()
+  else:
+    command = None
+    is_help_an_arg = False
+
+  if not command:
+    command = ''
+
+  spec = inspectutils.GetFullArgSpec(component)
+  args = spec.args
+
+  if spec.defaults is None:
+    num_defaults = 0
+  else:
+    num_defaults = len(spec.defaults)
+  args_with_no_defaults = args[:len(args) - num_defaults]
+  args_with_defaults = args[len(args) - num_defaults:]
+  flags = args_with_defaults + spec.kwonlyargs
+
+  items = [arg.upper() for arg in args_with_no_defaults]
+  if flags:
+    items.append('<flags>')
+    availability_lines = (
+        '\nAvailable flags: '
+        + ' | '.join('--' + flag for flag in flags) + '\n')
+  else:
+    availability_lines = ''
+  args_and_flags = ' '.join(items)
+
+  hyphen_hyphen = ' --' if is_help_an_arg else ''
+
+  return output_template.format(
+      current_command=command,
+      args_and_flags=args_and_flags,
+      availability_lines=availability_lines,
+      hyphen_hyphen=hyphen_hyphen)
+
+
+def UsageTextForObject(component, trace=None, verbose=False):
+  """Returns help text for usage screen for objects.
+
+  Construct help text for usage screen to inform the user about error occurred
+  and correct syntax for invoking the object.
+
+  Args:
+    component: The component to determine the usage text for.
+    trace: The Fire trace object containing all metadata of current execution.
+    verbose: Whether to include private members in the usage text.
+  Returns:
+    String suitable for display in error screen.
+  """
+  output_template = """Usage: {current_command} <{possible_actions}>
+{availability_lines}
+
+For detailed information on this command, run:
+{current_command} --help
+"""
+  if trace:
+    command = trace.GetCommand()
+  else:
+    command = None
+
+  if not command:
+    command = ''
+
+  groups = []
+  commands = []
+  values = []
+
+  members = completion._Members(component, verbose)  # pylint: disable=protected-access
+  for member_name, member in members:
+    if value_types.IsGroup(member):
+      groups.append(member_name)
+    if value_types.IsCommand(member):
+      commands.append(member_name)
+    if value_types.IsValue(member):
+      values.append(member_name)
+
+  possible_actions = []
+  availability_lines = []
+  availability_lint_format = '{header:20s}{choices}'
+  if groups:
+    possible_actions.append('groups')
+    groups_string = ' | '.join(groups)
+    groups_text = availability_lint_format.format(
+        header='available groups:',
+        choices=groups_string)
+    availability_lines.append(groups_text)
+  if commands:
+    possible_actions.append('commands')
+    commands_string = ' | '.join(commands)
+    commands_text = availability_lint_format.format(
+        header='available commands:',
+        choices=commands_string)
+    availability_lines.append(commands_text)
+  if values:
+    possible_actions.append('values')
+    values_string = ' | '.join(values)
+    values_text = availability_lint_format.format(
+        header='available values:',
+        choices=values_string)
+    availability_lines.append(values_text)
+  possible_actions_string = '|'.join(possible_actions)
+  availability_lines_string = '\n'.join(availability_lines)
+
+  return output_template.format(
+      current_command=command,
+      possible_actions=possible_actions_string,
+      availability_lines=availability_lines_string)
 
 
 def _HelpText(info, trace=None):

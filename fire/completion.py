@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from collections import defaultdict
-from copy import copy
+import collections
+import copy
 import inspect
 
 from fire import inspectutils
@@ -47,7 +47,7 @@ def _BashScript(name, commands, default_options=None):
     completion in Bash.
   """
   default_options = default_options or set()
-  options_map = defaultdict(lambda: copy(default_options))
+  options_map = collections.defaultdict(lambda: copy.copy(default_options))
   for command in commands:
     start = (name + ' ' + ' '.join(command[:-1])).strip()
     completion = _FormatForCommand(command[-1])
@@ -114,7 +114,7 @@ def _FishScript(name, commands, default_options=None):
     completion in Fish.
   """
   default_options = default_options or set()
-  options_map = defaultdict(lambda: copy(default_options))
+  options_map = collections.defaultdict(lambda: copy.copy(default_options))
   for command in commands:
     start = (name + ' ' + ' '.join(command[:-1])).strip()
     completion = _FormatForCommand(command[-1])

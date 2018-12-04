@@ -69,6 +69,7 @@ from fire import inspectutils
 from fire import interact
 from fire import parser
 from fire import trace
+from fire import value_types
 import six
 
 
@@ -242,8 +243,7 @@ def _PrintResult(component_trace, verbose=False):
     print(_DictAsString(result, verbose))
   elif isinstance(result, tuple):
     print(_OneLineResult(result))
-  elif isinstance(result,
-                  (bool, six.string_types, six.integer_types, float, complex)):
+  elif isinstance(result, value_types.VALUE_TYPES):
     print(result)
   elif result is not None:
     print(helputils.HelpString(result, component_trace, verbose))

@@ -95,5 +95,7 @@ class BaseTestCase(unittest.TestCase):
           raise
 
 
-def main():
-  unittest.main()
+# pylint: disable=invalid-name
+main = unittest.main
+skip = unittest.skip
+# pylint: enable=invalid-name

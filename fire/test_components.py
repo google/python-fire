@@ -32,6 +32,18 @@ def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=ke
 identity.__annotations__ = {'arg2': int, 'arg4': int}
 
 
+def multiplier_with_docstring(num, rate=2):
+  """Multiplies num by rate.
+
+  Args:
+    num (int): the num you want to multiply
+    rate (int): the rate for multiplication
+  Returns:
+    Multiplication of num by rate
+  """
+  return num * rate
+
+
 def function_with_help(help=True):  # pylint: disable=redefined-builtin
   return help
 
