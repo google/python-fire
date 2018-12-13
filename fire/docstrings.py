@@ -266,7 +266,7 @@ def _get_or_create_arg_by_name(state, name):
 def _is_arg_name(name):
   """Returns whether name is a valid arg name.
 
-  This is used to prevent multiple words (plaintext) from being misinterpretted
+  This is used to prevent multiple words (plaintext) from being misinterpreted
   as an argument name. So if ":" appears in the middle of a line in a docstring,
   we don't accidentally interpret the first half of that line as a single arg
   name.
