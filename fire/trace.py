@@ -221,7 +221,7 @@ class FireTrace(object):
 
     '--' is needed when the component takes keyword arguments, when the value of
     flag matches one of the argument of the component, or the component takes in
-    keywork-only arguments(e.g. argument with default value).
+    keyword-only arguments(e.g. argument with default value).
 
     Args:
       flag: the flag available for the trace

@@ -63,7 +63,7 @@ def _GetArgSpecInfo(fn):
     fn: The function or class of interest.
   Returns:
     A tuple with the following two items:
-      fn: The function to use for determing the arg spec of this function.
+      fn: The function to use for determining the arg spec of this function.
       skip_arg: Whether the first argument will be supplied automatically, and
         hence should be skipped when supplying args from a Fire command.
   """
