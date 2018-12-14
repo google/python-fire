@@ -90,8 +90,9 @@ _Note that flags are separated from the Fire command by an isolated `--` arg._
 
 ## License
 
-  Licensed under the [Apache 2.0](https://github.com/google/python-fire/blob/master/LICENSE) License.
-  
+Licensed under the
+[Apache 2.0](https://github.com/google/python-fire/blob/master/LICENSE) License.
+
 ## Disclaimer
 
 This is not an official Google product.

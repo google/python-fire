@@ -88,6 +88,10 @@ Please see [The Python Fire Guide](guide.md).
 
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 
+## License
+
+Licensed under the
+[Apache 2.0](https://github.com/google/python-fire/blob/master/LICENSE) License.
 
 ## Disclaimer
 

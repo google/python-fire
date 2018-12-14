@@ -148,16 +148,13 @@ class UsageTest(testutils.BaseTestCase):
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
 
-  @testutils.skip('The functionality is not implemented yet')
   def testUsageOutputVerbose(self):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')
     usage_output = helputils.UsageText(component, trace=t, verbose=True)
     expected_output = '''
-    Usage: NoDefaults <groups|commands|values>
-    available groups:   __delattr__ | __dict__ | __doc__ | __getattribute__ | __hash__ | __init__ | __repr__ | __setattr__ | __str__ | __weakref__
-    available commands: __class__ | __format__ | __new__ | __reduce__ | __reduce_ex__ | __sizeof__ | __subclasshook__ | double | triple
-    available values:   __module__
+    Usage: NoDefaults <commands>
+    available commands: double | triple
 
     For detailed information on this command, run:
     NoDefaults --help

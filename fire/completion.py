@@ -155,6 +155,25 @@ end
 
 
 def _IncludeMember(name, verbose):
+  """Returns whether a member should be included in auto-completion or help.
+
+  Determines whether a member of an object with the specified name should be
+  included in auto-completion or help text(both usage and detailed help).
+
+  If the member starts with '__', it will always be excluded. If the member
+  starts with only one '_', it will be included for all non-string types. If
+  verbose is True, the members, including the private members, are always
+  included.
+
+  Args:
+    name: The name of the member.
+    verbose: Whether to include private members.
+  Returns
+    A boolean value indicating whether the member should be included.
+
+  """
+  if isinstance(name, six.string_types) and name[:2] == '__':
+    return False
   if verbose:
     return True
   if isinstance(name, six.string_types):
