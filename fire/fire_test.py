@@ -683,6 +683,18 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, command=['--arg1=a1', '--arg2=a2', '-', 'jog'])
 
+  def testStrUpper(self):
+    # The property with no modification
+    self.assertEqual(
+        "myexcitingstring",
+        fire.Fire(tc.TypedProperties, command=['gamma'])
+    )
+    # The str.upper() call
+    self.assertEqual(
+        "MYEXCITINGSTRING",
+        fire.Fire(tc.TypedProperties, command=['gamma', 'upper'])
+    )
+
 
 if __name__ == '__main__':
   testutils.main()

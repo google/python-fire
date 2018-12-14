@@ -705,6 +705,8 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
   parsed_args = []
   for index, arg in enumerate(fn_args):
     value = kwargs.pop(arg, None)
+    if arg == 'self':
+      continue
     if value is not None:  # A value is specified at the command line.
       value = _ParseValue(value, index, arg, metadata)
       parsed_args.append(value)
