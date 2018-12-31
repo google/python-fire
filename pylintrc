@@ -38,7 +38,7 @@ disable=design,similarities,no-self-use,attribute-defined-outside-init,locally-d
 [REPORTS]
 
 # Set the output format. Available formats are text, parseable, colorized, msvs
-# (visual studio) and html
+# (Visual Studio) and HTML
 output-format=text
 
 # Include message's id in output
