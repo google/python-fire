@@ -444,11 +444,11 @@ def _Fire(component, args, context, name=None):
       target = remaining_args[0]
 
       # Allow indexing for namedtuples.
-      is_target_int = False
       try:
         index = int(target)
         is_target_int = True
-      except: pass
+      except ValueError:
+        is_target_int = False
 
       if inspectutils.Isnamedtuple(component) and is_target_int:
         try:
