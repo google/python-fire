@@ -277,6 +277,14 @@ class OrderedDictionary(object):
     return ordered_dict
 
 
+class NamedTuple(object):
+
+  def point(self):
+    """Point example straight from Python docs."""
+    Point = collections.namedtuple('Point', ['x', 'y'])
+    return Point(11, y=22)
+
+
 class CallableWithKeywordArgument(object):
   """Test class for supporting callable."""
 
