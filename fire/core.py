@@ -442,7 +442,23 @@ def _Fire(component, args, context, name=None):
           and remaining_args):
       # The component is a dict; we'll try to access a member.
       target = remaining_args[0]
-      if target in component:
+
+      # Allow indexing for namedtuples.
+      is_target_int = False
+      try:
+        index = int(target)
+        is_target_int = True
+      except: pass
+
+      if inspectutils.Isnamedtuple(component) and is_target_int:
+        try:
+          component = component[index]
+        except (ValueError, IndexError):
+          error = FireError(
+              'Unable to index into component with argument:', target)
+          component_trace.AddError(error, initial_args)
+          return component_trace
+      elif target in component:
         component = component[target]
       elif target.replace('-', '_') in component:
         component = component[target.replace('-', '_')]

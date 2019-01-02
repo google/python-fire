@@ -144,6 +144,14 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertOutputMatches(stdout='11', stderr=None):
       core.Fire(tc.NamedTuple, command=['point', 'x'])
 
+  def testPrintNamedTupleIndex(self):
+    with self.assertOutputMatches(stdout='22', stderr=None):
+      core.Fire(tc.NamedTuple, command=['point', '1'])
+
+  def testPrintNamedTupleNegativeIndex(self):
+    with self.assertOutputMatches(stdout='11', stderr=None):
+      core.Fire(tc.NamedTuple, command=['point', '-2'])
+
   def testCallable(self):
     with self.assertOutputMatches(stdout=r'foo:\s+foo\s+', stderr=None):
       core.Fire(tc.CallableWithKeywordArgument(), command=['--foo=foo'])
