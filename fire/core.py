@@ -420,7 +420,7 @@ def _Fire(component, args, context, name=None):
         instance = component
 
     elif (isinstance(component, (list, tuple)) and remaining_args
-          and not inspectutils.isnamedtuple(component)):
+          and not inspectutils.Isnamedtuple(component)):
       # The component is a tuple or list; we'll try to access a member.
       arg = remaining_args[0]
       try:
@@ -438,7 +438,7 @@ def _Fire(component, args, context, name=None):
       component_trace.AddAccessedProperty(
           component, index, [arg], filename, lineno)
 
-    elif ((isinstance(component, dict) or inspectutils.isnamedtuple(component))
+    elif ((isinstance(component, dict) or inspectutils.Isnamedtuple(component))
           and remaining_args):
       # The component is a dict; we'll try to access a member.
       target = remaining_args[0]
@@ -453,7 +453,7 @@ def _Fire(component, args, context, name=None):
         found_target = False
         # If the component is a namedtuple, we need to convert it to dict to
         # be able to use the .items() method.
-        if inspectutils.isnamedtuple(component):
+        if inspectutils.Isnamedtuple(component):
           component = component._asdict()
         for key, value in component.items():
           if target == str(key):
