@@ -281,6 +281,7 @@ class NamedTuple(object):
 
   def point(self):
     """Point example straight from Python docs."""
+    # pylint: disable=invalid-name
     Point = collections.namedtuple('Point', ['x', 'y'])
     return Point(11, y=22)
 
