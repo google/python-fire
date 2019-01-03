@@ -419,7 +419,8 @@ def _Fire(component, args, context, name=None):
         # If the initial component is a class, keep an instance for use with -i.
         instance = component
 
-    elif isinstance(component, (list, tuple)) and remaining_args:
+    elif (isinstance(component, (list, tuple)) and remaining_args
+          and not inspectutils.IsNamedTuple(component)):
       # The component is a tuple or list; we'll try to access a member.
       arg = remaining_args[0]
       try:
@@ -437,10 +438,27 @@ def _Fire(component, args, context, name=None):
       component_trace.AddAccessedProperty(
           component, index, [arg], filename, lineno)
 
-    elif isinstance(component, dict) and remaining_args:
+    elif ((isinstance(component, dict) or inspectutils.IsNamedTuple(component))
+          and remaining_args):
       # The component is a dict; we'll try to access a member.
       target = remaining_args[0]
-      if target in component:
+
+      # Allow indexing for namedtuples.
+      try:
+        index = int(target)
+        is_target_int = True
+      except ValueError:
+        is_target_int = False
+
+      if inspectutils.IsNamedTuple(component) and is_target_int:
+        try:
+          component = component[index]
+        except (ValueError, IndexError):
+          error = FireError(
+              'Unable to index into component with argument:', target)
+          component_trace.AddError(error, initial_args)
+          return component_trace
+      elif target in component:
         component = component[target]
       elif target.replace('-', '_') in component:
         component = component[target.replace('-', '_')]
@@ -449,6 +467,10 @@ def _Fire(component, args, context, name=None):
         # another type.
         # TODO(dbieber): Consider alternatives for accessing non-string keys.
         found_target = False
+        # If the component is a namedtuple, we need to convert it to dict to
+        # be able to use the .items() method.
+        if inspectutils.IsNamedTuple(component):
+          component = component._asdict()
         for key, value in component.items():
           if target == str(key):
             component = value
