@@ -204,7 +204,7 @@ def _InfoBackup(component):
   return info
 
 
-def Isnamedtuple(component):
+def IsNamedTuple(component):
   """Return true if the component is a namedtuple.
 
   Unfortunately, Python offers no native way to check for a namedtuple type.
