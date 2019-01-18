@@ -21,7 +21,9 @@ from __future__ import print_function
 import os
 import textwrap
 
+from fire import docstrings
 from fire import helputils
+from fire import inspectutils
 from fire import test_components as tc
 from fire import testutils
 from fire import trace
@@ -128,6 +130,40 @@ class HelpUtilsTest(testutils.BaseTestCase):
     self.assertIn('fire.test_components.OldStyleEmpty', helpstring)
     self.assertIn(os.path.join('fire', 'test_components.py'), helpstring)
     self.assertIn('Line:        ', helpstring)
+
+
+class HelpScreenTest(testutils.BaseTestCase):
+
+  def testHelpScreen(self):
+    component = tc.ClassWithDocstring()
+    t = trace.FireTrace(component, name='ClassWithDocstring')
+    info = inspectutils.Info(component)
+    info['docstring_info'] = docstrings.parse(info['docstring'])
+    help_output = helputils.HelpText(component, info, t)
+    expected_output = """
+NAME
+    ClassWithDocstring - Test class for testing help text output.
+
+SYNOPSIS
+    ClassWithDocstring COMMAND | VALUES
+
+DESCRIPTION
+    This is some detail description of this test class.
+
+COMMANDS
+    COMMAND is one of the followings:
+
+        print_msg
+            Prints a message.
+
+VALUES
+    VALUE is one of the followings:
+
+        message
+            The default message to print.
+
+"""
+    self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
 
 
 class UsageTest(testutils.BaseTestCase):
@@ -243,6 +279,7 @@ class UsageTest(testutils.BaseTestCase):
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
+
 
 if __name__ == '__main__':
   testutils.main()

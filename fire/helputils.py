@@ -162,6 +162,135 @@ def _CommonHelpText(info, trace=None):
   return '\n'.join(lines)
 
 
+def HelpText(component, info, trace=None, verbose=False):
+  if inspect.isroutine(component) or inspect.isclass(component):
+    return HelpTextForFunction(component, info, trace)
+  else:
+    return HelpTextForObject(component, info, trace, verbose)
+
+
+def HelpTextForFunction(component, info, trace=None, verbose=False):
+  del component, info, trace, verbose
+
+
+def HelpTextForObject(component, info, trace=None, verbose=False):
+  """Generates help text for python objects.
+
+  Args:
+    component: Current component to generate help text for.
+    info: Info containing metadata of component.
+    trace: FireTrace object that leads to current component.
+    verbose: Whether to display help text in verbose mode.
+
+  Returns:
+    Formatted help text for display.
+  """
+
+  output_template = """NAME
+    {current_command} - {command_summary}
+
+SYNOPSIS
+    {synopsis}
+
+DESCRIPTION
+    {command_description}
+{detail_section}
+"""
+
+  if trace:
+    current_command = trace.GetCommand()
+  else:
+    current_command = None
+
+  if not current_command:
+    current_command = ''
+
+  docstring_info = info['docstring_info']
+  command_summary = docstring_info.summary if docstring_info.summary else ''
+  if docstring_info.description:
+    command_description = docstring_info.description
+  else:
+    command_description = ''
+
+  groups = []
+  commands = []
+  values = []
+  members = completion._Members(component, verbose)  # pylint: disable=protected-access
+  for member_name, member in members:
+    if value_types.IsGroup(member):
+      groups.append((member_name, member))
+    if value_types.IsCommand(member):
+      commands.append((member_name, member))
+    if value_types.IsValue(member):
+      values.append((member_name, member))
+
+  possible_actions = []
+  # TODO(joejoevictor): Add global flags to here. Also, if it's a callable, there
+  # will be additional flags.
+  possible_flags = ''
+  detail_section_string = ''
+  item_template = """
+        {name}
+            {command_summary}
+"""
+
+  if groups:
+    # TODO(joejoevictor): Add missing GROUPS section handling
+    possible_actions.append('GROUP')
+  if commands:
+    possible_actions.append('COMMAND')
+    commands_str_template = """
+COMMANDS
+    COMMAND is one of the followings:
+{items}
+"""
+    command_item_strings = []
+    for command_name, command in commands:
+      command_docstring_info = docstrings.parse(
+          inspectutils.Info(command)['docstring'])
+      command_item_strings.append(
+          item_template.format(
+              name=command_name,
+              command_summary=command_docstring_info.summary))
+    detail_section_string += commands_str_template.format(
+        items=('\n'.join(command_item_strings)).rstrip('\n'))
+
+  if values:
+    possible_actions.append('VALUES')
+    values_str_template = """
+VALUES
+    VALUE is one of the followings:
+{items}
+"""
+    value_item_strings = []
+    for value_name, value in values:
+      del value
+      init_docstring_info = docstrings.parse(
+          inspectutils.Info(component.__class__.__init__)['docstring'])
+      for arg_info in init_docstring_info.args:
+        if arg_info.name == value_name:
+          value_item_strings.append(
+              item_template.format(
+                  name=value_name, command_summary=arg_info.description))
+    detail_section_string += values_str_template.format(
+        items=('\n'.join(value_item_strings)).rstrip('\n'))
+
+  possible_actions_string = ' ' + (' | '.join(possible_actions))
+
+  synopsis_template = '{current_command}{possible_actions}{possible_flags}'
+  synopsis_string = synopsis_template.format(
+      current_command=current_command,
+      possible_actions=possible_actions_string,
+      possible_flags=possible_flags)
+
+  return output_template.format(
+      current_command=current_command,
+      command_summary=command_summary,
+      synopsis=synopsis_string,
+      command_description=command_description,
+      detail_section=detail_section_string)
+
+
 def UsageText(component, trace=None, verbose=False):
   if inspect.isroutine(component) or inspect.isclass(component):
     return UsageTextForFunction(component, trace)
