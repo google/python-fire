@@ -12,7 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This module enables interactive mode in Python Fire."""
+"""This module enables interactive mode in Python Fire.
+
+It uses IPython as an optional dependency. When IPython is installed, the
+interactive flag will use IPython's REPL. When IPython is not installed, the
+interactive flag will start a Python REPL with the builtin `code` module's
+InteractiveConsole class.
+"""
 
 from __future__ import absolute_import
 from __future__ import division
