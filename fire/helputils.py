@@ -225,8 +225,8 @@ DESCRIPTION
       values.append((member_name, member))
 
   possible_actions = []
-  # TODO(joejoevictor): Add global flags to here. Also, if it's a callable, there
-  # will be additional flags.
+  # TODO(joejoevictor): Add global flags to here. Also, if it's a callable,
+  # there will be additional flags.
   possible_flags = ''
   detail_section_string = ''
   item_template = """
