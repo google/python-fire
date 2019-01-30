@@ -16,6 +16,17 @@
 
 Can produce help strings suitable for display in Fire CLIs for any type of
 Python object, module, class, or function.
+
+There are two types of informative strings: Usage and Help screens.
+
+Usage screens are shown when the user accesses a group or accesses a command
+without calling it. A Usage screen shows information about how to use that group
+or command. Usage screens are typically short and show the minimal information
+necessary for the user to determine how to proceed.
+
+Help screens are shown when the user requests help with the help flag (--help).
+Help screens are shown in a less-style console view, and contain detailed help
+information.
 """
 
 from __future__ import absolute_import
@@ -135,8 +146,8 @@ def _CommonHelpText(info, trace=None):
   Returns:
     String suitable for display giving information about the component.
   """
-  # TODO(joejoevictor): Currently this is just a copy of existing HelpString
-  # method. We will reimplement this further in later CLs.
+  # TODO(joejoevictor): Currently this is just a copy of existing
+  # HelpString method. We will reimplement this further in later CLs.
   fields = _GetFields(trace)
 
   try:
@@ -225,8 +236,8 @@ DESCRIPTION
       values.append((member_name, member))
 
   possible_actions = []
-  # TODO(joejoevictor): Add global flags to here. Also, if it's a callable,
-  # there will be additional flags.
+  # TODO(joejoevictor): Add global flags to here. Also, if it's a callable, there
+  # will be additional flags.
   possible_flags = ''
   detail_section_string = ''
   item_template = """
