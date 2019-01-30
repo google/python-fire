@@ -29,7 +29,7 @@ from hypothesis import strategies as st
 
 class DocstringsFuzzTest(testutils.BaseTestCase):
 
-  @settings(max_examples=10000)
+  @settings(max_examples=10000, deadline=1000)
   @given(st.text(min_size=1))
   @example('This is a one-line docstring.')
   def test_fuzz_parse(self, value):
