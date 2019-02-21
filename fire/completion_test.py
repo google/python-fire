@@ -36,7 +36,10 @@ class TabCompletionTest(testutils.BaseTestCase):
     script = completion._BashScript(name='command', commands=commands)  # pylint: disable=protected-access
     self.assertIn('command', script)
     self.assertIn('halt', script)
-    self.assertIn('"$start" == "command"', script)
+
+    assert_template = "{command})"
+    for last_command in ['command', 'halt']:
+      self.assertIn(assert_template.format(command=last_command), script)
 
   def testCompletionFishScript(self):
     # A sanity check test to make sure the fish completion script satisfies
