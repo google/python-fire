@@ -178,7 +178,8 @@ def GetSummaryAndDescription(docstring_info):
 
   # To handle both empty string and None
   summary = docstring_info.summary if docstring_info.summary else None
-  description = docstring_info.description if docstring_info.description else None
+  description = (
+      docstring_info.description if docstring_info.description else None)
   return summary, description
 
 

@@ -165,7 +165,7 @@ VALUES
 """
     self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
 
-  def testHelpScreen_withLineBreak(self):
+  def testHelpScreenWithLineBreak(self):
     component = tc.ClassWithMultilineDocstring.example_generator
     t = trace.FireTrace(component, name='example_generator')
     info = inspectutils.Info(component)
