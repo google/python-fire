@@ -70,6 +70,7 @@ from fire import interact
 from fire import parser
 from fire import trace
 from fire import value_types
+from fire.console import console_pager
 import six
 
 
@@ -130,35 +131,43 @@ def Fire(component=None, command=None, name=None):
   component_trace = _Fire(component, args, context, name)
 
   if component_trace.HasError():
-    for help_flag in ('-h', '--help'):
-      if help_flag in component_trace.elements[-1].args:
-        command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
-        print('INFO: Showing help with the command {cmd}.\n'.format(
-            cmd=pipes.quote(command)), file=sys.stderr)
-    _PrintError(component_trace)
+    _DisplayError(component_trace)
     raise FireExit(2, component_trace)
   elif component_trace.show_trace and component_trace.show_help:
-    print('Fire trace:\n{trace}\n'.format(trace=component_trace),
-          file=sys.stderr)
+    output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
     result = component_trace.GetResult()
-    print(
-        helputils.HelpString(result, component_trace, component_trace.verbose),
-        file=sys.stderr)
+    help_string = helputils.HelpString(
+        result, component_trace, component_trace.verbose)
+    output.append(help_string)
+    Display(output)
     raise FireExit(0, component_trace)
   elif component_trace.show_trace:
-    print('Fire trace:\n{trace}'.format(trace=component_trace),
-          file=sys.stderr)
+    output = ['Fire trace:\n{trace}'.format(trace=component_trace)]
+    Display(output)
     raise FireExit(0, component_trace)
   elif component_trace.show_help:
     result = component_trace.GetResult()
-    print(
-        helputils.HelpString(result, component_trace, component_trace.verbose),
-        file=sys.stderr)
+    help_string = helputils.HelpString(
+        result, component_trace, component_trace.verbose)
+    output = [help_string]
+    Display(output)
     raise FireExit(0, component_trace)
   else:
+    # The command succeeded normally; print the result.
     _PrintResult(component_trace, verbose=component_trace.verbose)
     result = component_trace.GetResult()
     return result
+
+
+def Display(lines):
+  text = '\n'.join(lines) + '\n'
+  pager = console_pager.Pager(text, out=sys.stderr)
+  try:
+    pager.Run()
+  except:  # pylint: disable=bare-except
+    # pager.Run() fails with termios.error(25, 'Inappropriate ioctl for device')
+    # for outputs that don't fit on a single screen in our test environment.
+    pass
 
 
 def CompletionScript(name, component, shell):
@@ -249,13 +258,21 @@ def _PrintResult(component_trace, verbose=False):
     print(helputils.HelpString(result, component_trace, verbose))
 
 
-def _PrintError(component_trace):
+def _DisplayError(component_trace):
   """Prints the Fire trace and the error to stdout."""
-  print('Fire trace:\n{trace}\n'.format(trace=component_trace), file=sys.stderr)
+  output = []
+  for help_flag in ('-h', '--help'):
+    if help_flag in component_trace.elements[-1].args:
+      command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
+      message = 'INFO: Showing help with the command {cmd}.\n'.format(
+          cmd=pipes.quote(command))
+      output.append(message)
+  output.append('Fire trace:\n{trace}\n'.format(trace=component_trace))
   result = component_trace.GetResult()
-  print(
-      helputils.HelpString(result, component_trace, component_trace.verbose),
-      file=sys.stderr)
+  help_string = helputils.HelpString(result, component_trace,
+                                     component_trace.verbose)
+  output.append(help_string)
+  Display(output)
 
 
 def _DictAsString(result, verbose=False):

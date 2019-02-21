@@ -82,11 +82,11 @@ class CoreTest(testutils.BaseTestCase):
       core.Fire(tc.InstanceVars, command=['-h'])
 
   def testHelpWithMember(self):
-    with self.assertRaisesFireExit(0, 'Usage:.*upper'):
+    with self.assertRaisesFireExit(0, 'Usage:.*capitalize'):
       core.Fire(tc.TypedProperties, command=['gamma', '--', '--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*upper'):
+    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*capitalize'):
       core.Fire(tc.TypedProperties, command=['gamma', '--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*upper'):
+    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*capitalize'):
       core.Fire(tc.TypedProperties, command=['gamma', '-h'])
     with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*delta'):
       core.Fire(tc.TypedProperties, command=['delta', '--help'])
