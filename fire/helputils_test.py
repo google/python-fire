@@ -165,6 +165,31 @@ VALUES
 """
     self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
 
+  def testHelpScreen_withLineBreak(self):
+    component = tc.ClassWithMultilineDocstring.example_generator
+    t = trace.FireTrace(component, name='example_generator')
+    info = inspectutils.Info(component)
+    info['docstring_info'] = docstrings.parse(info['docstring'])
+    help_output = helputils.HelpText(component, info, t)
+    expected_output = """
+    NAME
+        example_generator - Generators have a ``Yields`` section instead of a ``Returns`` section.
+
+    SYNOPSIS
+        example_generator N
+
+    DESCRIPTION
+        Generators have a ``Yields`` section instead of a ``Returns`` section.
+
+    POSITIONAL ARGUMENTS
+        N
+            The upper limit of the range to generate, from 0 to `n` - 1.
+
+    NOTES
+        You could also use flags syntax for POSITIONAL ARGUMENTS
+    """
+    self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
+
 
 class UsageTest(testutils.BaseTestCase):
 

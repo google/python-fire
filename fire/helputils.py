@@ -173,6 +173,25 @@ def _CommonHelpText(info, trace=None):
   return '\n'.join(lines)
 
 
+def GetSummaryAndDescription(docstring_info):
+  """Retrieves summary and description for help text generation."""
+
+  # To handle both empty string and None
+  summary = docstring_info.summary if docstring_info.summary else None
+  description = docstring_info.description if docstring_info.description else None
+  return summary, description
+
+
+def GetCurrentCommand(trace=None):
+  """Returns current command for the purpose of generating help text."""
+  if trace:
+    current_command = trace.GetCommand()
+  else:
+    current_command = ''
+
+  return current_command
+
+
 def HelpText(component, info, trace=None, verbose=False):
   if inspect.isroutine(component) or inspect.isclass(component):
     return HelpTextForFunction(component, info, trace)
@@ -181,7 +200,96 @@ def HelpText(component, info, trace=None, verbose=False):
 
 
 def HelpTextForFunction(component, info, trace=None, verbose=False):
-  del component, info, trace, verbose
+  """Returns detail help text for a function component.
+
+  Args:
+    component: Current component to generate help text for.
+    info: Info containing metadata of component.
+    trace: FireTrace object that leads to current component.
+    verbose: Whether to display help text in verbose mode.
+
+  Returns:
+    Formatted help text for display.
+  """
+  # TODO(joejoevictor): Implement verbose related output
+  del verbose
+
+  current_command = GetCurrentCommand(trace)
+  summary, description = GetSummaryAndDescription(info['docstring_info'])
+  spec = inspectutils.GetFullArgSpec(component)
+  args = spec.args
+
+  if spec.defaults is None:
+    num_defaults = 0
+  else:
+    num_defaults = len(spec.defaults)
+  args_with_no_defaults = args[:len(args) - num_defaults]
+
+  # TODO(joejoevictor): Generate flag section using these
+  # args_with_defaults = args[len(args) - num_defaults:]
+  # flags = args_with_defaults + spec.kwonlyargs
+
+  output_template = """NAME
+    {name_section}
+
+SYNOPSIS
+    {synopsis_section}
+
+DESCRIPTION
+    {description_section}
+{args_and_flags_section}
+NOTES
+    You could also use flags syntax for POSITIONAL ARGUMENTS
+"""
+
+  # Name section
+  name_section_template = '{current_command}{command_summary}'
+  command_summary_str = ' - ' + summary if summary else ''
+  name_section = name_section_template.format(
+      current_command=current_command, command_summary=command_summary_str)
+
+  items = [arg.upper() for arg in args_with_no_defaults]
+  args_and_flags = ' '.join(items)
+
+  # Synopsis section
+  synopsis_section_template = '{current_command} {args_and_flags}'
+  positional_arguments = '|'.join(args)
+  if positional_arguments:
+    positional_arguments = ' ' + positional_arguments
+  synopsis_section = synopsis_section_template.format(
+      current_command=current_command, args_and_flags=args_and_flags)
+
+  # Description section
+  description_section = description if description else summary
+
+  args_and_flags_section = ''
+
+  # Positional arguments and flags section
+
+  pos_arg_template = """
+POSITIONAL ARGUMENTS
+{items}
+"""
+  pos_arg_items = []
+  for arg in args_with_no_defaults:
+    item_template = '    {arg_name}\n        {arg_description}\n'
+    arg_description = None
+    for arg_in_docstring in info['docstring_info'].args:
+      if arg_in_docstring.name == arg:
+        arg_description = arg_in_docstring.description
+
+    item = item_template.format(
+        arg_name=arg.upper(), arg_description=arg_description)
+    pos_arg_items.append(item)
+  if pos_arg_items:
+    args_and_flags_section += pos_arg_template.format(
+        items='\n'.join(pos_arg_items).rstrip('\n'))
+
+  return output_template.format(
+      name_section=name_section,
+      synopsis_section=synopsis_section,
+      description_section=description_section,
+      args_and_flags_section=args_and_flags_section)
 
 
 def HelpTextForObject(component, info, trace=None, verbose=False):
@@ -208,13 +316,7 @@ DESCRIPTION
 {detail_section}
 """
 
-  if trace:
-    current_command = trace.GetCommand()
-  else:
-    current_command = None
-
-  if not current_command:
-    current_command = ''
+  current_command = GetCurrentCommand(trace)
 
   docstring_info = info['docstring_info']
   command_summary = docstring_info.summary if docstring_info.summary else ''
@@ -338,7 +440,6 @@ For detailed information on this command, run:
 
   spec = inspectutils.GetFullArgSpec(component)
   args = spec.args
-
   if spec.defaults is None:
     num_defaults = 0
   else:
