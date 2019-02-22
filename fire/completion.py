@@ -155,17 +155,19 @@ complete -F _complete-{identifier} {command}
     else:
       return opts_assignment_subcommand_template
 
-  lastcommand_checks = '\n'.join(
-      lastcommand_check_template.format(
-          command=command,
-          opts_assignment=_GetOptsAssignmentTemplate(command).format(
-              options=' '.join(sorted(
-                  options_map[command].union(subcommands_map[command])
-              )),
-          ),
-      )
-      for command in set(subcommands_map.keys()).union(set(options_map.keys()))
-  )
+  lines = []
+  for command in set(subcommands_map.keys()).union(set(options_map.keys())):
+    opts_assignment = _GetOptsAssignmentTemplate(command).format(
+        options=' '.join(
+            sorted(options_map[command].union(subcommands_map[command]))
+        ),
+    )
+    lines.append(
+        lastcommand_check_template.format(
+            command=command,
+            opts_assignment=opts_assignment)
+    )
+  lastcommand_checks = '\n'.join(lines)
 
   checks = check_wrapper.format(
       lastcommand_checks=lastcommand_checks,
@@ -253,7 +255,7 @@ end
                    "'__fish_using_command {command};{prev_global_check} and "
                    "__option_entered_check --{option}' -l {option}\n")
 
-  prev_global_check = " and __is_prev_global;"
+  prev_global_check = ' and __is_prev_global;'
   for command in set(subcommands_map.keys()).union(set(options_map.keys())):
     for subcommand in subcommands_map[command]:
       fish_source += subcommand_template.format(
@@ -267,8 +269,8 @@ end
       fish_source += flag_template.format(
           name=name,
           command=command,
-          prev_global_check=prev_global_check if check_needed else "",
-          option=option.lstrip("--"),
+          prev_global_check=prev_global_check if check_needed else '',
+          option=option.lstrip('--'),
       )
 
   return fish_source.format(
@@ -432,6 +434,7 @@ def _Commands(component, depth=3):
 def _IsOption(arg):
   return arg.startswith('-')
 
+
 def _GetMaps(name, commands, default_options):
   """Returns sets of subcommands and options for each command.
 
@@ -448,21 +451,18 @@ def _GetMaps(name, commands, default_options):
         command/subcommand.
     options_map: A dict storing set of options for each subcommand.
   """
-
   global_options = copy.copy(default_options)
   options_map = collections.defaultdict(lambda: copy.copy(default_options))
   subcommands_map = collections.defaultdict(set)
 
   for command in commands:
     if len(command) == 1:
-
       if _IsOption(command[0]):
         global_options.add(command[0])
       else:
         subcommands_map[name].add(command[0])
 
     elif command:
-
       subcommand = command[-2]
       arg = _FormatForCommand(command[-1])
 
