@@ -37,7 +37,7 @@ class TabCompletionTest(testutils.BaseTestCase):
     self.assertIn('command', script)
     self.assertIn('halt', script)
 
-    assert_template = '{command})'
+    assert_template = "{command})"
     for last_command in ['command', 'halt']:
       self.assertIn(assert_template.format(command=last_command), script)
 
