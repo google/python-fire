@@ -183,7 +183,7 @@ class FireError(Exception):
   """
 
 
-class FireExit(SystemExit):
+class FireExit(SystemExit):  # pylint: disable=g-bad-exception-name
   """An exception raised by Fire to the client in the case of a FireError.
 
   The trace of the Fire program is available on the `trace` property.
