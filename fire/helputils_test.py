@@ -88,7 +88,6 @@ class HelpUtilsTest(testutils.BaseTestCase):
     helpstring = helputils.HelpString('test'.upper)
     self.assertIn('Type:        builtin_function_or_method', helpstring)
     self.assertIn('String form: <built-in method upper of', helpstring)
-    self.assertIn('Usage:       [VARS ...] [--KWARGS ...]', helpstring)
 
   def testHelpStringIntType(self):
     helpstring = helputils.HelpString(int)
