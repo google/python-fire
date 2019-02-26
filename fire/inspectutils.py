@@ -73,11 +73,12 @@ def _GetArgSpecInfo(fn):
     skip_arg = True
     if six.PY2 and hasattr(fn, '__init__'):
       fn = fn.__init__
-  else:
+  elif inspect.ismethod(fn):
     # If the function is a bound method, we skip the `self` argument.
-    is_method = inspect.ismethod(fn)
-    skip_arg = is_method and fn.__self__ is not None
-
+    skip_arg = fn.__self__ is not None
+  elif inspect.isbuiltin(fn):
+    # If the function is a bound builtin, we skip the `self` argument.
+    skip_arg = fn.__self__ is not None
   return fn, skip_arg
 
 

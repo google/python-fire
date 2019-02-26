@@ -56,8 +56,6 @@ class InspectUtilsTest(testutils.BaseTestCase):
     spec = inspectutils.GetFullArgSpec('test'.upper)
     self.assertEqual(spec.args, [])
     self.assertEqual(spec.defaults, ())
-    self.assertEqual(spec.varargs, 'vars')
-    self.assertEqual(spec.varkw, 'kwargs')
     self.assertEqual(spec.kwonlyargs, [])
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {})
