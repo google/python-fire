@@ -65,7 +65,9 @@ class FireTrace(object):
 
   def GetResult(self):
     """Returns the component from the last element of the trace."""
+    # pytype: disable=attribute-error
     return self.GetLastHealthyElement().component
+    # pytype: enable=attribute-error
 
   def GetLastHealthyElement(self):
     """Returns the last element of the trace that is not an error.

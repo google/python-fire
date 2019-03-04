@@ -487,7 +487,7 @@ def _Fire(component, args, context, name=None):
         # If the component is a namedtuple, we need to convert it to dict to
         # be able to use the .items() method.
         if inspectutils.IsNamedTuple(component):
-          component = component._asdict()
+          component = component._asdict()  # pytype: disable=attribute-error
         for key, value in component.items():
           if target == str(key):
             component = value
