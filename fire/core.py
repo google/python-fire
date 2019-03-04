@@ -133,7 +133,7 @@ def Fire(component=None, command=None, name=None):
   if component_trace.HasError():
     _DisplayError(component_trace)
     raise FireExit(2, component_trace)
-  elif component_trace.show_trace and component_trace.show_help:
+  if component_trace.show_trace and component_trace.show_help:
     output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
     result = component_trace.GetResult()
     help_string = helputils.HelpString(
@@ -141,22 +141,22 @@ def Fire(component=None, command=None, name=None):
     output.append(help_string)
     Display(output)
     raise FireExit(0, component_trace)
-  elif component_trace.show_trace:
+  if component_trace.show_trace:
     output = ['Fire trace:\n{trace}'.format(trace=component_trace)]
     Display(output)
     raise FireExit(0, component_trace)
-  elif component_trace.show_help:
+  if component_trace.show_help:
     result = component_trace.GetResult()
     help_string = helputils.HelpString(
         result, component_trace, component_trace.verbose)
     output = [help_string]
     Display(output)
     raise FireExit(0, component_trace)
-  else:
-    # The command succeeded normally; print the result.
-    _PrintResult(component_trace, verbose=component_trace.verbose)
-    result = component_trace.GetResult()
-    return result
+
+  # The command succeeded normally; print the result.
+  _PrintResult(component_trace, verbose=component_trace.verbose)
+  result = component_trace.GetResult()
+  return result
 
 
 def Display(lines):
