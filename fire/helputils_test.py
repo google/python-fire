@@ -164,7 +164,7 @@ VALUES
 """
     self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
 
-  def testHelpScreenForFunction_docstringWithLineBreak(self):
+  def testHelpScreenForFunctionDocstringWithLineBreak(self):
     component = tc.ClassWithMultilineDocstring.example_generator
     t = trace.FireTrace(component, name='example_generator')
     info = inspectutils.Info(component)
@@ -189,7 +189,7 @@ VALUES
     """
     self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
 
-  def testHelpScreenForFunction_functionWithDefaultArgs(self):
+  def testHelpScreenForFunctionFunctionWithDefaultArgs(self):
     component = tc.WithDefaults().double
     t = trace.FireTrace(component, name='double')
     info = inspectutils.Info(component)
