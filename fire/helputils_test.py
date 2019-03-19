@@ -164,7 +164,7 @@ VALUES
 """
     self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
 
-  def testHelpScreenWithLineBreak(self):
+  def testHelpScreenForFunction_docstringWithLineBreak(self):
     component = tc.ClassWithMultilineDocstring.example_generator
     t = trace.FireTrace(component, name='example_generator')
     info = inspectutils.Info(component)
@@ -183,6 +183,31 @@ VALUES
     POSITIONAL ARGUMENTS
         N
             The upper limit of the range to generate, from 0 to `n` - 1.
+
+    NOTES
+        You could also use flags syntax for POSITIONAL ARGUMENTS
+    """
+    self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
+
+  def testHelpScreenForFunction_functionWithDefaultArgs(self):
+    component = tc.WithDefaults().double
+    t = trace.FireTrace(component, name='double')
+    info = inspectutils.Info(component)
+    info['docstring_info'] = docstrings.parse(info['docstring'])
+    help_output = helputils.HelpText(component, info, t)
+    expected_output = """
+    NAME
+        double - Returns the input multiplied by 2.
+
+    SYNOPSIS
+        double [--count=COUNT]
+
+    DESCRIPTION
+        Returns the input multiplied by 2.
+
+    FLAGS
+        --count
+            Input number that you want to double.
 
     NOTES
         You could also use flags syntax for POSITIONAL ARGUMENTS

@@ -87,8 +87,17 @@ class NoDefaults(object):
 
 
 class WithDefaults(object):
+  """Class with functions that have default arguments."""
 
   def double(self, count=0):
+    """Returns the input multiplied by 2.
+
+    Args:
+      count: Input number that you want to double.
+
+    Returns:
+      A number that is the double of count.s
+    """
     return 2 * count
 
   def triple(self, count=0):

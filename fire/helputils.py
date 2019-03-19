@@ -106,6 +106,20 @@ def _GetFields(trace=None):
   ]
 
 
+def GetArgsAngFlags(component):
+  """Returns all types of arguments and flags of a component."""
+  spec = inspectutils.GetFullArgSpec(component)
+  args = spec.args
+  if spec.defaults is None:
+    num_defaults = 0
+  else:
+    num_defaults = len(spec.defaults)
+  args_with_no_defaults = args[:len(args) - num_defaults]
+  args_with_defaults = args[len(args) - num_defaults:]
+  flags = args_with_defaults + spec.kwonlyargs
+  return args_with_no_defaults, args_with_defaults, flags
+
+
 def HelpString(component, trace=None, verbose=False):
   """Returns a help string for a supplied component.
 
@@ -220,15 +234,8 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   spec = inspectutils.GetFullArgSpec(component)
   args = spec.args
 
-  if spec.defaults is None:
-    num_defaults = 0
-  else:
-    num_defaults = len(spec.defaults)
-  args_with_no_defaults = args[:len(args) - num_defaults]
-
-  # TODO(joejoevictor): Generate flag section using these
-  # args_with_defaults = args[len(args) - num_defaults:]
-  # flags = args_with_defaults + spec.kwonlyargs
+  args_with_no_defaults, args_with_defaults, flags = GetArgsAngFlags(component)
+  del args_with_defaults
 
   output_template = """NAME
     {name_section}
@@ -249,8 +256,18 @@ NOTES
   name_section = name_section_template.format(
       current_command=current_command, command_summary=command_summary_str)
 
-  items = [arg.upper() for arg in args_with_no_defaults]
-  args_and_flags = ' '.join(items)
+  args_and_flags = ''
+  if args_with_no_defaults:
+    items = [arg.upper() for arg in args_with_no_defaults]
+    args_and_flags = ' '.join(items)
+
+  synopsis_flag_template = '[--{flag_name}={flag_name_upper}]'
+  if flags:
+    items = [
+        synopsis_flag_template.format(
+            flag_name=flag, flag_name_upper=flag.upper()) for flag in flags
+    ]
+    args_and_flags = args_and_flags + ' '.join(items)
 
   # Synopsis section
   synopsis_section_template = '{current_command} {args_and_flags}'
@@ -266,7 +283,6 @@ NOTES
   args_and_flags_section = ''
 
   # Positional arguments and flags section
-
   pos_arg_template = """
 POSITIONAL ARGUMENTS
 {items}
@@ -285,6 +301,25 @@ POSITIONAL ARGUMENTS
   if pos_arg_items:
     args_and_flags_section += pos_arg_template.format(
         items='\n'.join(pos_arg_items).rstrip('\n'))
+
+  flags_template = """
+FLAGS
+{items}
+"""
+  flag_items = []
+  for flag in flags:
+    item_template = '    --{flag_name}\n        {flag_description}\n'
+    flag_description = None
+    for arg_in_docstring in info['docstring_info'].args:
+      if arg_in_docstring.name == flag:
+        flag_description = arg_in_docstring.description
+
+    item = item_template.format(
+        flag_name=flag, flag_description=flag_description)
+    flag_items.append(item)
+  if flag_items:
+    args_and_flags_section += flags_template.format(
+        items='\n'.join(flag_items).rstrip('\n'))
 
   return output_template.format(
       name_section=name_section,
