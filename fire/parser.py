@@ -94,7 +94,7 @@ def _LiteralEval(value):
     SyntaxError: If the value string has a syntax error.
   """
   root = ast.parse(value, mode='eval')
-  if isinstance(root.body, ast.BinOp):
+  if isinstance(root.body, ast.BinOp):  # pytype: disable=attribute-error
     raise ValueError(value)
 
   for node in ast.walk(root):
