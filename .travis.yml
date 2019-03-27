@@ -15,6 +15,7 @@ before_install:
   - pip install --upgrade setuptools pip
   - pip install --upgrade pylint pytest pytest-pylint pytest-runner
 install:
+  - pip install termcolor
   - pip install hypothesis python-Levenshtein
   - python setup.py develop
 script:
