@@ -43,9 +43,10 @@ from fire import completion
 from fire import docstrings
 from fire import inspectutils
 from fire import value_types
+import termcolor
 
 
-def Text(component, trace=None, verbose=False):
+def HelpString(component, trace=None, verbose=False):
   """Returns the text to show for a supplied component.
 
   The component can be any Python class, object, function, module, etc.
@@ -65,9 +66,9 @@ def Text(component, trace=None, verbose=False):
     is_error_screen = trace.HasError()
 
   if is_error_screen:
-    return UsageText(info, trace, verbose=verbose)
+    return UsageText(component, info, trace, verbose=verbose)
   else:
-    return HelpText(info, trace, verbose=verbose)
+    return HelpText(component, info, trace, verbose=verbose)
 
 
 def GetArgsAngFlags(component):
@@ -134,19 +135,6 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   args_with_no_defaults, args_with_defaults, flags = GetArgsAngFlags(component)
   del args_with_defaults
 
-  output_template = """NAME
-    {name_section}
-
-SYNOPSIS
-    {synopsis_section}
-
-DESCRIPTION
-    {description_section}
-{args_and_flags_section}
-NOTES
-    You could also use flags syntax for POSITIONAL ARGUMENTS
-"""
-
   # Name section
   name_section_template = '{current_command}{command_summary}'
   command_summary_str = ' - ' + summary if summary else ''
@@ -177,52 +165,113 @@ NOTES
   # Description section
   description_section = description if description else summary
 
-  args_and_flags_section = ''
-
   # Positional arguments and flags section
-  pos_arg_template = """
-POSITIONAL ARGUMENTS
-{items}
-"""
+  docstring_info = info['docstring_info']
+  args_and_flags_sections = []
+  notes_sections = []
+
   pos_arg_items = []
-  for arg in args_with_no_defaults:
-    item_template = '    {arg_name}\n        {arg_description}\n'
-    arg_description = None
-    for arg_in_docstring in info['docstring_info'].args:
-      if arg_in_docstring.name == arg:
-        arg_description = arg_in_docstring.description
-
-    item = item_template.format(
-        arg_name=arg.upper(), arg_description=arg_description)
-    pos_arg_items.append(item)
+  pos_arg_items = [
+      _CreatePositionalArgItem(arg, docstring_info)
+      for arg in args_with_no_defaults
+  ]
   if pos_arg_items:
-    args_and_flags_section += pos_arg_template.format(
-        items='\n'.join(pos_arg_items).rstrip('\n'))
+    positional_arguments_section = ('POSITIONAL ARGUMENTS',
+                                    '\n'.join(pos_arg_items).rstrip('\n'))
+    args_and_flags_sections.append(positional_arguments_section)
+    notes_sections.append(
+        ('NOTES', 'You could also use flags syntax for POSITIONAL ARGUMENTS')
+    )
 
-  flags_template = """
-FLAGS
-{items}
-"""
-  flag_items = []
-  for flag in flags:
-    item_template = '    --{flag_name}\n        {flag_description}\n'
-    flag_description = None
-    for arg_in_docstring in info['docstring_info'].args:
-      if arg_in_docstring.name == flag:
-        flag_description = arg_in_docstring.description
+  flag_items = [
+      _CreateFlagItem(flag, docstring_info)
+      for flag in flags
+  ]
 
-    item = item_template.format(
-        flag_name=flag, flag_description=flag_description)
-    flag_items.append(item)
   if flag_items:
-    args_and_flags_section += flags_template.format(
-        items='\n'.join(flag_items).rstrip('\n'))
+    flags_section = ('FLAGS', '\n'.join(flag_items))
+    args_and_flags_sections.append(flags_section)
 
-  return output_template.format(
-      name_section=name_section,
-      synopsis_section=synopsis_section,
-      description_section=description_section,
-      args_and_flags_section=args_and_flags_section)
+  output_sections = [
+      ('NAME', name_section),
+      ('SYNOPSIS', synopsis_section),
+      ('DESCRIPTION', description_section),
+  ] + args_and_flags_sections + notes_sections
+
+  return '\n\n'.join(
+      _CreateOutputSection(name, content)
+      for name, content in output_sections
+  )
+
+
+def _CreateOutputSection(name, content):
+  return """{name}
+{content}""".format(name=Bold(name), content=Indent(content, 4))
+
+
+def _CreatePositionalArgItem(arg, docstring_info):
+  """Returns a string describing a positional argument.
+
+  Args:
+    arg: The name of the positional argument.
+    docstring_info: A docstrings.DocstringInfo namedtuple with information about
+      the containing function's docstring.
+  Returns:
+    A string to be used in constructing the help screen for the function.
+  """
+  description = None
+  if docstring_info.args:
+    for arg_in_docstring in docstring_info.args:
+      if arg_in_docstring.name == arg:
+        description = arg_in_docstring.description
+
+  if description:
+    return """{arg}
+    {description}""".format(
+        arg=arg.upper(),
+        description=description)
+  else:
+    return arg.upper()
+
+
+def _CreateFlagItem(flag, docstring_info):
+  """Returns a string describing a flag using information from the docstring.
+
+  Args:
+    flag: The name of the flag.
+    docstring_info: A docstrings.DocstringInfo namedtuple with information about
+      the containing function's docstring.
+  Returns:
+    A string to be used in constructing the help screen for the function.
+  """
+  description = None
+  if docstring_info.args:
+    for arg_in_docstring in docstring_info.args:
+      if arg_in_docstring.name == flag:
+        description = arg_in_docstring.description
+        break
+
+  if description:
+    return """--{flag}
+{description}""".format(flag=flag,
+                        description=Indent(description, 2))
+  else:
+    return '--{flag}'.format(flag=flag)
+
+
+def _CreateItem(name, description):
+  return """{name}
+{description}""".format(name=name,
+                        description=Indent(description, 2))
+
+
+def Indent(text, spaces=2):
+  lines = text.split('\n')
+  return '\n'.join(' ' * spaces + line for line in lines)
+
+
+def Bold(text):
+  return termcolor.colored(text, attrs=['bold'])
 
 
 def HelpTextForObject(component, info, trace=None, verbose=False):
@@ -237,18 +286,6 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
   Returns:
     Formatted help text for display.
   """
-
-  output_template = """NAME
-    {current_command} - {command_summary}
-
-SYNOPSIS
-    {synopsis}
-
-DESCRIPTION
-    {command_description}
-{detail_section}
-"""
-
   current_command = GetCurrentCommand(trace)
 
   docstring_info = info['docstring_info']
@@ -270,44 +307,28 @@ DESCRIPTION
     if value_types.IsValue(member):
       values.append((member_name, member))
 
+  usage_details_sections = []
   possible_actions = []
   # TODO(joejoevictor): Add global flags to here. Also, if it's a callable,
   # there will be additional flags.
   possible_flags = ''
-  detail_section_string = ''
-  item_template = """
-        {name}
-            {command_summary}
-"""
 
   if groups:
     # TODO(joejoevictor): Add missing GROUPS section handling
     possible_actions.append('GROUP')
   if commands:
     possible_actions.append('COMMAND')
-    commands_str_template = """
-COMMANDS
-    COMMAND is one of the followings:
-{items}
-"""
     command_item_strings = []
     for command_name, command in commands:
       command_docstring_info = docstrings.parse(
           inspectutils.Info(command)['docstring'])
       command_item_strings.append(
-          item_template.format(
-              name=command_name,
-              command_summary=command_docstring_info.summary))
-    detail_section_string += commands_str_template.format(
-        items=('\n'.join(command_item_strings)).rstrip('\n'))
+          _CreateItem(command_name, command_docstring_info.summary))
+    usage_details_sections.append(
+        ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings)))
 
   if values:
     possible_actions.append('VALUES')
-    values_str_template = """
-VALUES
-    VALUE is one of the followings:
-{items}
-"""
     value_item_strings = []
     for value_name, value in values:
       del value
@@ -315,11 +336,10 @@ VALUES
           inspectutils.Info(component.__class__.__init__)['docstring'])
       for arg_info in init_docstring_info.args:
         if arg_info.name == value_name:
-          value_item_strings.append(
-              item_template.format(
-                  name=value_name, command_summary=arg_info.description))
-    detail_section_string += values_str_template.format(
-        items=('\n'.join(value_item_strings)).rstrip('\n'))
+          value_item_strings.append(_CreateItem(value_name,
+                                                arg_info.description))
+    usage_details_sections.append(
+        ('VALUES', _NewChoicesSection('VALUE', value_item_strings)))
 
   possible_actions_string = ' ' + (' | '.join(possible_actions))
 
@@ -329,15 +349,33 @@ VALUES
       possible_actions=possible_actions_string,
       possible_flags=possible_flags)
 
-  return output_template.format(
+  description_sections = []
+  if command_description:
+    description_sections.append(('DESCRIPTION', command_description))
+
+  name_line = '{current_command} - {command_summary}'.format(
       current_command=current_command,
-      command_summary=command_summary,
-      synopsis=synopsis_string,
-      command_description=command_description,
-      detail_section=detail_section_string)
+      command_summary=command_summary)
+  output_sections = [
+      ('NAME', name_line),
+      ('SYNOPSIS', synopsis_string),
+  ] + description_sections + usage_details_sections
+
+  return '\n\n'.join(
+      _CreateOutputSection(name, content)
+      for name, content in output_sections
+  )
 
 
-def UsageText(component, trace=None, verbose=False):
+def _NewChoicesSection(name, choices):
+  return """{name} is one of the followings:
+{items}""".format(
+    name=Bold(name),
+    items=Indent('\n'.join(choices), 2))
+
+
+def UsageText(component, info, trace=None, verbose=False):
+  del info  # Unused.
   if inspect.isroutine(component) or inspect.isclass(component):
     return UsageTextForFunction(component, trace)
   else:

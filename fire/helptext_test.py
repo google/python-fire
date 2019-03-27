@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import textwrap
 
 from fire import docstrings
@@ -29,6 +30,9 @@ from fire import trace
 
 
 class HelpScreenTest(testutils.BaseTestCase):
+
+  def setUp(self):
+    os.environ['ANSI_COLORS_DISABLED'] = '1'
 
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
@@ -48,18 +52,16 @@ DESCRIPTION
 
 COMMANDS
     COMMAND is one of the followings:
-
-        print_msg
-            Prints a message.
+      print_msg
+        Prints a message.
 
 VALUES
     VALUE is one of the followings:
-
-        message
-            The default message to print.
-
+      message
+        The default message to print.
 """
-    self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
+    self.assertEqual(textwrap.dedent(expected_output).strip(),
+                     help_output.strip())
 
   def testHelpScreenForFunctionDocstringWithLineBreak(self):
     component = tc.ClassWithMultilineDocstring.example_generator
@@ -84,7 +86,8 @@ VALUES
     NOTES
         You could also use flags syntax for POSITIONAL ARGUMENTS
     """
-    self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
+    self.assertEqual(textwrap.dedent(expected_output).strip(),
+                     help_output.strip())
 
   def testHelpScreenForFunctionFunctionWithDefaultArgs(self):
     component = tc.WithDefaults().double
@@ -104,12 +107,10 @@ VALUES
 
     FLAGS
         --count
-            Input number that you want to double.
-
-    NOTES
-        You could also use flags syntax for POSITIONAL ARGUMENTS
+          Input number that you want to double.
     """
-    self.assertEqual(textwrap.dedent(expected_output).lstrip('\n'), help_output)
+    self.assertEqual(textwrap.dedent(expected_output).strip(),
+                     help_output.strip())
 
 
 class UsageTest(testutils.BaseTestCase):
@@ -117,7 +118,8 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutput(self):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')
-    usage_output = helptext.UsageText(component, trace=t, verbose=False)
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=False)
     expected_output = '''
     Usage: NoDefaults <commands>
     available commands: double | triple
@@ -133,7 +135,8 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputVerbose(self):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     expected_output = '''
     Usage: NoDefaults <commands>
     available commands: double | triple
@@ -149,7 +152,8 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.NoDefaults().double
     t = trace.FireTrace(component, name='NoDefaults')
     t.AddAccessedProperty(component, 'double', ['double'], None, None)
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     expected_output = '''
     Usage: NoDefaults double COUNT
 
@@ -163,7 +167,8 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputFunctionWithHelp(self):
     component = tc.function_with_help
     t = trace.FireTrace(component, name='function_with_help')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     expected_output = '''
     Usage: function_with_help <flags>
 
@@ -179,7 +184,8 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputFunctionWithDocstring(self):
     component = tc.multiplier_with_docstring
     t = trace.FireTrace(component, name='multiplier_with_docstring')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     expected_output = '''
     Usage: multiplier_with_docstring NUM <flags>
 
@@ -197,7 +203,8 @@ class UsageTest(testutils.BaseTestCase):
     # This is both a group and a command!
     component = tc.CallableWithKeywordArgument
     t = trace.FireTrace(component, name='CallableWithKeywordArgument')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     # TODO(zuhaohen): We need to handle the case for keyword args as well
     # i.e. __call__ method of CallableWithKeywordArgument
     expected_output = '''
@@ -215,7 +222,8 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputConstructorWithParameter(self):
     component = tc.InstanceVars
     t = trace.FireTrace(component, name='InstanceVars')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     expected_output = '''
     Usage: InstanceVars ARG1 ARG2
 
