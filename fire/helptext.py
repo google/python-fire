@@ -328,7 +328,7 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
         ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings)))
 
   if values:
-    possible_actions.append('VALUES')
+    possible_actions.append('VALUE')
     value_item_strings = []
     for value_name, value in values:
       del value

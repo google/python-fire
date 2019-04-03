@@ -45,7 +45,7 @@ NAME
     ClassWithDocstring - Test class for testing help text output.
 
 SYNOPSIS
-    ClassWithDocstring COMMAND | VALUES
+    ClassWithDocstring COMMAND | VALUE
 
 DESCRIPTION
     This is some detail description of this test class.
