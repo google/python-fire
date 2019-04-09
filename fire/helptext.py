@@ -225,13 +225,11 @@ def _CreatePositionalArgItem(arg, docstring_info):
       if arg_in_docstring.name == arg:
         description = arg_in_docstring.description
 
+  arg = arg.upper()
   if description:
-    return """{arg}
-    {description}""".format(
-        arg=arg.upper(),
-        description=description)
+    return _CreateItem(arg, description, indent=4)
   else:
-    return arg.upper()
+    return arg
 
 
 def _CreateFlagItem(flag, docstring_info):
@@ -251,27 +249,32 @@ def _CreateFlagItem(flag, docstring_info):
         description = arg_in_docstring.description
         break
 
+  flag = '--{flag}'.format(flag=flag)
   if description:
-    return """--{flag}
-{description}""".format(flag=flag,
-                        description=Indent(description, 2))
+    return _CreateItem(flag, description, indent=2)
   else:
-    return '--{flag}'.format(flag=flag)
+    return flag
 
 
-def _CreateItem(name, description):
+def _CreateItem(name, description, indent=2):
   return """{name}
 {description}""".format(name=name,
-                        description=Indent(description, 2))
+                        description=Indent(description, indent))
 
 
 def Indent(text, spaces=2):
   lines = text.split('\n')
-  return '\n'.join(' ' * spaces + line for line in lines)
+  return '\n'.join(
+      ' ' * spaces + line if line else line
+      for line in lines)
 
 
 def Bold(text):
   return termcolor.colored(text, attrs=['bold'])
+
+
+def Underline(text):
+  return termcolor.colored(text, attrs=['underline'])
 
 
 def HelpTextForObject(component, info, trace=None, verbose=False):
@@ -341,9 +344,10 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
     usage_details_sections.append(
         ('VALUES', _NewChoicesSection('VALUE', value_item_strings)))
 
-  possible_actions_string = ' ' + (' | '.join(possible_actions))
+  possible_actions_string = ' | '.join(
+      Underline(action) for action in possible_actions)
 
-  synopsis_template = '{current_command}{possible_actions}{possible_flags}'
+  synopsis_template = '{current_command} {possible_actions}{possible_flags}'
   synopsis_string = synopsis_template.format(
       current_command=current_command,
       possible_actions=possible_actions_string,
@@ -368,10 +372,10 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
 
 
 def _NewChoicesSection(name, choices):
-  return """{name} is one of the followings:
-{items}""".format(
-    name=Bold(name),
-    items=Indent('\n'.join(choices), 2))
+  return _CreateItem(
+      '{name} is one of the followings:'.format(name=Bold(Underline(name))),
+      '\n' + '\n\n'.join(choices),
+      indent=1)
 
 
 def UsageText(component, info, trace=None, verbose=False):
@@ -454,7 +458,7 @@ def UsageTextForObject(component, trace=None, verbose=False):
   output_template = """Usage: {current_command} <{possible_actions}>
 {availability_lines}
 
-For detailed information on this command, run:
+For detailed information on this command and its flags, run:
 {current_command} --help
 """
   if trace:

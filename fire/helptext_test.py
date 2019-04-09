@@ -52,13 +52,15 @@ DESCRIPTION
 
 COMMANDS
     COMMAND is one of the followings:
-      print_msg
-        Prints a message.
+
+     print_msg
+       Prints a message.
 
 VALUES
     VALUE is one of the followings:
-      message
-        The default message to print.
+
+     message
+       The default message to print.
 """
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
@@ -124,7 +126,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: NoDefaults <commands>
     available commands: double | triple
 
-    For detailed information on this command, run:
+    For detailed information on this command and its flags, run:
     NoDefaults --help
     '''
 
@@ -141,7 +143,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: NoDefaults <commands>
     available commands: double | triple
 
-    For detailed information on this command, run:
+    For detailed information on this command and its flags, run:
     NoDefaults --help
     '''
     self.assertEqual(
