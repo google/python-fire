@@ -31,10 +31,10 @@ from fire import trace
 
 class HelpTest(testutils.BaseTestCase):
 
-  def checkTextInSection(self, text, actual_output):
+  def assertTextInSection(self, text, actual_output):
     self.assertIn(textwrap.dedent(text).lstrip('\n'), actual_output)
 
-  def checkTextNotInSection(self, text, actual_output):
+  def assertTextNotInSection(self, text, actual_output):
     self.assertNotIn(textwrap.dedent(text).lstrip('\n'), actual_output)
 
   def testHelpTextNoDefaults(self):
@@ -48,10 +48,10 @@ class HelpTest(testutils.BaseTestCase):
         info=info,
         trace=trace.FireTrace(component, name='NoDefaults'))
 
-    self.checkTextInSection('NAME\n    NoDefaults', help_screen)
-    self.checkTextInSection('SYNOPSIS\n    NoDefaults', help_screen)
-    self.checkTextNotInSection('DESCRIPTION', help_screen)
-    self.checkTextNotInSection('NOTES', help_screen)
+    self.assertTextInSection('NAME\n    NoDefaults', help_screen)
+    self.assertTextInSection('SYNOPSIS\n    NoDefaults', help_screen)
+    self.assertTextNotInSection('DESCRIPTION', help_screen)
+    self.assertTextNotInSection('NOTES', help_screen)
 
   def setUp(self):
     os.environ['ANSI_COLORS_DISABLED'] = '1'
