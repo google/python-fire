@@ -29,7 +29,29 @@ from fire import testutils
 from fire import trace
 
 
-class HelpScreenTest(testutils.BaseTestCase):
+class HelpTest(testutils.BaseTestCase):
+
+  def checkTextInSection(self, text, actual_output):
+    self.assertIn(textwrap.dedent(text).lstrip('\n'), actual_output)
+
+  def checkTextNotInSection(self, text, actual_output):
+    self.assertNotIn(textwrap.dedent(text).lstrip('\n'), actual_output)
+
+  def testHelpTextNoDefaults(self):
+    component = tc.NoDefaults
+    # TODO(joejoevictor): We should have inspectutils.Info to generate
+    # info['docstring_info'] as well.
+    info = inspectutils.Info(component)
+    info['docstring_info'] = docstrings.parse(info['docstring'])
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, name='NoDefaults'))
+
+    self.checkTextInSection('NAME\n    NoDefaults', help_screen)
+    self.checkTextInSection('SYNOPSIS\n    NoDefaults', help_screen)
+    self.checkTextNotInSection('DESCRIPTION', help_screen)
+    self.checkTextNotInSection('NOTES', help_screen)
 
   def setUp(self):
     os.environ['ANSI_COLORS_DISABLED'] = '1'

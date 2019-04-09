@@ -112,6 +112,30 @@ def HelpText(component, info, trace=None, verbose=False):
     return HelpTextForObject(component, info, trace, verbose)
 
 
+def GetDescriptionSectionText(summary, description):
+  """Returns description section text based on the input docstring info.
+
+  Returns the string that should be used as description section based on the
+  input. The logic is the following: If there's description available, use it.
+  Otherwise, use summary if available. If neither description or summary is
+  available, returns None.
+
+  Args:
+    summary: summary found in object summary
+    description: description found in object docstring
+
+  Returns:
+    String for the description section in help screen.
+  """
+  if not (description or summary):
+    return None
+
+  if description:
+    return description
+  else:
+    return summary
+
+
 def HelpTextForFunction(component, info, trace=None, verbose=False):
   """Returns detail help text for a function component.
 
@@ -163,7 +187,10 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
       current_command=current_command, args_and_flags=args_and_flags)
 
   # Description section
-  description_section = description if description else summary
+  command_description = GetDescriptionSectionText(summary, description)
+  description_sections = []
+  if command_description:
+    description_sections.append(('DESCRIPTION', command_description))
 
   # Positional arguments and flags section
   docstring_info = info['docstring_info']
@@ -195,8 +222,7 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   output_sections = [
       ('NAME', name_section),
       ('SYNOPSIS', synopsis_section),
-      ('DESCRIPTION', description_section),
-  ] + args_and_flags_sections + notes_sections
+  ] + description_sections + args_and_flags_sections + notes_sections
 
   return '\n\n'.join(
       _CreateOutputSection(name, content)
@@ -293,11 +319,8 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
 
   docstring_info = info['docstring_info']
   command_summary = docstring_info.summary if docstring_info.summary else ''
-  if docstring_info.description:
-    command_description = docstring_info.description
-  else:
-    command_description = ''
-
+  command_description = GetDescriptionSectionText(docstring_info.summary,
+                                                  docstring_info.description)
   groups = []
   commands = []
   values = []
