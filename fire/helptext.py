@@ -41,9 +41,9 @@ import inspect
 
 from fire import completion
 from fire import docstrings
+from fire import formatting
 from fire import inspectutils
 from fire import value_types
-import termcolor
 
 
 def HelpString(component, trace=None, verbose=False):
@@ -232,7 +232,8 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
 
 def _CreateOutputSection(name, content):
   return """{name}
-{content}""".format(name=Bold(name), content=Indent(content, 4))
+{content}""".format(name=formatting.Bold(name),
+                    content=formatting.Indent(content, 4))
 
 
 def _CreatePositionalArgItem(arg, docstring_info):
@@ -285,22 +286,7 @@ def _CreateFlagItem(flag, docstring_info):
 def _CreateItem(name, description, indent=2):
   return """{name}
 {description}""".format(name=name,
-                        description=Indent(description, indent))
-
-
-def Indent(text, spaces=2):
-  lines = text.split('\n')
-  return '\n'.join(
-      ' ' * spaces + line if line else line
-      for line in lines)
-
-
-def Bold(text):
-  return termcolor.colored(text, attrs=['bold'])
-
-
-def Underline(text):
-  return termcolor.colored(text, attrs=['underline'])
+                        description=formatting.Indent(description, indent))
 
 
 def HelpTextForObject(component, info, trace=None, verbose=False):
@@ -368,7 +354,7 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
         ('VALUES', _NewChoicesSection('VALUE', value_item_strings)))
 
   possible_actions_string = ' | '.join(
-      Underline(action) for action in possible_actions)
+      formatting.Underline(action) for action in possible_actions)
 
   synopsis_template = '{current_command} {possible_actions}{possible_flags}'
   synopsis_string = synopsis_template.format(
@@ -396,7 +382,8 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
 
 def _NewChoicesSection(name, choices):
   return _CreateItem(
-      '{name} is one of the followings:'.format(name=Bold(Underline(name))),
+      '{name} is one of the followings:'.format(
+          name=formatting.Bold(formatting.Underline(name))),
       '\n' + '\n\n'.join(choices),
       indent=1)
 
