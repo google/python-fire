@@ -112,6 +112,10 @@ class InspectUtilsTest(testutils.BaseTestCase):
     self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 
+  def testInfoNoDocstring(self):
+    info = inspectutils.Info(tc.NoDefaults)
+    self.assertEqual(info['docstring'], None, 'Docstring should be None')
+
 
 if __name__ == '__main__':
   testutils.main()

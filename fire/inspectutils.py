@@ -162,6 +162,10 @@ def Info(component):
     from IPython.core import oinspect  # pylint: disable=g-import-not-at-top
     inspector = oinspect.Inspector()
     info = inspector.info(component)
+
+    # IPython's oinspect.Inspector.info may return '<no docstring>'
+    if info['docstring'] == '<no docstring>':
+      info['docstring'] = None
   except ImportError:
     info = _InfoBackup(component)
 
