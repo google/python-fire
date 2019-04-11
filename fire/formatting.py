@@ -34,4 +34,3 @@ def Bold(text):
 
 def Underline(text):
   return termcolor.colored(text, attrs=['underline'])
-
