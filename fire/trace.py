@@ -29,8 +29,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import pipes
 from fire import inspectutils
+import six
 
 INITIAL_COMPONENT = 'Initial component'
 INSTANTIATED_CLASS = 'Instantiated class'
@@ -165,8 +165,8 @@ class FireTrace(object):
   def _Quote(self, arg):
     if arg.startswith('--') and '=' in arg:
       prefix, value = arg.split('=', 1)
-      return pipes.quote(prefix) + '=' + pipes.quote(value)
-    return pipes.quote(arg)
+      return six.moves.shlex_quote(prefix) + '=' + six.moves.shlex_quote(value)
+    return six.moves.shlex_quote(arg)
 
   def GetCommand(self):
     """Returns the command representing the trace up to this point.
