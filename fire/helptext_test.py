@@ -31,6 +31,9 @@ from fire import trace
 
 class HelpTest(testutils.BaseTestCase):
 
+  def setUp(self):
+    os.environ['ANSI_COLORS_DISABLED'] = '1'
+
   def testHelpTextNoDefaults(self):
     component = tc.NoDefaults
     # TODO(joejoevictor): We should have inspectutils.Info to generate
@@ -63,8 +66,21 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('triple', help_screen)
     self.assertNotIn('NOTES', help_screen)
 
-  def setUp(self):
-    os.environ['ANSI_COLORS_DISABLED'] = '1'
+  def testHelpTextFunction(self):
+    component = tc.NoDefaults().double
+    info = inspectutils.Info(component)
+    info['docstring_info'] = docstrings.parse(info['docstring'])
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, name='double'))
+    self.assertIn('NAME\n    double', help_screen)
+    self.assertIn('SYNOPSIS\n    double COUNT', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn('POSITIONAL ARGUMENTS\n    COUNT', help_screen)
+    self.assertIn(
+        'NOTES\n    You could also use flags syntax for POSITIONAL ARGUMENTS',
+        help_screen)
 
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
