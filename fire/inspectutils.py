@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import inspect
+from fire import docstrings
 
 import six
 
@@ -174,6 +175,9 @@ def Info(component):
     info['line'] = lineindex + 1
   except (TypeError, IOError):
     info['line'] = None
+
+  if 'docstring' in info:
+    info['docstring_info'] = docstrings.parse(info['docstring'])
 
   return info
 

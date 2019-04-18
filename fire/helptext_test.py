@@ -31,12 +31,6 @@ from fire import trace
 
 class HelpTest(testutils.BaseTestCase):
 
-  def assertTextInSection(self, text, actual_output):
-    self.assertIn(textwrap.dedent(text).lstrip('\n'), actual_output)
-
-  def assertTextNotInSection(self, text, actual_output):
-    self.assertNotIn(textwrap.dedent(text).lstrip('\n'), actual_output)
-
   def testHelpTextNoDefaults(self):
     component = tc.NoDefaults
     # TODO(joejoevictor): We should have inspectutils.Info to generate
@@ -47,11 +41,27 @@ class HelpTest(testutils.BaseTestCase):
         component=component,
         info=info,
         trace=trace.FireTrace(component, name='NoDefaults'))
+    self.assertIn('NAME\n    NoDefaults', help_screen)
+    self.assertIn('SYNOPSIS\n    NoDefaults', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertNotIn('NOTES', help_screen)
 
-    self.assertTextInSection('NAME\n    NoDefaults', help_screen)
-    self.assertTextInSection('SYNOPSIS\n    NoDefaults', help_screen)
-    self.assertTextNotInSection('DESCRIPTION', help_screen)
-    self.assertTextNotInSection('NOTES', help_screen)
+  def testHelpTextNoDefaultsObject(self):
+    component = tc.NoDefaults()
+    info = inspectutils.Info(component)
+    info['docstring_info'] = docstrings.parse(info['docstring'])
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, name='NoDefaults'))
+    self.assertIn('NAME\n    NoDefaults', help_screen)
+    self.assertIn('SYNOPSIS\n    NoDefaults COMMAND', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn('COMMANDS\n    COMMAND is one of the followings:',
+                  help_screen)
+    self.assertIn('double', help_screen)
+    self.assertIn('triple', help_screen)
+    self.assertNotIn('NOTES', help_screen)
 
   def setUp(self):
     os.environ['ANSI_COLORS_DISABLED'] = '1'
@@ -60,7 +70,6 @@ class HelpTest(testutils.BaseTestCase):
     component = tc.ClassWithDocstring()
     t = trace.FireTrace(component, name='ClassWithDocstring')
     info = inspectutils.Info(component)
-    info['docstring_info'] = docstrings.parse(info['docstring'])
     help_output = helptext.HelpText(component, info, t)
     expected_output = """
 NAME

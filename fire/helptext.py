@@ -40,7 +40,6 @@ from __future__ import print_function
 import inspect
 
 from fire import completion
-from fire import docstrings
 from fire import formatting
 from fire import inspectutils
 from fire import value_types
@@ -59,7 +58,6 @@ def HelpString(component, trace=None, verbose=False):
     String suitable for display giving information about the component.
   """
   info = inspectutils.Info(component)
-  info['docstring_info'] = docstrings.parse(info['docstring'])
 
   is_error_screen = False
   if trace:
@@ -332,10 +330,15 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
     possible_actions.append('COMMAND')
     command_item_strings = []
     for command_name, command in commands:
-      command_docstring_info = docstrings.parse(
-          inspectutils.Info(command)['docstring'])
-      command_item_strings.append(
-          _CreateItem(command_name, command_docstring_info.summary))
+      command_info = inspectutils.Info(command)
+      command_item = command_name
+      if 'docstring_info' in command_info:
+        command_docstring_info = command_info['docstring_info']
+        if command_docstring_info and command_docstring_info.summary:
+          command_item = _CreateItem(command_name,
+                                     command_docstring_info.summary)
+
+      command_item_strings.append(command_item)
     usage_details_sections.append(
         ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings)))
 
@@ -344,12 +347,14 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
     value_item_strings = []
     for value_name, value in values:
       del value
-      init_docstring_info = docstrings.parse(
-          inspectutils.Info(component.__class__.__init__)['docstring'])
-      for arg_info in init_docstring_info.args:
-        if arg_info.name == value_name:
-          value_item_strings.append(_CreateItem(value_name,
-                                                arg_info.description))
+      init_info = inspectutils.Info(component.__class__.__init__)
+      value_item = value_name
+      if 'docstring_info' in init_info:
+        init_docstring_info = init_info['docstring_info']
+        for arg_info in init_docstring_info.args:
+          if arg_info.name == value_name:
+            value_item = _CreateItem(value_name, arg_info.description)
+      value_item_strings.append(value_item)
     usage_details_sections.append(
         ('VALUES', _NewChoicesSection('VALUE', value_item_strings)))
 
