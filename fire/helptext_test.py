@@ -82,6 +82,20 @@ class HelpTest(testutils.BaseTestCase):
         'NOTES\n    You could also use flags syntax for POSITIONAL ARGUMENTS',
         help_screen)
 
+  def testHelpTextFunctionWithDefaults(self):
+    component = tc.WithDefaults().triple
+    info = inspectutils.Info(component)
+    info['docstring_info'] = docstrings.parse(info['docstring'])
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, name='triple'))
+    self.assertIn('NAME\n    triple', help_screen)
+    self.assertIn('SYNOPSIS\n    triple [--count=COUNT]', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn('FLAGS\n    --count', help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
     t = trace.FireTrace(component, name='ClassWithDocstring')
