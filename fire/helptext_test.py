@@ -21,7 +21,6 @@ from __future__ import print_function
 import os
 import textwrap
 
-from fire import docstrings
 from fire import helptext
 from fire import inspectutils
 from fire import test_components as tc
@@ -36,10 +35,7 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextNoDefaults(self):
     component = tc.NoDefaults
-    # TODO(joejoevictor): We should have inspectutils.Info to generate
-    # info['docstring_info'] as well.
     info = inspectutils.Info(component)
-    info['docstring_info'] = docstrings.parse(info['docstring'])
     help_screen = helptext.HelpText(
         component=component,
         info=info,
@@ -52,7 +48,6 @@ class HelpTest(testutils.BaseTestCase):
   def testHelpTextNoDefaultsObject(self):
     component = tc.NoDefaults()
     info = inspectutils.Info(component)
-    info['docstring_info'] = docstrings.parse(info['docstring'])
     help_screen = helptext.HelpText(
         component=component,
         info=info,
@@ -69,7 +64,6 @@ class HelpTest(testutils.BaseTestCase):
   def testHelpTextFunction(self):
     component = tc.NoDefaults().double
     info = inspectutils.Info(component)
-    info['docstring_info'] = docstrings.parse(info['docstring'])
     help_screen = helptext.HelpText(
         component=component,
         info=info,
@@ -85,7 +79,6 @@ class HelpTest(testutils.BaseTestCase):
   def testHelpTextFunctionWithDefaults(self):
     component = tc.WithDefaults().triple
     info = inspectutils.Info(component)
-    info['docstring_info'] = docstrings.parse(info['docstring'])
     help_screen = helptext.HelpText(
         component=component,
         info=info,
@@ -130,7 +123,6 @@ VALUES
     component = tc.ClassWithMultilineDocstring.example_generator
     t = trace.FireTrace(component, name='example_generator')
     info = inspectutils.Info(component)
-    info['docstring_info'] = docstrings.parse(info['docstring'])
     help_output = helptext.HelpText(component, info, t)
     expected_output = """
     NAME
@@ -156,7 +148,6 @@ VALUES
     component = tc.WithDefaults().double
     t = trace.FireTrace(component, name='double')
     info = inspectutils.Info(component)
-    info['docstring_info'] = docstrings.parse(info['docstring'])
     help_output = helptext.HelpText(component, info, t)
     expected_output = """
     NAME
