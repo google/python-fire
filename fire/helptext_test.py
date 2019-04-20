@@ -89,6 +89,31 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('FLAGS\n    --count', help_screen)
     self.assertNotIn('NOTES', help_screen)
 
+  def testHelpTextFunctionWithBuiltin(self):
+    component = 'test'.upper
+    info = inspectutils.Info(component)
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, 'upper'))
+    self.assertIn('NAME\n    upper', help_screen)
+    self.assertIn('SYNOPSIS\n    upper', help_screen)
+    # We don't check description content here since the content is python
+    # version dependent.
+    self.assertIn('DESCRIPTION\n', help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
+  def testHelpTextFunctionIntType(self):
+    component = int
+    info = inspectutils.Info(component)
+    help_screen = helptext.HelpText(
+        component=component, info=info, trace=trace.FireTrace(component, 'int'))
+    self.assertIn('NAME\n    int', help_screen)
+    self.assertIn('SYNOPSIS\n    int', help_screen)
+    # We don't check description content here since the content is python
+    # version dependent.
+    self.assertIn('DESCRIPTION\n', help_screen)
+
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
     t = trace.FireTrace(component, name='ClassWithDocstring')
