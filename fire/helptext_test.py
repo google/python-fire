@@ -114,6 +114,65 @@ class HelpTest(testutils.BaseTestCase):
     # version dependent.
     self.assertIn('DESCRIPTION\n', help_screen)
 
+  def testHelpTextEmptyList(self):
+    component = []
+    info = inspectutils.Info(component)
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, 'list'))
+    self.assertIn('NAME\n    list', help_screen)
+    self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
+    # We don't check description content here since the content could be python
+    # version dependent.
+    self.assertIn('DESCRIPTION\n', help_screen)
+    # We don't check the listed commands either since the list API could
+    # potentially change between Python versions.
+    self.assertIn('COMMANDS\n    COMMAND is one of the followings:\n',
+                  help_screen)
+
+  def testHelpTextShortList(self):
+    component = [10]
+    info = inspectutils.Info(component)
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, 'list'))
+    self.assertIn('NAME\n    list', help_screen)
+    self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
+    # We don't check description content here since the content could be python
+    # version dependent.
+    self.assertIn('DESCRIPTION\n', help_screen)
+
+    # We don't check the listed commands comprehensively since the list API
+    # could potentially change between Python versions. Check a few
+    # functions(command) that we're confident likely remain available.
+    self.assertIn('COMMANDS\n    COMMAND is one of the followings:\n',
+                  help_screen)
+    self.assertIn('     append\n', help_screen)
+
+  def testHelpTextInt(self):
+    component = 7
+    info = inspectutils.Info(component)
+    help_screen = helptext.HelpText(
+        component=component, info=info, trace=trace.FireTrace(component, '7'))
+    self.assertIn('NAME\n    7', help_screen)
+    self.assertIn('SYNOPSIS\n    7 COMMAND | VALUE', help_screen)
+    self.assertIn('DESCRIPTION\n', help_screen)
+    self.assertIn('COMMANDS\n    COMMAND is one of the followings:\n',
+                  help_screen)
+    self.assertIn('VALUES\n    VALUE is one of the followings:\n', help_screen)
+
+  def testHelpTextNoInit(self):
+    component = tc.OldStyleEmpty
+    info = inspectutils.Info(component)
+    help_screen = helptext.HelpText(
+        component=component,
+        info=info,
+        trace=trace.FireTrace(component, 'OldStyleEmpty'))
+    self.assertIn('NAME\n    OldStyleEmpty', help_screen)
+    self.assertIn('SYNOPSIS\n    OldStyleEmpty', help_screen)
+
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
     t = trace.FireTrace(component, name='ClassWithDocstring')

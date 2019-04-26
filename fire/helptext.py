@@ -351,9 +351,10 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
       value_item = value_name
       if 'docstring_info' in init_info:
         init_docstring_info = init_info['docstring_info']
-        for arg_info in init_docstring_info.args:
-          if arg_info.name == value_name:
-            value_item = _CreateItem(value_name, arg_info.description)
+        if init_docstring_info.args:
+          for arg_info in init_docstring_info.args:
+            if arg_info.name == value_name:
+              value_item = _CreateItem(value_name, arg_info.description)
       value_item_strings.append(value_item)
     usage_details_sections.append(
         ('VALUES', _NewChoicesSection('VALUE', value_item_strings)))
