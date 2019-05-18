@@ -502,21 +502,21 @@ For detailed information on this command and its flags, run:
   availability_lines = []
   availability_lint_format = '{header:20s}{choices}'
   if groups:
-    possible_actions.append('groups')
+    possible_actions.append('group')
     groups_string = ' | '.join(groups)
     groups_text = availability_lint_format.format(
         header='available groups:',
         choices=groups_string)
     availability_lines.append(groups_text)
   if commands:
-    possible_actions.append('commands')
+    possible_actions.append('command')
     commands_string = ' | '.join(commands)
     commands_text = availability_lint_format.format(
         header='available commands:',
         choices=commands_string)
     availability_lines.append(commands_text)
   if values:
-    possible_actions.append('values')
+    possible_actions.append('value')
     values_string = ' | '.join(values)
     values_text = availability_lint_format.format(
         header='available values:',

@@ -259,7 +259,7 @@ class UsageTest(testutils.BaseTestCase):
     info = inspectutils.Info(component)
     usage_output = helptext.UsageText(component, info, trace=t, verbose=False)
     expected_output = '''
-    Usage: NoDefaults <commands>
+    Usage: NoDefaults <command>
     available commands: double | triple
 
     For detailed information on this command and its flags, run:
@@ -276,7 +276,7 @@ class UsageTest(testutils.BaseTestCase):
     info = inspectutils.Info(component)
     usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     expected_output = '''
-    Usage: NoDefaults <commands>
+    Usage: NoDefaults <command>
     available commands: double | triple
 
     For detailed information on this command and its flags, run:
@@ -346,7 +346,7 @@ class UsageTest(testutils.BaseTestCase):
     # TODO(zuhaohen): We need to handle the case for keyword args as well
     # i.e. __call__ method of CallableWithKeywordArgument
     expected_output = '''
-    Usage: CallableWithKeywordArgument <commands>
+    Usage: CallableWithKeywordArgument <command>
 
     Available commands: print_msg
 
