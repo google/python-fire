@@ -22,6 +22,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from functools import wraps
+from logging import (getLogger, RootLogger, StreamHandler, FileHandler,
+                    Formatter, DEBUG, INFO, WARNING, ERROR)
+
+from exceptions import InvalidLogLevel
 import inspect
 
 FIRE_METADATA = 'FIRE_METADATA'
@@ -95,3 +100,74 @@ def GetParseFns(fn):
   metadata = GetMetadata(fn)
   default = dict(default=None, positional=[], named={})
   return metadata.get(FIRE_PARSE_FNS, default)
+
+
+def logger(level: str='DEBUG', log_file: bool=False, log_name: str='fire.log',
+           formatter: str=Formatter(('%(levelname)s - %(filename)s - %(asctime)s '
+                                     '- %(message)s - line: %(lineno)d'))):
+    """
+    Decorator to add logs to functions.
+
+    param: level (optional)
+        - receives the desired level of the log as a string.
+        default: 'DEBUG'
+
+    param: log_file (optional)
+        - receives a boolean value indicating whether there will be a log file
+          or not.
+        default: False
+
+    param: log_name (optional)
+        - receives a name for the log file.
+        default: 'fire.log'
+
+    param: formatter (optional)
+        - receives a formatting for the log output.
+        default: '%(levelname)s - %(filename)s - %(asctime)s - %(message)s - %(lineno)d'
+        example:
+            DEBUG - your_file.py - 2019-05-20 15:28:42,635 - There was an exception in foo() - line: 160
+    """
+
+    level = level.strip().upper()
+    log_levels = {
+                'DEBUG': DEBUG, 'INFO': INFO, 'WARNING': WARNING,
+                'ERROR': ERROR
+                }
+
+    def _file_handler():
+        file_handler = FileHandler(log_name)
+        file_handler.setLevel(log_levels[level])
+        file_handler.setFormatter(formatter)
+        return file_handler
+
+
+    def _console_handler():
+        console_handler = StreamHandler()
+        console_handler.setLevel(log_levels[level])
+        console_handler.setFormatter(formatter)
+        return console_handler
+
+
+    def _add_logger(func):
+        @wraps(func)
+        def _inner(*args, **kwargs):
+            if level in log_levels:
+                logger = getLogger()
+                logger.setLevel(log_levels[level])
+
+                try:
+                    return func(*args)
+                except:
+                    message = 'There was an exception in {0}()'.format(func.__name__)
+                    logger.addHandler(_file_handler()) if log_file else None
+                    logger.addHandler(_console_handler())
+
+                    logger.debug(message) if level == 'DEBUG' else None
+                    logger.info(message) if level == 'INFO' else None
+                    logger.warning(message) if level == 'WARNING' else None
+                    logger.error(message) if level == 'ERROR' else None
+                    raise
+            else:
+                raise InvalidLogLevel('The log level value is invalid.')
+        return _inner
+    return _add_logger
