@@ -8,7 +8,7 @@ python:
 # https://github.com/travis-ci/travis-ci/issues/9815
 matrix:
   include:
-    - python: 3.7
+    - python: 3.6
       dist: xenial
       sudo: yes
 before_install:
