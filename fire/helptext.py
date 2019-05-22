@@ -458,6 +458,15 @@ For detailed information on this command, run:
       hyphen_hyphen=hyphen_hyphen)
 
 
+def _CreateAvailabilityLine(header, items,
+                            header_indent=2, items_indent=25, line_length=80):
+  items_width = line_length - items_indent
+  items_text = '\n'.join(formatting.WrappedJoin(items, width=items_width))
+  indented_items_text = formatting.Indent(items_text, spaces=items_indent)
+  indented_header = formatting.Indent(header, spaces=header_indent)
+  return indented_header + indented_items_text[len(indented_header):]
+
+
 def UsageTextForObject(component, trace=None, verbose=False):
   """Returns help text for usage screen for objects.
 
@@ -500,27 +509,23 @@ For detailed information on this command and its flags, run:
 
   possible_actions = []
   availability_lines = []
-  availability_lint_format = '{header:20s}{choices}'
   if groups:
     possible_actions.append('group')
-    groups_string = ' | '.join(groups)
-    groups_text = availability_lint_format.format(
+    groups_text = _CreateAvailabilityLine(
         header='available groups:',
-        choices=groups_string)
+        items=groups)
     availability_lines.append(groups_text)
   if commands:
     possible_actions.append('command')
-    commands_string = ' | '.join(commands)
-    commands_text = availability_lint_format.format(
+    commands_text = _CreateAvailabilityLine(
         header='available commands:',
-        choices=commands_string)
+        items=commands)
     availability_lines.append(commands_text)
   if values:
     possible_actions.append('value')
-    values_string = ' | '.join(values)
-    values_text = availability_lint_format.format(
+    values_text = _CreateAvailabilityLine(
         header='available values:',
-        choices=values_string)
+        items=values)
     availability_lines.append(values_text)
   possible_actions_string = '|'.join(possible_actions)
   availability_lines_string = '\n'.join(availability_lines)

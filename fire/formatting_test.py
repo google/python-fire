@@ -40,6 +40,17 @@ class FormattingTest(testutils.BaseTestCase):
     text = formatting.Indent('hello\nworld', spaces=2)
     self.assertEqual('  hello\n  world', text)
 
+  def test_wrap_one_item(self):
+    lines = formatting.WrappedJoin(['rice'])
+    self.assertEqual(['rice'], lines)
+
+  def test_wrap_multiple_items(self):
+    lines = formatting.WrappedJoin(['rice', 'beans', 'chicken', 'cheese'],
+                                   width=15)
+    self.assertEqual(['rice | beans |',
+                      'chicken |',
+                      'cheese'], lines)
+
 
 if __name__ == '__main__':
   testutils.main()

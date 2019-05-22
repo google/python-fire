@@ -34,3 +34,26 @@ def Bold(text):
 
 def Underline(text):
   return termcolor.colored(text, attrs=['underline'])
+
+
+def WrappedJoin(items, separator=' | ', width=80):
+  """Joins the items by the separator, wrapping lines at the given width."""
+  lines = []
+  current_line = ''
+  for index, item in enumerate(items):
+    is_final_item = index == len(items) - 1
+    if is_final_item:
+      if len(current_line) + len(item) <= width:
+        current_line += item
+      else:
+        lines.append(current_line.rstrip())
+        current_line = item
+    else:
+      if len(current_line) + len(item) + len(separator) <= width:
+        current_line += item + separator
+      else:
+        lines.append(current_line.rstrip())
+        current_line = item + separator
+
+  lines.append(current_line)
+  return lines

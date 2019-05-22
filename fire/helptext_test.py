@@ -260,7 +260,7 @@ class UsageTest(testutils.BaseTestCase):
     usage_output = helptext.UsageText(component, info, trace=t, verbose=False)
     expected_output = '''
     Usage: NoDefaults <command>
-    available commands: double | triple
+      available commands:    double | triple
 
     For detailed information on this command and its flags, run:
     NoDefaults --help
@@ -277,7 +277,7 @@ class UsageTest(testutils.BaseTestCase):
     usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
     expected_output = '''
     Usage: NoDefaults <command>
-    available commands: double | triple
+      available commands:    double | triple
 
     For detailed information on this command and its flags, run:
     NoDefaults --help
@@ -348,7 +348,7 @@ class UsageTest(testutils.BaseTestCase):
     expected_output = '''
     Usage: CallableWithKeywordArgument <command>
 
-    Available commands: print_msg
+      Available commands:    print_msg
 
     For detailed information on this command, run:
     CallableWithKeywordArgument -- --help
