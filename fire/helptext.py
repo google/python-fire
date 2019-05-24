@@ -384,12 +384,12 @@ def CommandUsageDetailsSection(commands):
   command_item_strings = []
   for command_name, command in commands:
     command_info = inspectutils.Info(command)
-    command_item = command_name
+    command_item = formatting.Bold(command_name)
     if 'docstring_info' in command_info:
       command_docstring_info = command_info['docstring_info']
       if command_docstring_info and command_docstring_info.summary:
-        command_item = _CreateItem(command_name,
-                                   command_docstring_info.summary)
+        command_item = _CreateItem(
+            formatting.Bold(command_name), command_docstring_info.summary)
     command_item_strings.append(command_item)
   return ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings))
 

@@ -264,6 +264,19 @@ VALUES
         formatting.Bold('FLAGS') + '\n    --' + formatting.Underline('count'),
         help_screen)
 
+  def testHelpTextBoldCommandName(self):
+    component = tc.ClassWithDocstring()
+    info = inspectutils.Info(component)
+    t = trace.FireTrace(component, name='ClassWithDocstring')
+    help_screen = helptext.HelpText(component, info, t)
+    self.assertIn(
+        formatting.Bold('NAME') + '\n    ClassWithDocstring', help_screen)
+    self.assertIn(formatting.Bold('COMMANDS') + '\n', help_screen)
+    self.assertIn(
+        formatting.BoldUnderline('COMMAND') + ' is one of the followings:\n',
+        help_screen)
+    self.assertIn(formatting.Bold('print_msg') + '\n', help_screen)
+
 
 class UsageTest(testutils.BaseTestCase):
 
