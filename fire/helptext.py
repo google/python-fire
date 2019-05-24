@@ -324,40 +324,16 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
   possible_flags = ''
 
   if groups:
-    # TODO(joejoevictor): Add missing GROUPS section handling
     possible_actions.append('GROUP')
+    # TODO(joejoevictor): Add missing GROUPS section handling
   if commands:
     possible_actions.append('COMMAND')
-    command_item_strings = []
-    for command_name, command in commands:
-      command_info = inspectutils.Info(command)
-      command_item = command_name
-      if 'docstring_info' in command_info:
-        command_docstring_info = command_info['docstring_info']
-        if command_docstring_info and command_docstring_info.summary:
-          command_item = _CreateItem(command_name,
-                                     command_docstring_info.summary)
-
-      command_item_strings.append(command_item)
-    usage_details_sections.append(
-        ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings)))
-
+    usage_details_section = CommandUsageDetailsSection(commands)
+    usage_details_sections.append(usage_details_section)
   if values:
     possible_actions.append('VALUE')
-    value_item_strings = []
-    for value_name, value in values:
-      del value
-      init_info = inspectutils.Info(component.__class__.__init__)
-      value_item = value_name
-      if 'docstring_info' in init_info:
-        init_docstring_info = init_info['docstring_info']
-        if init_docstring_info.args:
-          for arg_info in init_docstring_info.args:
-            if arg_info.name == value_name:
-              value_item = _CreateItem(value_name, arg_info.description)
-      value_item_strings.append(value_item)
-    usage_details_sections.append(
-        ('VALUES', _NewChoicesSection('VALUE', value_item_strings)))
+    usage_details_section = ValuesUsageDetailsSection(component, values)
+    usage_details_sections.append(usage_details_section)
 
   possible_actions_string = ' | '.join(
       formatting.Underline(action) for action in possible_actions)
@@ -384,6 +360,38 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
       _CreateOutputSection(name, content)
       for name, content in output_sections
   )
+
+
+def ValuesUsageDetailsSection(component, values):
+  """Creates a section tuple for the values section of the usage details."""
+  value_item_strings = []
+  for value_name, value in values:
+    del value
+    init_info = inspectutils.Info(component.__class__.__init__)
+    value_item = value_name
+    if 'docstring_info' in init_info:
+      init_docstring_info = init_info['docstring_info']
+      if init_docstring_info.args:
+        for arg_info in init_docstring_info.args:
+          if arg_info.name == value_name:
+            value_item = _CreateItem(value_name, arg_info.description)
+    value_item_strings.append(value_item)
+  return ('VALUES', _NewChoicesSection('VALUE', value_item_strings))
+
+
+def CommandUsageDetailsSection(commands):
+  """Creates a section tuple for the commands section of the usage details."""
+  command_item_strings = []
+  for command_name, command in commands:
+    command_info = inspectutils.Info(command)
+    command_item = command_name
+    if 'docstring_info' in command_info:
+      command_docstring_info = command_info['docstring_info']
+      if command_docstring_info and command_docstring_info.summary:
+        command_item = _CreateItem(command_name,
+                                   command_docstring_info.summary)
+    command_item_strings.append(command_item)
+  return ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings))
 
 
 def _NewChoicesSection(name, choices):
