@@ -21,6 +21,7 @@ from __future__ import print_function
 import os
 import textwrap
 
+from fire import formatting
 from fire import helptext
 from fire import inspectutils
 from fire import test_components as tc
@@ -249,6 +250,19 @@ VALUES
     """
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
+
+  def testHelpTextUnderlineFlag(self):
+    component = tc.WithDefaults().triple
+    info = inspectutils.Info(component)
+    t = trace.FireTrace(component, name='triple')
+    help_screen = helptext.HelpText(component, info, t)
+    self.assertIn(formatting.Bold('NAME') + '\n    triple', help_screen)
+    self.assertIn(
+        formatting.Bold('SYNOPSIS') + '\n    triple [--count=COUNT]',
+        help_screen)
+    self.assertIn(
+        formatting.Bold('FLAGS') + '\n    --' + formatting.Underline('count'),
+        help_screen)
 
 
 class UsageTest(testutils.BaseTestCase):

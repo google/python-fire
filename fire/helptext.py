@@ -165,14 +165,15 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
 
   args_and_flags = ''
   if args_with_no_defaults:
-    items = [arg.upper() for arg in args_with_no_defaults]
+    items = [formatting.Underline(arg.upper()) for arg in args_with_no_defaults]
     args_and_flags = ' '.join(items)
 
   synopsis_flag_template = '[--{flag_name}={flag_name_upper}]'
   if flags:
     items = [
         synopsis_flag_template.format(
-            flag_name=flag, flag_name_upper=flag.upper()) for flag in flags
+            flag_name=formatting.Underline(flag), flag_name_upper=flag.upper())
+        for flag in flags
     ]
     args_and_flags = args_and_flags + ' '.join(items)
 
@@ -252,9 +253,9 @@ def _CreatePositionalArgItem(arg, docstring_info):
 
   arg = arg.upper()
   if description:
-    return _CreateItem(arg, description, indent=4)
+    return _CreateItem(formatting.BoldUnderline(arg), description, indent=4)
   else:
-    return arg
+    return formatting.BoldUnderline(arg)
 
 
 def _CreateFlagItem(flag, docstring_info):
@@ -274,11 +275,10 @@ def _CreateFlagItem(flag, docstring_info):
         description = arg_in_docstring.description
         break
 
-  flag = '--{flag}'.format(flag=flag)
+  flag = '--{flag}'.format(flag=formatting.Underline(flag))
   if description:
     return _CreateItem(flag, description, indent=2)
-  else:
-    return flag
+  return flag
 
 
 def _CreateItem(name, description, indent=2):
@@ -324,8 +324,8 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
   possible_flags = ''
 
   if groups:
-    possible_actions.append('GROUP')
     # TODO(joejoevictor): Add missing GROUPS section handling
+    possible_actions.append('GROUP')
   if commands:
     possible_actions.append('COMMAND')
     usage_details_section = CommandUsageDetailsSection(commands)

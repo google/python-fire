@@ -36,6 +36,10 @@ def Underline(text):
   return termcolor.colored(text, attrs=['underline'])
 
 
+def BoldUnderline(text):
+  return Bold(Underline(text))
+
+
 def WrappedJoin(items, separator=' | ', width=80):
   """Joins the items by the separator, wrapping lines at the given width."""
   lines = []
