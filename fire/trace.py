@@ -211,13 +211,14 @@ class FireTrace(object):
     return element.HasCapacity() and not element.HasSeparator()
 
   def __str__(self):
-    return '\n'.join(
-        '{index}. {trace_string}'.format(
-            index=index + 1,
-            trace_string=element,
-        )
-        for index, element in enumerate(self.elements)
-    )
+    lines = []
+    for index, element in enumerate(self.elements):
+      line = '{index}. {trace_string}'.format(
+          index=index + 1,
+          trace_string=element,
+      )
+      lines.append(line)
+    return '\n'.join(lines)
 
   def NeedsSeparatingHyphenHyphen(self, flag='help'):
     """Returns whether a the trace need '--' before '--help'.
