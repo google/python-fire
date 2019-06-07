@@ -324,8 +324,9 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
   possible_flags = ''
 
   if groups:
-    # TODO(joejoevictor): Add missing GROUPS section handling
     possible_actions.append('GROUP')
+    usage_details_section = GroupUsageDetailsSection(groups)
+    usage_details_sections.append(usage_details_section)
   if commands:
     possible_actions.append('COMMAND')
     usage_details_section = CommandUsageDetailsSection(commands)
@@ -362,6 +363,36 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
   )
 
 
+def GroupUsageDetailsSection(groups):
+  """Creates a section tuple for the groups section of the usage details."""
+  group_item_strings = []
+  for group_name, group in groups:
+    group_info = inspectutils.Info(group)
+    group_item = group_name
+    if 'docstring_info' in group_info:
+      group_docstring_info = group_info['docstring_info']
+      if group_docstring_info and group_docstring_info.summary:
+        group_item = _CreateItem(group_name,
+                                 group_docstring_info.summary)
+    group_item_strings.append(group_item)
+  return ('GROUPS', _NewChoicesSection('GROUP', group_item_strings))
+
+
+def CommandUsageDetailsSection(commands):
+  """Creates a section tuple for the commands section of the usage details."""
+  command_item_strings = []
+  for command_name, command in commands:
+    command_info = inspectutils.Info(command)
+    command_item = command_name
+    if 'docstring_info' in command_info:
+      command_docstring_info = command_info['docstring_info']
+      if command_docstring_info and command_docstring_info.summary:
+        command_item = _CreateItem(command_name,
+                                   command_docstring_info.summary)
+    command_item_strings.append(command_item)
+  return ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings))
+
+
 def ValuesUsageDetailsSection(component, values):
   """Creates a section tuple for the values section of the usage details."""
   value_item_strings = []
@@ -379,24 +410,9 @@ def ValuesUsageDetailsSection(component, values):
   return ('VALUES', _NewChoicesSection('VALUE', value_item_strings))
 
 
-def CommandUsageDetailsSection(commands):
-  """Creates a section tuple for the commands section of the usage details."""
-  command_item_strings = []
-  for command_name, command in commands:
-    command_info = inspectutils.Info(command)
-    command_item = formatting.Bold(command_name)
-    if 'docstring_info' in command_info:
-      command_docstring_info = command_info['docstring_info']
-      if command_docstring_info and command_docstring_info.summary:
-        command_item = _CreateItem(
-            formatting.Bold(command_name), command_docstring_info.summary)
-    command_item_strings.append(command_item)
-  return ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings))
-
-
 def _NewChoicesSection(name, choices):
   return _CreateItem(
-      '{name} is one of the followings:'.format(
+      '{name} is one of the following:'.format(
           name=formatting.Bold(formatting.Underline(name))),
       '\n' + '\n\n'.join(choices),
       indent=1)

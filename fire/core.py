@@ -240,7 +240,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
 def _PrintResult(component_trace, verbose=False):
   """Prints the result of the Fire call to stdout in a human readable way."""
   # TODO(dbieber): Design human readable deserializable serialization method
-  # and move serialization to it's own module.
+  # and move serialization to its own module.
   result = component_trace.GetResult()
 
   if isinstance(result, (list, set, types.GeneratorType)):
@@ -267,7 +267,7 @@ def _DisplayError(component_trace):
       message = 'INFO: Showing help with the command {cmd}.\n'.format(
           cmd=pipes.quote(command))
       output.append(message)
-  output.append('Fire trace:\n{trace}\n'.format(trace=component_trace))
+  output.append('ERROR: ' + component_trace.elements[-1].ErrorAsStr())
   result = component_trace.GetResult()
   help_string = helputils.HelpString(result, component_trace,
                                      component_trace.verbose)

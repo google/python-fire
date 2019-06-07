@@ -56,7 +56,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    NoDefaults', help_screen)
     self.assertIn('SYNOPSIS\n    NoDefaults COMMAND', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
-    self.assertIn('COMMANDS\n    COMMAND is one of the followings:',
+    self.assertIn('COMMANDS\n    COMMAND is one of the following:',
                   help_screen)
     self.assertIn('double', help_screen)
     self.assertIn('triple', help_screen)
@@ -129,7 +129,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('DESCRIPTION\n', help_screen)
     # We don't check the listed commands either since the list API could
     # potentially change between Python versions.
-    self.assertIn('COMMANDS\n    COMMAND is one of the followings:\n',
+    self.assertIn('COMMANDS\n    COMMAND is one of the following:\n',
                   help_screen)
 
   def testHelpTextShortList(self):
@@ -148,7 +148,7 @@ class HelpTest(testutils.BaseTestCase):
     # We don't check the listed commands comprehensively since the list API
     # could potentially change between Python versions. Check a few
     # functions(command) that we're confident likely remain available.
-    self.assertIn('COMMANDS\n    COMMAND is one of the followings:\n',
+    self.assertIn('COMMANDS\n    COMMAND is one of the following:\n',
                   help_screen)
     self.assertIn('     append\n', help_screen)
 
@@ -160,9 +160,9 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    7', help_screen)
     self.assertIn('SYNOPSIS\n    7 COMMAND | VALUE', help_screen)
     self.assertIn('DESCRIPTION\n', help_screen)
-    self.assertIn('COMMANDS\n    COMMAND is one of the followings:\n',
+    self.assertIn('COMMANDS\n    COMMAND is one of the following:\n',
                   help_screen)
-    self.assertIn('VALUES\n    VALUE is one of the followings:\n', help_screen)
+    self.assertIn('VALUES\n    VALUE is one of the following:\n', help_screen)
 
   def testHelpTextNoInit(self):
     component = tc.OldStyleEmpty
@@ -190,13 +190,13 @@ DESCRIPTION
     This is some detail description of this test class.
 
 COMMANDS
-    COMMAND is one of the followings:
+    COMMAND is one of the following:
 
      print_msg
        Prints a message.
 
 VALUES
-    VALUE is one of the followings:
+    VALUE is one of the following:
 
      message
        The default message to print.
@@ -273,7 +273,7 @@ VALUES
         formatting.Bold('NAME') + '\n    ClassWithDocstring', help_screen)
     self.assertIn(formatting.Bold('COMMANDS') + '\n', help_screen)
     self.assertIn(
-        formatting.BoldUnderline('COMMAND') + ' is one of the followings:\n',
+        formatting.BoldUnderline('COMMAND') + ' is one of the following:\n',
         help_screen)
     self.assertIn(formatting.Bold('print_msg') + '\n', help_screen)
 

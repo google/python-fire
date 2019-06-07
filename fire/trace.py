@@ -291,8 +291,13 @@ class FireTraceElement(object):
   def AddSeparator(self):
     self._separator = True
 
+  def ErrorAsStr(self):
+    return ' '.join(str(arg) for arg in self._error.args)
+
   def __str__(self):
-    if not self.HasError():
+    if self.HasError():
+      return self.ErrorAsStr()
+    else:
       # Format is: {action} "{target}" ({filename}:{lineno})
       string = self._action
       if self._target is not None:
@@ -304,5 +309,3 @@ class FireTraceElement(object):
 
         string += ' ({path})'.format(path=path)
       return string
-    else:
-      return str(self._error)
