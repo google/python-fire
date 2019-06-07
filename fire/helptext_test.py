@@ -289,8 +289,8 @@ class UsageTest(testutils.BaseTestCase):
     Usage: NoDefaults <command>
       available commands:    double | triple
 
-    For detailed information on this command and its flags, run:
-    NoDefaults --help
+    For detailed information on this command, run:
+      NoDefaults --help
     '''
 
     self.assertEqual(
@@ -306,8 +306,8 @@ class UsageTest(testutils.BaseTestCase):
     Usage: NoDefaults <command>
       available commands:    double | triple
 
-    For detailed information on this command and its flags, run:
-    NoDefaults --help
+    For detailed information on this command, run:
+      NoDefaults --help
     '''
     self.assertEqual(
         usage_output,
@@ -323,7 +323,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: NoDefaults double COUNT
 
     For detailed information on this command, run:
-    NoDefaults double --help
+      NoDefaults double --help
     '''
     self.assertEqual(
         usage_output,
@@ -340,7 +340,7 @@ class UsageTest(testutils.BaseTestCase):
     Available flags: --help
 
     For detailed information on this command, run:
-    function_with_help -- --help
+      function_with_help -- --help
     '''
     self.assertEqual(
         usage_output,
@@ -357,7 +357,7 @@ class UsageTest(testutils.BaseTestCase):
     Available flags: --rate
 
     For detailed information on this command, run:
-    multiplier_with_docstring --help
+      multiplier_with_docstring --help
     '''
     self.assertEqual(
         usage_output,
@@ -378,7 +378,7 @@ class UsageTest(testutils.BaseTestCase):
       Available commands:    print_msg
 
     For detailed information on this command, run:
-    CallableWithKeywordArgument -- --help
+      CallableWithKeywordArgument -- --help
     '''
     self.assertEqual(
         usage_output,
@@ -393,7 +393,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: InstanceVars ARG1 ARG2
 
     For detailed information on this command, run:
-    InstanceVars --help
+      InstanceVars --help
     '''
     self.assertEqual(
         usage_output,

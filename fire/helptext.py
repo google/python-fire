@@ -440,15 +440,15 @@ def UsageTextForFunction(component, trace=None):
   output_template = """Usage: {current_command} {args_and_flags}
 {availability_lines}
 For detailed information on this command, run:
-{current_command}{hyphen_hyphen} --help
+  {current_command}{hyphen_hyphen} --help
 """
 
   if trace:
     command = trace.GetCommand()
-    is_help_an_arg = trace.NeedsSeparatingHyphenHyphen()
+    needs_separating_hyphen_hyphen = trace.NeedsSeparatingHyphenHyphen()
   else:
     command = None
-    is_help_an_arg = False
+    needs_separating_hyphen_hyphen = False
 
   if not command:
     command = ''
@@ -473,7 +473,7 @@ For detailed information on this command, run:
     availability_lines = ''
   args_and_flags = ' '.join(items)
 
-  hyphen_hyphen = ' --' if is_help_an_arg else ''
+  hyphen_hyphen = ' --' if needs_separating_hyphen_hyphen else ''
 
   return output_template.format(
       current_command=command,
@@ -507,8 +507,8 @@ def UsageTextForObject(component, trace=None, verbose=False):
   output_template = """Usage: {current_command} <{possible_actions}>
 {availability_lines}
 
-For detailed information on this command and its flags, run:
-{current_command} --help
+For detailed information on this command, run:
+  {current_command} --help
 """
   if trace:
     command = trace.GetCommand()
