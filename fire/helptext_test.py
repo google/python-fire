@@ -277,6 +277,22 @@ VALUES
         help_screen)
     self.assertIn(formatting.Bold('print_msg') + '\n', help_screen)
 
+  def testHelpTextObjectWithGroupAndValues(self):
+    component = tc.TypedProperties()
+    t = trace.FireTrace(component, name='TypedProperties')
+    info = inspectutils.Info(component)
+    help_screen = helptext.HelpText(
+        component=component, info=info, trace=t, verbose=True)
+    print(help_screen)
+    self.assertIn('GROUPS', help_screen)
+    self.assertIn('GROUP is one of the following:', help_screen)
+    self.assertIn(
+        'charlie\n       Class with functions that have default arguments.',
+        help_screen)
+    self.assertIn('VALUES', help_screen)
+    self.assertIn('VALUE is one of the following:', help_screen)
+    self.assertIn('alpha', help_screen)
+
 
 class UsageTest(testutils.BaseTestCase):
 
