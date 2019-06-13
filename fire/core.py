@@ -494,8 +494,7 @@ def _Fire(component, args, context, name=None):
             found_target = True
             break
         if not found_target:
-          error = FireError(
-              'Cannot find target in dict:', target, component)
+          error = FireError('Cannot find target in dict:', target)
           component_trace.AddError(error, initial_args)
           return component_trace
 
