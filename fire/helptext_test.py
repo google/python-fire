@@ -199,8 +199,7 @@ VALUES
     VALUE is one of the following:
 
      message
-       The default message to print.
-"""
+       The default message to print."""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
 
@@ -224,8 +223,7 @@ VALUES
             The upper limit of the range to generate, from 0 to `n` - 1.
 
     NOTES
-        You could also use flags syntax for POSITIONAL ARGUMENTS
-    """
+        You could also use flags syntax for POSITIONAL ARGUMENTS"""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
 
@@ -246,8 +244,7 @@ VALUES
 
     FLAGS
         --count
-          Input number that you want to double.
-    """
+          Input number that you want to double."""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
 
@@ -306,8 +303,7 @@ class UsageTest(testutils.BaseTestCase):
       available commands:    double | triple
 
     For detailed information on this command, run:
-      NoDefaults --help
-    '''
+      NoDefaults --help'''
 
     self.assertEqual(
         usage_output,
@@ -323,8 +319,7 @@ class UsageTest(testutils.BaseTestCase):
       available commands:    double | triple
 
     For detailed information on this command, run:
-      NoDefaults --help
-    '''
+      NoDefaults --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -339,8 +334,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: NoDefaults double COUNT
 
     For detailed information on this command, run:
-      NoDefaults double --help
-    '''
+      NoDefaults double --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -356,8 +350,7 @@ class UsageTest(testutils.BaseTestCase):
     Available flags: --help
 
     For detailed information on this command, run:
-      function_with_help -- --help
-    '''
+      function_with_help -- --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -373,8 +366,7 @@ class UsageTest(testutils.BaseTestCase):
     Available flags: --rate
 
     For detailed information on this command, run:
-      multiplier_with_docstring --help
-    '''
+      multiplier_with_docstring --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -386,7 +378,7 @@ class UsageTest(testutils.BaseTestCase):
     t = trace.FireTrace(component, name='CallableWithKeywordArgument')
     info = inspectutils.Info(component)
     usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
-    # TODO(zuhaohen): We need to handle the case for keyword args as well
+    # TODO(joejoevictor): We need to handle the case for keyword args as well
     # i.e. __call__ method of CallableWithKeywordArgument
     expected_output = '''
     Usage: CallableWithKeywordArgument <command>
@@ -394,8 +386,7 @@ class UsageTest(testutils.BaseTestCase):
       Available commands:    print_msg
 
     For detailed information on this command, run:
-      CallableWithKeywordArgument -- --help
-    '''
+      CallableWithKeywordArgument -- --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -409,8 +400,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: InstanceVars ARG1 ARG2
 
     For detailed information on this command, run:
-      InstanceVars --help
-    '''
+      InstanceVars --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -424,8 +414,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: EmptyDict
 
     For detailed information on this command, run:
-      EmptyDict --help
-    '''
+      EmptyDict --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -439,8 +428,7 @@ class UsageTest(testutils.BaseTestCase):
     Usage: None
 
     For detailed information on this command, run:
-      None --help
-    '''
+      None --help'''
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))

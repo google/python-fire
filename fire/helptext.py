@@ -440,8 +440,7 @@ def UsageTextForFunction(component, trace=None):
   output_template = """Usage: {current_command} {args_and_flags}
 {availability_lines}
 For detailed information on this command, run:
-  {current_command}{hyphen_hyphen} --help
-"""
+  {current_command}{hyphen_hyphen} --help"""
 
   if trace:
     command = trace.GetCommand()
@@ -507,8 +506,7 @@ def UsageTextForObject(component, trace=None, verbose=False):
   output_template = """Usage: {current_command}{possible_actions}
 {availability_lines}
 For detailed information on this command, run:
-  {current_command} --help
-"""
+  {current_command} --help"""
   if trace:
     command = trace.GetCommand()
   else:
