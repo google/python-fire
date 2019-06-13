@@ -415,6 +415,36 @@ class UsageTest(testutils.BaseTestCase):
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
 
+  def testUsageOutputEmptyDict(self):
+    component = {}
+    t = trace.FireTrace(component, name='EmptyDict')
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    expected_output = '''
+    Usage: EmptyDict
+
+    For detailed information on this command, run:
+      EmptyDict --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
+  def testUsageOutputNone(self):
+    component = None
+    t = trace.FireTrace(component, name='None')
+    info = inspectutils.Info(component)
+    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    expected_output = '''
+    Usage: None
+
+    For detailed information on this command, run:
+      None --help
+    '''
+    self.assertEqual(
+        usage_output,
+        textwrap.dedent(expected_output).lstrip('\n'))
+
 
 if __name__ == '__main__':
   testutils.main()

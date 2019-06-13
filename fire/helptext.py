@@ -488,7 +488,7 @@ def _CreateAvailabilityLine(header, items,
   items_text = '\n'.join(formatting.WrappedJoin(items, width=items_width))
   indented_items_text = formatting.Indent(items_text, spaces=items_indent)
   indented_header = formatting.Indent(header, spaces=header_indent)
-  return indented_header + indented_items_text[len(indented_header):]
+  return indented_header + indented_items_text[len(indented_header):] + '\n'
 
 
 def UsageTextForObject(component, trace=None, verbose=False):
@@ -504,9 +504,8 @@ def UsageTextForObject(component, trace=None, verbose=False):
   Returns:
     String suitable for display in error screen.
   """
-  output_template = """Usage: {current_command} <{possible_actions}>
+  output_template = """Usage: {current_command}{possible_actions}
 {availability_lines}
-
 For detailed information on this command, run:
   {current_command} --help
 """
@@ -551,8 +550,14 @@ For detailed information on this command, run:
         header='available values:',
         items=values)
     availability_lines.append(values_text)
-  possible_actions_string = '|'.join(possible_actions)
-  availability_lines_string = '\n'.join(availability_lines)
+
+  if possible_actions:
+    possible_actions_string = ' <{actions}>'.format(
+        actions='|'.join(possible_actions))
+  else:
+    possible_actions_string = ''
+
+  availability_lines_string = ''.join(availability_lines)
 
   return output_template.format(
       current_command=command,
