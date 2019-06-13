@@ -31,6 +31,7 @@ A library for automatically generating command line interfaces.""".strip()
 
 DEPENDENCIES = [
     'six',
+    'termcolor',
 ]
 
 TEST_DEPENDENCIES = [

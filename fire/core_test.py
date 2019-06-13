@@ -74,34 +74,34 @@ class CoreTest(testutils.BaseTestCase):
 
   # TODO(dbieber): Use parameterized tests to break up repetitive tests.
   def testHelpWithClass(self):
-    with self.assertRaisesFireExit(0, 'Usage:.*ARG1'):
+    with self.assertRaisesFireExit(0, 'SYNOPSIS.*ARG1'):
       core.Fire(tc.InstanceVars, command=['--', '--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*ARG1'):
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*ARG1'):
       core.Fire(tc.InstanceVars, command=['--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*ARG1'):
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*ARG1'):
       core.Fire(tc.InstanceVars, command=['-h'])
 
   def testHelpWithMember(self):
-    with self.assertRaisesFireExit(0, 'Usage:.*capitalize'):
+    with self.assertRaisesFireExit(0, 'SYNOPSIS.*capitalize'):
       core.Fire(tc.TypedProperties, command=['gamma', '--', '--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*capitalize'):
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*capitalize'):
       core.Fire(tc.TypedProperties, command=['gamma', '--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*capitalize'):
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*capitalize'):
       core.Fire(tc.TypedProperties, command=['gamma', '-h'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*delta'):
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*delta'):
       core.Fire(tc.TypedProperties, command=['delta', '--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*echo'):
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*echo'):
       core.Fire(tc.TypedProperties, command=['echo', '--help'])
 
   def testHelpOnErrorInConstructor(self):
-    with self.assertRaisesFireExit(0, 'Usage:.*[VALUE]'):
+    with self.assertRaisesFireExit(0, 'SYNOPSIS.*VALUE'):
       core.Fire(tc.ErrorInConstructor, command=['--', '--help'])
-    with self.assertRaisesFireExit(0, 'INFO:.*Usage:.*[VALUE]'):
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*VALUE'):
       core.Fire(tc.ErrorInConstructor, command=['--help'])
 
   def testHelpWithNamespaceCollision(self):
     # Tests cases when calling the help shortcut should not show help.
-    with self.assertOutputMatches(stdout='Docstring.*', stderr=None):
+    with self.assertOutputMatches(stdout='DESCRIPTION.*', stderr=None):
       core.Fire(tc.WithHelpArg, command=['--help', 'False'])
     with self.assertOutputMatches(stdout='help in a dict', stderr=None):
       core.Fire(tc.WithHelpArg, command=['dictionary', '__help'])

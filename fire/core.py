@@ -64,7 +64,7 @@ import types
 
 from fire import completion
 from fire import decorators
-from fire import helputils
+from fire import helptext
 from fire import inspectutils
 from fire import interact
 from fire import parser
@@ -136,7 +136,7 @@ def Fire(component=None, command=None, name=None):
   if component_trace.show_trace and component_trace.show_help:
     output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
     result = component_trace.GetResult()
-    help_string = helputils.HelpString(
+    help_string = helptext.HelpString(
         result, component_trace, component_trace.verbose)
     output.append(help_string)
     Display(output)
@@ -147,7 +147,7 @@ def Fire(component=None, command=None, name=None):
     raise FireExit(0, component_trace)
   if component_trace.show_help:
     result = component_trace.GetResult()
-    help_string = helputils.HelpString(
+    help_string = helptext.HelpString(
         result, component_trace, component_trace.verbose)
     output = [help_string]
     Display(output)
@@ -255,7 +255,7 @@ def _PrintResult(component_trace, verbose=False):
   elif isinstance(result, value_types.VALUE_TYPES):
     print(result)
   elif result is not None:
-    print(helputils.HelpString(result, component_trace, verbose))
+    print(helptext.HelpString(result, component_trace, verbose))
 
 
 def _DisplayError(component_trace):
@@ -269,8 +269,8 @@ def _DisplayError(component_trace):
       output.append(message)
   output.append('ERROR: ' + component_trace.elements[-1].ErrorAsStr())
   result = component_trace.GetResult()
-  help_string = helputils.HelpString(result, component_trace,
-                                     component_trace.verbose)
+  help_string = helptext.HelpString(result, component_trace,
+                                    component_trace.verbose)
   output.append(help_string)
   Display(output)
 

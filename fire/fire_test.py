@@ -60,7 +60,7 @@ class FireTest(testutils.BaseTestCase):
     with mock.patch.object(sys, 'argv',
                            [os.path.join('python-fire', 'fire',
                                          'base_filename.py')]):
-      with self.assertOutputMatches(stdout='Usage:       base_filename.py',
+      with self.assertOutputMatches(stdout='SYNOPSIS.*base_filename.py',
                                     stderr=None):
         fire.Fire(tc.Empty)
 
@@ -536,12 +536,12 @@ class FireTest(testutils.BaseTestCase):
       fire.Fire(tc.BoolConverter, command=['--', '--help'])
 
   def testHelpFlagAndTraceFlag(self):
-    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*SYNOPSIS'):
       fire.Fire(tc.BoolConverter,
                 command=['as-bool', 'True', '--', '--help', '--trace'])
-    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*SYNOPSIS'):
       fire.Fire(tc.BoolConverter, command=['as-bool', 'True', '--', '-h', '-t'])
-    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*SYNOPSIS'):
       fire.Fire(tc.BoolConverter, command=['--', '-h', '--trace'])
 
   def testTabCompletionNoName(self):
