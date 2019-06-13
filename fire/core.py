@@ -64,6 +64,7 @@ import types
 
 from fire import completion
 from fire import decorators
+from fire import formatting
 from fire import helptext
 from fire import inspectutils
 from fire import interact
@@ -267,7 +268,8 @@ def _DisplayError(component_trace):
       message = 'INFO: Showing help with the command {cmd}.\n'.format(
           cmd=pipes.quote(command))
       output.append(message)
-  output.append('ERROR: ' + component_trace.elements[-1].ErrorAsStr())
+  output.append(formatting.Error('ERROR: ')
+                + component_trace.elements[-1].ErrorAsStr())
   result = component_trace.GetResult()
   help_string = helptext.HelpString(result, component_trace,
                                     component_trace.verbose)

@@ -61,3 +61,7 @@ def WrappedJoin(items, separator=' | ', width=80):
 
   lines.append(current_line)
   return lines
+
+
+def Error(text):
+  return termcolor.colored(text, color='red', attrs=['bold'])
