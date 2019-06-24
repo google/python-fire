@@ -120,16 +120,22 @@ def Fire(component=None, command=None, name=None):
     raise ValueError('The command argument must be a string or a sequence of '
                      'arguments.')
 
-  # Determine the calling context.
-  caller = inspect.stack()[1]
-  caller_frame = caller[0]
-  caller_globals = caller_frame.f_globals
-  caller_locals = caller_frame.f_locals
-  context = {}
-  context.update(caller_globals)
-  context.update(caller_locals)
+  args, flag_args = parser.SeparateFlagArgs(args)
 
-  component_trace = _Fire(component, args, context, name)
+  argparser = parser.CreateParser()
+  parsed_flag_args, unused_args = argparser.parse_known_args(flag_args)
+
+  context = {}
+  if parsed_flag_args.interactive or component is None:
+    # Determine the calling context.
+    caller = inspect.stack()[1]
+    caller_frame = caller[0]
+    caller_globals = caller_frame.f_globals
+    caller_locals = caller_frame.f_locals
+    context.update(caller_globals)
+    context.update(caller_locals)
+
+  component_trace = _Fire(component, args, parsed_flag_args, context, name)
 
   if component_trace.HasError():
     _DisplayError(component_trace)
@@ -329,7 +335,7 @@ def _OneLineResult(result):
     return str(result).replace('\n', ' ')
 
 
-def _Fire(component, args, context, name=None):
+def _Fire(component, args, parsed_flag_args, context, name=None):
   """Execute a Fire command on a target component using the args supplied.
 
   Arguments that come after a final isolated '--' are treated as Flags, eg for
@@ -361,6 +367,8 @@ def _Fire(component, args, context, name=None):
     component: The target component for Fire.
     args: A list of args to consume in Firing on the component, usually from
         the command line.
+    parsed_flag_args: The values of the flag args (e.g. --verbose, --separator)
+        that are part of every Fire CLI.
     context: A dict with the local and global variables available at the call
         to Fire.
     name: Optional. The name of the command. Used in interactive mode and in
@@ -372,10 +380,6 @@ def _Fire(component, args, context, name=None):
     ValueError: If there are arguments that cannot be consumed.
     ValueError: If --completion is specified but no name available.
   """
-  args, flag_args = parser.SeparateFlagArgs(args)
-
-  argparser = parser.CreateParser()
-  parsed_flag_args, unused_args = argparser.parse_known_args(flag_args)
   verbose = parsed_flag_args.verbose
   interactive = parsed_flag_args.interactive
   separator = parsed_flag_args.separator
