@@ -501,6 +501,7 @@ For detailed information on this command, run:
 
   members = completion._Members(component, verbose)  # pylint: disable=protected-access
   for member_name, member in members:
+    member_name = str(member_name)
     if value_types.IsGroup(member):
       groups.append(member_name)
     if value_types.IsCommand(member):

@@ -201,7 +201,7 @@ class Underscores(object):
 class BoolConverter(object):
 
   def as_bool(self, arg=False):
-    return arg
+    return bool(arg)
 
 
 class ReturnsObj(object):
