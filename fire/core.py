@@ -71,7 +71,7 @@ from fire import interact
 from fire import parser
 from fire import trace
 from fire import value_types
-from fire.console import console_pager
+from fire.console import console_io
 import six
 
 
@@ -168,13 +168,7 @@ def Fire(component=None, command=None, name=None):
 
 def Display(lines, out):
   text = '\n'.join(lines) + '\n'
-  pager = console_pager.Pager(text, out=out)
-  try:
-    pager.Run()
-  except:  # pylint: disable=bare-except
-    # pager.Run() fails with termios.error(25, 'Inappropriate ioctl for device')
-    # for outputs that don't fit on a single screen in our test environment.
-    pass
+  console_io.More(text, out=out)
 
 
 def CompletionScript(name, component, shell):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- #
 
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -95,12 +95,15 @@ import os
 import sys
 import unicodedata
 
+# from fire.console import properties
 from fire.console import console_attr_os
 from fire.console import encoding as encoding_util
+from fire.console import text
 
 import six
 
 
+# TODO: Unify this logic with console.style.mappings
 class BoxLineCharacters(object):
   """Box/line drawing characters.
 
@@ -161,6 +164,18 @@ class BoxLineCharactersAscii(BoxLineCharacters):
   d_vr = '#'
 
 
+class BoxLineCharactersScreenReader(BoxLineCharactersAscii):
+  dl = ' '
+  dr = ' '
+  hd = ' '
+  hu = ' '
+  ul = ' '
+  ur = ' '
+  vh = ' '
+  vl = ' '
+  vr = ' '
+
+
 class ProgressTrackerSymbols(object):
   """Characters used by progress trackers."""
 
@@ -172,8 +187,8 @@ class ProgressTrackerSymbolsUnicode(ProgressTrackerSymbols):
   def spin_marks(self):
     return ['⠏', '⠛', '⠹', '⠼', '⠶', '⠧']
 
-  success = '✓'
-  failed = 'X'
+  success = text.TypedText(['✓'], text_type=text.TextTypes.PT_SUCCESS)
+  failed = text.TypedText(['X'], text_type=text.TextTypes.PT_FAILURE)
   interrupted = '-'
   not_started = '.'
   prefix_length = 2
@@ -232,7 +247,7 @@ class ConsoleAttr(object):
   _BULLETS_WINDOWS = ('■', '≡', '∞', 'Φ', '·')  # cp437 compatible unicode
   _BULLETS_ASCII = ('o', '*', '+', '-')
 
-  def __init__(self, encoding=None):
+  def __init__(self, encoding=None, suppress_output=False):
     """Constructor.
 
     Args:
@@ -240,6 +255,8 @@ class ConsoleAttr(object):
         ascii -- ASCII art. This is the default.
         utf8 -- UTF-8 unicode.
         win -- Windows code page 437.
+      suppress_output: True to create a ConsoleAttr that doesn't want to output
+        anything.
     """
     # Normalize the encoding name.
     if not encoding:
@@ -247,7 +264,7 @@ class ConsoleAttr(object):
     elif encoding == 'win':
       encoding = 'cp437'
     self._encoding = encoding or 'ascii'
-    self._term = os.getenv('TERM', '').lower()
+    self._term = '' if suppress_output else os.getenv('TERM', '').lower()
 
     # ANSI "standard" attributes.
     if self.SupportsAnsi():
@@ -263,23 +280,27 @@ class ConsoleAttr(object):
       self._font_italic = ''
 
     # Encoded character attributes.
-    if self._encoding == 'utf8':
+    is_screen_reader = False
+    if self._encoding == 'utf8' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_UNICODE
       self._progress_tracker_symbols = ProgressTrackerSymbolsUnicode()
-    elif self._encoding == 'cp437':
+    elif self._encoding == 'cp437' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_WINDOWS
       # Windows does not suport the unicode characters used for the spinner.
       self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
     else:
       self._box_line_characters = BoxLineCharactersAscii()
+      if is_screen_reader:
+        self._box_line_characters = BoxLineCharactersScreenReader()
       self._bullets = self._BULLETS_ASCII
       self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
 
     # OS specific attributes.
     self._get_raw_key = [console_attr_os.GetRawKeyFunction()]
-    self._term_size = console_attr_os.GetTermSize()
+    self._term_size = (
+        (0, 0) if suppress_output else console_attr_os.GetTermSize())
 
     self._display_width_cache = {}
 
@@ -433,6 +454,14 @@ class ConsoleAttr(object):
       character.
     """
     return self._get_raw_key[0]()
+
+  def GetTermIdentifier(self):
+    """Returns the TERM envrionment variable for the console.
+
+    Returns:
+      str: A str that describes the console's text capabilities
+    """
+    return self._term
 
   def GetTermSize(self):
     """Returns the terminal (x, y) dimensions in characters.
