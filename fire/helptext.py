@@ -185,7 +185,7 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
                                     '\n'.join(pos_arg_items).rstrip('\n'))
     args_and_flags_sections.append(positional_arguments_section)
     notes_sections.append(
-        ('NOTES', 'You could also use flags syntax for POSITIONAL ARGUMENTS')
+        ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
     )
 
   flag_items = [

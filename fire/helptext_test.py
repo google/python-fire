@@ -67,7 +67,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('DESCRIPTION', help_screen)
     self.assertIn('POSITIONAL ARGUMENTS\n    COUNT', help_screen)
     self.assertIn(
-        'NOTES\n    You could also use flags syntax for POSITIONAL ARGUMENTS',
+        'NOTES\n    You can also use flags syntax for POSITIONAL ARGUMENTS',
         help_screen)
 
   def testHelpTextFunctionWithDefaults(self):
@@ -202,7 +202,7 @@ VALUES
             The upper limit of the range to generate, from 0 to `n` - 1.
 
     NOTES
-        You could also use flags syntax for POSITIONAL ARGUMENTS"""
+        You can also use flags syntax for POSITIONAL ARGUMENTS"""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
 
