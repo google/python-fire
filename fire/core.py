@@ -278,14 +278,14 @@ def _DisplayError(component_trace):
     help_text = helptext.HelpText(result, component_trace,
                                   component_trace.verbose)
     output.append(help_text)
+    Display(output, out=sys.stderr)
   else:
-    output.append(formatting.Error('ERROR: ')
-                  + component_trace.elements[-1].ErrorAsStr())
+    print(formatting.Error('ERROR: ')
+          + component_trace.elements[-1].ErrorAsStr(),
+          file=sys.stderr)
     error_text = helptext.UsageText(result, component_trace,
                                     component_trace.verbose)
-    output.append(error_text)
-
-  Display(output, out=sys.stderr)
+    print(error_text, file=sys.stderr)
 
 
 def _DictAsString(result, verbose=False):
