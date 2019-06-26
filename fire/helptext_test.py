@@ -23,7 +23,6 @@ import textwrap
 
 from fire import formatting
 from fire import helptext
-from fire import inspectutils
 from fire import test_components as tc
 from fire import testutils
 from fire import trace
@@ -36,10 +35,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextNoDefaults(self):
     component = tc.NoDefaults
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, name='NoDefaults'))
     self.assertIn('NAME\n    NoDefaults', help_screen)
     self.assertIn('SYNOPSIS\n    NoDefaults', help_screen)
@@ -48,10 +45,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextNoDefaultsObject(self):
     component = tc.NoDefaults()
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, name='NoDefaults'))
     self.assertIn('NAME\n    NoDefaults', help_screen)
     self.assertIn('SYNOPSIS\n    NoDefaults COMMAND', help_screen)
@@ -64,10 +59,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextFunction(self):
     component = tc.NoDefaults().double
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, name='double'))
     self.assertIn('NAME\n    double', help_screen)
     self.assertIn('SYNOPSIS\n    double COUNT', help_screen)
@@ -79,10 +72,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextFunctionWithDefaults(self):
     component = tc.WithDefaults().triple
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, name='triple'))
     self.assertIn('NAME\n    triple', help_screen)
     self.assertIn('SYNOPSIS\n    triple [--count=COUNT]', help_screen)
@@ -92,10 +83,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextFunctionWithBuiltin(self):
     component = 'test'.upper
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, 'upper'))
     self.assertIn('NAME\n    upper', help_screen)
     self.assertIn('SYNOPSIS\n    upper', help_screen)
@@ -106,9 +95,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextFunctionIntType(self):
     component = int
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
-        component=component, info=info, trace=trace.FireTrace(component, 'int'))
+        component=component, trace=trace.FireTrace(component, 'int'))
     self.assertIn('NAME\n    int', help_screen)
     self.assertIn('SYNOPSIS\n    int', help_screen)
     # We don't check description content here since the content is python
@@ -117,10 +105,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextEmptyList(self):
     component = []
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, 'list'))
     self.assertIn('NAME\n    list', help_screen)
     self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
@@ -134,10 +120,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextShortList(self):
     component = [10]
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, 'list'))
     self.assertIn('NAME\n    list', help_screen)
     self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
@@ -154,9 +138,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextInt(self):
     component = 7
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
-        component=component, info=info, trace=trace.FireTrace(component, '7'))
+        component=component, trace=trace.FireTrace(component, '7'))
     self.assertIn('NAME\n    7', help_screen)
     self.assertIn('SYNOPSIS\n    7 COMMAND | VALUE', help_screen)
     self.assertIn('DESCRIPTION\n', help_screen)
@@ -166,10 +149,8 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextNoInit(self):
     component = tc.OldStyleEmpty
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
         component=component,
-        info=info,
         trace=trace.FireTrace(component, 'OldStyleEmpty'))
     self.assertIn('NAME\n    OldStyleEmpty', help_screen)
     self.assertIn('SYNOPSIS\n    OldStyleEmpty', help_screen)
@@ -177,8 +158,7 @@ class HelpTest(testutils.BaseTestCase):
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
     t = trace.FireTrace(component, name='ClassWithDocstring')
-    info = inspectutils.Info(component)
-    help_output = helptext.HelpText(component, info, t)
+    help_output = helptext.HelpText(component, t)
     expected_output = """
 NAME
     ClassWithDocstring - Test class for testing help text output.
@@ -206,8 +186,7 @@ VALUES
   def testHelpScreenForFunctionDocstringWithLineBreak(self):
     component = tc.ClassWithMultilineDocstring.example_generator
     t = trace.FireTrace(component, name='example_generator')
-    info = inspectutils.Info(component)
-    help_output = helptext.HelpText(component, info, t)
+    help_output = helptext.HelpText(component, t)
     expected_output = """
     NAME
         example_generator - Generators have a ``Yields`` section instead of a ``Returns`` section.
@@ -230,8 +209,7 @@ VALUES
   def testHelpScreenForFunctionFunctionWithDefaultArgs(self):
     component = tc.WithDefaults().double
     t = trace.FireTrace(component, name='double')
-    info = inspectutils.Info(component)
-    help_output = helptext.HelpText(component, info, t)
+    help_output = helptext.HelpText(component, t)
     expected_output = """
     NAME
         double - Returns the input multiplied by 2.
@@ -250,9 +228,8 @@ VALUES
 
   def testHelpTextUnderlineFlag(self):
     component = tc.WithDefaults().triple
-    info = inspectutils.Info(component)
     t = trace.FireTrace(component, name='triple')
-    help_screen = helptext.HelpText(component, info, t)
+    help_screen = helptext.HelpText(component, t)
     self.assertIn(formatting.Bold('NAME') + '\n    triple', help_screen)
     self.assertIn(
         formatting.Bold('SYNOPSIS') + '\n    triple [--count=COUNT]',
@@ -263,9 +240,8 @@ VALUES
 
   def testHelpTextBoldCommandName(self):
     component = tc.ClassWithDocstring()
-    info = inspectutils.Info(component)
     t = trace.FireTrace(component, name='ClassWithDocstring')
-    help_screen = helptext.HelpText(component, info, t)
+    help_screen = helptext.HelpText(component, t)
     self.assertIn(
         formatting.Bold('NAME') + '\n    ClassWithDocstring', help_screen)
     self.assertIn(formatting.Bold('COMMANDS') + '\n', help_screen)
@@ -277,9 +253,8 @@ VALUES
   def testHelpTextObjectWithGroupAndValues(self):
     component = tc.TypedProperties()
     t = trace.FireTrace(component, name='TypedProperties')
-    info = inspectutils.Info(component)
     help_screen = helptext.HelpText(
-        component=component, info=info, trace=t, verbose=True)
+        component=component, trace=t, verbose=True)
     print(help_screen)
     self.assertIn('GROUPS', help_screen)
     self.assertIn('GROUP is one of the following:', help_screen)
@@ -296,8 +271,7 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutput(self):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=False)
+    usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = '''
     Usage: NoDefaults <command>
       available commands:    double | triple
@@ -312,8 +286,7 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputVerbose(self):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
     Usage: NoDefaults <command>
       available commands:    double | triple
@@ -328,8 +301,7 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.NoDefaults().double
     t = trace.FireTrace(component, name='NoDefaults')
     t.AddAccessedProperty(component, 'double', ['double'], None, None)
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
     Usage: NoDefaults double COUNT
 
@@ -342,8 +314,7 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputFunctionWithHelp(self):
     component = tc.function_with_help
     t = trace.FireTrace(component, name='function_with_help')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
     Usage: function_with_help <flags>
 
@@ -358,8 +329,7 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputFunctionWithDocstring(self):
     component = tc.multiplier_with_docstring
     t = trace.FireTrace(component, name='multiplier_with_docstring')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
     Usage: multiplier_with_docstring NUM <flags>
 
@@ -376,8 +346,7 @@ class UsageTest(testutils.BaseTestCase):
     # This is both a group and a command!
     component = tc.CallableWithKeywordArgument
     t = trace.FireTrace(component, name='CallableWithKeywordArgument')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     # TODO(joejoevictor): We need to handle the case for keyword args as well
     # i.e. __call__ method of CallableWithKeywordArgument
     expected_output = '''
@@ -394,8 +363,7 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputConstructorWithParameter(self):
     component = tc.InstanceVars
     t = trace.FireTrace(component, name='InstanceVars')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
     Usage: InstanceVars ARG1 ARG2
 
@@ -408,8 +376,7 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputEmptyDict(self):
     component = {}
     t = trace.FireTrace(component, name='EmptyDict')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
     Usage: EmptyDict
 
@@ -422,8 +389,7 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputNone(self):
     component = None
     t = trace.FireTrace(component, name='None')
-    info = inspectutils.Info(component)
-    usage_output = helptext.UsageText(component, info, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
     Usage: None
 

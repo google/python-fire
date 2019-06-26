@@ -45,30 +45,6 @@ from fire import inspectutils
 from fire import value_types
 
 
-def HelpString(component, trace=None, verbose=False):
-  """Returns the text to show for a supplied component.
-
-  The component can be any Python class, object, function, module, etc.
-
-  Args:
-    component: The component to determine the help string for.
-    trace: The Fire trace leading to this component.
-    verbose: Whether to include private members in the help string.
-  Returns:
-    String suitable for display giving information about the component.
-  """
-  info = inspectutils.Info(component)
-
-  is_error_screen = False
-  if trace:
-    is_error_screen = trace.HasError()
-
-  if is_error_screen:
-    return UsageText(component, info, trace, verbose=verbose)
-  else:
-    return HelpText(component, info, trace, verbose=verbose)
-
-
 def GetArgsAngFlags(component):
   """Returns all types of arguments and flags of a component."""
   spec = inspectutils.GetFullArgSpec(component)
@@ -103,11 +79,12 @@ def GetCurrentCommand(trace=None):
   return current_command
 
 
-def HelpText(component, info, trace=None, verbose=False):
+def HelpText(component, trace=None, verbose=False):
+  info = inspectutils.Info(component)
   if inspect.isroutine(component) or inspect.isclass(component):
-    return HelpTextForFunction(component, info, trace)
+    return HelpTextForFunction(component, info, trace=trace, verbose=verbose)
   else:
-    return HelpTextForObject(component, info, trace, verbose)
+    return HelpTextForObject(component, info, trace=trace, verbose=verbose)
 
 
 def GetDescriptionSectionText(summary, description):
@@ -163,19 +140,21 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   name_section = name_section_template.format(
       current_command=current_command, command_summary=command_summary_str)
 
-  args_and_flags = ''
+  arg_and_flag_strings = []
   if args_with_no_defaults:
-    items = [formatting.Underline(arg.upper()) for arg in args_with_no_defaults]
-    args_and_flags = ' '.join(items)
+    arg_strings = [formatting.Underline(arg.upper())
+                   for arg in args_with_no_defaults]
+    arg_and_flag_strings.extend(arg_strings)
 
-  synopsis_flag_template = '[--{flag_name}={flag_name_upper}]'
+  flag_string_template = '[--{flag_name}={flag_name_upper}]'
   if flags:
-    items = [
-        synopsis_flag_template.format(
+    flag_strings = [
+        flag_string_template.format(
             flag_name=formatting.Underline(flag), flag_name_upper=flag.upper())
         for flag in flags
     ]
-    args_and_flags = args_and_flags + ' '.join(items)
+    arg_and_flag_strings.extend(flag_strings)
+  args_and_flags = ' '.join(arg_and_flag_strings)
 
   # Synopsis section
   synopsis_section_template = '{current_command} {args_and_flags}'
@@ -418,8 +397,7 @@ def _NewChoicesSection(name, choices):
       indent=1)
 
 
-def UsageText(component, info, trace=None, verbose=False):
-  del info  # Unused.
+def UsageText(component, trace=None, verbose=False):
   if inspect.isroutine(component) or inspect.isclass(component):
     return UsageTextForFunction(component, trace)
   else:
@@ -434,7 +412,7 @@ def UsageTextForFunction(component, trace=None):
     trace: The Fire trace object containing all metadata of current execution.
 
   Returns:
-    String suitable for display in error screen.
+    String suitable for display in an error screen.
   """
 
   output_template = """Usage: {current_command} {args_and_flags}
@@ -491,10 +469,10 @@ def _CreateAvailabilityLine(header, items,
 
 
 def UsageTextForObject(component, trace=None, verbose=False):
-  """Returns help text for usage screen for objects.
+  """Returns the usage text for the error screen for an object.
 
-  Construct help text for usage screen to inform the user about error occurred
-  and correct syntax for invoking the object.
+  Constructs the usage text for the error screen to inform the user about how
+  to use the current component.
 
   Args:
     component: The component to determine the usage text for.

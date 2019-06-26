@@ -143,21 +143,21 @@ def Fire(component=None, command=None, name=None):
   if component_trace.show_trace and component_trace.show_help:
     output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
     result = component_trace.GetResult()
-    help_string = helptext.HelpString(
+    help_text = helptext.HelpText(
         result, component_trace, component_trace.verbose)
-    output.append(help_string)
-    Display(output)
+    output.append(help_text)
+    Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
   if component_trace.show_trace:
     output = ['Fire trace:\n{trace}'.format(trace=component_trace)]
-    Display(output)
+    Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
   if component_trace.show_help:
     result = component_trace.GetResult()
-    help_string = helptext.HelpString(
+    help_text = helptext.HelpText(
         result, component_trace, component_trace.verbose)
-    output = [help_string]
-    Display(output)
+    output = [help_text]
+    Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
 
   # The command succeeded normally; print the result.
@@ -166,9 +166,9 @@ def Fire(component=None, command=None, name=None):
   return result
 
 
-def Display(lines):
+def Display(lines, out):
   text = '\n'.join(lines) + '\n'
-  pager = console_pager.Pager(text, out=sys.stderr)
+  pager = console_pager.Pager(text, out=out)
   try:
     pager.Run()
   except:  # pylint: disable=bare-except
@@ -262,25 +262,36 @@ def _PrintResult(component_trace, verbose=False):
   elif isinstance(result, value_types.VALUE_TYPES):
     print(result)
   elif result is not None:
-    print(helptext.HelpString(result, component_trace, verbose))
+    help_text = helptext.HelpText(result, component_trace, verbose)
+    output = [help_text]
+    Display(output, out=sys.stdout)
 
 
 def _DisplayError(component_trace):
   """Prints the Fire trace and the error to stdout."""
+  result = component_trace.GetResult()
+
   output = []
+  show_help = False
   for help_flag in ('-h', '--help'):
     if help_flag in component_trace.elements[-1].args:
-      command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
-      message = 'INFO: Showing help with the command {cmd}.\n'.format(
-          cmd=pipes.quote(command))
-      output.append(message)
-  output.append(formatting.Error('ERROR: ')
-                + component_trace.elements[-1].ErrorAsStr())
-  result = component_trace.GetResult()
-  help_string = helptext.HelpString(result, component_trace,
+      show_help = True
+
+  if show_help:
+    command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
+    print('INFO: Showing help with the command {cmd}.\n'.format(
+        cmd=pipes.quote(command)), file=sys.stderr)
+    help_text = helptext.HelpText(result, component_trace,
+                                  component_trace.verbose)
+    output.append(help_text)
+  else:
+    output.append(formatting.Error('ERROR: ')
+                  + component_trace.elements[-1].ErrorAsStr())
+    error_text = helptext.UsageText(result, component_trace,
                                     component_trace.verbose)
-  output.append(help_string)
-  Display(output)
+    output.append(error_text)
+
+  Display(output, out=sys.stderr)
 
 
 def _DictAsString(result, verbose=False):
