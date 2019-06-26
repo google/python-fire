@@ -378,13 +378,15 @@ def ValuesUsageDetailsSection(component, values):
   for value_name, value in values:
     del value
     init_info = inspectutils.Info(component.__class__.__init__)
-    value_item = value_name
+    value_item = None
     if 'docstring_info' in init_info:
       init_docstring_info = init_info['docstring_info']
       if init_docstring_info.args:
         for arg_info in init_docstring_info.args:
           if arg_info.name == value_name:
             value_item = _CreateItem(value_name, arg_info.description)
+    if value_item is None:
+      value_item = str(value_name)
     value_item_strings.append(value_item)
   return ('VALUES', _NewChoicesSection('VALUE', value_item_strings))
 
