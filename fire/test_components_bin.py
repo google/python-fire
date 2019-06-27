@@ -25,8 +25,7 @@ import fire
 from fire import test_components
 
 
-def main(argv):
-  del argv  # Unused.
+def main():
   fire.Fire(test_components)
 
 if __name__ == '__main__':
