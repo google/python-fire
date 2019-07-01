@@ -310,7 +310,7 @@ class FireTest(testutils.BaseTestCase):
 
   def testFireObjectWithListAsObject(self):
     self.assertEqual(
-        fire.Fire(tc.TypedProperties, command=['echo', 'index', 'bethany']),
+        fire.Fire(tc.TypedProperties, command=['echo', 'count', 'bethany']),
         1)
 
   def testFireObjectWithTupleAsObject(self):
