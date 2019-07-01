@@ -287,12 +287,26 @@ class OrderedDictionary(object):
 
 
 class NamedTuple(object):
+  """Functions returning named tuples used for testing."""
 
   def point(self):
     """Point example straight from Python docs."""
     # pylint: disable=invalid-name
     Point = collections.namedtuple('Point', ['x', 'y'])
     return Point(11, y=22)
+
+  def matching_names(self):
+    """Field name equals value."""
+    # pylint: disable=invalid-name
+    Point = collections.namedtuple('Point', ['x', 'y'])
+    return Point(x='x', y='y')
+
+
+class CallableWithPositionalArgs(object):
+  """Test class for supporting callable."""
+
+  def __call__(self, x, y):
+    return x + y
 
 
 class CallableWithKeywordArgument(object):

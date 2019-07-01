@@ -356,9 +356,15 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
 
   2. Start with component as the current component.
   2a. If the current component is a class, instantiate it using args from args.
-  2b. If the current component is a routine, call it using args from args.
-  2c. Otherwise access a member from component using an arg from args.
-  2d. Repeat 2a-2c until no args remain.
+  2b. If the component is a routine, call it using args from args.
+  2c. If the component is a sequence, index into it using an arg from
+      args.
+  2d. If possible, access a member from the component using an arg from args.
+  2e. If the component is a callable object, call it using args from args.
+  2f. Repeat 2a-2e until no args remain.
+  Note: Only the first applicable rule from 2a-2e is applied in each iteration.
+  After each iteration of step 2a-2e, the current component is updated to be the
+  result of the applied rule.
 
   3a. Embed into ipython REPL if interactive mode is selected.
   3b. Generate a completion script if that flag is provided.
@@ -427,101 +433,97 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
       used_separator = True
     assert separator not in remaining_args
 
-    if inspect.isclass(component) or inspect.isroutine(component):
+    handled = False
+    candidate_errors = []
+
+    is_callable = inspect.isclass(component) or inspect.isroutine(component)
+    is_callable_object = callable(component) and not is_callable
+    is_sequence = isinstance(component, (list, tuple))
+    is_map = isinstance(component, dict) or inspectutils.IsNamedTuple(component)
+
+    if not handled and is_callable:
       # The component is a class or a routine; we'll try to initialize it or
       # call it.
-      isclass = inspect.isclass(component)
+      is_class = inspect.isclass(component)
 
       try:
         component, remaining_args = _CallAndUpdateTrace(
             component,
             remaining_args,
             component_trace,
-            treatment='class' if isclass else 'routine',
+            treatment='class' if is_class else 'routine',
             target=component.__name__)
+        handled = True
       except FireError as error:
-        component_trace.AddError(error, initial_args)
-        return component_trace
+        candidate_errors.append((error, initial_args))
 
-      if last_component is initial_component:
+      if handled and last_component is initial_component:
         # If the initial component is a class, keep an instance for use with -i.
         instance = component
 
-    elif (isinstance(component, (list, tuple)) and remaining_args
-          and not inspectutils.IsNamedTuple(component)):
+    if not handled and is_sequence and remaining_args:
       # The component is a tuple or list; we'll try to access a member.
       arg = remaining_args[0]
       try:
         index = int(arg)
         component = component[index]
+        handled = True
       except (ValueError, IndexError):
         error = FireError(
             'Unable to index into component with argument:', arg)
-        component_trace.AddError(error, initial_args)
-        return component_trace
+        candidate_errors.append((error, initial_args))
 
-      remaining_args = remaining_args[1:]
-      filename = None
-      lineno = None
-      component_trace.AddAccessedProperty(
-          component, index, [arg], filename, lineno)
+      if handled:
+        remaining_args = remaining_args[1:]
+        filename = None
+        lineno = None
+        component_trace.AddAccessedProperty(
+            component, index, [arg], filename, lineno)
 
-    elif ((isinstance(component, dict) or inspectutils.IsNamedTuple(component))
-          and remaining_args):
-      # The component is a dict; we'll try to access a member.
+    if not handled and is_map and remaining_args:
+      # The component is a dict or other key-value map; try to access a member.
       target = remaining_args[0]
 
-      # Allow indexing for namedtuples.
-      try:
-        index = int(target)
-        is_target_int = True
-      except ValueError:
-        is_target_int = False
-
-      if inspectutils.IsNamedTuple(component) and is_target_int:
-        try:
-          component = component[index]
-        except (ValueError, IndexError):
-          error = FireError(
-              'Unable to index into component with argument:', target)
-          component_trace.AddError(error, initial_args)
-          return component_trace
-      elif target in component:
-        component = component[target]
-      elif target.replace('-', '_') in component:
-        component = component[target.replace('-', '_')]
+      # Treat namedtuples as dicts when handling them as a map.
+      if inspectutils.IsNamedTuple(component):
+        component_dict = component._asdict()  # pytype: disable=attribute-error
       else:
-        # The target isn't present in the dict as a string, but maybe it is as
-        # another type.
+        component_dict = component
+
+      if target in component_dict:
+        component = component_dict[target]
+        handled = True
+      elif target.replace('-', '_') in component_dict:
+        component = component_dict[target.replace('-', '_')]
+        handled = True
+      else:
+        # The target isn't present in the dict as a string key, but maybe it is
+        # a key as another type.
         # TODO(dbieber): Consider alternatives for accessing non-string keys.
-        found_target = False
-        # If the component is a namedtuple, we need to convert it to dict to
-        # be able to use the .items() method.
-        if inspectutils.IsNamedTuple(component):
-          component = component._asdict()  # pytype: disable=attribute-error
-        for key, value in component.items():
+        for key, value in component_dict.items():
           if target == str(key):
             component = value
-            found_target = True
+            handled = True
             break
-        if not found_target:
-          error = FireError('Cannot find target in dict:', target)
-          component_trace.AddError(error, initial_args)
-          return component_trace
 
-      remaining_args = remaining_args[1:]
-      filename = None
-      lineno = None
-      component_trace.AddAccessedProperty(
-          component, target, [target], filename, lineno)
+      if handled:
+        remaining_args = remaining_args[1:]
+        filename = None
+        lineno = None
+        component_trace.AddAccessedProperty(
+            component, target, [target], filename, lineno)
+      else:
+        error = FireError('Cannot find key:', target)
+        candidate_errors.append((error, initial_args))
 
-    elif remaining_args:
-      # We'll try to access a member of the component.
+    if not handled and remaining_args:
+      # Object handler. We'll try to access a member of the component.
       try:
         target = remaining_args[0]
 
         component, consumed_args, remaining_args = _GetMember(
             component, remaining_args)
+        handled = True
 
         filename, lineno = inspectutils.GetFileAndLine(component)
 
@@ -529,19 +531,25 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
             component, target, consumed_args, filename, lineno)
 
       except FireError as error:
-        if not callable(component):
-          component_trace.AddError(error, initial_args)
-          return component_trace
+        # Couldn't access member.
+        candidate_errors.append((error, initial_args))
 
-        # If we can't access the member, try to treat component as a callable.
-        try:
-          component, remaining_args = _CallAndUpdateTrace(component,
-                                                          remaining_args,
-                                                          component_trace,
-                                                          treatment='callable')
-        except FireError as error:
-          component_trace.AddError(error, initial_args)
-          return component_trace
+    if not handled and is_callable_object:
+      # The component is a callable object; we'll try to call it.
+      try:
+        component, remaining_args = _CallAndUpdateTrace(
+            component,
+            remaining_args,
+            component_trace,
+            treatment='callable')
+        handled = True
+      except FireError as error:
+        candidate_errors.append((error, initial_args))
+
+    if not handled and candidate_errors:
+      error, initial_args = candidate_errors[0]
+      component_trace.AddError(error, initial_args)
+      return component_trace
 
     if used_separator:
       # Add back in the arguments from after the separator.
@@ -644,8 +652,9 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   if not target:
     target = component
   filename, lineno = inspectutils.GetFileAndLine(component)
+  metadata = decorators.GetMetadata(component)
   fn = component.__call__ if treatment == 'callable' else component
-  parse = _MakeParseFn(fn)
+  parse = _MakeParseFn(fn, metadata)
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
   component = fn(*varargs, **kwargs)
 
@@ -662,11 +671,12 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   return component, remaining_args
 
 
-def _MakeParseFn(fn):
+def _MakeParseFn(fn, metadata):
   """Creates a parse function for fn.
 
   Args:
     fn: The function or class to create the parse function for.
+    metadata: Additional metadata about the component the parse function is for.
   Returns:
     A parse function for fn. The parse function accepts a list of arguments
     and returns (varargs, kwargs), remaining_args. The original function fn
@@ -674,7 +684,6 @@ def _MakeParseFn(fn):
     the leftover args from the arguments to the parse function.
   """
   fn_spec = inspectutils.GetFullArgSpec(fn)
-  metadata = decorators.GetMetadata(fn)
 
   # Note: num_required_args is the number of positional arguments without
   # default values. All of these arguments are required.

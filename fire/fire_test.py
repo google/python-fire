@@ -308,6 +308,16 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(fire.Fire(tc.TypedProperties, command=['fox', '1']),
                      'divide')
 
+  def testFireObjectWithListAsObject(self):
+    self.assertEqual(
+        fire.Fire(tc.TypedProperties, command=['echo', 'index', 'bethany']),
+        1)
+
+  def testFireObjectWithTupleAsObject(self):
+    self.assertEqual(
+        fire.Fire(tc.TypedProperties, command=['fox', 'count', 'divide']),
+        1)
+
   def testFireNoComponent(self):
     self.assertEqual(fire.Fire(command=['tc', 'WithDefaults', 'double', '10']),
                      20)

@@ -144,6 +144,10 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertOutputMatches(stdout='11', stderr=None):
       core.Fire(tc.NamedTuple, command=['point', 'x'])
 
+  def testPrintNamedTupleFieldNameEqualsValue(self):
+    with self.assertOutputMatches(stdout='x', stderr=None):
+      core.Fire(tc.NamedTuple, command=['matching_names', 'x'])
+
   def testPrintNamedTupleIndex(self):
     with self.assertOutputMatches(stdout='22', stderr=None):
       core.Fire(tc.NamedTuple, command=['point', '1'])
@@ -160,6 +164,11 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertOutputMatches(stdout=r'', stderr=None):
       core.Fire(tc.CallableWithKeywordArgument(), command=[])
 
+  def testCallableWithPositionalArgs(self):
+    with self.assertRaisesFireExit(2, ''):
+      # This does not give 7 since positional args are disallowed for callable
+      # objects.
+      core.Fire(tc.CallableWithPositionalArgs(), command=['3', '4'])
 
 if __name__ == '__main__':
   testutils.main()
