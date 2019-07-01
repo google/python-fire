@@ -293,12 +293,12 @@ class FireTest(testutils.BaseTestCase):
   def testFireSet(self):
     component = tc.simple_set()
     result = fire.Fire(component, command=[])
-    self.assertLen(result, 3)
+    self.assertEqual(len(result), 3)
 
   def testFireFrozenset(self):
     component = tc.simple_frozenset()
     result = fire.Fire(component, command=[])
-    self.assertLen(result, 3)
+    self.assertEqual(len(result), 3)
 
   def testFireList(self):
     component = ['zero', 'one', 'two', 'three']
