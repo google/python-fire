@@ -244,7 +244,7 @@ def _PrintResult(component_trace, verbose=False):
   # and move serialization to its own module.
   result = component_trace.GetResult()
 
-  if isinstance(result, (list, set, types.GeneratorType)):
+  if isinstance(result, (list, set, frozenset, types.GeneratorType)):
     for i in result:
       print(_OneLineResult(i))
   elif inspect.isgeneratorfunction(result):

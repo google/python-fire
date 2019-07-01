@@ -152,6 +152,14 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertOutputMatches(stdout='22', stderr=None):
       core.Fire(tc.NamedTuple, command=['point', '1'])
 
+  def testPrintSet(self):
+    with self.assertOutputMatches(stdout='.*three.*', stderr=None):
+      core.Fire(tc.simple_set(), command=[])
+
+  def testPrintFrozenSet(self):
+    with self.assertOutputMatches(stdout='.*three.*', stderr=None):
+      core.Fire(tc.simple_frozenset(), command=[])
+
   def testPrintNamedTupleNegativeIndex(self):
     with self.assertOutputMatches(stdout='11', stderr=None):
       core.Fire(tc.NamedTuple, command=['point', '-2'])

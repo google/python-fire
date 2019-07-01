@@ -290,6 +290,16 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(
         fire.Fire(tc.TypedProperties, command=['delta', 'nest', '0']), 'a')
 
+  def testFireSet(self):
+    component = tc.simple_set()
+    result = fire.Fire(component, command=[])
+    self.assertLen(result, 3)
+
+  def testFireFrozenset(self):
+    component = tc.simple_frozenset()
+    result = fire.Fire(component, command=[])
+    self.assertLen(result, 3)
+
   def testFireList(self):
     component = ['zero', 'one', 'two', 'three']
     self.assertEqual(fire.Fire(component, command=['2']), 'two')

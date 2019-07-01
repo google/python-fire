@@ -370,3 +370,11 @@ class ClassWithMultilineDocstring(object):
     """
     for i in range(n):
       yield i
+
+
+def simple_set():
+  return {1, 2, 'three'}
+
+
+def simple_frozenset():
+  return frozenset({1, 2, 'three'})
