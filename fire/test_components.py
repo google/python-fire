@@ -309,6 +309,16 @@ class CallableWithPositionalArgs(object):
     return x + y
 
 
+NamedTuplePoint = collections.namedtuple('NamedTuplePoint', ['x', 'y'])
+
+
+class SubPoint(NamedTuplePoint):
+  """Used for verifying subclasses of namedtuples behave as intended."""
+
+  def coordinate_sum(self):
+    return self.x + self.y
+
+
 class CallableWithKeywordArgument(object):
   """Test class for supporting callable."""
 

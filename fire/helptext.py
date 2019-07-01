@@ -40,6 +40,7 @@ from __future__ import print_function
 import inspect
 
 from fire import completion
+from fire import decorators
 from fire import formatting
 from fire import inspectutils
 from fire import value_types
@@ -128,8 +129,6 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
 
   current_command = GetCurrentCommand(trace)
   summary, description = GetSummaryAndDescription(info['docstring_info'])
-  spec = inspectutils.GetFullArgSpec(component)
-  args = spec.args
 
   args_with_no_defaults, args_with_defaults, flags = GetArgsAngFlags(component)
   del args_with_defaults
@@ -140,10 +139,20 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   name_section = name_section_template.format(
       current_command=current_command, command_summary=command_summary_str)
 
+  # Check if positional args are allowed. If not, require flag syntax for args.
+  metadata = decorators.GetMetadata(component)
+  accepts_positional_args = metadata.get(decorators.ACCEPTS_POSITIONAL_ARGS)
+
   arg_and_flag_strings = []
   if args_with_no_defaults:
-    arg_strings = [formatting.Underline(arg.upper())
-                   for arg in args_with_no_defaults]
+    if accepts_positional_args:
+      arg_strings = [formatting.Underline(arg.upper())
+                     for arg in args_with_no_defaults]
+    else:
+      arg_strings = [
+          '--{arg}={arg_upper}'.format(
+              arg=arg, arg_upper=formatting.Underline(arg.upper()))
+          for arg in args_with_no_defaults]
     arg_and_flag_strings.extend(arg_strings)
 
   flag_string_template = '[--{flag_name}={flag_name_upper}]'
@@ -158,9 +167,6 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
 
   # Synopsis section
   synopsis_section_template = '{current_command} {args_and_flags}'
-  positional_arguments = '|'.join(args)
-  if positional_arguments:
-    positional_arguments = ' ' + positional_arguments
   synopsis_section = synopsis_section_template.format(
       current_command=current_command, args_and_flags=args_and_flags)
 
@@ -175,18 +181,18 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   args_and_flags_sections = []
   notes_sections = []
 
-  pos_arg_items = []
-  pos_arg_items = [
-      _CreatePositionalArgItem(arg, docstring_info)
+  arg_items = [
+      _CreateArgItem(arg, docstring_info)
       for arg in args_with_no_defaults
   ]
-  if pos_arg_items:
-    positional_arguments_section = ('POSITIONAL ARGUMENTS',
-                                    '\n'.join(pos_arg_items).rstrip('\n'))
-    args_and_flags_sections.append(positional_arguments_section)
-    notes_sections.append(
-        ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
-    )
+  if arg_items:
+    title = 'POSITIONAL ARGUMENTS' if accepts_positional_args else 'ARGUMENTS'
+    arguments_section = (title, '\n'.join(arg_items).rstrip('\n'))
+    args_and_flags_sections.append(arguments_section)
+    if accepts_positional_args:
+      notes_sections.append(
+          ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
+      )
 
   flag_items = [
       _CreateFlagItem(flag, docstring_info)
@@ -214,7 +220,7 @@ def _CreateOutputSection(name, content):
                     content=formatting.Indent(content, 4))
 
 
-def _CreatePositionalArgItem(arg, docstring_info):
+def _CreateArgItem(arg, docstring_info):
   """Returns a string describing a positional argument.
 
   Args:
@@ -416,7 +422,6 @@ def UsageTextForFunction(component, trace=None):
   Returns:
     String suitable for display in an error screen.
   """
-
   output_template = """Usage: {current_command} {args_and_flags}
 {availability_lines}
 For detailed information on this command, run:
@@ -442,7 +447,15 @@ For detailed information on this command, run:
   args_with_defaults = args[len(args) - num_defaults:]
   flags = args_with_defaults + spec.kwonlyargs
 
-  items = [arg.upper() for arg in args_with_no_defaults]
+  # Check if positional args are allowed. If not, show flag syntax for args.
+  metadata = decorators.GetMetadata(component)
+  accepts_positional_args = metadata.get(decorators.ACCEPTS_POSITIONAL_ARGS)
+  if not accepts_positional_args:
+    items = ['--{arg}={upper}'.format(arg=arg, upper=arg.upper())
+             for arg in args_with_no_defaults]
+  else:
+    items = [arg.upper() for arg in args_with_no_defaults]
+
   if flags:
     items.append('<flags>')
     availability_lines = (

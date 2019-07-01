@@ -365,7 +365,7 @@ class UsageTest(testutils.BaseTestCase):
     t = trace.FireTrace(component, name='InstanceVars')
     usage_output = helptext.UsageText(component, trace=t, verbose=True)
     expected_output = '''
-    Usage: InstanceVars ARG1 ARG2
+    Usage: InstanceVars --arg1=ARG1 --arg2=ARG2
 
     For detailed information on this command, run:
       InstanceVars --help'''
@@ -399,6 +399,13 @@ class UsageTest(testutils.BaseTestCase):
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
 
+  @testutils.skip('Only passes in Python 3 for now.')
+  def testInitRequiresFlagSyntaxSubclassNamedTuple(self):
+    component = tc.SubPoint
+    t = trace.FireTrace(component, name='SubPoint')
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    expected_output = 'Usage: SubPoint --x=X --y=Y'
+    self.assertIn(expected_output, usage_output)
 
 if __name__ == '__main__':
   testutils.main()
