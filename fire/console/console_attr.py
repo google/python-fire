@@ -268,7 +268,7 @@ class ConsoleAttr(object):
 
     # ANSI "standard" attributes.
     if self.SupportsAnsi():
-      # Select Graphic Rendition paramaters from
+      # Select Graphic Rendition parameters from
       # http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
       # Italic '3' would be nice here but its not widely supported.
       self._csi = '\x1b['
@@ -456,7 +456,7 @@ class ConsoleAttr(object):
     return self._get_raw_key[0]()
 
   def GetTermIdentifier(self):
-    """Returns the TERM envrionment variable for the console.
+    """Returns the TERM environment variable for the console.
 
     Returns:
       str: A str that describes the console's text capabilities
