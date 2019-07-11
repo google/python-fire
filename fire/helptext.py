@@ -70,13 +70,12 @@ def GetSummaryAndDescription(docstring_info):
   return summary, description
 
 
-def GetCurrentCommand(trace=None):
+def GetCurrentCommand(trace=None, include_separators=True):
   """Returns current command for the purpose of generating help text."""
   if trace:
-    current_command = trace.GetCommand()
+    current_command = trace.GetCommand(include_separators=include_separators)
   else:
     current_command = ''
-
   return current_command
 
 
@@ -128,6 +127,8 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   del verbose
 
   current_command = GetCurrentCommand(trace)
+  current_command_without_separator = GetCurrentCommand(
+      trace, include_separators=False)
   summary, description = GetSummaryAndDescription(info['docstring_info'])
 
   args_with_no_defaults, args_with_defaults, flags = GetArgsAngFlags(component)
@@ -137,7 +138,8 @@ def HelpTextForFunction(component, info, trace=None, verbose=False):
   name_section_template = '{current_command}{command_summary}'
   command_summary_str = ' - ' + summary if summary else ''
   name_section = name_section_template.format(
-      current_command=current_command, command_summary=command_summary_str)
+      current_command=current_command_without_separator,
+      command_summary=command_summary_str)
 
   # Check if positional args are allowed. If not, require flag syntax for args.
   metadata = decorators.GetMetadata(component)
@@ -285,7 +287,8 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
     Formatted help text for display.
   """
   current_command = GetCurrentCommand(trace)
-
+  current_command_without_separator = GetCurrentCommand(
+      trace, include_separators=False)
   docstring_info = info['docstring_info']
   command_summary = docstring_info.summary if docstring_info.summary else ''
   command_description = GetDescriptionSectionText(docstring_info.summary,
@@ -335,7 +338,7 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
     description_sections.append(('DESCRIPTION', command_description))
 
   name_line = '{current_command} - {command_summary}'.format(
-      current_command=current_command,
+      current_command=current_command_without_separator,
       command_summary=command_summary)
   output_sections = [
       ('NAME', name_line),

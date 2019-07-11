@@ -265,6 +265,14 @@ VALUES
     self.assertIn('VALUE is one of the following:', help_screen)
     self.assertIn('alpha', help_screen)
 
+  def testHelpTextNameSectionCommandWithSeparator(self):
+    component = 9
+    t = trace.FireTrace(component, name='int', separator='-')
+    t.AddSeparator()
+    help_screen = helptext.HelpText(component=component, trace=t, verbose=True)
+    self.assertIn('int -', help_screen)
+    self.assertNotIn('int - -', help_screen)
+
 
 class UsageTest(testutils.BaseTestCase):
 

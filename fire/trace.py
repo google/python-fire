@@ -169,8 +169,11 @@ class FireTrace(object):
       return pipes.quote(prefix) + '=' + pipes.quote(value)
     return pipes.quote(arg)
 
-  def GetCommand(self):
+  def GetCommand(self, include_separators=True):
     """Returns the command representing the trace up to this point.
+
+    Args:
+      include_separators: Whether or not to include separators in the command.
 
     Returns:
       A string representing a Fire CLI command that would produce this trace.
@@ -184,10 +187,10 @@ class FireTrace(object):
         continue
       if element.args:
         args.extend(element.args)
-      if element.HasSeparator():
+      if element.HasSeparator() and include_separators:
         args.append(self.separator)
 
-    if self.NeedsSeparator():
+    if self.NeedsSeparator() and include_separators:
       args.append(self.separator)
 
     return ' '.join(self._Quote(arg) for arg in args)
