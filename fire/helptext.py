@@ -324,6 +324,16 @@ def HelpTextForObject(component, info, trace=None, verbose=False):
     usage_details_section = ValuesUsageDetailsSection(component, values)
     usage_details_sections.append(usage_details_section)
 
+  if isinstance(component, (list, tuple)) and component:
+    possible_actions.append('INDEX')
+    component_len = len(component)
+    if component_len < 10:
+      indexes_strings = [', '.join(str(x) for x in range(component_len))]
+    else:
+      indexes_strings = ['0..{max}'.format(max=component_len-1)]
+    usage_details_sections.append(
+        ('INDEXES', _NewChoicesSection('INDEX', indexes_strings)))
+
   possible_actions_string = ' | '.join(
       formatting.Underline(action) for action in possible_actions)
 
@@ -548,6 +558,18 @@ For detailed information on this command, run:
         header='available values:',
         items=values)
     availability_lines.append(values_text)
+
+  if isinstance(component, (list, tuple)) and component:
+    possible_actions.append('index')
+    component_len = len(component)
+    if component_len < 10:
+      indexes_strings = [str(x) for x in range(component_len)]
+    else:
+      indexes_strings = ['0..{max}'.format(max=component_len-1)]
+    indexes_text = _CreateAvailabilityLine(
+        header='available indexes:',
+        items=indexes_strings)
+    availability_lines.append(indexes_text)
 
   if possible_actions:
     possible_actions_string = ' <{actions}>'.format(
