@@ -269,9 +269,17 @@ VALUES
     component = 9
     t = trace.FireTrace(component, name='int', separator='-')
     t.AddSeparator()
-    help_screen = helptext.HelpText(component=component, trace=t, verbose=True)
+    help_screen = helptext.HelpText(component=component, trace=t, verbose=False)
     self.assertIn('int -', help_screen)
     self.assertNotIn('int - -', help_screen)
+
+  def testHelpTextNameSectionCommandWithSeparatorVerbobse(self):
+    component = 9
+    t = trace.FireTrace(component, name='int', separator='-')
+    t.AddSeparator()
+    help_screen = helptext.HelpText(component=component, trace=t, verbose=True)
+    self.assertIn('int -', help_screen)
+    self.assertIn('int - -', help_screen)
 
 
 class UsageTest(testutils.BaseTestCase):
