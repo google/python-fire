@@ -249,7 +249,7 @@ def _PrintResult(component_trace, verbose=False):
       print(_OneLineResult(i))
   elif inspect.isgeneratorfunction(result):
     raise NotImplementedError
-  elif isinstance(result, dict):
+  elif isinstance(result, dict) and value_types.IsSimpleGroup(result):
     print(_DictAsString(result, verbose))
   elif isinstance(result, tuple):
     print(_OneLineResult(result))

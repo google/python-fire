@@ -37,3 +37,22 @@ def IsCommand(component):
 
 def IsValue(component):
   return isinstance(component, VALUE_TYPES)
+
+
+def IsSimpleGroup(component):
+  """If a group is simple enough, then we treat it as a value in PrintResult.
+
+  Only if a group contains all value types do we consider it simple enough to
+  print as a value.
+
+  Args:
+    component: The group to check for value-group status.
+  Returns:
+    A boolean indicating if the group should be treated as a value for printing
+    purposes.
+  """
+  assert isinstance(component, dict)
+  for unused_key, value in component.items():
+    if not IsValue(value) and not isinstance(value, (list, dict)):
+      return False
+  return True
