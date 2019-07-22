@@ -410,21 +410,24 @@ def _NewChoicesSection(name, choices):
 
 def UsageText(component, trace=None, verbose=False):
   if inspect.isroutine(component) or inspect.isclass(component):
-    return UsageTextForFunction(component, trace)
+    return UsageTextForFunction(component, trace, verbose)
   else:
     return UsageTextForObject(component, trace, verbose)
 
 
-def UsageTextForFunction(component, trace=None):
+def UsageTextForFunction(component, trace=None, verbose=False):
   """Returns usage text for function objects.
 
   Args:
     component: The component to determine the usage text for.
     trace: The Fire trace object containing all metadata of current execution.
+    verbose: Whether to display the usage text in verbose mode.
 
   Returns:
     String suitable for display in an error screen.
   """
+  del verbose  # Unused.
+
   output_template = """Usage: {current_command} {args_and_flags}
 {availability_lines}
 For detailed information on this command, run:

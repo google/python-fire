@@ -303,7 +303,7 @@ def _DictAsString(result, verbose=False):
   # 1) Getting visible items and the longest key for output formatting
   # 2) Actually construct the output lines
   result_visible = {key: value for key, value in result.items()
-                    if _ComponentVisible(key, verbose)}
+                    if completion.MemberVisible(key, value, verbose)}
 
   if not result_visible:
     return '{}'
@@ -313,19 +313,11 @@ def _DictAsString(result, verbose=False):
 
   lines = []
   for key, value in result.items():
-    if _ComponentVisible(key, verbose):
+    if completion.MemberVisible(key, value, verbose):
       line = format_string.format(key=str(key) + ':',
                                   value=_OneLineResult(value))
       lines.append(line)
   return '\n'.join(lines)
-
-
-def _ComponentVisible(component, verbose=False):
-  """Returns whether a component should be visible in the output."""
-  return (
-      verbose
-      or not isinstance(component, six.string_types)
-      or not component.startswith('_'))
 
 
 def _OneLineResult(result):

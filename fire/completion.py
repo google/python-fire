@@ -281,30 +281,36 @@ end
   )
 
 
-def _IncludeMember(name, verbose):
+def MemberVisible(name, member, verbose):
   """Returns whether a member should be included in auto-completion or help.
 
   Determines whether a member of an object with the specified name should be
   included in auto-completion or help text(both usage and detailed help).
 
-  If the member starts with '__', it will always be excluded. If the member
+  If the member name starts with '__', it will always be excluded. If it
   starts with only one '_', it will be included for all non-string types. If
-  verbose is True, the members, including the private members, are always
-  included.
+  verbose is True, the members, including the private members, are included.
+
+  When not in verbose mode, some modules and functions are excluded as well.
 
   Args:
     name: The name of the member.
+    member: The member itself.
     verbose: Whether to include private members.
   Returns
     A boolean value indicating whether the member should be included.
-
   """
-  if isinstance(name, six.string_types) and name[:2] == '__':
+  if isinstance(name, six.string_types) and name.startswith('__'):
     return False
   if verbose:
     return True
+  if isinstance(member, type(absolute_import)):
+    return False
+  if inspect.ismodule(member) and member is six:
+    # TODO(dbieber): Determine more generally which modules to hide.
+    return False
   if isinstance(name, six.string_types):
-    return name and name[0] != '_'
+    return not name.startswith('_')
   return True  # Default to including the member
 
 
@@ -328,7 +334,7 @@ def _Members(component, verbose=False):
   return [
       (member_name, member)
       for member_name, member in members
-      if _IncludeMember(member_name, verbose)
+      if MemberVisible(member_name, member, verbose)
   ]
 
 
