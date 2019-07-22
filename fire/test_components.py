@@ -388,3 +388,12 @@ def simple_set():
 
 def simple_frozenset():
   return frozenset({1, 2, 'three'})
+
+
+class Subdict(dict):
+
+  pass
+
+
+subdict = Subdict({1: 2,
+                   'red': 'blue'})
