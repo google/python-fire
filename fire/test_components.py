@@ -391,9 +391,8 @@ def simple_frozenset():
 
 
 class Subdict(dict):
+  """A subclass of dict, for testing purposes."""
 
-  pass
 
-
-subdict = Subdict({1: 2,
-                   'red': 'blue'})
+# An example subdict.
+SUBDICT = Subdict({1: 2, 'red': 'blue'})
