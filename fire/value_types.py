@@ -23,7 +23,8 @@ import inspect
 import six
 
 
-VALUE_TYPES = (bool, six.string_types, six.integer_types, float, complex)
+VALUE_TYPES = (bool, six.string_types, six.integer_types, float, complex,
+               type(Ellipsis), type(None), type(NotImplemented))
 
 
 def IsGroup(component):

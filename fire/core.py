@@ -254,8 +254,9 @@ def _PrintResult(component_trace, verbose=False):
   elif isinstance(result, tuple):
     print(_OneLineResult(result))
   elif isinstance(result, value_types.VALUE_TYPES):
-    print(result)
-  elif result is not None:
+    if result is not None:
+      print(result)
+  else:
     help_text = helptext.HelpText(result, component_trace, verbose)
     output = [help_text]
     Display(output, out=sys.stdout)
