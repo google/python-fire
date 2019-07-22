@@ -273,7 +273,7 @@ VALUES
     self.assertIn('int -', help_screen)
     self.assertNotIn('int - -', help_screen)
 
-  def testHelpTextNameSectionCommandWithSeparatorVerbobse(self):
+  def testHelpTextNameSectionCommandWithSeparatorVerbose(self):
     component = 9
     t = trace.FireTrace(component, name='int', separator='-')
     t.AddSeparator()
