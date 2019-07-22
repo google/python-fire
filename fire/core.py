@@ -334,6 +334,14 @@ def _OneLineResult(result):
   if isinstance(result, six.string_types):
     return str(result).replace('\n', ' ')
 
+  # TODO(dbieber): Show a small amount of usage information about the function
+  # or module if it fits cleanly on the line.
+  if inspect.isfunction(result):
+    return '<function {name}>'.format(name=result.__name__)
+
+  if inspect.ismodule(result):
+    return '<module {name}>'.format(name=result.__name__)
+
   try:
     # Don't force conversion to ascii.
     return json.dumps(result, ensure_ascii=False)
