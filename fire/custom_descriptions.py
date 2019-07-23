@@ -65,7 +65,7 @@ def NeedsCustomDescription(component):
       or type_ is six.text_type
       or type_ is six.binary_type
       or type_ in (float, complex, bool)
-      or type_ in (dict, tuple, list, set)
+      or type_ in (dict, tuple, list, set, frozenset)
      ):
     return True
   return False
