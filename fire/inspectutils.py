@@ -86,6 +86,7 @@ def _GetArgSpecInfo(fn):
 def GetFullArgSpec(fn):
   """Returns a FullArgSpec describing the given callable."""
 
+  original_fn = fn
   fn, skip_arg = _GetArgSpecInfo(fn)
 
   try:
@@ -100,10 +101,26 @@ def GetFullArgSpec(fn):
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
     # 1. If it's a builtin, it can take args.
-    # 2. If it's an implicit __init__ function (a 'slot wrapper'), take no args.
-    # Are there other cases?
+    # 2. If it's an implicit __init__ function (a 'slot wrapper'), that comes
+    # from a namedtuple, use _fields to determine the args.
+    # 3. If it's another slot wrapper (that comes from not subclassing object in
+    # Python 2), then there are no args.
+    # Are there other cases? We just don't know.
+
+    # Case 1: Builtins accept args.
     if inspect.isbuiltin(fn):
       return FullArgSpec(varargs='vars', varkw='kwargs')
+
+    # Case 2: namedtuples store their args in their _fields attribute.
+    # TODO(dbieber): Determine if there's a way to detect false positives.
+    # In Python 2, a class that does not subclass anything, does not define
+    # __init__, and has an attribute named _fields will cause Fire to think it
+    # expects args for its constructor when in fact it does not.
+    fields = getattr(original_fn, '_fields', None)
+    if fields:
+      return FullArgSpec(args=list(fields))
+
+    # Case 3: Other known slot wrappers do not accept args.
     return FullArgSpec()
 
   if skip_arg and args:

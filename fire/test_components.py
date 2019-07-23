@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import collections
 
+import enum
 import six
 
 if six.PY3:
@@ -396,3 +397,9 @@ class Subdict(dict):
 
 # An example subdict.
 SUBDICT = Subdict({1: 2, 'red': 'blue'})
+
+
+class Color(enum.Enum):
+  RED = 1
+  GREEN = 2
+  BLUE = 3

@@ -70,6 +70,26 @@ class InspectUtilsTest(testutils.BaseTestCase):
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {})
 
+  def testGetFullArgSpecFromNamedTuple(self):
+    spec = inspectutils.GetFullArgSpec(tc.NamedTuplePoint)
+    self.assertEqual(spec.args, ['x', 'y'])
+    self.assertEqual(spec.defaults, ())
+    self.assertEqual(spec.varargs, None)
+    self.assertEqual(spec.varkw, None)
+    self.assertEqual(spec.kwonlyargs, [])
+    self.assertEqual(spec.kwonlydefaults, {})
+    self.assertEqual(spec.annotations, {})
+
+  def testGetFullArgSpecFromNamedTupleSubclass(self):
+    spec = inspectutils.GetFullArgSpec(tc.SubPoint)
+    self.assertEqual(spec.args, ['x', 'y'])
+    self.assertEqual(spec.defaults, ())
+    self.assertEqual(spec.varargs, None)
+    self.assertEqual(spec.varkw, None)
+    self.assertEqual(spec.kwonlyargs, [])
+    self.assertEqual(spec.kwonlydefaults, {})
+    self.assertEqual(spec.annotations, {})
+
   def testGetFullArgSpecFromClassNoInit(self):
     spec = inspectutils.GetFullArgSpec(tc.OldStyleEmpty)
     self.assertEqual(spec.args, [])
