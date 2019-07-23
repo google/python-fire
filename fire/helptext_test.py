@@ -110,9 +110,8 @@ class HelpTest(testutils.BaseTestCase):
         trace=trace.FireTrace(component, 'list'))
     self.assertIn('NAME\n    list', help_screen)
     self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
-    # We don't check description content here since the content could be python
-    # version dependent.
-    self.assertIn('DESCRIPTION\n', help_screen)
+    # The list docstring is messy, so it is not shown.
+    self.assertNotIn('DESCRIPTION', help_screen)
     # We don't check the listed commands either since the list API could
     # potentially change between Python versions.
     self.assertIn('COMMANDS\n    COMMAND is one of the following:\n',
@@ -125,9 +124,8 @@ class HelpTest(testutils.BaseTestCase):
         trace=trace.FireTrace(component, 'list'))
     self.assertIn('NAME\n    list', help_screen)
     self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
-    # We don't check description content here since the content could be python
-    # version dependent.
-    self.assertIn('DESCRIPTION\n', help_screen)
+    # The list docstring is messy, so it is not shown.
+    self.assertNotIn('DESCRIPTION', help_screen)
 
     # We don't check the listed commands comprehensively since the list API
     # could potentially change between Python versions. Check a few
@@ -142,7 +140,8 @@ class HelpTest(testutils.BaseTestCase):
         component=component, trace=trace.FireTrace(component, '7'))
     self.assertIn('NAME\n    7', help_screen)
     self.assertIn('SYNOPSIS\n    7 COMMAND | VALUE', help_screen)
-    self.assertIn('DESCRIPTION\n', help_screen)
+    # The int docstring is messy, so it is not shown.
+    self.assertNotIn('DESCRIPTION', help_screen)
     self.assertIn('COMMANDS\n    COMMAND is one of the following:\n',
                   help_screen)
     self.assertIn('VALUES\n    VALUE is one of the following:\n', help_screen)
@@ -274,12 +273,12 @@ VALUES
     self.assertNotIn('int - -', help_screen)
 
   def testHelpTextNameSectionCommandWithSeparatorVerbose(self):
-    component = 9
-    t = trace.FireTrace(component, name='int', separator='-')
+    component = tc.WithDefaults().double
+    t = trace.FireTrace(component, name='double', separator='-')
     t.AddSeparator()
     help_screen = helptext.HelpText(component=component, trace=t, verbose=True)
-    self.assertIn('int -', help_screen)
-    self.assertIn('int - -', help_screen)
+    self.assertIn('double -', help_screen)
+    self.assertIn('double - -', help_screen)
 
 
 class UsageTest(testutils.BaseTestCase):

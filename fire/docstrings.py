@@ -424,7 +424,7 @@ def _consume_line(line_info, state):
     elif state.section.format == Formats.NUMPY:
       line_stripped = line_info.remaining.strip()
       if _is_arg_name(line_stripped):
-        # Token on it's own line can either be the last word of the description
+        # Token on its own line can either be the last word of the description
         # of the previous arg, or a new arg. TODO: Whitespace can distinguish.
         arg = _get_or_create_arg_by_name(state, line_stripped)
         state.current_arg = arg

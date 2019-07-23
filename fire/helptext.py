@@ -36,10 +36,13 @@ from __future__ import print_function
 import inspect
 
 from fire import completion
+from fire import custom_descriptions
 from fire import decorators
 from fire import formatting
 from fire import inspectutils
 from fire import value_types
+
+LINE_LENGTH = 80
 
 
 def HelpText(component, trace=None, verbose=False):
@@ -61,10 +64,10 @@ def HelpText(component, trace=None, verbose=False):
   metadata = decorators.GetMetadata(component)
 
   # Sections:
-  name_section = _NameSection(info, trace=trace, verbose=verbose)
+  name_section = _NameSection(component, info, trace=trace, verbose=verbose)
   synopsis_section = _SynopsisSection(
       component, actions_grouped_by_kind, spec, metadata, trace=trace)
-  description_section = _DescriptionSection(info)
+  description_section = _DescriptionSection(component, info)
   # TODO(dbieber): Add returns and raises sections for functions.
 
   if inspect.isroutine(component) or inspect.isclass(component):
@@ -92,11 +95,17 @@ def HelpText(component, trace=None, verbose=False):
   )
 
 
-def _NameSection(info, trace=None, verbose=False):
+def _NameSection(component, info, trace=None, verbose=False):
   """The "Name" section of the help string."""
+
   # Only include separators in the name in verbose mode.
   current_command = _GetCurrentCommand(trace, include_separators=verbose)
   summary = _GetSummary(info)
+
+  # If the docstring is one of the messy builtin docstrings, don't show summary.
+  # TODO(dbieber): In follow up commits we can add in replacement summaries.
+  if custom_descriptions.NeedsCustomDescription(component):
+    summary = None
 
   if summary:
     text = current_command + ' - ' + summary
@@ -129,13 +138,26 @@ def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata,
   return ('SYNOPSIS', text)
 
 
-def _DescriptionSection(info):
-  """The "Description" sections of the help string."""
+def _DescriptionSection(component, info):
+  """The "Description" sections of the help string.
+
+  Args:
+    component: The component to produce the description section for.
+    info: The info dict for the component of interest.
+
+  Returns:
+    Returns the description if available. If not, returns the summary.
+    If neither are available, returns None.
+  """
+  # If the docstring is one of the messy builtin docstrings, set it to None.
+  # TODO(dbieber): In follow up commits we can add in replacement docstrings.
+  if custom_descriptions.NeedsCustomDescription(component):
+    return None
+
   summary = _GetSummary(info)
   description = _GetDescription(info)
-  # Returns the description if available. If not, returns the summary.
-  # If neither are available, returns None.
   text = description or summary or None
+
   if text:
     return ('DESCRIPTION', text)
   else:
@@ -574,7 +596,8 @@ For detailed information on this command, run:
 
 
 def _CreateAvailabilityLine(header, items,
-                            header_indent=2, items_indent=25, line_length=80):
+                            header_indent=2, items_indent=25,
+                            line_length=LINE_LENGTH):
   items_width = line_length - items_indent
   item_names = [item[0] for item in items]
   items_text = '\n'.join(formatting.WrappedJoin(item_names, width=items_width))
