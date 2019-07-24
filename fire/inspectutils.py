@@ -117,7 +117,7 @@ def GetFullArgSpec(fn):
     # __init__, and has an attribute named _fields will cause Fire to think it
     # expects args for its constructor when in fact it does not.
     fields = getattr(original_fn, '_fields', None)
-    if fields:
+    if fields is not None:
       return FullArgSpec(args=list(fields))
 
     # Case 3: Other known slot wrappers do not accept args.
