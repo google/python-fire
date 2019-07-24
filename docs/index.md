@@ -27,6 +27,26 @@ You can call `Fire` on any Python object:<br>
 functions, classes, modules, objects, dictionaries, lists, tuples, etc.
 They all work!
 
+Here's an example of calling Fire on a function.
+
+```python
+import fire
+
+def hello(name="World"):
+  return "Hello %s!" % name
+
+if __name__ == '__main__':
+  fire.Fire(hello)
+```
+
+Then, from the command line, you can run:
+
+```bash
+python hello.py  # Hello World!
+python hello.py --name=David  # Hello David!
+python hello.py --help  # Shows usage information.
+```
+
 Here's an example of calling Fire on a class.
 
 ```python
@@ -77,16 +97,16 @@ Please see [The Python Fire Guide](guide.md).
 | Call           | `fire.Fire()`          | Turns the current module into a Fire CLI.
 | Call           | `fire.Fire(component)` | Turns `component` into a Fire CLI.
 
-| Using a CLI    | Command                    | Notes
-| :------------- | :------------------------- | :---------
-| [Help](using-cli.md#help-flag) | `command -- --help` |
-| [REPL](using-cli.md#interactive-flag) | `command -- --interactive` | Enters interactive mode.
-| [Separator](using-cli.md#separator-flag) | `command -- --separator=X` | This sets the separator to `X`. The default separator is `-`.
-| [Completion](using-cli.md#completion-flag) | `command -- --completion [shell]` | Generate a completion script for the CLI.
-| [Trace](using-cli.md#trace-flag) | `command -- --trace` | Gets a Fire trace for the command.
-| [Verbose](using-cli.md#verbose-flag) | `command -- --verbose` |
+Using a CLI                                     | Command                                 | Notes
+:---------------------------------------------- | :-------------------------------------- | :----
+[Help](using-cli.md#help-flag)             | `command --help` or `command -- --help` |
+[REPL](using-cli.md#interactive-flag)      | `command -- --interactive`              | Enters interactive mode.
+[Separator](using-cli.md#separator-flag)   | `command -- --separator=X`              | Sets the separator to `X`. The default separator is `-`.
+[Completion](using-cli.md#completion-flag) | `command -- --completion [shell]`       | Generates a completion script for the CLI.
+[Trace](using-cli.md#trace-flag)           | `command -- --trace`                    | Gets a Fire trace for the command.
+[Verbose](using-cli.md#verbose-flag)       | `command -- --verbose`                  |
 
-_Note that flags are separated from the Fire command by an isolated `--` arg._
+_Note that these flags are separated from the Fire command by an isolated `--`._
 
 ## License
 
