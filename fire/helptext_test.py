@@ -221,7 +221,7 @@ VALUES
 
     FLAGS
         --count
-          Input number that you want to double."""
+            Input number that you want to double."""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
 

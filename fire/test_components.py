@@ -420,3 +420,22 @@ class HasStaticAndClassMethods(object):
   @classmethod
   def class_fn(cls, args):
     return args + cls.CLASS_STATE
+
+
+def function_with_varargs(arg1, arg2, arg3=1, *varargs):  # pylint: disable=keyword-arg-before-vararg
+  """Function with varargs.
+
+  Args:
+    arg1: Position arg docstring.
+    arg2: Position arg docstring.
+    arg3: Flags docstring.
+    *varargs: Accepts unlimited positional args.
+  Returns:
+    The unlimited positional args.
+  """
+  del arg1, arg2, arg3  # Unused.
+  return varargs
+
+
+def function_with_keyword_arguments(**kwargs):
+  return kwargs

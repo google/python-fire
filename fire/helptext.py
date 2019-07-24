@@ -182,11 +182,17 @@ def _ArgsAndFlagsSections(info, spec, metadata):
       _CreateArgItem(arg, docstring_info)
       for arg in args_with_no_defaults
   ]
+
+  if spec.varargs:
+    arg_items.append(
+        _CreateArgItem(spec.varargs, docstring_info)
+    )
+
   if arg_items:
     title = 'POSITIONAL ARGUMENTS' if accepts_positional_args else 'ARGUMENTS'
     arguments_section = (title, '\n'.join(arg_items).rstrip('\n'))
     args_and_flags_sections.append(arguments_section)
-    if accepts_positional_args:
+    if args_with_no_defaults and accepts_positional_args:
       notes_sections.append(
           ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
       )
@@ -277,9 +283,15 @@ def _GetArgsAndFlagsString(spec, metadata):
   if flags:
     for flag in flags:
       flag_string = flag_string_template.format(
-          flag_name=formatting.Underline(flag),
-          flag_name_upper=flag.upper())
+          flag_name=flag,
+          flag_name_upper=formatting.Underline(flag.upper()))
       arg_and_flag_strings.append(flag_string)
+
+  if spec.varargs:
+    varargs_string = '[{varargs}]...'.format(
+        varargs=formatting.Underline(spec.varargs.upper()))
+    arg_and_flag_strings.append(varargs_string)
+
   return ' '.join(arg_and_flag_strings)
 
 
@@ -358,7 +370,7 @@ def _CreateArgItem(arg, docstring_info):
   description = None
   if docstring_info.args:
     for arg_in_docstring in docstring_info.args:
-      if arg_in_docstring.name == arg:
+      if arg_in_docstring.name in (arg, '*' + arg, '**' + arg):
         description = arg_in_docstring.description
 
   arg = arg.upper()
@@ -387,7 +399,7 @@ def _CreateFlagItem(flag, docstring_info):
 
   flag = '--{flag}'.format(flag=formatting.Underline(flag))
   if description:
-    return _CreateItem(flag, description, indent=2)
+    return _CreateItem(flag, description, indent=4)
   return flag
 
 
@@ -515,6 +527,10 @@ For detailed information on this command, run:
         + ' | '.join('--' + flag for flag in flags) + '\n')
   else:
     availability_lines = ''
+
+  if spec.varargs:
+    items.append('[{varargs}]...'.format(varargs=spec.varargs.upper()))
+
   args_and_flags = ' '.join(items)
 
   hyphen_hyphen = ' --' if needs_separating_hyphen_hyphen else ''
