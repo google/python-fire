@@ -417,6 +417,7 @@ def _GetArgDescription(name, docstring_info):
     for arg_in_docstring in docstring_info.args:
       if arg_in_docstring.name in (name, '*' + name, '**' + name):
         return arg_in_docstring.description
+  return None
 
 
 def _GroupUsageDetailsSection(groups):
