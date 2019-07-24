@@ -31,6 +31,7 @@ from fire import trace
 class HelpTest(testutils.BaseTestCase):
 
   def setUp(self):
+    super(HelpTest, self).setUp()
     os.environ['ANSI_COLORS_DISABLED'] = '1'
 
   def testHelpTextNoDefaults(self):
