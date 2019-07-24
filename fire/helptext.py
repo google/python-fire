@@ -168,7 +168,6 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   """The "Args and Flags" sections of the help string."""
   args_with_no_defaults = spec.args[:len(spec.args) - len(spec.defaults)]
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
-  flags = args_with_defaults + spec.kwonlyargs
 
   # Check if positional args are allowed. If not, require flag syntax for args.
   accepts_positional_args = metadata.get(decorators.ACCEPTS_POSITIONAL_ARGS)
@@ -197,10 +196,23 @@ def _ArgsAndFlagsSections(info, spec, metadata):
           ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
       )
 
-  flag_items = [
-      _CreateFlagItem(flag, docstring_info)
-      for flag in flags
+  optional_flag_items = [
+      _CreateFlagItem(flag, docstring_info, required=False)
+      for flag in args_with_defaults
   ]
+  required_flag_items = [
+      _CreateFlagItem(flag, docstring_info, required=True)
+      for flag in spec.kwonlyargs
+  ]
+  flag_items = optional_flag_items + required_flag_items
+
+  if spec.varkw:
+    description = _GetArgDescription(spec.varkw, docstring_info)
+    message = ('Additional flags are accepted.'
+               if flag_items else
+               'Flags are accepted.')
+    item = _CreateItem(message, description, indent=4)
+    flag_items.append(item)
 
   if flag_items:
     flags_section = ('FLAGS', '\n'.join(flag_items))
@@ -262,7 +274,6 @@ def _GetArgsAndFlagsString(spec, metadata):
   """
   args_with_no_defaults = spec.args[:len(spec.args) - len(spec.defaults)]
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
-  flags = args_with_defaults + spec.kwonlyargs
 
   # Check if positional args are allowed. If not, require flag syntax for args.
   accepts_positional_args = metadata.get(decorators.ACCEPTS_POSITIONAL_ARGS)
@@ -279,13 +290,9 @@ def _GetArgsAndFlagsString(spec, metadata):
           for arg in args_with_no_defaults]
     arg_and_flag_strings.extend(arg_strings)
 
-  flag_string_template = '[--{flag_name}={flag_name_upper}]'
-  if flags:
-    for flag in flags:
-      flag_string = flag_string_template.format(
-          flag_name=flag,
-          flag_name_upper=formatting.Underline(flag.upper()))
-      arg_and_flag_strings.append(flag_string)
+  # If there are any arguments that are treated as flags:
+  if args_with_defaults or spec.kwonlyargs or spec.varkw:
+    arg_and_flag_strings.append('<flags>')
 
   if spec.varargs:
     varargs_string = '[{varargs}]...'.format(
@@ -367,46 +374,49 @@ def _CreateArgItem(arg, docstring_info):
   Returns:
     A string to be used in constructing the help screen for the function.
   """
-  description = None
-  if docstring_info.args:
-    for arg_in_docstring in docstring_info.args:
-      if arg_in_docstring.name in (arg, '*' + arg, '**' + arg):
-        description = arg_in_docstring.description
+  description = _GetArgDescription(arg, docstring_info)
 
   arg = arg.upper()
-  if description:
-    return _CreateItem(formatting.BoldUnderline(arg), description, indent=4)
-  else:
-    return formatting.BoldUnderline(arg)
+  return _CreateItem(formatting.BoldUnderline(arg), description, indent=4)
 
 
-def _CreateFlagItem(flag, docstring_info):
+def _CreateFlagItem(flag, docstring_info, required=False):
   """Returns a string describing a flag using information from the docstring.
 
   Args:
     flag: The name of the flag.
     docstring_info: A docstrings.DocstringInfo namedtuple with information about
       the containing function's docstring.
+    required: Whether the flag is required. Keyword-only arguments (only in
+      Python 3) become required flags, whereas normal keyword arguments become
+      optional flags.
   Returns:
     A string to be used in constructing the help screen for the function.
   """
-  description = None
-  if docstring_info.args:
-    for arg_in_docstring in docstring_info.args:
-      if arg_in_docstring.name == flag:
-        description = arg_in_docstring.description
-        break
+  description = _GetArgDescription(flag, docstring_info)
 
-  flag = '--{flag}'.format(flag=formatting.Underline(flag))
-  if description:
-    return _CreateItem(flag, description, indent=4)
-  return flag
+  flag_string_template = '--{flag_name}={flag_name_upper}'
+  flag = flag_string_template.format(
+      flag_name=flag,
+      flag_name_upper=formatting.Underline(flag.upper()))
+  if not required:
+    flag += ' (optional)'
+  return _CreateItem(flag, description, indent=4)
 
 
 def _CreateItem(name, description, indent=2):
+  if not description:
+    return name
   return """{name}
 {description}""".format(name=name,
                         description=formatting.Indent(description, indent))
+
+
+def _GetArgDescription(name, docstring_info):
+  if docstring_info.args:
+    for arg_in_docstring in docstring_info.args:
+      if arg_in_docstring.name in (name, '*' + name, '**' + name):
+        return arg_in_docstring.description
 
 
 def _GroupUsageDetailsSection(groups):
@@ -417,9 +427,8 @@ def _GroupUsageDetailsSection(groups):
     group_item = group_name
     if 'docstring_info' in group_info:
       group_docstring_info = group_info['docstring_info']
-      if group_docstring_info and group_docstring_info.summary:
-        group_item = _CreateItem(group_name,
-                                 group_docstring_info.summary)
+      if group_docstring_info:
+        group_item = _CreateItem(group_name, group_docstring_info.summary)
     group_item_strings.append(group_item)
   return ('GROUPS', _NewChoicesSection('GROUP', group_item_strings))
 
@@ -432,9 +441,8 @@ def _CommandUsageDetailsSection(commands):
     command_item = command_name
     if 'docstring_info' in command_info:
       command_docstring_info = command_info['docstring_info']
-      if command_docstring_info and command_docstring_info.summary:
-        command_item = _CreateItem(command_name,
-                                   command_docstring_info.summary)
+      if command_docstring_info:
+        command_item = _CreateItem(command_name, command_docstring_info.summary)
     command_item_strings.append(command_item)
   return ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings))
 
@@ -502,14 +510,8 @@ For detailed information on this command, run:
     command = ''
 
   spec = inspectutils.GetFullArgSpec(component)
-  args = spec.args
-  if spec.defaults is None:
-    num_defaults = 0
-  else:
-    num_defaults = len(spec.defaults)
-  args_with_no_defaults = args[:len(args) - num_defaults]
-  args_with_defaults = args[len(args) - num_defaults:]
-  flags = args_with_defaults + spec.kwonlyargs
+  args_with_no_defaults = spec.args[:len(spec.args) - len(spec.defaults)]
+  args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
 
   # Check if positional args are allowed. If not, show flag syntax for args.
   metadata = decorators.GetMetadata(component)
@@ -520,13 +522,32 @@ For detailed information on this command, run:
   else:
     items = [arg.upper() for arg in args_with_no_defaults]
 
-  if flags:
+  # If there are any arguments that are treated as flags:
+  if args_with_defaults or spec.kwonlyargs or spec.varkw:
     items.append('<flags>')
-    availability_lines = (
-        '\nAvailable flags: '
-        + ' | '.join('--' + flag for flag in flags) + '\n')
-  else:
-    availability_lines = ''
+
+  optional_flags = [('--' + flag) for flag in args_with_defaults]
+  required_flags = [('--' + flag) for flag in spec.kwonlyargs]
+
+  # Flags section:
+  availability_lines = []
+  if optional_flags:
+    availability_lines.append(
+        _CreateAvailabilityLine(header='Optional flags:', items=optional_flags,
+                                header_indent=0))
+  if required_flags:
+    availability_lines.append(
+        _CreateAvailabilityLine(header='Required flags:', items=required_flags,
+                                header_indent=0))
+  if spec.varkw:
+    additional_flags = ('Additional flags are accepted.'
+                        if optional_flags or required_flags else
+                        'Flags are accepted.')
+    availability_lines.append(additional_flags + '\n')
+
+  if availability_lines:
+    # Start the section with blank lines.
+    availability_lines.insert(0, '\n')
 
   if spec.varargs:
     items.append('[{varargs}]...'.format(varargs=spec.varargs.upper()))
@@ -538,7 +559,7 @@ For detailed information on this command, run:
   return output_template.format(
       current_command=command,
       args_and_flags=args_and_flags,
-      availability_lines=availability_lines,
+      availability_lines=''.join(availability_lines),
       hyphen_hyphen=hyphen_hyphen)
 
 
@@ -576,25 +597,25 @@ For detailed information on this command, run:
     possible_actions.append('group')
     groups_text = _CreateAvailabilityLine(
         header='available groups:',
-        items=groups)
+        items=[name for name, _ in groups])
     availability_lines.append(groups_text)
   if commands:
     possible_actions.append('command')
     commands_text = _CreateAvailabilityLine(
         header='available commands:',
-        items=commands)
+        items=[name for name, _ in commands])
     availability_lines.append(commands_text)
   if values:
     possible_actions.append('value')
     values_text = _CreateAvailabilityLine(
         header='available values:',
-        items=values)
+        items=[name for name, _ in values])
     availability_lines.append(values_text)
   if indexes:
     possible_actions.append('index')
     indexes_text = _CreateAvailabilityLine(
         header='available indexes:',
-        items=[(indexes, None)])
+        items=indexes)
     availability_lines.append(indexes_text)
 
   if possible_actions:
@@ -615,8 +636,7 @@ def _CreateAvailabilityLine(header, items,
                             header_indent=2, items_indent=25,
                             line_length=LINE_LENGTH):
   items_width = line_length - items_indent
-  item_names = [item[0] for item in items]
-  items_text = '\n'.join(formatting.WrappedJoin(item_names, width=items_width))
+  items_text = '\n'.join(formatting.WrappedJoin(items, width=items_width))
   indented_items_text = formatting.Indent(items_text, spaces=items_indent)
   indented_header = formatting.Indent(header, spaces=header_indent)
   return indented_header + indented_items_text[len(indented_header):] + '\n'

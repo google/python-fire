@@ -77,9 +77,9 @@ class HelpTest(testutils.BaseTestCase):
         component=component,
         trace=trace.FireTrace(component, name='triple'))
     self.assertIn('NAME\n    triple', help_screen)
-    self.assertIn('SYNOPSIS\n    triple [--count=COUNT]', help_screen)
+    self.assertIn('SYNOPSIS\n    triple <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
-    self.assertIn('FLAGS\n    --count', help_screen)
+    self.assertIn('FLAGS\n    --count=COUNT (optional)', help_screen)
     self.assertNotIn('NOTES', help_screen)
 
   def testHelpTextFunctionWithBuiltin(self):
@@ -215,13 +215,13 @@ VALUES
         double - Returns the input multiplied by 2.
 
     SYNOPSIS
-        double [--count=COUNT]
+        double <flags>
 
     DESCRIPTION
         Returns the input multiplied by 2.
 
     FLAGS
-        --count
+        --count=COUNT (optional)
             Input number that you want to double."""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
@@ -232,7 +232,7 @@ VALUES
     help_screen = helptext.HelpText(component, t)
     self.assertIn(formatting.Bold('NAME') + '\n    triple', help_screen)
     self.assertIn(
-        formatting.Bold('SYNOPSIS') + '\n    triple [--count=COUNT]',
+        formatting.Bold('SYNOPSIS') + '\n    triple <flags>',
         help_screen)
     self.assertIn(
         formatting.Bold('FLAGS') + '\n    --' + formatting.Underline('count'),
@@ -334,7 +334,7 @@ class UsageTest(testutils.BaseTestCase):
     expected_output = '''
     Usage: function_with_help <flags>
 
-    Available flags: --help
+    Optional flags:          --help
 
     For detailed information on this command, run:
       function_with_help -- --help'''
@@ -349,7 +349,7 @@ class UsageTest(testutils.BaseTestCase):
     expected_output = '''
     Usage: multiplier_with_docstring NUM <flags>
 
-    Available flags: --rate
+    Optional flags:          --rate
 
     For detailed information on this command, run:
       multiplier_with_docstring --help'''

@@ -437,5 +437,6 @@ def function_with_varargs(arg1, arg2, arg3=1, *varargs):  # pylint: disable=keyw
   return varargs
 
 
-def function_with_keyword_arguments(**kwargs):
-  return kwargs
+def function_with_keyword_arguments(arg1, arg2=3, **kwargs):
+  del arg2  # Unused.
+  return arg1, kwargs
