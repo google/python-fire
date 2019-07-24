@@ -403,3 +403,20 @@ class Color(enum.Enum):
   RED = 1
   GREEN = 2
   BLUE = 3
+
+
+class HasStaticAndClassMethods(object):
+  """A class with a static method and a class method."""
+
+  CLASS_STATE = 1
+
+  def __init__(self, instance_state):
+    self.instance_state = instance_state
+
+  @staticmethod
+  def static_fn(args):
+    return args
+
+  @classmethod
+  def class_fn(cls, args):
+    return args + cls.CLASS_STATE

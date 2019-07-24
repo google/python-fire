@@ -178,5 +178,19 @@ class CoreTest(testutils.BaseTestCase):
       # objects.
       core.Fire(tc.CallableWithPositionalArgs(), command=['3', '4'])
 
+  def testStaticMethod(self):
+    self.assertEqual(
+        core.Fire(tc.HasStaticAndClassMethods,
+                  command=['static_fn', 'alpha']),
+        'alpha',
+    )
+
+  def testClassMethod(self):
+    self.assertEqual(
+        core.Fire(tc.HasStaticAndClassMethods,
+                  command=['class_fn', '6']),
+        7,
+    )
+
 if __name__ == '__main__':
   testutils.main()
