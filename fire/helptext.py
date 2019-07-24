@@ -399,8 +399,8 @@ def _CreateFlagItem(flag, docstring_info, required=False):
   flag = flag_string_template.format(
       flag_name=flag,
       flag_name_upper=formatting.Underline(flag.upper()))
-  if not required:
-    flag += ' (optional)'
+  if required:
+    flag += ' (required)'
   return _CreateItem(flag, description, indent=4)
 
 

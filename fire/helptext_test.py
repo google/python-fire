@@ -79,7 +79,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    triple', help_screen)
     self.assertIn('SYNOPSIS\n    triple <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
-    self.assertIn('FLAGS\n    --count=COUNT (optional)', help_screen)
+    self.assertIn('FLAGS\n    --count=COUNT', help_screen)
     self.assertNotIn('NOTES', help_screen)
 
   def testHelpTextFunctionWithBuiltin(self):
@@ -221,7 +221,7 @@ VALUES
         Returns the input multiplied by 2.
 
     FLAGS
-        --count=COUNT (optional)
+        --count=COUNT
             Input number that you want to double."""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
