@@ -621,4 +621,3 @@ class ActionGroup(object):
 
   def GetItems(self):
     return zip(self.names, self.members)
-

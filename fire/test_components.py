@@ -311,7 +311,7 @@ class CallableWithPositionalArgs(object):
   def __call__(self, x, y):
     return x + y
 
-  def foo(self, x):
+  def fn(self, x):
     return x + 1
 
 
