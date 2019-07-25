@@ -253,6 +253,9 @@ def _PrintResult(component_trace, verbose=False):
     print(_DictAsString(result, verbose))
   elif isinstance(result, tuple):
     print(_OneLineResult(result))
+  elif isinstance(result, complex):
+    # Print "3+4j" instead of "(3+4j)".
+    print(str(result).strip('()'))
   elif isinstance(result, value_types.VALUE_TYPES):
     if result is not None:
       print(result)
