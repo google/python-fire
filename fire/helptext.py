@@ -121,7 +121,13 @@ def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata,
   if possible_actions:
     continuations.append(_GetPossibleActionsString(possible_actions))
   if callable(component):
-    continuations.append(_GetArgsAndFlagsString(spec, metadata))
+    callable_continuation = _GetArgsAndFlagsString(spec, metadata)
+    if callable_continuation:
+      continuations.append(callable_continuation)
+    elif trace:
+      # This continuation might be blank if no args are needed.
+      # In this case, show a separator.
+      continuations.append(trace.separator)
   continuation = ' | '.join(continuations)
 
   synopsis_template = '{current_command} {continuation}'
