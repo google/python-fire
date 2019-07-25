@@ -33,8 +33,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import inspect
-
 from fire import completion
 from fire import custom_descriptions
 from fire import decorators
@@ -319,7 +317,7 @@ def _GetActionsGroupedByKind(component, verbose=False):
   values = ActionGroup(name='value', plural='values')
   indexes = ActionGroup(name='index', plural='indexes')
 
-  members = completion._Members(component, verbose)  # pylint: disable=protected-access
+  members = completion.VisibleMembers(component, verbose=verbose)
   for member_name, member in members:
     member_name = str(member_name)
     if value_types.IsGroup(member):
@@ -456,14 +454,7 @@ def _NewChoicesSection(name, choices):
 
 
 def UsageText(component, trace=None, verbose=False):
-  if inspect.isroutine(component) or inspect.isclass(component):
-    return UsageTextForFunction(component, trace, verbose)
-  else:
-    return UsageTextForObject(component, trace, verbose)
-
-
-def UsageTextForFunction(component, trace=None, verbose=False):
-  """Returns usage text for function objects.
+  """Returns usage text for the given component.
 
   Args:
     component: The component to determine the usage text for.
@@ -473,13 +464,12 @@ def UsageTextForFunction(component, trace=None, verbose=False):
   Returns:
     String suitable for display in an error screen.
   """
-  del verbose  # Unused.
-
-  output_template = """Usage: {current_command} {args_and_flags}
+  output_template = """Usage: {continued_command}
 {availability_lines}
 For detailed information on this command, run:
-  {current_command}{hyphen_hyphen} --help"""
+  {help_command}"""
 
+  # Get the command so far:
   if trace:
     command = trace.GetCommand()
     needs_separating_hyphen_hyphen = trace.NeedsSeparatingHyphenHyphen()
@@ -490,13 +480,67 @@ For detailed information on this command, run:
   if not command:
     command = ''
 
+  # Build the continuations for the command:
+  continued_command = command
+
   spec = inspectutils.GetFullArgSpec(component)
+  metadata = decorators.GetMetadata(component)
+
+  # Usage for objects.
+  actions_grouped_by_kind = _GetActionsGroupedByKind(component, verbose=verbose)
+  possible_actions = _GetPossibleActions(actions_grouped_by_kind)
+
+  continuations = []
+  if possible_actions:
+    continuations.append(_GetPossibleActionsUsageString(possible_actions))
+
+  availability_lines = _UsageAvailabilityLines(actions_grouped_by_kind)
+
+  if callable(component):
+    callable_items = _GetCallableUsageItems(spec, metadata)
+    continuations.append(' '.join(callable_items))
+    availability_lines.extend(_GetCallableAvailabilityLines(spec))
+
+  if continuations:
+    continued_command += ' ' + ' | '.join(continuations)
+  help_command = (
+      command
+      + (' -- ' if needs_separating_hyphen_hyphen else ' ')
+      + '--help'
+  )
+
+  return output_template.format(
+      continued_command=continued_command,
+      availability_lines=''.join(availability_lines),
+      help_command=help_command)
+
+
+def _GetPossibleActionsUsageString(possible_actions):
+  if possible_actions:
+    return '<{actions}>'.format(actions='|'.join(possible_actions))
+  return None
+
+
+def _UsageAvailabilityLines(actions_grouped_by_kind):
+  availability_lines = []
+  for action_group in actions_grouped_by_kind:
+    if action_group.members:
+      availability_line = _CreateAvailabilityLine(
+          header='available {plural}:'.format(plural=action_group.plural),
+          items=action_group.names
+      )
+      availability_lines.append(availability_line)
+  return availability_lines
+
+
+def _GetCallableUsageItems(spec, metadata):
+  """A list of elements that comprise the usage summary for a callable."""
   args_with_no_defaults = spec.args[:len(spec.args) - len(spec.defaults)]
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
 
   # Check if positional args are allowed. If not, show flag syntax for args.
-  metadata = decorators.GetMetadata(component)
   accepts_positional_args = metadata.get(decorators.ACCEPTS_POSITIONAL_ARGS)
+
   if not accepts_positional_args:
     items = ['--{arg}={upper}'.format(arg=arg, upper=arg.upper())
              for arg in args_with_no_defaults]
@@ -507,6 +551,17 @@ For detailed information on this command, run:
   if args_with_defaults or spec.kwonlyargs or spec.varkw:
     items.append('<flags>')
 
+  if spec.varargs:
+    items.append('[{varargs}]...'.format(varargs=spec.varargs.upper()))
+
+  return items
+
+
+def _GetCallableAvailabilityLines(spec):
+  """The list of availability lines for a callable for use in a usage string."""
+  args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
+
+  # TODO(dbieber): Handle args_with_no_defaults if not accepts_positional_args.
   optional_flags = [('--' + flag) for flag in args_with_defaults]
   required_flags = [('--' + flag) for flag in spec.kwonlyargs]
 
@@ -514,86 +569,20 @@ For detailed information on this command, run:
   availability_lines = []
   if optional_flags:
     availability_lines.append(
-        _CreateAvailabilityLine(header='Optional flags:', items=optional_flags,
-                                header_indent=0))
+        _CreateAvailabilityLine(header='optional flags:', items=optional_flags,
+                                header_indent=2))
   if required_flags:
     availability_lines.append(
-        _CreateAvailabilityLine(header='Required flags:', items=required_flags,
-                                header_indent=0))
+        _CreateAvailabilityLine(header='required flags:', items=required_flags,
+                                header_indent=2))
   if spec.varkw:
-    additional_flags = ('Additional flags are accepted.'
+    additional_flags = ('additional flags are accepted'
                         if optional_flags or required_flags else
-                        'Flags are accepted.')
-    availability_lines.append(additional_flags + '\n')
-
-  if availability_lines:
-    # Start the section with blank lines.
-    availability_lines.insert(0, '\n')
-
-  if spec.varargs:
-    items.append('[{varargs}]...'.format(varargs=spec.varargs.upper()))
-
-  args_and_flags = ' '.join(items)
-
-  hyphen_hyphen = ' --' if needs_separating_hyphen_hyphen else ''
-
-  return output_template.format(
-      current_command=command,
-      args_and_flags=args_and_flags,
-      availability_lines=''.join(availability_lines),
-      hyphen_hyphen=hyphen_hyphen)
-
-
-def UsageTextForObject(component, trace=None, verbose=False):
-  """Returns the usage text for the error screen for an object.
-
-  Constructs the usage text for the error screen to inform the user about how
-  to use the current component.
-
-  Args:
-    component: The component to determine the usage text for.
-    trace: The Fire trace object containing all metadata of current execution.
-    verbose: Whether to include private members in the usage text.
-  Returns:
-    String suitable for display in error screen.
-  """
-  output_template = """Usage: {current_command}{possible_actions}
-{availability_lines}
-For detailed information on this command, run:
-  {current_command} --help"""
-  if trace:
-    command = trace.GetCommand()
-  else:
-    command = None
-
-  if not command:
-    command = ''
-
-  actions_grouped_by_kind = _GetActionsGroupedByKind(component, verbose=verbose)
-
-  possible_actions = []
-  availability_lines = []
-  for action_group in actions_grouped_by_kind:
-    if action_group.members:
-      possible_actions.append(action_group.name)
-      availability_line = _CreateAvailabilityLine(
-          header='available {plural}:'.format(plural=action_group.plural),
-          items=action_group.names
-      )
-      availability_lines.append(availability_line)
-
-  if possible_actions:
-    possible_actions_string = ' <{actions}>'.format(
-        actions='|'.join(possible_actions))
-  else:
-    possible_actions_string = ''
-
-  availability_lines_string = ''.join(availability_lines)
-
-  return output_template.format(
-      current_command=command,
-      possible_actions=possible_actions_string,
-      availability_lines=availability_lines_string)
+                        'flags are accepted')
+    availability_lines.append(
+        _CreateAvailabilityLine(header=additional_flags, items=[],
+                                header_indent=2))
+  return availability_lines
 
 
 def _CreateAvailabilityLine(header, items,

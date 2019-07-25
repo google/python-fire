@@ -317,7 +317,7 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.NoDefaults().double
     t = trace.FireTrace(component, name='NoDefaults')
     t.AddAccessedProperty(component, 'double', ['double'], None, None)
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = '''
     Usage: NoDefaults double COUNT
 
@@ -330,11 +330,10 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputFunctionWithHelp(self):
     component = tc.function_with_help
     t = trace.FireTrace(component, name='function_with_help')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = '''
     Usage: function_with_help <flags>
-
-    Optional flags:          --help
+      optional flags:        --help
 
     For detailed information on this command, run:
       function_with_help -- --help'''
@@ -345,17 +344,16 @@ class UsageTest(testutils.BaseTestCase):
   def testUsageOutputFunctionWithDocstring(self):
     component = tc.multiplier_with_docstring
     t = trace.FireTrace(component, name='multiplier_with_docstring')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = '''
     Usage: multiplier_with_docstring NUM <flags>
-
-    Optional flags:          --rate
+      optional flags:        --rate
 
     For detailed information on this command, run:
       multiplier_with_docstring --help'''
     self.assertEqual(
-        usage_output,
-        textwrap.dedent(expected_output).lstrip('\n'))
+        textwrap.dedent(expected_output).lstrip('\n'),
+        usage_output)
 
   @testutils.skip('The functionality is not implemented yet')
   def testUsageOutputCallable(self):
@@ -373,21 +371,35 @@ class UsageTest(testutils.BaseTestCase):
     For detailed information on this command, run:
       CallableWithKeywordArgument -- --help'''
     self.assertEqual(
-        usage_output,
-        textwrap.dedent(expected_output).lstrip('\n'))
+        textwrap.dedent(expected_output).lstrip('\n'),
+        usage_output)
 
   def testUsageOutputConstructorWithParameter(self):
     component = tc.InstanceVars
     t = trace.FireTrace(component, name='InstanceVars')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = '''
     Usage: InstanceVars --arg1=ARG1 --arg2=ARG2
 
     For detailed information on this command, run:
       InstanceVars --help'''
     self.assertEqual(
-        usage_output,
-        textwrap.dedent(expected_output).lstrip('\n'))
+        textwrap.dedent(expected_output).lstrip('\n'),
+        usage_output)
+
+  def testUsageOutputConstructorWithParameterVerbose(self):
+    component = tc.InstanceVars
+    t = trace.FireTrace(component, name='InstanceVars')
+    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    expected_output = '''
+    Usage: InstanceVars <command> | --arg1=ARG1 --arg2=ARG2
+      available commands:    run
+
+    For detailed information on this command, run:
+      InstanceVars --help'''
+    self.assertEqual(
+        textwrap.dedent(expected_output).lstrip('\n'),
+        usage_output)
 
   def testUsageOutputEmptyDict(self):
     component = {}
@@ -399,8 +411,8 @@ class UsageTest(testutils.BaseTestCase):
     For detailed information on this command, run:
       EmptyDict --help'''
     self.assertEqual(
-        usage_output,
-        textwrap.dedent(expected_output).lstrip('\n'))
+        textwrap.dedent(expected_output).lstrip('\n'),
+        usage_output)
 
   def testUsageOutputNone(self):
     component = None
@@ -412,8 +424,8 @@ class UsageTest(testutils.BaseTestCase):
     For detailed information on this command, run:
       None --help'''
     self.assertEqual(
-        usage_output,
-        textwrap.dedent(expected_output).lstrip('\n'))
+        textwrap.dedent(expected_output).lstrip('\n'),
+        usage_output)
 
   @testutils.skip('Only passes in Python 3 for now.')
   def testInitRequiresFlagSyntaxSubclassNamedTuple(self):

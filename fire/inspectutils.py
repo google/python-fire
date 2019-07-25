@@ -112,6 +112,8 @@ def GetFullArgSpec(fn):
 
     # Case 1: Builtins accept args.
     if inspect.isbuiltin(fn):
+      # TODO(dbieber): Try parsing the docstring, if available.
+      # TODO(dbieber): Use known argspecs, like set.add and namedtuple.count.
       return FullArgSpec(varargs='vars', varkw='kwargs')
 
     # Case 2: namedtuples store their args in their _fields attribute.

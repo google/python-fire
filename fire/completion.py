@@ -281,7 +281,18 @@ end
   )
 
 
-def MemberVisible(component, name, member, verbose):
+def GetClassAttrsDict(component):
+  """Gets the attributes of the component class, as a dict with name keys."""
+  if not inspect.isclass(component):
+    return None
+  class_attrs_list = inspect.classify_class_attrs(component)
+  return {
+      class_attr.name: class_attr
+      for class_attr in class_attrs_list
+  }
+
+
+def MemberVisible(component, name, member, class_attrs=None, verbose=False):
   """Returns whether a member should be included in auto-completion or help.
 
   Determines whether a member of an object with the specified name should be
@@ -297,6 +308,8 @@ def MemberVisible(component, name, member, verbose):
     component: The component containing the member.
     name: The name of the member.
     member: The member itself.
+    class_attrs: (optional) If component is a class, provide this as:
+      GetClassAttrsDict(component). If not provided, it will be computed.
     verbose: Whether to include private members.
   Returns
     A boolean value indicating whether the member should be included.
@@ -310,6 +323,13 @@ def MemberVisible(component, name, member, verbose):
   if inspect.ismodule(member) and member is six:
     # TODO(dbieber): Determine more generally which modules to hide.
     return False
+  if inspect.isclass(component):
+    # If class_attrs has not been provided, compute it.
+    if class_attrs is None:
+      class_attrs = GetClassAttrsDict(class_attrs)
+    class_attr = class_attrs.get(name)
+    if class_attr and class_attr.kind == 'method':
+      return False
   if (six.PY2 and inspect.isfunction(component)
       and name in ('func_closure', 'func_code', 'func_defaults',
                    'func_dict', 'func_doc', 'func_globals', 'func_name')):
@@ -322,7 +342,7 @@ def MemberVisible(component, name, member, verbose):
   return True  # Default to including the member
 
 
-def _Members(component, verbose=False):
+def VisibleMembers(component, class_attrs=None, verbose=False):
   """Returns a list of the members of the given component.
 
   If verbose is True, then members starting with _ (normally ignored) are
@@ -330,6 +350,12 @@ def _Members(component, verbose=False):
 
   Args:
     component: The component whose members to list.
+    class_attrs: (optional) If component is a class, you may provide this as:
+      GetClassAttrsDict(component). If not provided, it will be computed.
+      If provided, this determines how class members will be treated for
+      visibility. In particular, methods are generally hidden for
+      non-instantiated classes, but if you wish them to be shown (e.g. for
+      completion scripts) then pass in a different class_attr for them.
     verbose: Whether to include private members.
   Returns:
     A list of tuples (member_name, member) of all members of the component.
@@ -339,10 +365,13 @@ def _Members(component, verbose=False):
   else:
     members = inspect.getmembers(component)
 
+  # If class_attrs has not been provided, compute it.
+  if class_attrs is None:
+    class_attrs = GetClassAttrsDict(component)
   return [
-      (member_name, member)
-      for member_name, member in members
-      if MemberVisible(component, member_name, member, verbose)
+      (member_name, member) for member_name, member in members
+      if MemberVisible(component, member_name, member, class_attrs=class_attrs,
+                       verbose=verbose)
   ]
 
 
@@ -386,7 +415,7 @@ def Completions(component, verbose=False):
 
   return [
       _FormatForCommand(member_name)
-      for member_name, unused_member in _Members(component, verbose)
+      for member_name, _ in VisibleMembers(component, verbose=verbose)
   ]
 
 
@@ -427,7 +456,7 @@ def _Commands(component, depth=3):
     Only traverses the member DAG up to a depth of depth.
   """
   if inspect.isroutine(component) or inspect.isclass(component):
-    for completion in Completions(component):
+    for completion in Completions(component, verbose=False):
       yield (completion,)
   if inspect.isroutine(component):
     return  # Don't descend into routines.
@@ -435,7 +464,9 @@ def _Commands(component, depth=3):
   if depth < 1:
     return
 
-  for member_name, member in _Members(component):
+  # By setting class_attrs={} we don't hide methods in completion.
+  for member_name, member in VisibleMembers(component, class_attrs={},
+                                            verbose=False):
     # TODO(dbieber): Also skip components we've already seen.
     member_name = _FormatForCommand(member_name)
 
