@@ -336,7 +336,7 @@ class CallableWithKeywordArgument(object):
     print(msg)
 
 
-callable_with_keyword_argument = CallableWithKeywordArgument()
+CALLABLE_WITH_KEYWORD_ARGUMENT = CallableWithKeywordArgument()
 
 
 class ClassWithDocstring(object):

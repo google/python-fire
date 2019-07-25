@@ -288,12 +288,12 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')
     usage_output = helptext.UsageText(component, trace=t, verbose=False)
-    expected_output = '''
+    expected_output = """
     Usage: NoDefaults <command>
       available commands:    double | triple
 
     For detailed information on this command, run:
-      NoDefaults --help'''
+      NoDefaults --help"""
 
     self.assertEqual(
         usage_output,
@@ -303,12 +303,12 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')
     usage_output = helptext.UsageText(component, trace=t, verbose=True)
-    expected_output = '''
+    expected_output = """
     Usage: NoDefaults <command>
       available commands:    double | triple
 
     For detailed information on this command, run:
-      NoDefaults --help'''
+      NoDefaults --help"""
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -318,11 +318,11 @@ class UsageTest(testutils.BaseTestCase):
     t = trace.FireTrace(component, name='NoDefaults')
     t.AddAccessedProperty(component, 'double', ['double'], None, None)
     usage_output = helptext.UsageText(component, trace=t, verbose=False)
-    expected_output = '''
+    expected_output = """
     Usage: NoDefaults double COUNT
 
     For detailed information on this command, run:
-      NoDefaults double --help'''
+      NoDefaults double --help"""
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -331,12 +331,12 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.function_with_help
     t = trace.FireTrace(component, name='function_with_help')
     usage_output = helptext.UsageText(component, trace=t, verbose=False)
-    expected_output = '''
+    expected_output = """
     Usage: function_with_help <flags>
       optional flags:        --help
 
     For detailed information on this command, run:
-      function_with_help -- --help'''
+      function_with_help -- --help"""
     self.assertEqual(
         usage_output,
         textwrap.dedent(expected_output).lstrip('\n'))
@@ -345,12 +345,12 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.multiplier_with_docstring
     t = trace.FireTrace(component, name='multiplier_with_docstring')
     usage_output = helptext.UsageText(component, trace=t, verbose=False)
-    expected_output = '''
+    expected_output = """
     Usage: multiplier_with_docstring NUM <flags>
       optional flags:        --rate
 
     For detailed information on this command, run:
-      multiplier_with_docstring --help'''
+      multiplier_with_docstring --help"""
     self.assertEqual(
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
@@ -361,13 +361,13 @@ class UsageTest(testutils.BaseTestCase):
     t = trace.FireTrace(component, name='CallableWithKeywordArgument',
                         separator='@')
     usage_output = helptext.UsageText(component, trace=t, verbose=False)
-    expected_output = '''
+    expected_output = """
     Usage: CallableWithKeywordArgument <command> | <flags>
       available commands:    print_msg
       flags are accepted
 
     For detailed information on this command, run:
-      CallableWithKeywordArgument -- --help'''
+      CallableWithKeywordArgument -- --help"""
     self.assertEqual(
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
@@ -376,11 +376,11 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.InstanceVars
     t = trace.FireTrace(component, name='InstanceVars')
     usage_output = helptext.UsageText(component, trace=t, verbose=False)
-    expected_output = '''
+    expected_output = """
     Usage: InstanceVars --arg1=ARG1 --arg2=ARG2
 
     For detailed information on this command, run:
-      InstanceVars --help'''
+      InstanceVars --help"""
     self.assertEqual(
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
@@ -389,12 +389,12 @@ class UsageTest(testutils.BaseTestCase):
     component = tc.InstanceVars
     t = trace.FireTrace(component, name='InstanceVars')
     usage_output = helptext.UsageText(component, trace=t, verbose=True)
-    expected_output = '''
+    expected_output = """
     Usage: InstanceVars <command> | --arg1=ARG1 --arg2=ARG2
       available commands:    run
 
     For detailed information on this command, run:
-      InstanceVars --help'''
+      InstanceVars --help"""
     self.assertEqual(
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
@@ -403,11 +403,11 @@ class UsageTest(testutils.BaseTestCase):
     component = {}
     t = trace.FireTrace(component, name='EmptyDict')
     usage_output = helptext.UsageText(component, trace=t, verbose=True)
-    expected_output = '''
+    expected_output = """
     Usage: EmptyDict
 
     For detailed information on this command, run:
-      EmptyDict --help'''
+      EmptyDict --help"""
     self.assertEqual(
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
@@ -416,11 +416,11 @@ class UsageTest(testutils.BaseTestCase):
     component = None
     t = trace.FireTrace(component, name='None')
     usage_output = helptext.UsageText(component, trace=t, verbose=True)
-    expected_output = '''
+    expected_output = """
     Usage: None
 
     For detailed information on this command, run:
-      None --help'''
+      None --help"""
     self.assertEqual(
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
