@@ -281,7 +281,7 @@ end
   )
 
 
-def MemberVisible(name, member, verbose):
+def MemberVisible(component, name, member, verbose):
   """Returns whether a member should be included in auto-completion or help.
 
   Determines whether a member of an object with the specified name should be
@@ -294,6 +294,7 @@ def MemberVisible(name, member, verbose):
   When not in verbose mode, some modules and functions are excluded as well.
 
   Args:
+    component: The component containing the member.
     name: The name of the member.
     member: The member itself.
     verbose: Whether to include private members.
@@ -308,6 +309,13 @@ def MemberVisible(name, member, verbose):
     return False
   if inspect.ismodule(member) and member is six:
     # TODO(dbieber): Determine more generally which modules to hide.
+    return False
+  if (six.PY2 and inspect.isfunction(component)
+      and name in ('func_closure', 'func_code', 'func_defaults',
+                   'func_dict', 'func_doc', 'func_globals', 'func_name')):
+    return False
+  if (six.PY2 and inspect.ismethod(component)
+      and name in ('im_class', 'im_func', 'im_self')):
     return False
   if isinstance(name, six.string_types):
     return not name.startswith('_')
@@ -334,7 +342,7 @@ def _Members(component, verbose=False):
   return [
       (member_name, member)
       for member_name, member in members
-      if MemberVisible(member_name, member, verbose)
+      if MemberVisible(component, member_name, member, verbose)
   ]
 
 

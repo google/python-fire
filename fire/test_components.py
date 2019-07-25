@@ -306,8 +306,13 @@ class NamedTuple(object):
 class CallableWithPositionalArgs(object):
   """Test class for supporting callable."""
 
+  TEST = 1
+
   def __call__(self, x, y):
     return x + y
+
+  def foo(self, x):
+    return x + 1
 
 
 NamedTuplePoint = collections.namedtuple('NamedTuplePoint', ['x', 'y'])

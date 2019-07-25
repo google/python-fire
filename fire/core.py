@@ -303,7 +303,7 @@ def _DictAsString(result, verbose=False):
   # 1) Getting visible items and the longest key for output formatting
   # 2) Actually construct the output lines
   result_visible = {key: value for key, value in result.items()
-                    if completion.MemberVisible(key, value, verbose)}
+                    if completion.MemberVisible(result, key, value, verbose)}
 
   if not result_visible:
     return '{}'
@@ -313,7 +313,7 @@ def _DictAsString(result, verbose=False):
 
   lines = []
   for key, value in result.items():
-    if completion.MemberVisible(key, value, verbose):
+    if completion.MemberVisible(result, key, value, verbose):
       line = format_string.format(key=str(key) + ':',
                                   value=_OneLineResult(value))
       lines.append(line)

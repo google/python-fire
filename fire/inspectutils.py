@@ -80,6 +80,9 @@ def _GetArgSpecInfo(fn):
   elif inspect.isbuiltin(fn):
     # If the function is a bound builtin, we skip the `self` argument.
     skip_arg = fn.__self__ is not None
+  elif not inspect.isfunction(fn):
+    # The purpose of this else clause is to set skip_arg for callable objects.
+    skip_arg = True
   return fn, skip_arg
 
 

@@ -70,18 +70,14 @@ def HelpText(component, trace=None, verbose=False):
   description_section = _DescriptionSection(component, info)
   # TODO(dbieber): Add returns and raises sections for functions.
 
-  if inspect.isroutine(component) or inspect.isclass(component):
-    # For functions (ARGUMENTS / POSITIONAL ARGUMENTS, FLAGS)
+  if callable(component):
     args_and_flags_sections, notes_sections = _ArgsAndFlagsSections(
         info, spec, metadata)
-    usage_details_sections = []
   else:
-    # For objects (GROUPS, COMMANDS, VALUES, INDEXES)
-    # TODO(dbieber): Show callable function usage in help text.
     args_and_flags_sections = []
     notes_sections = []
-    usage_details_sections = _UsageDetailsSections(component,
-                                                   actions_grouped_by_kind)
+  usage_details_sections = _UsageDetailsSections(component,
+                                                 actions_grouped_by_kind)
 
   sections = (
       [name_section, synopsis_section, description_section]
@@ -119,21 +115,19 @@ def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata,
   """The "Synopsis" section of the help string."""
   current_command = _GetCurrentCommand(trace=trace, include_separators=True)
 
-  # TODO(dbieber): Support callable functions.
-  if inspect.isroutine(component) or inspect.isclass(component):
-    # For function:
-    args_and_flags = _GetArgsAndFlagsString(spec, metadata)
-    synopsis_section_template = '{current_command} {args_and_flags}'
-    text = synopsis_section_template.format(
-        current_command=current_command, args_and_flags=args_and_flags)
+  possible_actions = _GetPossibleActions(actions_grouped_by_kind)
 
-  else:
-    # For object:
-    possible_actions_string = _GetPossibleActionsString(actions_grouped_by_kind)
-    synopsis_template = '{current_command} {possible_actions}'
-    text = synopsis_template.format(
-        current_command=current_command,
-        possible_actions=possible_actions_string)
+  continuations = []
+  if possible_actions:
+    continuations.append(_GetPossibleActionsString(possible_actions))
+  if callable(component):
+    continuations.append(_GetArgsAndFlagsString(spec, metadata))
+  continuation = ' | '.join(continuations)
+
+  synopsis_template = '{current_command} {continuation}'
+  text = synopsis_template.format(
+      current_command=current_command,
+      continuation=continuation)
 
   return ('SYNOPSIS', text)
 
@@ -225,22 +219,17 @@ def _UsageDetailsSections(component, actions_grouped_by_kind):
   """The usage details sections of the help string."""
   groups, commands, values, indexes = actions_grouped_by_kind
 
-  usage_details_sections = []
+  sections = []
+  if groups.members:
+    sections.append(_MakeUsageDetailsSection(groups))
+  if commands.members:
+    sections.append(_MakeUsageDetailsSection(commands))
+  if values.members:
+    sections.append(_ValuesUsageDetailsSection(component, values))
+  if indexes.members:
+    sections.append(('INDEXES', _NewChoicesSection('INDEX', indexes.names)))
 
-  if groups:
-    usage_details_section = _GroupUsageDetailsSection(groups)
-    usage_details_sections.append(usage_details_section)
-  if commands:
-    usage_details_section = _CommandUsageDetailsSection(commands)
-    usage_details_sections.append(usage_details_section)
-  if values:
-    usage_details_section = _ValuesUsageDetailsSection(component, values)
-    usage_details_sections.append(usage_details_section)
-  if indexes:
-    usage_details_sections.append(
-        ('INDEXES', _NewChoicesSection('INDEX', [indexes])))
-
-  return usage_details_sections
+  return sections
 
 
 def _GetSummary(info):
@@ -302,51 +291,46 @@ def _GetArgsAndFlagsString(spec, metadata):
   return ' '.join(arg_and_flag_strings)
 
 
-def _GetPossibleActionsString(actions_grouped_by_kind):
-  """A help screen string listing the possible action kinds available."""
-  groups, commands, values, indexes = actions_grouped_by_kind
-
+def _GetPossibleActions(actions_grouped_by_kind):
+  """The list of possible action kinds."""
   possible_actions = []
-  if groups:
-    possible_actions.append('GROUP')
-  if commands:
-    possible_actions.append('COMMAND')
-  if values:
-    possible_actions.append('VALUE')
-  if indexes:
-    possible_actions.append('INDEX')
+  for action_group in actions_grouped_by_kind:
+    if action_group.members:
+      possible_actions.append(action_group.name)
+  return possible_actions
 
-  possible_actions_string = ' | '.join(
-      formatting.Underline(action) for action in possible_actions)
-  return possible_actions_string
+
+def _GetPossibleActionsString(possible_actions):
+  """A help screen string listing the possible action kinds available."""
+  return ' | '.join(formatting.Underline(action.upper())
+                    for action in possible_actions)
 
 
 def _GetActionsGroupedByKind(component, verbose=False):
   """Gets lists of available actions, grouped by action kind."""
-  groups = []
-  commands = []
-  values = []
+  groups = ActionGroup(name='group', plural='groups')
+  commands = ActionGroup(name='command', plural='commands')
+  values = ActionGroup(name='value', plural='values')
+  indexes = ActionGroup(name='index', plural='indexes')
 
   members = completion._Members(component, verbose)  # pylint: disable=protected-access
   for member_name, member in members:
     member_name = str(member_name)
     if value_types.IsGroup(member):
-      groups.append((member_name, member))
+      groups.Add(name=member_name, member=member)
     if value_types.IsCommand(member):
-      commands.append((member_name, member))
+      commands.Add(name=member_name, member=member)
     if value_types.IsValue(member):
-      values.append((member_name, member))
+      values.Add(name=member_name, member=member)
 
-  indexes = None
   if isinstance(component, (list, tuple)) and component:
     component_len = len(component)
-    # WARNING: Note that indexes is a string, whereas the rest are lists.
     if component_len < 10:
-      indexes = ', '.join(str(x) for x in range(component_len))
+      indexes.Add(name=', '.join(str(x) for x in range(component_len)))
     else:
-      indexes = '0..{max}'.format(max=component_len-1)
+      indexes.Add(name='0..{max}'.format(max=component_len-1))
 
-  return groups, commands, values, indexes
+  return [groups, commands, values, indexes]
 
 
 def _GetCurrentCommand(trace=None, include_separators=True):
@@ -420,38 +404,28 @@ def _GetArgDescription(name, docstring_info):
   return None
 
 
-def _GroupUsageDetailsSection(groups):
-  """Creates a section tuple for the groups section of the usage details."""
-  group_item_strings = []
-  for group_name, group in groups:
-    group_info = inspectutils.Info(group)
-    group_item = group_name
-    if 'docstring_info' in group_info:
-      group_docstring_info = group_info['docstring_info']
-      if group_docstring_info:
-        group_item = _CreateItem(group_name, group_docstring_info.summary)
-    group_item_strings.append(group_item)
-  return ('GROUPS', _NewChoicesSection('GROUP', group_item_strings))
-
-
-def _CommandUsageDetailsSection(commands):
-  """Creates a section tuple for the commands section of the usage details."""
-  command_item_strings = []
-  for command_name, command in commands:
-    command_info = inspectutils.Info(command)
-    command_item = command_name
-    if 'docstring_info' in command_info:
-      command_docstring_info = command_info['docstring_info']
-      if command_docstring_info:
-        command_item = _CreateItem(command_name, command_docstring_info.summary)
-    command_item_strings.append(command_item)
-  return ('COMMANDS', _NewChoicesSection('COMMAND', command_item_strings))
+def _MakeUsageDetailsSection(action_group):
+  """Creates a usage details section for the provided action group."""
+  item_strings = []
+  for name, member in action_group.GetItems():
+    info = inspectutils.Info(member)
+    item = name
+    docstring_info = info.get('docstring_info')
+    if (docstring_info
+        and not custom_descriptions.NeedsCustomDescription(member)):
+      summary = docstring_info.summary
+    else:
+      summary = None
+    item = _CreateItem(name, summary)
+    item_strings.append(item)
+  return (action_group.plural.upper(),
+          _NewChoicesSection(action_group.name.upper(), item_strings))
 
 
 def _ValuesUsageDetailsSection(component, values):
   """Creates a section tuple for the values section of the usage details."""
   value_item_strings = []
-  for value_name, value in values:
+  for value_name, value in values.GetItems():
     del value
     init_info = inspectutils.Info(component.__class__.__init__)
     value_item = None
@@ -590,34 +564,17 @@ For detailed information on this command, run:
     command = ''
 
   actions_grouped_by_kind = _GetActionsGroupedByKind(component, verbose=verbose)
-  groups, commands, values, indexes = actions_grouped_by_kind
 
   possible_actions = []
   availability_lines = []
-  if groups:
-    possible_actions.append('group')
-    groups_text = _CreateAvailabilityLine(
-        header='available groups:',
-        items=[name for name, _ in groups])
-    availability_lines.append(groups_text)
-  if commands:
-    possible_actions.append('command')
-    commands_text = _CreateAvailabilityLine(
-        header='available commands:',
-        items=[name for name, _ in commands])
-    availability_lines.append(commands_text)
-  if values:
-    possible_actions.append('value')
-    values_text = _CreateAvailabilityLine(
-        header='available values:',
-        items=[name for name, _ in values])
-    availability_lines.append(values_text)
-  if indexes:
-    possible_actions.append('index')
-    indexes_text = _CreateAvailabilityLine(
-        header='available indexes:',
-        items=indexes)
-    availability_lines.append(indexes_text)
+  for action_group in actions_grouped_by_kind:
+    if action_group.members:
+      possible_actions.append(action_group.name)
+      availability_line = _CreateAvailabilityLine(
+          header='available {plural}:'.format(plural=action_group.plural),
+          items=action_group.names
+      )
+      availability_lines.append(availability_line)
 
   if possible_actions:
     possible_actions_string = ' <{actions}>'.format(
@@ -641,3 +598,21 @@ def _CreateAvailabilityLine(header, items,
   indented_items_text = formatting.Indent(items_text, spaces=items_indent)
   indented_header = formatting.Indent(header, spaces=header_indent)
   return indented_header + indented_items_text[len(indented_header):] + '\n'
+
+
+class ActionGroup(object):
+  """A group of actions of the same kind."""
+
+  def __init__(self, name, plural):
+    self.name = name
+    self.plural = plural
+    self.names = []
+    self.members = []
+
+  def Add(self, name, member=None):
+    self.names.append(name)
+    self.members.append(member)
+
+  def GetItems(self):
+    return zip(self.names, self.members)
+
