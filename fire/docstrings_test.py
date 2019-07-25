@@ -238,7 +238,7 @@ class DocstringsTest(testutils.BaseTestCase):
     lines = ['   ', '  foo  ', '   ']
     expected_output = ['  foo  ']
 
-    self.assertEqual(docstrings._strip_blank_lines(lines), expected_output)
+    self.assertEqual(docstrings._strip_blank_lines(lines), expected_output)  # pylint: disable=protected-access
 
 
 if __name__ == '__main__':
