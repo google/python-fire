@@ -56,6 +56,7 @@ from __future__ import print_function
 
 import collections
 import re
+import textwrap
 
 import enum
 
@@ -179,7 +180,10 @@ def parse(docstring):
     _consume_line(line_info, state)
 
   summary = ' '.join(state.summary.lines) if state.summary.lines else None
-  description = _join_lines(state.description.lines)
+  state.description.lines = _strip_blank_lines(state.description.lines)
+  description = textwrap.dedent('\n'.join(state.description.lines))
+  if not description:
+    description = None
   returns = _join_lines(state.returns.lines)
   yields = _join_lines(state.yields.lines)
   raises = _join_lines(state.raises.lines)
@@ -201,6 +205,32 @@ def parse(docstring):
       raises=raises,
       yields=yields,
   )
+
+
+def _strip_blank_lines(lines):
+  """Removes lines containing only blank characters before and after the text.
+
+  Args:
+    lines: A list of lines.
+  Returns:
+    A list of lines without trailing or leading blank lines.
+  """
+  # Find the first non-blank line.
+  start = 0
+  while lines and _is_blank(lines[start]):
+    start += 1
+
+  lines = lines[start:]
+
+  # Remove trailing blank lines.
+  while lines and _is_blank(lines[-1]):
+    lines.pop()
+
+  return lines
+
+
+def _is_blank(line):
+  return not line or line.isspace()
 
 
 def _join_lines(lines):
@@ -391,7 +421,7 @@ def _consume_line(line_info, state):
     else:
       # We're past the end of the summary.
       # Additions now contribute to the description.
-      state.description.lines.append(line_info.remaining)
+      state.description.lines.append(line_info.remaining_raw)
   else:
     state.summary.permitted = False
 
@@ -470,6 +500,7 @@ def _create_line_info(line, next_line):
   line_info = Namespace()  # TODO(dbieber): Switch to an explicit class.
   line_info.line = line
   line_info.stripped = line.strip()
+  line_info.remaining_raw = line_info.line
   line_info.remaining = line_info.stripped
   line_info.indentation = len(line) - len(line.lstrip())
   line_info.next.line = next_line
@@ -497,6 +528,7 @@ def _update_section_state(line_info, state):
     state.section.format = Formats.GOOGLE
     state.section.title = google_section
     line_info.remaining = _get_after_google_header(line_info)
+    line_info.remaining_raw = line_info.remaining
     section_updated = True
 
   rst_section = _rst_section(line_info)
@@ -504,6 +536,7 @@ def _update_section_state(line_info, state):
     state.section.format = Formats.RST
     state.section.title = rst_section
     line_info.remaining = _get_after_directive(line_info)
+    line_info.remaining_raw = line_info.remaining
     section_updated = True
 
   numpy_section = _numpy_section(line_info)
@@ -511,6 +544,7 @@ def _update_section_state(line_info, state):
     state.section.format = Formats.NUMPY
     state.section.title = numpy_section
     line_info.remaining = ''
+    line_info.remaining_raw = line_info.remaining
     section_updated = True
 
   if section_updated:

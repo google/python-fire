@@ -131,7 +131,7 @@ class DocstringsTest(testutils.BaseTestCase):
     expected_docstring_info = DocstringInfo(
         summary='Docstring summary.',
         description='This is a longer description of the docstring. It spans '
-        'multiple lines, as is allowed.',
+        'multiple lines, as\nis allowed.',
         args=[
             ArgInfo(name='param1', type='int',
                     description='The first parameter.'),
@@ -159,7 +159,7 @@ class DocstringsTest(testutils.BaseTestCase):
     expected_docstring_info = DocstringInfo(
         summary='Docstring summary.',
         description='This is a longer description of the docstring. It spans '
-        'across multiple lines.',
+        'across multiple\nlines.',
         args=[
             ArgInfo(name='arg1', type='str',
                     description='Description of arg1.'),
@@ -193,7 +193,7 @@ class DocstringsTest(testutils.BaseTestCase):
     expected_docstring_info = DocstringInfo(
         summary='Docstring summary.',
         description='This is a longer description of the docstring. It spans '
-        'across multiple lines.',
+        'across multiple\nlines.',
         args=[
             ArgInfo(name='param1', type='int',
                     description='The first parameter.'),
@@ -217,7 +217,7 @@ class DocstringsTest(testutils.BaseTestCase):
     expected_docstring_info = DocstringInfo(
         summary='Docstring summary.',
         description='This is the first section of a docstring description.\n\n'
-        'This is the second section of a docstring description. This docstring '
+        'This is the second section of a docstring description. This docstring\n'
         'description has just two sections.',
     )
     self.assertEqual(docstring_info, expected_docstring_info)
@@ -231,6 +231,12 @@ class DocstringsTest(testutils.BaseTestCase):
     reasonably.
     """
     docstrings.parse(docstring)
+
+  def test_strip_blank_lines(self):
+    lines = ['   ', '  foo  ', '   ']
+    expected_output = ['  foo  ']
+
+    self.assertEqual(docstrings._strip_blank_lines(lines), expected_output)
 
 
 if __name__ == '__main__':

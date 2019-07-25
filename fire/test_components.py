@@ -440,3 +440,20 @@ def function_with_varargs(arg1, arg2, arg3=1, *varargs):  # pylint: disable=keyw
 def function_with_keyword_arguments(arg1, arg2=3, **kwargs):
   del arg2  # Unused.
   return arg1, kwargs
+
+
+def fn_with_code_in_docstring():
+  """This has code in the docstring.
+
+
+
+  Example:
+    x = fn_with_code_in_docstring()
+    indentation_matters = True
+
+
+
+  Returns:
+    True.
+  """
+  return True
