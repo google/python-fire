@@ -427,11 +427,10 @@ class UsageTest(testutils.BaseTestCase):
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
 
-  @testutils.skip('Only passes in Python 3 for now.')
   def testInitRequiresFlagSyntaxSubclassNamedTuple(self):
     component = tc.SubPoint
     t = trace.FireTrace(component, name='SubPoint')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
+    usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = 'Usage: SubPoint --x=X --y=Y'
     self.assertIn(expected_output, usage_output)
 

@@ -328,7 +328,9 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
     if class_attrs is None:
       class_attrs = GetClassAttrsDict(class_attrs)
     class_attr = class_attrs.get(name)
-    if class_attr and class_attr.kind == 'method':
+    if class_attr and class_attr.kind in ('method', 'property'):
+      # methods and properties should be accessed on instantiated objects,
+      # not uninstantiated classes.
       return False
   if (six.PY2 and inspect.isfunction(component)
       and name in ('func_closure', 'func_code', 'func_defaults',
