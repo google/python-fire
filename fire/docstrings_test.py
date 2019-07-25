@@ -216,8 +216,10 @@ class DocstringsTest(testutils.BaseTestCase):
     docstring_info = docstrings.parse(docstring)
     expected_docstring_info = DocstringInfo(
         summary='Docstring summary.',
-        description='This is the first section of a docstring description.\n\n'
-        'This is the second section of a docstring description. This docstring\n'
+        description='This is the first section of a docstring description.'
+        '\n\n'
+        'This is the second section of a docstring description. This docstring'
+        '\n'
         'description has just two sections.',
     )
     self.assertEqual(docstring_info, expected_docstring_info)
