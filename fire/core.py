@@ -144,7 +144,7 @@ def Fire(component=None, command=None, name=None):
     output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
     result = component_trace.GetResult()
     help_text = helptext.HelpText(
-        result, component_trace, component_trace.verbose)
+        result, trace=component_trace, verbose=component_trace.verbose)
     output.append(help_text)
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
@@ -155,7 +155,7 @@ def Fire(component=None, command=None, name=None):
   if component_trace.show_help:
     result = component_trace.GetResult()
     help_text = helptext.HelpText(
-        result, component_trace, component_trace.verbose)
+        result, trace=component_trace, verbose=component_trace.verbose)
     output = [help_text]
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
@@ -260,7 +260,8 @@ def _PrintResult(component_trace, verbose=False):
     if result is not None:
       print(result)
   else:
-    help_text = helptext.HelpText(result, component_trace, verbose)
+    help_text = helptext.HelpText(
+        result, trace=component_trace, verbose=verbose)
     output = [help_text]
     Display(output, out=sys.stdout)
 
@@ -279,16 +280,16 @@ def _DisplayError(component_trace):
     command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
     print('INFO: Showing help with the command {cmd}.\n'.format(
         cmd=pipes.quote(command)), file=sys.stderr)
-    help_text = helptext.HelpText(result, component_trace,
-                                  component_trace.verbose)
+    help_text = helptext.HelpText(result, trace=component_trace,
+                                  verbose=component_trace.verbose)
     output.append(help_text)
     Display(output, out=sys.stderr)
   else:
     print(formatting.Error('ERROR: ')
           + component_trace.elements[-1].ErrorAsStr(),
           file=sys.stderr)
-    error_text = helptext.UsageText(result, component_trace,
-                                    component_trace.verbose)
+    error_text = helptext.UsageText(result, trace=component_trace,
+                                    verbose=component_trace.verbose)
     print(error_text, file=sys.stderr)
 
 
