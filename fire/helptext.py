@@ -498,7 +498,10 @@ For detailed information on this command, run:
 
   if callable(component):
     callable_items = _GetCallableUsageItems(spec, metadata)
-    continuations.append(' '.join(callable_items))
+    if callable_items:
+      continuations.append(' '.join(callable_items))
+    elif trace:
+      continuations.append(trace.separator)
     availability_lines.extend(_GetCallableAvailabilityLines(spec))
 
   if continuations:

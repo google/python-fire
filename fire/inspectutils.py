@@ -86,6 +86,16 @@ def _GetArgSpecInfo(fn):
   return fn, skip_arg
 
 
+def Py2GetArgSpec(fn):
+  """A wrapper around getargspec that tries both fn and fn.__call__."""
+  try:
+    return inspect.getargspec(fn)  # pylint: disable=deprecated-method
+  except TypeError:
+    if hasattr(fn, '__call__'):
+      return inspect.getargspec(fn.__call__)  # pylint: disable=deprecated-method
+    raise
+
+
 def GetFullArgSpec(fn):
   """Returns a FullArgSpec describing the given callable."""
 
@@ -94,7 +104,7 @@ def GetFullArgSpec(fn):
 
   try:
     if six.PY2:
-      args, varargs, varkw, defaults = inspect.getargspec(fn)  # pylint: disable=deprecated-method
+      args, varargs, varkw, defaults = Py2GetArgSpec(fn)
       kwonlyargs = kwonlydefaults = None
       annotations = getattr(fn, '__annotations__', None)
     else:

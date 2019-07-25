@@ -336,6 +336,9 @@ class CallableWithKeywordArgument(object):
     print(msg)
 
 
+callable_with_keyword_argument = CallableWithKeywordArgument()
+
+
 class ClassWithDocstring(object):
   """Test class for testing help text output.
 

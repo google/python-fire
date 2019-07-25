@@ -355,18 +355,16 @@ class UsageTest(testutils.BaseTestCase):
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
 
-  @testutils.skip('The functionality is not implemented yet')
   def testUsageOutputCallable(self):
-    # This is both a group and a command!
-    component = tc.CallableWithKeywordArgument
-    t = trace.FireTrace(component, name='CallableWithKeywordArgument')
-    usage_output = helptext.UsageText(component, trace=t, verbose=True)
-    # TODO(joejoevictor): We need to handle the case for keyword args as well
-    # i.e. __call__ method of CallableWithKeywordArgument
+    # This is both a group and a command.
+    component = tc.CallableWithKeywordArgument()
+    t = trace.FireTrace(component, name='CallableWithKeywordArgument',
+                        separator='@')
+    usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = '''
-    Usage: CallableWithKeywordArgument <command>
-
-      Available commands:    print_msg
+    Usage: CallableWithKeywordArgument <command> | <flags>
+      available commands:    print_msg
+      flags are accepted
 
     For detailed information on this command, run:
       CallableWithKeywordArgument -- --help'''
