@@ -98,7 +98,6 @@ def Py2GetArgSpec(fn):
 
 def GetFullArgSpec(fn):
   """Returns a FullArgSpec describing the given callable."""
-
   original_fn = fn
   fn, skip_arg = _GetArgSpecInfo(fn)
 

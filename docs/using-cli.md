@@ -91,6 +91,8 @@ the arguments of the class's \_\_init\_\_ function. Arguments must be specified
 by name, using the flags syntax. See the section on
 [calling a function](#calling-a-function) for more details.
 
+Similarly, when passing arguments to a callable object (an object with a custom
+`__call__` function), those arguments must be passed using flags syntax.
 
 ## Using Flags with Fire CLIs <a name="using-flags"></a>
 

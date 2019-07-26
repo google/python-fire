@@ -244,6 +244,15 @@ def _PrintResult(component_trace, verbose=False):
   # and move serialization to its own module.
   result = component_trace.GetResult()
 
+  if hasattr(result, '__str__'):
+    # If the object has a custom __str__ method, rather than one inherited from
+    # object, then we use that to serialize the object.
+    class_attrs = completion.GetClassAttrsDict(type(result))
+    str_attr = class_attrs.get('__str__')
+    if str_attr and str_attr.defining_class is not object:
+      print(str(result))
+      return
+
   if isinstance(result, (list, set, frozenset, types.GeneratorType)):
     for i in result:
       print(_OneLineResult(i))
@@ -253,9 +262,6 @@ def _PrintResult(component_trace, verbose=False):
     print(_DictAsString(result, verbose))
   elif isinstance(result, tuple):
     print(_OneLineResult(result))
-  elif isinstance(result, complex):
-    # Print "3+4j" instead of "(3+4j)".
-    print(str(result).strip('()'))
   elif isinstance(result, value_types.VALUE_TYPES):
     if result is not None:
       print(result)
