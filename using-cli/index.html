@@ -13,18 +13,19 @@
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
   
   <script>
     // Current page data
     var mkdocs_page_name = "Using a CLI";
     var mkdocs_page_input_path = "using-cli.md";
-    var mkdocs_page_url = "/using-cli/";
+    var mkdocs_page_url = null;
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -38,7 +39,7 @@
         <a href=".." class="icon icon-home"> Python Fire</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -192,6 +193,8 @@ values, or if the function accepts *varargs, or if the function accepts
 the arguments of the class's __init__ function. Arguments must be specified
 by name, using the flags syntax. See the section on
 <a href="#calling-a-function">calling a function</a> for more details.</p>
+<p>Similarly, when passing arguments to a callable object (an object with a custom
+<code>__call__</code> function), those arguments must be passed using flags syntax.</p>
 <h2 id="using-flags-with-fire-clis">Using Flags with Fire CLIs <a name="using-flags"></a></h2>
 <p>Command line arguments to a Fire CLI are normally consumed by Fire, as described
 in the <a href="#basic-usage">Basic Usage</a> section. In order to set Flags, put the flags
@@ -226,6 +229,8 @@ interactively using Python.</p>
 <code>widget</code>. To save the completion script to your home directory, you could e.g.
 run <code>widget -- --completion &gt; ~/.widget-completion</code>. You should then source this
 file; to get permanent completion, source this file from your .bashrc file.</p>
+<p>Call <code>widget -- --completion fish</code> to generate a completion script for the Fish
+shell. Source this file from your fish.config.</p>
 <p>If the commands available in the Fire CLI change, you'll have to regenerate the
 completion script and source it again.</p>
 <h3 id="-help-getting-help"><code>--help</code>: Getting help <a name="help-flag"></a></h3>
@@ -308,12 +313,12 @@ considered a debugging tool, but not fully supported yet.</p>
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-	  
+      
         </div>
       </div>
 
     </section>
-    
+
   </div>
 
   <div class="rst-versions" role="note" style="cursor: pointer">
@@ -327,7 +332,9 @@ considered a debugging tool, but not fully supported yet.</p>
       
     </span>
 </div>
-    <script src="../js/theme.js"></script>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
 
 </body>
 </html>

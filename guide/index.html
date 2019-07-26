@@ -13,18 +13,19 @@
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
   
   <script>
     // Current page data
     var mkdocs_page_name = "The Python Fire Guide";
     var mkdocs_page_input_path = "guide.md";
-    var mkdocs_page_url = "/guide/";
+    var mkdocs_page_url = null;
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -38,7 +39,7 @@
         <a href=".." class="icon icon-home"> Python Fire</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -84,6 +85,8 @@
             <li><a class="toctree-l3" href="#accessing-properties">Accessing Properties</a></li>
         
             <li><a class="toctree-l3" href="#chaining-function-calls">Chaining Function Calls</a></li>
+        
+            <li><a class="toctree-l3" href="#custom-serialization">Custom Serialization</a></li>
         
             <li><a class="toctree-l3" href="#can-we-make-an-even-simpler-example-than-hello-world">Can we make an even simpler example than Hello World?</a></li>
         
@@ -180,7 +183,7 @@ if __name__ == '__main__':
 Hello World!
 </code></pre>
 
-<h5 id="version-2-firefirefn">Version 2: <code>fire.Fire(&lt;fn&gt;)</code></h5>
+<h5 id="version-2-firefireltfngt">Version 2: <code>fire.Fire(&lt;fn&gt;)</code></h5>
 <p>Let's modify our program slightly to only expose the <code>hello</code> function to the
 command line.</p>
 <pre><code class="python">import fire
@@ -252,7 +255,7 @@ $ python example.py multiply 10 20
 
 <p>You'll notice that Fire correctly parsed <code>10</code> and <code>20</code> as numbers, rather than
 as strings. Read more about <a href="#argument-parsing">argument parsing here</a>.</p>
-<h5 id="version-2-firefiredict">Version 2: <code>fire.Fire(&lt;dict&gt;)</code></h5>
+<h5 id="version-2-firefireltdictgt">Version 2: <code>fire.Fire(&lt;dict&gt;)</code></h5>
 <p>In version 1 we exposed all the program's functionality to the command line. By
 using a dict, we can selectively expose functions to the command line.</p>
 <pre><code class="python">import fire
@@ -277,7 +280,7 @@ $ python example.py multiply 10 20
 200
 </code></pre>
 
-<h5 id="version-3-firefireobject">Version 3: <code>fire.Fire(&lt;object&gt;)</code></h5>
+<h5 id="version-3-firefireltobjectgt">Version 3: <code>fire.Fire(&lt;object&gt;)</code></h5>
 <p>Fire also works on objects, as in this variant. This is a good way to expose
 multiple commands.</p>
 <pre><code class="python">import fire
@@ -302,7 +305,7 @@ $ python example.py multiply 10 20
 200
 </code></pre>
 
-<h5 id="version-4-firefireclass">Version 4: <code>fire.Fire(&lt;class&gt;)</code></h5>
+<h5 id="version-4-firefireltclassgt">Version 4: <code>fire.Fire(&lt;class&gt;)</code></h5>
 <p>Fire also works on classes. This is another good way to expose multiple
 commands.</p>
 <pre><code class="python">import fire
@@ -486,7 +489,7 @@ if __name__ == '__main__':
 </code></pre>
 
 <p>Now we can draw stuff :).</p>
-<pre><code class="bash">$ python example.py move 3 3 on move 3 6 on move 6 3 on move 6 6 on move 7 4 on move 7 5 on __str__
+<pre><code class="bash">$ python example.py move 3 3 on move 3 6 on move 6 3 on move 6 6 on move 7 4 on move 7 5 on
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
@@ -500,6 +503,13 @@ if __name__ == '__main__':
 </code></pre>
 
 <p>It's supposed to be a smiley face.</p>
+<h3 id="custom-serialization">Custom Serialization</h3>
+<p>You'll notice in the BinaryCanvas example, the canvas with the smiley face was
+printed to the screen. You can determine how a component will be serialized by
+defining its <code>__str__</code> method.</p>
+<p>If a custom <code>__str__</code> method is present on the final component, the object is
+serialized and printed. If there's no custom <code>__str__</code> method, then the help
+screen for the object is shown instead.</p>
 <h3 id="can-we-make-an-even-simpler-example-than-hello-world">Can we make an even simpler example than Hello World?</h3>
 <p>Yes, this program is even simpler than our original Hello World example.</p>
 <pre><code class="python">import fire
@@ -524,13 +534,13 @@ class Building(object):
 
   def __init__(self, name, stories=1):
     self.name = name
-    self.stories = 1
+    self.stories = stories
 
   def climb_stairs(self, stairs_per_story=10):
     for story in range(self.stories):
       for stair in range(1, stairs_per_story):
         yield stair
-        yield 'Phew!'
+      yield 'Phew!'
     yield 'Done!'
 
 if __name__ == '__main__':
@@ -769,7 +779,7 @@ separating the flags from the Fire command, but may not always be able to, since
 </tr>
 <tr>
 <td align="left"><a href="../using-cli/#completion-flag">Completion</a></td>
-<td align="left"><code>command -- --completion</code></td>
+<td align="left"><code>command -- --completion [shell]</code></td>
 <td align="left">Generate a completion script for the CLI.</td>
 </tr>
 <tr>
@@ -811,12 +821,12 @@ separating the flags from the Fire command, but may not always be able to, since
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-	  
+      
         </div>
       </div>
 
     </section>
-    
+
   </div>
 
   <div class="rst-versions" role="note" style="cursor: pointer">
@@ -830,7 +840,9 @@ separating the flags from the Fire command, but may not always be able to, since
       
     </span>
 </div>
-    <script src="../js/theme.js"></script>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
 
 </body>
 </html>

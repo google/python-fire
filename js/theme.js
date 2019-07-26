@@ -11,14 +11,37 @@ $( document ).ready(function() {
       $("[data-toggle='rst-versions']").toggleClass("shift");
     });
 
+    // Keyboard navigation
+    document.addEventListener("keydown", function(e) {
+      var key = e.which || e.keyCode || window.event && window.event.keyCode;
+      var page;
+      switch (key) {
+          case 78:  // n
+              page = $('[role="navigation"] a:contains(Next):first').prop('href');
+              break;
+          case 80:  // p
+              page = $('[role="navigation"] a:contains(Previous):first').prop('href');
+              break;
+          case 13:  // enter
+              if (e.target === document.getElementById('mkdocs-search-query')) {
+                e.preventDefault();
+              }
+              break;
+          default: break;
+      }
+      if ($(e.target).is(':input')) {
+        return true;
+      } else if (page) {
+        window.location.href = page;
+      }
+    });
+
     $(document).on('click', "[data-toggle='rst-current-version']", function() {
       $("[data-toggle='rst-versions']").toggleClass("shift-up");
     });
 
     // Make tables responsive
     $("table.docutils:not(.field-list)").wrap("<div class='wy-table-responsive'></div>");
-
-    hljs.initHighlightingOnLoad();
 
     $('table').addClass('docutils');
 });

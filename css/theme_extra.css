@@ -128,8 +128,11 @@ pre .cs, pre .c {
  * Additions specific to the search functionality provided by MkDocs
  */
 
-.search-results article {
+.search-results {
     margin-top: 23px;
+}
+
+.search-results article {
     border-top: 1px solid #E1E4E5;
     padding-top: 24px;
 }
@@ -176,7 +179,7 @@ form .search-query {
 /*
  * Account for wide tables which go off the side.
  * Override borders to avoid wierdness on narrow tables.
- * 
+ *
  * https://github.com/mkdocs/mkdocs/issues/834
  * https://github.com/mkdocs/mkdocs/pull/1034
  */
@@ -191,3 +194,4 @@ td, th {
    border: 1px solid #e1e4e5 !important; /* csslint allow: important */
    border-collapse: collapse;
 }
+
