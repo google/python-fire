@@ -247,7 +247,7 @@ def _PrintResult(component_trace, verbose=False):
   if hasattr(result, '__str__'):
     # If the object has a custom __str__ method, rather than one inherited from
     # object, then we use that to serialize the object.
-    class_attrs = completion.GetClassAttrsDict(type(result))
+    class_attrs = completion.GetClassAttrsDict(type(result)) or {}
     str_attr = class_attrs.get('__str__')
     if str_attr and str_attr.defining_class is not object:
       print(str(result))
