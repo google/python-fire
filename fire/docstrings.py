@@ -188,14 +188,9 @@ def parse(docstring):
   yields = _join_lines(state.yields.lines)
   raises = _join_lines(state.raises.lines)
 
-  args = [
-      ArgInfo(
-          name=arg.name,
-          type=_cast_to_known_type(_join_lines(arg.type.lines)),
-          description=_join_lines(arg.description.lines),
-      )
-      for arg in state.args
-  ]
+  args = [ArgInfo(
+      name=arg.name, type=_cast_to_known_type(_join_lines(arg.type.lines)),
+      description=_join_lines(arg.description.lines)) for arg in state.args]
 
   return DocstringInfo(
       summary=summary,
@@ -503,10 +498,12 @@ def _create_line_info(line, next_line):
   line_info.remaining_raw = line_info.line
   line_info.remaining = line_info.stripped
   line_info.indentation = len(line) - len(line.lstrip())
+  # TODO(dbieber): If next_line is blank, use the next non-blank line.
   line_info.next.line = next_line
-  line_info.next.stripped = next_line.strip() if next_line else None
+  next_line_exists = next_line is not None
+  line_info.next.stripped = next_line.strip() if next_line_exists else None
   line_info.next.indentation = (
-      len(next_line) - len(next_line.lstrip()) if next_line else None)
+      len(next_line) - len(next_line.lstrip()) if next_line_exists else None)
   # Note: This counts all whitespace equally.
   return line_info
 

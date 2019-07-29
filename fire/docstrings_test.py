@@ -34,7 +34,7 @@ class DocstringsTest(testutils.BaseTestCase):
     expected_docstring_info = DocstringInfo(
         summary='A simple one line docstring.',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_one_line_simple_whitespace(self):
     docstring = """
@@ -44,7 +44,7 @@ class DocstringsTest(testutils.BaseTestCase):
     expected_docstring_info = DocstringInfo(
         summary='A simple one line docstring.',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_one_line_too_long(self):
     # pylint: disable=line-too-long
@@ -57,7 +57,7 @@ class DocstringsTest(testutils.BaseTestCase):
         'a little too long so it keeps going well beyond a reasonable length '
         'for a one-liner.',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_one_line_runs_over(self):
     # pylint: disable=line-too-long
@@ -70,7 +70,7 @@ class DocstringsTest(testutils.BaseTestCase):
         summary='A one line docstring thats both a little too verbose and '
         'a little too long so it runs onto a second line.',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_one_line_runs_over_whitespace(self):
     docstring = """
@@ -82,7 +82,7 @@ class DocstringsTest(testutils.BaseTestCase):
         summary='A one line docstring thats both a little too verbose and '
         'a little too long so it runs onto a second line.',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_google_format_args_only(self):
     docstring = """One line description.
@@ -99,7 +99,7 @@ class DocstringsTest(testutils.BaseTestCase):
             ArgInfo(name='arg2', description='arg2_description'),
         ]
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_google_format_arg_named_args(self):
     docstring = """
@@ -112,7 +112,7 @@ class DocstringsTest(testutils.BaseTestCase):
             ArgInfo(name='args', description='arg_description'),
         ]
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_google_format_typed_args_and_returns(self):
     docstring = """Docstring summary.
@@ -140,7 +140,7 @@ class DocstringsTest(testutils.BaseTestCase):
         ],
         returns='bool: The return value. True for success, False otherwise.'
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_rst_format_typed_args_and_returns(self):
     docstring = """Docstring summary.
@@ -169,7 +169,7 @@ class DocstringsTest(testutils.BaseTestCase):
         returns='int -- description of the return value.',
         raises='AttributeError, KeyError',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_numpy_format_typed_args_and_returns(self):
     docstring = """Docstring summary.
@@ -203,7 +203,7 @@ class DocstringsTest(testutils.BaseTestCase):
         # TODO(dbieber): Support return type.
         returns='bool True if successful, False otherwise.',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_multisection_docstring(self):
     docstring = """Docstring summary.
@@ -222,7 +222,20 @@ class DocstringsTest(testutils.BaseTestCase):
         '\n'
         'description has just two sections.',
     )
-    self.assertEqual(docstring_info, expected_docstring_info)
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_google_section_with_blank_first_line(self):
+    docstring = """Inspired by requests HTTPAdapter docstring.
+
+    :param x: Simple param.
+
+    Usage:
+
+      >>> import requests
+    """
+    docstring_info = docstrings.parse(docstring)
+    self.assertEqual('Inspired by requests HTTPAdapter docstring.',
+                     docstring_info.summary)
 
   def test_ill_formed_docstring(self):
     docstring = """Docstring summary.
@@ -238,7 +251,7 @@ class DocstringsTest(testutils.BaseTestCase):
     lines = ['   ', '  foo  ', '   ']
     expected_output = ['  foo  ']
 
-    self.assertEqual(docstrings._strip_blank_lines(lines), expected_output)  # pylint: disable=protected-access
+    self.assertEqual(expected_output, docstrings._strip_blank_lines(lines))  # pylint: disable=protected-access
 
 
 if __name__ == '__main__':
