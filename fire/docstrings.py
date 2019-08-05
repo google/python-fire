@@ -212,7 +212,8 @@ def _strip_blank_lines(lines):
   """
   # Find the first non-blank line.
   start = 0
-  while lines and _is_blank(lines[start]):
+  num_lines = len(lines)
+  while lines and start < num_lines and _is_blank(lines[start]):
     start += 1
 
   lines = lines[start:]
