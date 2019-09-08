@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import inspect
+import types
 from fire import docstrings
 
 import six
@@ -70,7 +71,7 @@ def _GetArgSpecInfo(fn):
   """
   skip_arg = False
   if inspect.isclass(fn):
-    # If the function is a class, we try to use it's init method.
+    # If the function is a class, we try to use its init method.
     skip_arg = True
     if six.PY2 and hasattr(fn, '__init__'):
       fn = fn.__init__
@@ -78,8 +79,11 @@ def _GetArgSpecInfo(fn):
     # If the function is a bound method, we skip the `self` argument.
     skip_arg = fn.__self__ is not None
   elif inspect.isbuiltin(fn):
-    # If the function is a bound builtin, we skip the `self` argument.
-    skip_arg = fn.__self__ is not None
+    # If the function is a bound builtin, we skip the `self` argument, unless
+    # the function is from a standard library module in which case its __self__
+    # attribute is that module.
+    if not isinstance(fn.__self__, types.ModuleType):
+      skip_arg = True
   elif not inspect.isfunction(fn):
     # The purpose of this else clause is to set skip_arg for callable objects.
     skip_arg = True
