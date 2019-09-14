@@ -9,9 +9,8 @@ arguments. This command corresponds to the Python component you called the
 `Fire` function on. If you did not supply an object in the call to `Fire`, then
 the context in which `Fire` was called will be used as the Python component.
 
-You can append `-- --help` to any command to see what Python component it
-corresponds to, as well as the various ways in which you can extend the command.
-Flags are always separated from the Fire command by an isolated `--` in order
+You can append `-- --help`(`--help` or `-h` is also supported as being the most generally used flag) to any command to see what Python component it corresponds to, as well as the various ways in which you can extend the command.
+Flags are generally separated from the Fire command by an isolated `--` in order
 to distinguish between flags and named arguments.
 
 Given a Fire command that corresponds to a Python object, you can extend that
