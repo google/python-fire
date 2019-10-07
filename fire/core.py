@@ -48,6 +48,7 @@ The available flags for all Fire CLIs are:
   --separator SEPARATOR: Use SEPARATOR in place of the default separator, '-'.
   --trace: Get the Fire Trace for the command.
 """
+from typing import Any
 
 from __future__ import absolute_import
 from __future__ import division
@@ -62,6 +63,7 @@ import shlex
 import sys
 import types
 
+
 from fire import completion
 from fire import decorators
 from fire import formatting
@@ -75,7 +77,7 @@ from fire.console import console_io
 import six
 
 
-def Fire(component=None, command=None, name=None):
+def Fire(component=None, command: six.string_types =None, name: str =None) -> _Fire:
   """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
@@ -166,7 +168,7 @@ def Fire(component=None, command=None, name=None):
   return result
 
 
-def Display(lines, out):
+def Display(lines: Any, out) -> None:
   text = '\n'.join(lines) + '\n'
   console_io.More(text, out=out)
 
@@ -922,7 +924,7 @@ def _ParseKeywordArgs(args, fn_spec):
   return kwargs, remaining_kwargs, remaining_args
 
 
-def _IsFlag(argument):
+def _IsFlag(argument) -> bool:
   """Determines if the argument is a flag argument.
 
   If it starts with a hyphen and isn't a negative number, it's a flag.
@@ -935,12 +937,12 @@ def _IsFlag(argument):
   return _IsSingleCharFlag(argument) or _IsMultiCharFlag(argument)
 
 
-def _IsSingleCharFlag(argument):
+def _IsSingleCharFlag(argument: str) -> str:
   """Determines if the argument is a single char flag (e.g. '-a')."""
   return re.match('^-[a-zA-Z]$', argument) or re.match('^-[a-zA-Z]=', argument)
 
 
-def _IsMultiCharFlag(argument):
+def _IsMultiCharFlag(argument: str) -> str:
   """Determines if the argument is a multi char flag (e.g. '--alpha')."""
   return argument.startswith('--') or re.match('^-[a-zA-Z]', argument)
 
