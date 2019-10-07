@@ -48,8 +48,6 @@ The available flags for all Fire CLIs are:
   --separator SEPARATOR: Use SEPARATOR in place of the default separator, '-'.
   --trace: Get the Fire Trace for the command.
 """
-from typing import Any
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -74,6 +72,9 @@ from fire import parser
 from fire import trace
 from fire import value_types
 from fire.console import console_io
+
+from typing import Any
+
 import six
 
 
