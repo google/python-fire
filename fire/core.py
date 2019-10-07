@@ -78,7 +78,7 @@ from typing import Any
 import six
 
 
-def Fire(component=None, command: six.string_types =None, name: str =None) -> _Fire:
+def Fire(component=None, command: six.string_types =None, name: str =None) -> str:
   """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
