@@ -30,6 +30,7 @@ def CreateParser():
   parser.add_argument('--completion', nargs='?', const='bash', type=str)
   parser.add_argument('--help', '-h', action='store_true')
   parser.add_argument('--trace', '-t', action='store_true')
+  parser.add_argument('--use-bash-arrays', '-uba')
   # TODO(dbieber): Consider allowing name to be passed as an argument.
   return parser
 

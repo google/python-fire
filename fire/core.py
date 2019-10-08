@@ -355,6 +355,10 @@ def _OneLineResult(result):
   except (TypeError, ValueError):
     return str(result).replace('\n', ' ')
 
+def _count_lines(files):
+    if isinstance(files, str):
+        files = files.split()
+        x = lambda x: list(map, (print, len(open(files[x].readlines()))))
 
 def _Fire(component, args, parsed_flag_args, context, name=None):
   """Execute a Fire command on a target component using the args supplied.
