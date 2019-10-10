@@ -175,8 +175,9 @@ def parse(docstring):
 
   for index, line in enumerate(lines):
     has_next = index + 1 < lines_len
+    previous_line = lines[index - 1] if index > 0 else None
     next_line = lines[index + 1] if has_next else None
-    line_info = _create_line_info(line, next_line)
+    line_info = _create_line_info(line, next_line, previous_line)
     _consume_line(line_info, state)
 
   summary = ' '.join(state.summary.lines) if state.summary.lines else None
@@ -454,7 +455,7 @@ def _consume_line(line_info, state):
         # of the previous arg, or a new arg. TODO: Whitespace can distinguish.
         arg = _get_or_create_arg_by_name(state, line_stripped)
         state.current_arg = arg
-      elif ':' in line_stripped:
+      elif _line_is_numpy_parameter_type(line_stripped, line_info):
         possible_args, type_data = line_stripped.split(':', 1)
         arg_names = _as_arg_names(possible_args)  # re.split(' |,', s)
         if arg_names:
@@ -491,8 +492,10 @@ def _consume_line(line_info, state):
       pass
 
 
-def _create_line_info(line, next_line):
-  """Returns information about the current and next line of the docstring."""
+def _create_line_info(line, next_line, previous_line):
+  """Returns information about the current line, the next line
+  and the previous line of the docstring.
+  """
   line_info = Namespace()  # TODO(dbieber): Switch to an explicit class.
   line_info.line = line
   line_info.stripped = line.strip()
@@ -505,6 +508,11 @@ def _create_line_info(line, next_line):
   line_info.next.stripped = next_line.strip() if next_line_exists else None
   line_info.next.indentation = (
       len(next_line) - len(next_line.lstrip()) if next_line_exists else None)
+  line_info.previous.line = previous_line
+  previous_line_exists = previous_line is not None
+  line_info.previous.indentation = (
+    len(previous_line) - len(previous_line.lstrip())
+    if previous_line_exists else None)
   # Note: This counts all whitespace equally.
   return line_info
 
@@ -725,3 +733,20 @@ def _numpy_section(line_info):
     return _section_from_possible_title(possible_title)
   else:
     return None
+
+
+def _line_is_numpy_parameter_type(line, line_info):
+  """Returns whether the line contains an argument and its type, NumPy style:
+  x : type
+  Exclude the descriptions even if they contain a colon by checking
+  the indentation of the line above
+  """
+  if ':' in line:
+    previous_indent = line_info.previous.indentation
+    current_indent = line_info.indentation
+    if ':' in line_info.previous.line and current_indent > previous_indent:
+      # the parameter type was the previous line, this is the description
+      return False
+    else:
+      return True
+  return False
