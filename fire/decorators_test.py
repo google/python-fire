@@ -22,6 +22,8 @@ from fire import core
 from fire import decorators
 from fire import testutils
 
+import six
+
 
 class NoDefaults(object):
   """A class for testing decorated functions without default values."""
@@ -88,6 +90,25 @@ class WithVarArgs(object):
   @decorators.SetParseFn(str)
   def example7(self, arg1, arg2=None, *varargs, **kwargs):  # pylint: disable=keyword-arg-before-vararg
     return arg1, arg2, varargs, kwargs
+
+
+if six.PY2:
+  def lru_cache():
+    def wrapper(func):
+      return func
+    return wrapper
+else:
+  from functools import lru_cache
+
+
+class LruCacheDecorator(object):
+  @lru_cache()
+  def example8(self, arg1):
+    return arg1
+
+@lru_cache()
+def lru_cache_decorated(arg1):
+    return arg1
 
 
 class FireDecoratorsTest(testutils.BaseTestCase):
@@ -169,6 +190,11 @@ class FireDecoratorsTest(testutils.BaseTestCase):
                   command=['example7', '1', '--arg2=2', '3', '4', '--kwarg=5']),
         ('1', '2', ('3', '4'), {'kwarg': '5'}))
 
+  def testLruCacheDecoratorBoundArg(self):
+    self.assertEqual(core.Fire(LruCacheDecorator, command=['example8', 'foo']), 'foo')
+
+  def testLruCacheDecorator(self):
+      self.assertEqual(core.Fire(lru_cache_decorated, command=['foo']), 'foo')
 
 if __name__ == '__main__':
   testutils.main()
