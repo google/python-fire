@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import functools
 
 import enum
 import six
@@ -498,3 +499,15 @@ class BinaryCanvas(object):
   def set(self, value):
     self.pixels[self._row][self._col] = value
     return self
+
+
+def simple_decorator(f):
+  @functools.wraps(f)
+  def wrapper(*args, **kwargs):
+    return f(*args, **kwargs)
+  return wrapper
+
+
+@simple_decorator
+def decorated_method(name='World'):
+  return 'Hello %s' % name

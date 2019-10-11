@@ -703,6 +703,12 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, command=['--arg1=a1', '--arg2=a2', '-', 'jog'])
 
+  def testHelpKwargsDecorator(self):
+    # Issue #190, follow the wrapped method instead of crashing
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.decorated_method, command=['-h'])
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.decorated_method, command=['--help'])
 
 if __name__ == '__main__':
   testutils.main()
