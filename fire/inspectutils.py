@@ -100,8 +100,6 @@ def Py2GetArgSpec(fn):
     raise
 
 
-
-
 def custom_getfullargspec(func):
   """Taken from CPython inspect.getfullargspec:
     The method is deprecated and uses

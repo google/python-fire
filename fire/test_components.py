@@ -500,6 +500,26 @@ class BinaryCanvas(object):
     self.pixels[self._row][self._col] = value
     return self
 
+# LRU cache decorator to reproduce issue #145
+if six.PY2:
+  def lru_cache():
+    def wrapper(func):
+      return func
+    return wrapper
+else:
+  from functools import lru_cache
+
+
+class LruCacheDecoratedMethod(object):
+  @lru_cache()
+  def lru_cache_in_class(self, arg1):
+    return arg1
+
+
+@lru_cache()
+def lru_cache_decorated(arg1):
+  return arg1
+
 
 def simple_decorator(f):
   @functools.wraps(f)

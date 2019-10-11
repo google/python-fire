@@ -703,6 +703,7 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, command=['--arg1=a1', '--arg2=a2', '-', 'jog'])
 
+  @unittest.skipIf(six.PY2, 'Inspecting wrapper chain signature not implemented on Python 2.')
   def testHelpKwargsDecorator(self):
     # Issue #190, follow the wrapped method instead of crashing
     with self.assertRaisesFireExit(0):
