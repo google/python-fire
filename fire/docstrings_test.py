@@ -269,13 +269,13 @@ class DocstringsTest(testutils.BaseTestCase):
     expected_docstring_info = DocstringInfo(summary='Greets name.',
                                             description=None,
                                             args=[
-                                                ArgInfo(name='name', type='str',
-                                                        description='name, default : World'),
-                                                ArgInfo(name='arg2', type='int',
-                                                        description='arg2, default:None'),
-                                                ArgInfo(name='arg3', type='bool',
-                                                        description=None)
-                                              ]
+                                              ArgInfo(name='name', type='str',
+                                                      description='name, default : World'),
+                                              ArgInfo(name='arg2', type='int',
+                                                      description='arg2, default:None'),
+                                              ArgInfo(name='arg3', type='bool',
+                                                      description=None)
+                                            ]
                                             )
     self.assertEqual(expected_docstring_info, docstring_info)
 

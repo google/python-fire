@@ -455,7 +455,7 @@ def _consume_line(line_info, state):
         # of the previous arg, or a new arg. TODO: Whitespace can distinguish.
         arg = _get_or_create_arg_by_name(state, line_stripped)
         state.current_arg = arg
-      elif _line_is_numpy_parameter_type(line_stripped, line_info):
+      elif _line_is_numpy_parameter_type(line_info):
         possible_args, type_data = line_stripped.split(':', 1)
         arg_names = _as_arg_names(possible_args)  # re.split(' |,', s)
         if arg_names:
@@ -507,7 +507,7 @@ def _create_line_info(line, next_line, previous_line):
   next_line_exists = next_line is not None
   line_info.next.stripped = next_line.strip() if next_line_exists else None
   line_info.next.indentation = (
-      len(next_line) - len(next_line.lstrip()) if next_line_exists else None)
+    len(next_line) - len(next_line.lstrip()) if next_line_exists else None)
   line_info.previous.line = previous_line
   previous_line_exists = previous_line is not None
   line_info.previous.indentation = (
@@ -735,12 +735,21 @@ def _numpy_section(line_info):
     return None
 
 
-def _line_is_numpy_parameter_type(line, line_info):
-  """Returns whether the line contains an argument and its type, NumPy style:
+def _line_is_numpy_parameter_type(line_info):
+  """Returns whether the line contains Numpy style parameter type definition
+
+  We are looking for a line of this form:
   x : type
-  Exclude the descriptions even if they contain a colon by checking
-  the indentation of the line above
+
+  And we have to exclude false positives on argument descriptions
+  containing a colon by checking the indentation of the line above
+
+  Args:
+    line_info: Information about the current line.
+  Returns:
+    True if the line is a numpy parameter type definition, False otherwise.
   """
+  line = line_info.remaining.strip()
   if ':' in line:
     previous_indent = line_info.previous.indentation
     current_indent = line_info.indentation
