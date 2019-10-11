@@ -100,23 +100,31 @@ def Py2GetArgSpec(fn):
     raise
 
 
-def custom_getfullargspec(func):
-  """Taken from CPython inspect.getfullargspec:
-    The method is deprecated and uses
+def GetFullArgSpecPy3(func):
+  """ Get the name and default values of 'func' parameters
 
-    skip_bound_args=False
-    and follow_wrapped_chains=False
-    because it was legacy behavior
+  Taken from CPython inspect.getfullargspec:
+  The method is deprecated and uses
 
-    We need the opposite to follow the wrapped methods, and skip the bound arguments
-    instead of manually removing them
+  skip_bound_args=False
+  and follow_wrapped_chains=False
+  because it was legacy behavior
+
+  We need the opposite to follow the wrapped methods,
+  and skip the bound arguments instead of manually removing them
+
+  Args:
+    fn: The function or class of interest.
+  Returns:
+    a named tuple: FullArgSpec(args, varargs, varkw, defaults,
+      kwonlyargs, kwonlydefaults, annotations)
   """
 
   try:
     sig = inspect._signature_from_callable(func,
-                                   skip_bound_arg=True,
-                                   follow_wrapper_chains=True,
-                                   sigcls=inspect.Signature)
+                                           skip_bound_arg=True,
+                                           follow_wrapper_chains=True,
+                                           sigcls=inspect.Signature)
   except Exception as ex:
     # Most of the times 'signature' will raise ValueError.
     # But, it can also raise AttributeError, and, maybe something
@@ -180,7 +188,7 @@ def GetFullArgSpec(fn):
       annotations = getattr(fn, '__annotations__', None)
     else:
       (args, varargs, varkw, defaults,
-       kwonlyargs, kwonlydefaults, annotations) = custom_getfullargspec(fn)
+       kwonlyargs, kwonlydefaults, annotations) = GetFullArgSpecPy3(fn)
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?

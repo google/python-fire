@@ -193,10 +193,12 @@ class CoreTest(testutils.BaseTestCase):
     )
 
   def testLruCacheDecoratorBoundArg(self):
-    self.assertEqual(core.Fire(tc.LruCacheDecoratedMethod, command=['lru_cache_in_class', 'foo']), 'foo')
+    self.assertEqual(core.Fire(tc.LruCacheDecoratedMethod,
+                               command=['lru_cache_in_class', 'foo']), 'foo')
 
   def testLruCacheDecorator(self):
     self.assertEqual(core.Fire(tc.lru_cache_decorated, command=['foo']), 'foo')
+
 
 if __name__ == '__main__':
   testutils.main()
