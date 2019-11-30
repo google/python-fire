@@ -47,7 +47,7 @@ class Pager(object):
     _prompt: The page break prompt.
     _search_direction: The search direction command, n:forward, N:reverse.
     _search_pattern: The current forward/reverse search compiled RE.
-    _width: The termonal width in characters.
+    _width: The terminal width in characters.
   """
 
   HELP_TEXT = """
