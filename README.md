@@ -1,4 +1,4 @@
-# Python Fire [![PyPI](https://img.shields.io/pypi/pyversions/fire.svg?style=plastic)](https://github.com/google/python-fire) [![PyPI version](https://badge.fury.io/py/fire.svg)](https://badge.fury.io/py/fire)
+# Python Fire [![PyPI](https://img.shields.io/pypi/pyversions/fire.svg?style=plastic)](https://github.com/google/python-fire)
 _Python Fire is a library for automatically generating command line interfaces
 (CLIs) from absolutely any Python object._
 
