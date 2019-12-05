@@ -195,7 +195,7 @@ def Info(component):
     A dict with information about the component.
   """
   try:
-    from IPython.core import oinspect  # pylint: disable=g-import-not-at-top
+    from IPython.core import oinspect  # pylint: disable=import-outside-toplevel,g-import-not-at-top
     inspector = oinspect.Inspector()
     info = inspector.info(component)
 
