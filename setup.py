@@ -14,8 +14,8 @@
 
 """The setup.py file for Python Fire."""
 
+import sys
 from setuptools import setup
-
 
 LONG_DESCRIPTION = """
 Python Fire is a library for automatically generating command line interfaces
@@ -32,7 +32,7 @@ A library for automatically generating command line interfaces.""".strip()
 DEPENDENCIES = [
     'six',
     'termcolor',
-]
+] + (['enum34'] if sys.version < 3.4 else [])
 
 TEST_DEPENDENCIES = [
     'hypothesis',
