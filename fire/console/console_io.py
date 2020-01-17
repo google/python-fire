@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import signal
 import subprocess
 import sys
 
@@ -68,6 +69,10 @@ def IsInteractive(output=False, error=False, heuristic=False):
   return True
 
 
+def PreexecFunc():
+  signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+
 def More(contents, out, prompt=None, check_pager=True):
   """Run a user specified pager or fall back to the internal pager.
 
@@ -97,10 +102,19 @@ def More(contents, out, prompt=None, check_pager=True):
       less_orig = encoding.GetEncodedValue(os.environ, 'LESS', None)
       less = '-R' + (less_orig or '')
       encoding.SetEncodedValue(os.environ, 'LESS', less)
-      p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
+      # Ignores SIGINT from this point on since the child process has started
+      # and we don't want to terminate either one when the child is still alive.
+      signal.signal(signal.SIGINT, signal.SIG_IGN)
+      # Runs PreexecFunc before starting the child so SIGINT is ignored for the
+      # child process as well.
+      p = subprocess.Popen(
+          pager, stdin=subprocess.PIPE, shell=True, preexec_fn=PreexecFunc)
       enc = console_attr.GetConsoleAttr().GetEncoding()
       p.communicate(input=contents.encode(enc))
       p.wait()
+      # Starts using default disposition for SIGINT again after the child has
+      # exited.
+      signal.signal(signal.SIGINT, signal.SIG_DFL)
       if less_orig is None:
         encoding.SetEncodedValue(os.environ, 'LESS', None)
       return
