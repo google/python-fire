@@ -20,6 +20,8 @@ from __future__ import print_function
 
 import termcolor
 
+ELLIPSIS = '...'
+
 
 def Indent(text, spaces=2):
   lines = text.split('\n')
@@ -65,3 +67,29 @@ def WrappedJoin(items, separator=' | ', width=80):
 
 def Error(text):
   return termcolor.colored(text, color='red', attrs=['bold'])
+
+
+def EllipsisTruncate(text, available_space, line_length):
+  """Truncate text from the end with ellipsis."""
+  if available_space < len(ELLIPSIS):
+    available_space = line_length
+  # No need to truncate
+  if len(text) <= available_space:
+    return text
+  return text[:available_space - len(ELLIPSIS)] + ELLIPSIS
+
+
+def EllipsisMiddleTruncate(text, available_space, line_length):
+  """Truncates text from the middle with ellipsis."""
+  if available_space < len(ELLIPSIS):
+    available_space = line_length
+  if len(text) < available_space:
+    return text
+  available_string_len = available_space - len(ELLIPSIS)
+  first_half_len = int(available_string_len / 2)  # start from middle
+  second_half_len = available_string_len - first_half_len
+  return text[:first_half_len] + ELLIPSIS + text[-second_half_len:]
+
+
+def DoubleQuote(text):
+  return '"%s"' % text

@@ -41,6 +41,7 @@ from fire import inspectutils
 from fire import value_types
 
 LINE_LENGTH = 80
+SECTION_INDENTATION = 4
 
 
 def HelpText(component, trace=None, verbose=False):
@@ -96,10 +97,12 @@ def _NameSection(component, info, trace=None, verbose=False):
   current_command = _GetCurrentCommand(trace, include_separators=verbose)
   summary = _GetSummary(info)
 
-  # If the docstring is one of the messy builtin docstrings, don't show summary.
-  # TODO(dbieber): In follow up commits we can add in replacement summaries.
+  # If the docstring is one of the messy builtin docstrings, show custom one.
   if custom_descriptions.NeedsCustomDescription(component):
-    summary = None
+    available_space = LINE_LENGTH - SECTION_INDENTATION - len(current_command +
+                                                              ' - ')
+    summary = custom_descriptions.GetSummary(component, available_space,
+                                             LINE_LENGTH)
 
   if summary:
     text = current_command + ' - ' + summary
@@ -147,15 +150,17 @@ def _DescriptionSection(component, info):
     Returns the description if available. If not, returns the summary.
     If neither are available, returns None.
   """
-  # If the docstring is one of the messy builtin docstrings, set it to None.
-  # TODO(dbieber): In follow up commits we can add in replacement docstrings.
   if custom_descriptions.NeedsCustomDescription(component):
-    return None
-
-  summary = _GetSummary(info)
-  description = _GetDescription(info)
+    available_space = LINE_LENGTH - SECTION_INDENTATION
+    description = custom_descriptions.GetDescription(component, available_space,
+                                                     LINE_LENGTH)
+    summary = custom_descriptions.GetSummary(component, available_space,
+                                             LINE_LENGTH)
+  else:
+    description = _GetDescription(info)
+    summary = _GetSummary(info)
+  # Fall back to summary if description is not available.
   text = description or summary or None
-
   if text:
     return ('DESCRIPTION', text)
   else:
@@ -348,8 +353,9 @@ def _GetCurrentCommand(trace=None, include_separators=True):
 
 def _CreateOutputSection(name, content):
   return """{name}
-{content}""".format(name=formatting.Bold(name),
-                    content=formatting.Indent(content, 4))
+{content}""".format(
+    name=formatting.Bold(name),
+    content=formatting.Indent(content, SECTION_INDENTATION))
 
 
 def _CreateArgItem(arg, docstring_info):
@@ -359,6 +365,7 @@ def _CreateArgItem(arg, docstring_info):
     arg: The name of the positional argument.
     docstring_info: A docstrings.DocstringInfo namedtuple with information about
       the containing function's docstring.
+
   Returns:
     A string to be used in constructing the help screen for the function.
   """
@@ -418,6 +425,9 @@ def _MakeUsageDetailsSection(action_group):
     if (docstring_info
         and not custom_descriptions.NeedsCustomDescription(member)):
       summary = docstring_info.summary
+    elif custom_descriptions.NeedsCustomDescription(member):
+      summary = custom_descriptions.GetSummary(
+          member, LINE_LENGTH - SECTION_INDENTATION, LINE_LENGTH)
     else:
       summary = None
     item = _CreateItem(name, summary)

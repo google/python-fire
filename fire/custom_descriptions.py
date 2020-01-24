@@ -40,7 +40,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from fire import formatting
 import six
+
+TWO_DOUBLE_QUOTES = '""'
+STRING_DESC_PREFIX = 'The string '
 
 
 def NeedsCustomDescription(component):
@@ -69,3 +73,79 @@ def NeedsCustomDescription(component):
      ):
     return True
   return False
+
+
+def GetStringTypeSummary(obj, available_space, line_length):
+  """Returns a custom summary for string type objects.
+
+  This function constructs a summary for string type objects by double quoting
+  the string value. The double quoted string value will be potentially truncated
+  with ellipsis depending on whether it has enough space available to show the
+  full string value.
+
+  Args:
+    obj: The object to generate summary for.
+    available_space: Number of character spaces available.
+    line_length: The full width of the terminal, default is 80.
+
+  Returns:
+    A summary for the input object.
+  """
+  if len(obj) + len(TWO_DOUBLE_QUOTES) <= available_space:
+    content = obj
+  else:
+    additional_len_needed = len(TWO_DOUBLE_QUOTES) + len(formatting.ELLIPSIS)
+    if available_space < additional_len_needed:
+      available_space = line_length
+    content = formatting.EllipsisTruncate(
+        obj, available_space - len(TWO_DOUBLE_QUOTES), line_length)
+  return formatting.DoubleQuote(content)
+
+
+def GetStringTypeDescription(obj, available_space, line_length):
+  """Returns the predefined description for string obj.
+
+  This function constructs a description for string type objects in the format
+  of 'The string "<string_value>"'. <string_value> could be potentially
+  truncated depending on whether it has enough space available to show the full
+  string value.
+
+  Args:
+    obj: The object to generate description for.
+    available_space: Number of character spaces available.
+    line_length: The full width of the terminal, default if 80.
+
+  Returns:
+    A description for input object.
+  """
+  additional_len_needed = len(STRING_DESC_PREFIX) + len(
+      TWO_DOUBLE_QUOTES) + len(formatting.ELLIPSIS)
+  if available_space < additional_len_needed:
+    available_space = line_length
+
+  return STRING_DESC_PREFIX + formatting.DoubleQuote(
+      formatting.EllipsisTruncate(
+          obj, available_space - len(STRING_DESC_PREFIX) -
+          len(TWO_DOUBLE_QUOTES), line_length))
+
+
+CUSTOM_DESC_SUM_FN_DICT = {
+    'str': (GetStringTypeSummary, GetStringTypeDescription),
+    'unicode': (GetStringTypeSummary, GetStringTypeDescription),
+}
+
+
+def GetSummary(obj, available_space, line_length):
+  obj_type_name = type(obj).__name__
+  if obj_type_name in CUSTOM_DESC_SUM_FN_DICT.keys():
+    return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[0](obj, available_space,
+                                                         line_length)
+  return None
+
+
+def GetDescription(obj, available_space, line_length):
+  obj_type_name = type(obj).__name__
+  if obj_type_name in CUSTOM_DESC_SUM_FN_DICT.keys():
+    return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[1](obj, available_space,
+                                                         line_length)
+  return None

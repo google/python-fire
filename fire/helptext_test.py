@@ -111,7 +111,8 @@ class HelpTest(testutils.BaseTestCase):
         trace=trace.FireTrace(component, 'list'))
     self.assertIn('NAME\n    list', help_screen)
     self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
-    # The list docstring is messy, so it is not shown.
+    # TODO(zuhaochen): Change assertion after custom description is
+    # implemented for list type.
     self.assertNotIn('DESCRIPTION', help_screen)
     # We don't check the listed commands either since the list API could
     # potentially change between Python versions.
@@ -125,7 +126,8 @@ class HelpTest(testutils.BaseTestCase):
         trace=trace.FireTrace(component, 'list'))
     self.assertIn('NAME\n    list', help_screen)
     self.assertIn('SYNOPSIS\n    list COMMAND', help_screen)
-    # The list docstring is messy, so it is not shown.
+    # TODO(zuhaochen): Change assertion after custom description is
+    # implemented for list type.
     self.assertNotIn('DESCRIPTION', help_screen)
 
     # We don't check the listed commands comprehensively since the list API
@@ -141,7 +143,8 @@ class HelpTest(testutils.BaseTestCase):
         component=component, trace=trace.FireTrace(component, '7'))
     self.assertIn('NAME\n    7', help_screen)
     self.assertIn('SYNOPSIS\n    7 COMMAND | VALUE', help_screen)
-    # The int docstring is messy, so it is not shown.
+    # TODO(zuhaochen): Change assertion after implementing custom
+    # description for int.
     self.assertNotIn('DESCRIPTION', help_screen)
     self.assertIn('COMMANDS\n    COMMAND is one of the following:\n',
                   help_screen)

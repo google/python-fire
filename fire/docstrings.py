@@ -149,6 +149,7 @@ def parse(docstring):
 
   Args:
     docstring: The docstring to parse.
+
   Returns:
     A DocstringInfo containing information about the docstring.
   """
