@@ -595,11 +595,11 @@ $ python example.py [1,2]
 list
 $ python example.py True
 bool
-$ python example.py {name: David}
+$ python example.py {name:David}
 dict
 ```
 
-You'll notice in that last example that bare-words are automatically replaced
+You'll notice in the third example that bare-words are automatically replaced
 with strings.
 
 Be careful with your quotes! If you want to pass the string `"10"`, rather than
