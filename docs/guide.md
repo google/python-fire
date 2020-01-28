@@ -693,28 +693,28 @@ The complete set of flags available is shown below, in the reference section.
 
 ### Reference
 
-| Setup   | Command            | Notes |
-| :------ | :----------------- | :---- |
-| install | `pip install fire` |
+| Setup   | Command             | Notes
+| :------ | :------------------ | :---------
+| install | `pip install fire`  |
 
 ##### Creating a CLI
 
-| Creating a CLI | Command                | Notes                                     |
-| :------------- | :--------------------- | :---------------------------------------- |
+| Creating a CLI | Command                | Notes
+| :--------------| :--------------------- | :---------
 | import         | `import fire`          |
-| Call           | `fire.Fire()`          | Turns the current module into a Fire CLI. |
-| Call           | `fire.Fire(component)` | Turns `component` into a Fire CLI.        |
+| Call           | `fire.Fire()`          | Turns the current module into a Fire CLI.
+| Call           | `fire.Fire(component)` | Turns `component` into a Fire CLI.
 
 ##### Flags
 
-| Using a CLI                                | Command                           | Notes                                                         |
-| :----------------------------------------- | :-------------------------------- | :------------------------------------------------------------ |
-| [Help](using-cli.md#help-flag)             | `command -- --help`               | Show help and usage information for the command.              |
-| [REPL](using-cli.md#interactive-flag)      | `command -- --interactive`        | Enter interactive mode.                                       |
-| [Separator](using-cli.md#separator-flag)   | `command -- --separator=X`        | This sets the separator to `X`. The default separator is `-`. |
-| [Completion](using-cli.md#completion-flag) | `command -- --completion [shell]` | Generate a completion script for the CLI.                     |
-| [Trace](using-cli.md#trace-flag)           | `command -- --trace`              | Gets a Fire trace for the command.                            |
-| [Verbose](using-cli.md#verbose-flag)       | `command -- --verbose`            | Include private members in the output.                        |
+| Using a CLI    | Command                    | Notes
+| :------------- | :------------------------- | :---------
+| [Help](using-cli.md#help-flag) | `command -- --help` | Show help and usage information for the command.
+| [REPL](using-cli.md#interactive-flag) | `command -- --interactive` | Enter interactive mode.
+| [Separator](using-cli.md#separator-flag) | `command -- --separator=X` | This sets the separator to `X`. The default separator is `-`.
+| [Completion](using-cli.md#completion-flag) | `command -- --completion [shell]` | Generate a completion script for the CLI.
+| [Trace](using-cli.md#trace-flag) | `command -- --trace` | Gets a Fire trace for the command.
+| [Verbose](using-cli.md#verbose-flag) | `command -- --verbose` | Include private members in the output.
 
 _Note that flags are separated from the Fire command by an isolated `--` arg._
 
