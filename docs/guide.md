@@ -595,7 +595,7 @@ $ python example.py [1,2]
 list
 $ python example.py True
 bool
-$ python example.py {name: David}
+$ python example.py {name:David}
 dict
 ```
 
