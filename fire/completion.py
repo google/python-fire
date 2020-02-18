@@ -318,7 +318,10 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
     return False
   if verbose:
     return True
-  if isinstance(member, type(absolute_import)):
+  # Python 3.7.6 evaluates type(absolute_import) == __future__._Feature while
+  # Python 2.7.16 (Base macOS Catalina) evaluates
+  # type(absolute_import) == <type 'instance'>
+  if isinstance(member, type(absolute_import)) and six.PY34:
     return False
   if inspect.ismodule(member) and member is six:
     # TODO(dbieber): Determine more generally which modules to hide.
