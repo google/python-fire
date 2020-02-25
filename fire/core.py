@@ -255,16 +255,16 @@ def _PrintResult(component_trace, verbose=False):
 
   if isinstance(result, (list, set, frozenset, types.GeneratorType)):
     for i in result:
-      print(_OneLineResult(i))
+      print(_OneLineResult(i).encode("utf-8"))
   elif inspect.isgeneratorfunction(result):
     raise NotImplementedError
   elif isinstance(result, dict) and value_types.IsSimpleGroup(result):
-    print(_DictAsString(result, verbose))
+    print(_DictAsString(result, verbose).encode("utf-8"))
   elif isinstance(result, tuple):
-    print(_OneLineResult(result))
+    print(_OneLineResult(result).encode("utf-8"))
   elif isinstance(result, value_types.VALUE_TYPES):
     if result is not None:
-      print(result)
+      print(result.encode("utf-8"))
   else:
     help_text = helptext.HelpText(
         result, trace=component_trace, verbose=verbose)
