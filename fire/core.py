@@ -250,7 +250,7 @@ def _PrintResult(component_trace, verbose=False):
     class_attrs = completion.GetClassAttrsDict(type(result)) or {}
     str_attr = class_attrs.get('__str__')
     if str_attr and str_attr.defining_class is not object:
-      print(str(result))
+      print(str(result).encode("utf-8"))
       return
 
   if isinstance(result, (list, set, frozenset, types.GeneratorType)):
