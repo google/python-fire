@@ -41,10 +41,10 @@ TEST_DEPENDENCIES = [
 ]
 
 VERSION = '0.2.2'
-URL = 'https://github.com/google/python-fire'
+URL = 'https://github.com/cauefcr/python-fire-json'
 
 setup(
-    name='fire',
+    name='fire-json',
     version=VERSION,
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
@@ -79,7 +79,7 @@ setup(
 
     keywords='command line interface cli python fire interactive bash tool',
 
-    packages=['fire', 'fire.console'],
+    packages=['fire_json', 'fire_json.console'],
 
     install_requires=DEPENDENCIES,
     tests_require=TEST_DEPENDENCIES,
