@@ -507,6 +507,5 @@ class DefaultMethod(object):
 
   def __getattr__(self, name):
     def _missing():
-      return "Undefined Function"
+      return 'Undefined function'
     return _missing
-
