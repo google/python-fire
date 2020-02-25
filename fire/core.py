@@ -243,33 +243,33 @@ def _PrintResult(component_trace, verbose=False):
   # TODO(dbieber): Design human readable deserializable serialization method
   # and move serialization to its own module.
   result = component_trace.GetResult()
+  print(json.dumps(result))
+  # if hasattr(result, '__str__'):
+  #   # If the object has a custom __str__ method, rather than one inherited from
+  #   # object, then we use that to serialize the object.
+  #   class_attrs = completion.GetClassAttrsDict(type(result)) or {}
+  #   str_attr = class_attrs.get('__str__')
+  #   if str_attr and str_attr.defining_class is not object:
+  #     print(str(result).encode("utf-8"))
+  #     return
 
-  if hasattr(result, '__str__'):
-    # If the object has a custom __str__ method, rather than one inherited from
-    # object, then we use that to serialize the object.
-    class_attrs = completion.GetClassAttrsDict(type(result)) or {}
-    str_attr = class_attrs.get('__str__')
-    if str_attr and str_attr.defining_class is not object:
-      print(str(result).encode("utf-8"))
-      return
-
-  if isinstance(result, (list, set, frozenset, types.GeneratorType)):
-    for i in result:
-      print(_OneLineResult(i).encode("utf-8"))
-  elif inspect.isgeneratorfunction(result):
-    raise NotImplementedError
-  elif isinstance(result, dict) and value_types.IsSimpleGroup(result):
-    print(_DictAsString(result, verbose).encode("utf-8"))
-  elif isinstance(result, tuple):
-    print(_OneLineResult(result).encode("utf-8"))
-  elif isinstance(result, value_types.VALUE_TYPES):
-    if result is not None:
-      print(result.encode("utf-8"))
-  else:
-    help_text = helptext.HelpText(
-        result, trace=component_trace, verbose=verbose)
-    output = [help_text]
-    Display(output, out=sys.stdout)
+  # if isinstance(result, (list, set, frozenset, types.GeneratorType)):
+  #   for i in result:
+  #     print(_OneLineResult(i).encode("utf-8"))
+  # elif inspect.isgeneratorfunction(result):
+  #   raise NotImplementedError
+  # elif isinstance(result, dict) and value_types.IsSimpleGroup(result):
+  #   print(_DictAsString(result, verbose).encode("utf-8"))
+  # elif isinstance(result, tuple):
+  #   print(_OneLineResult(result).encode("utf-8"))
+  # elif isinstance(result, value_types.VALUE_TYPES):
+  #   if result is not None:
+  #     print(result.encode("utf-8"))
+  # else:
+  #   help_text = helptext.HelpText(
+  #       result, trace=component_trace, verbose=verbose)
+  #   output = [help_text]
+  #   Display(output, out=sys.stdout)
 
 
 def _DisplayError(component_trace):
@@ -308,31 +308,31 @@ def _DictAsString(result, verbose=False):
   Returns:
     A string representing the dict
   """
-
+  return json.dump(result, ensure_ascii=False)
   # We need to do 2 iterations over the items in the result dict
   # 1) Getting visible items and the longest key for output formatting
   # 2) Actually construct the output lines
-  class_attrs = completion.GetClassAttrsDict(result)
-  result_visible = {
-      key: value for key, value in result.items()
-      if completion.MemberVisible(result, key, value,
-                                  class_attrs=class_attrs, verbose=verbose)
-  }
+  # class_attrs = completion.GetClassAttrsDict(result)
+  # result_visible = {
+  #     key: value for key, value in result.items()
+  #     if completion.MemberVisible(result, key, value,
+  #                                 class_attrs=class_attrs, verbose=verbose)
+  # }
 
-  if not result_visible:
-    return '{}'
+  # if not result_visible:
+  #   return '{}'
 
-  longest_key = max(len(str(key)) for key in result_visible.keys())
-  format_string = '{{key:{padding}s}} {{value}}'.format(padding=longest_key + 1)
+  # longest_key = max(len(str(key)) for key in result_visible.keys())
+  # format_string = '{{key:{padding}s}} {{value}}'.format(padding=longest_key + 1)
 
-  lines = []
-  for key, value in result.items():
-    if completion.MemberVisible(result, key, value, class_attrs=class_attrs,
-                                verbose=verbose):
-      line = format_string.format(key=str(key) + ':',
-                                  value=_OneLineResult(value))
-      lines.append(line)
-  return '\n'.join(lines)
+  # lines = []
+  # for key, value in result.items():
+  #   if completion.MemberVisible(result, key, value, class_attrs=class_attrs,
+  #                               verbose=verbose):
+  #     line = format_string.format(key=str(key) + ':',
+  #                                 value=_OneLineResult(value))
+  #     lines.append(line)
+  # return '\n'.join(lines)
 
 
 def _OneLineResult(result):
