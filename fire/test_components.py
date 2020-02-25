@@ -499,6 +499,7 @@ class BinaryCanvas(object):
     self.pixels[self._row][self._col] = value
     return self
 
+
 class DefaultMethod(object):
 
   def double(self, number):
@@ -508,3 +509,4 @@ class DefaultMethod(object):
     def _missing():
       return "Undefined Function"
     return _missing
+
