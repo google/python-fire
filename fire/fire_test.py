@@ -708,6 +708,10 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.DefaultMethod, command=['double', '10']), 20
     )
 
+  def testClassWithInvalidProperty(self):
+    self.assertEqual(
+        fire.Fire(tc.InvalidProperty, command=['double', '10']), 20
+    )
 
 if __name__ == '__main__':
   testutils.main()

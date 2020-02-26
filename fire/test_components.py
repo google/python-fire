@@ -509,3 +509,13 @@ class DefaultMethod(object):
     def _missing():
       return 'Undefined function'
     return _missing
+
+
+class InvalidProperty(object):
+
+  def double(self, number):
+    return 2 * number
+
+  @property
+  def prop(self):
+    raise ValueError('test')
