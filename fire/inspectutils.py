@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import print_function
 
 import inspect
+import sys
 import types
+
 from fire import docstrings
 
 import six
@@ -114,6 +116,7 @@ def Py3GetFullArgSpec(fn):
   Returns:
     An inspect.FullArgSpec namedtuple with the full arg spec of the function.
   """
+  # pylint: disable=no-member
   # pytype: disable=module-attr
   try:
     sig = inspect._signature_from_callable(  # pylint: disable=protected-access
@@ -170,6 +173,7 @@ def Py3GetFullArgSpec(fn):
     defaults = None
   return inspect.FullArgSpec(args, varargs, varkw, defaults,
                              kwonlyargs, kwdefaults, annotations)
+  # pylint: enable=no-member
   # pytype: enable=module-attr
 
 
@@ -179,9 +183,12 @@ def GetFullArgSpec(fn):
   fn, skip_arg = _GetArgSpecInfo(fn)
 
   try:
-    if six.PY3:
+    if sys.version_info[0:2] >= (3, 5):
       (args, varargs, varkw, defaults,
        kwonlyargs, kwonlydefaults, annotations) = Py3GetFullArgSpec(fn)
+    elif six.PY3:  # Specifically Python 3.4.
+      (args, varargs, varkw, defaults,
+       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)  # pylint: disable=deprecated-method,no-member
     else:  # six.PY2
       args, varargs, varkw, defaults = Py2GetArgSpec(fn)
       kwonlyargs = kwonlydefaults = None
