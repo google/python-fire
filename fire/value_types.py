@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import inspect
 
-from fire import completion
+from fire import inspectutils
 import six
 
 
@@ -78,7 +78,7 @@ def HasCustomStr(component):
     Whether `component` has a custom __str__ method.
   """
   if hasattr(component, '__str__'):
-    class_attrs = completion.GetClassAttrsDict(type(component)) or {}
+    class_attrs = inspectutils.GetClassAttrsDict(type(component)) or {}
     str_attr = class_attrs.get('__str__')
     if str_attr and str_attr.defining_class is not object:
       return True

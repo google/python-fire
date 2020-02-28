@@ -281,17 +281,6 @@ end
   )
 
 
-def GetClassAttrsDict(component):
-  """Gets the attributes of the component class, as a dict with name keys."""
-  if not inspect.isclass(component):
-    return None
-  class_attrs_list = inspect.classify_class_attrs(component)
-  return {
-      class_attr.name: class_attr
-      for class_attr in class_attrs_list
-  }
-
-
 def MemberVisible(component, name, member, class_attrs=None, verbose=False):
   """Returns whether a member should be included in auto-completion or help.
 
@@ -328,7 +317,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
   if inspect.isclass(component):
     # If class_attrs has not been provided, compute it.
     if class_attrs is None:
-      class_attrs = GetClassAttrsDict(class_attrs)
+      class_attrs = inspectutils.GetClassAttrsDict(class_attrs)
     class_attr = class_attrs.get(name)
     if class_attr and class_attr.kind in ('method', 'property'):
       # methods and properties should be accessed on instantiated objects,
@@ -355,9 +344,9 @@ def VisibleMembers(component, class_attrs=None, verbose=False):
   Args:
     component: The component whose members to list.
     class_attrs: (optional) If component is a class, you may provide this as:
-      GetClassAttrsDict(component). If not provided, it will be computed.
-      If provided, this determines how class members will be treated for
-      visibility. In particular, methods are generally hidden for
+      inspectutils.GetClassAttrsDict(component). If not provided, it will be
+      computed. If provided, this determines how class members will be treated
+      for visibility. In particular, methods are generally hidden for
       non-instantiated classes, but if you wish them to be shown (e.g. for
       completion scripts) then pass in a different class_attr for them.
     verbose: Whether to include private members.
@@ -371,7 +360,7 @@ def VisibleMembers(component, class_attrs=None, verbose=False):
 
   # If class_attrs has not been provided, compute it.
   if class_attrs is None:
-    class_attrs = GetClassAttrsDict(component)
+    class_attrs = inspectutils.GetClassAttrsDict(component)
   return [
       (member_name, member) for member_name, member in members
       if MemberVisible(component, member_name, member, class_attrs=class_attrs,
