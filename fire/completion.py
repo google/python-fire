@@ -298,7 +298,8 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
     name: The name of the member.
     member: The member itself.
     class_attrs: (optional) If component is a class, provide this as:
-      GetClassAttrsDict(component). If not provided, it will be computed.
+      inspectutils.GetClassAttrsDict(component). If not provided, it will be
+      computed.
     verbose: Whether to include private members.
   Returns
     A boolean value indicating whether the member should be included.
@@ -317,7 +318,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
   if inspect.isclass(component):
     # If class_attrs has not been provided, compute it.
     if class_attrs is None:
-      class_attrs = inspectutils.GetClassAttrsDict(class_attrs)
+      class_attrs = inspectutils.GetClassAttrsDict(class_attrs) or {}
     class_attr = class_attrs.get(name)
     if class_attr and class_attr.kind in ('method', 'property'):
       # methods and properties should be accessed on instantiated objects,
