@@ -318,7 +318,9 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
     return False
   if verbose:
     return True
-  if isinstance(member, type(absolute_import)):
+  if member in (absolute_import, division, print_function):
+    return False
+  if isinstance(member, type(absolute_import)) and six.PY34:
     return False
   if inspect.ismodule(member) and member is six:
     # TODO(dbieber): Determine more generally which modules to hide.
