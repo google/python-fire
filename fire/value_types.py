@@ -37,7 +37,8 @@ def IsCommand(component):
 
 
 def IsValue(component):
-  return isinstance(component, VALUE_TYPES)
+  return isinstance(component, VALUE_TYPES) or (
+      hasattr(component, '__str__') and inspect.ismethod(component.__str__))
 
 
 def IsSimpleGroup(component):
