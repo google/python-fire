@@ -253,6 +253,32 @@ class DocstringsTest(testutils.BaseTestCase):
 
     self.assertEqual(expected_output, docstrings._strip_blank_lines(lines))  # pylint: disable=protected-access
 
+  def test_numpy_colon_in_description(self):
+    docstring = """
+     Greets name.
+
+     Arguments
+     ---------
+     name : str
+         name, default : World
+     arg2 : int
+         arg2, default:None
+     arg3 : bool
+     """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='Greets name.',
+        description=None,
+        args=[
+            ArgInfo(name='name', type='str',
+                    description='name, default : World'),
+            ArgInfo(name='arg2', type='int',
+                    description='arg2, default:None'),
+            ArgInfo(name='arg3', type='bool', description=None),
+        ]
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
 
 if __name__ == '__main__':
   testutils.main()
