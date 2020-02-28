@@ -196,13 +196,15 @@ class CoreTest(testutils.BaseTestCase):
 
   @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
   def testLruCacheDecoratorBoundArg(self):
-    self.assertEqual(core.Fire(tc.py3.LruCacheDecoratedMethod,
-                               command=['lru_cache_in_class', 'foo']), 'foo')
+    self.assertEqual(
+        core.Fire(tc.py3.LruCacheDecoratedMethod,  # pylint: disable=module-attr
+                  command=['lru_cache_in_class', 'foo']), 'foo')
 
   @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
   def testLruCacheDecorator(self):
     self.assertEqual(
-        core.Fire(tc.py3.lru_cache_decorated, command=['foo']), 'foo')
+        core.Fire(tc.py3.lru_cache_decorated,  # pylint: disable=module-attr
+                  command=['foo']), 'foo')
 
 
 if __name__ == '__main__':
