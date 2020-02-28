@@ -100,19 +100,92 @@ def Py2GetArgSpec(fn):
     raise
 
 
+def Py3GetFullArgSpec(fn):
+  """A alternative to the builtin getfullargspec.
+
+  The builtin inspect.getfullargspec uses:
+  `skip_bound_args=False, follow_wrapped_chains=False`
+  in order to be backwards compatible.
+
+  This function instead skips bound args (self) and follows wrapped chains.
+
+  Args:
+    fn: The function or class of interest.
+  Returns:
+    An inspect.FullArgSpec namedtuple with the full arg spec of the function.
+  """
+  # pytype: disable=module-attr
+  try:
+    sig = inspect._signature_from_callable(  # pylint: disable=protected-access
+        fn,
+        skip_bound_arg=True,
+        follow_wrapper_chains=True,
+        sigcls=inspect.Signature)
+  except Exception:
+    # 'signature' can raise ValueError (most common), AttributeError, and
+    # possibly others. We catch all exceptions here, and reraise a TypeError.
+    raise TypeError('Unsupported callable.')
+
+  args = []
+  varargs = None
+  varkw = None
+  kwonlyargs = []
+  defaults = ()
+  annotations = {}
+  defaults = ()
+  kwdefaults = {}
+
+  if sig.return_annotation is not sig.empty:
+    annotations['return'] = sig.return_annotation
+
+  for param in sig.parameters.values():
+    kind = param.kind
+    name = param.name
+
+    # pylint: disable=protected-access
+    if kind is inspect._POSITIONAL_ONLY:
+      args.append(name)
+    elif kind is  inspect._POSITIONAL_OR_KEYWORD:
+      args.append(name)
+      if param.default is not param.empty:
+        defaults += (param.default,)
+    elif kind is  inspect._VAR_POSITIONAL:
+      varargs = name
+    elif kind is  inspect._KEYWORD_ONLY:
+      kwonlyargs.append(name)
+      if param.default is not param.empty:
+        kwdefaults[name] = param.default
+    elif kind is  inspect._VAR_KEYWORD:
+      varkw = name
+    if param.annotation is not param.empty:
+      annotations[name] = param.annotation
+    # pylint: enable=protected-access
+
+  if not kwdefaults:
+    # compatibility with 'func.__kwdefaults__'
+    kwdefaults = None
+
+  if not defaults:
+    # compatibility with 'func.__defaults__'
+    defaults = None
+  return inspect.FullArgSpec(args, varargs, varkw, defaults,
+                             kwonlyargs, kwdefaults, annotations)
+  # pytype: enable=module-attr
+
+
 def GetFullArgSpec(fn):
   """Returns a FullArgSpec describing the given callable."""
   original_fn = fn
   fn, skip_arg = _GetArgSpecInfo(fn)
 
   try:
-    if six.PY2:
+    if six.PY3:
+      (args, varargs, varkw, defaults,
+       kwonlyargs, kwonlydefaults, annotations) = Py3GetFullArgSpec(fn)
+    else:  # six.PY2
       args, varargs, varkw, defaults = Py2GetArgSpec(fn)
       kwonlyargs = kwonlydefaults = None
       annotations = getattr(fn, '__annotations__', None)
-    else:
-      (args, varargs, varkw, defaults,
-       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)  # pylint: disable=deprecated-method,no-member
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
@@ -141,9 +214,9 @@ def GetFullArgSpec(fn):
     # Case 3: Other known slot wrappers do not accept args.
     return FullArgSpec()
 
-  if skip_arg and args:
+  if six.PY2 and skip_arg and args:
+    # In Python 3, Py3GetFullArgSpec uses skip_bound_arg=True already.
     args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.
-
   return FullArgSpec(args, varargs, varkw, defaults,
                      kwonlyargs, kwonlydefaults, annotations)
 

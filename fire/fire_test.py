@@ -20,7 +20,6 @@ from __future__ import print_function
 
 import os
 import sys
-import unittest
 
 import fire
 from fire import test_components as tc
@@ -185,7 +184,7 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(fire.Fire(tc.Annotations, command=['double', '5']), 10)
     self.assertEqual(fire.Fire(tc.Annotations, command=['triple', '5']), 15)
 
-  @unittest.skipIf(six.PY2, 'Keyword-only arguments not in Python 2.')
+  @testutils.skipIf(six.PY2, 'Keyword-only arguments not in Python 2.')
   def testFireKeywordOnlyArgs(self):
     with self.assertRaisesFireExit(2):
       # Keyword arguments must be passed with flag syntax.
@@ -712,6 +711,15 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(
         fire.Fire(tc.InvalidProperty, command=['double', '10']), 20
     )
+
+  @testutils.skipIf(six.PY2, 'Cannot inspect wrapped signatures in Python 2.')
+  def testHelpKwargsDecorator(self):
+    # Issue #190, follow the wrapped method instead of crashing.
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.decorated_method, command=['-h'])
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.decorated_method, command=['--help'])
+
 
 if __name__ == '__main__':
   testutils.main()

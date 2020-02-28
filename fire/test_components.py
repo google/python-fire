@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import functools
 
 import enum
 import six
@@ -519,3 +520,15 @@ class InvalidProperty(object):
   @property
   def prop(self):
     raise ValueError('test')
+
+
+def simple_decorator(f):
+  @functools.wraps(f)
+  def wrapper(*args, **kwargs):
+    return f(*args, **kwargs)
+  return wrapper
+
+
+@simple_decorator
+def decorated_method(name='World'):
+  return 'Hello %s' % name
