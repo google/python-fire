@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import inspect
 
+from fire import completion
 import six
 
 
@@ -37,8 +38,7 @@ def IsCommand(component):
 
 
 def IsValue(component):
-  return isinstance(component, VALUE_TYPES) or (
-      hasattr(component, '__str__') and inspect.ismethod(component.__str__))
+  return isinstance(component, VALUE_TYPES) or HasCustomStr(component)
 
 
 def IsSimpleGroup(component):
@@ -58,3 +58,28 @@ def IsSimpleGroup(component):
     if not IsValue(value) and not isinstance(value, (list, dict)):
       return False
   return True
+
+
+def HasCustomStr(component):
+  """Determines if a component has a custom __str__ method.
+
+  Uses inspect.classify_class_attrs to determine the origin of the object's
+  __str__ method, if one is present. If it defined by `object` itself, then
+  it is not considered custom. Otherwise it is. This means that the __str__
+  methods of primitives like ints and floats are considered custom.
+
+  Objects with custom __str__ methods are treated as values and can be
+  serialized in places where more complex objects would have their help screen
+  shown instead.
+
+  Args:
+    component: The object to check for a custom __str__ method.
+  Returns:
+    Whether `component` has a custom __str__ method.
+  """
+  if hasattr(component, '__str__'):
+    class_attrs = completion.GetClassAttrsDict(type(component)) or {}
+    str_attr = class_attrs.get('__str__')
+    if str_attr and str_attr.defining_class is not object:
+      return True
+  return False
