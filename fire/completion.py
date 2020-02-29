@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from collections import defaultdict
-from copy import copy
+import collections
+import copy
 import inspect
 
 from fire import inspectutils
@@ -47,12 +47,9 @@ def _BashScript(name, commands, default_options=None):
     completion in Bash.
   """
   default_options = default_options or set()
-  options_map = defaultdict(lambda: copy(default_options))
-  for command in commands:
-    start = (name + ' ' + ' '.join(command[:-1])).strip()
-    completion = _FormatForCommand(command[-1])
-    options_map[start].add(completion)
-    options_map[start.replace('_', '-')].add(completion)
+  global_options, options_map, subcommands_map = _GetMaps(
+      name, commands, default_options
+  )
 
   bash_completion_template = """# bash completion support for {name}
 # DO NOT EDIT.
@@ -60,41 +57,130 @@ def _BashScript(name, commands, default_options=None):
 
 _complete-{identifier}()
 {{
-  local start cur opts
+  local cur prev opts lastcommand
   COMPREPLY=()
-  start="${{COMP_WORDS[@]:0:COMP_CWORD}}"
+  prev="${{COMP_WORDS[COMP_CWORD-1]}}"
   cur="${{COMP_WORDS[COMP_CWORD]}}"
+  lastcommand=$(get_lastcommand)
 
   opts="{default_options}"
+  GLOBAL_OPTIONS="{global_options}"
 
-{start_checks}
+{checks}
 
   COMPREPLY=( $(compgen -W "${{opts}}" -- ${{cur}}) )
   return 0
 }}
 
+get_lastcommand()
+{{
+  local lastcommand i
+
+  lastcommand=
+  for ((i=0; i < ${{#COMP_WORDS[@]}}; ++i)); do
+    if [[ ${{COMP_WORDS[i]}} != -* ]] && [[ -n ${{COMP_WORDS[i]}} ]] && [[
+      ${{COMP_WORDS[i]}} != $cur ]]; then
+      lastcommand=${{COMP_WORDS[i]}}
+    fi
+  done
+
+  echo $lastcommand
+}}
+
+filter_options()
+{{
+  local opts
+  opts=""
+  for opt in "$@"
+  do
+    if ! option_already_entered $opt; then
+      opts="$opts $opt"
+    fi
+  done
+
+  echo $opts
+}}
+
+option_already_entered()
+{{
+  local opt
+  for opt in ${{COMP_WORDS[@]:0:COMP_CWORD}}
+  do
+    if [ $1 == $opt ]; then
+      return 0
+    fi
+  done
+  return 1
+}}
+
+is_prev_global()
+{{
+  local opt
+  for opt in $GLOBAL_OPTIONS
+  do
+    if [ $opt == $prev ]; then
+      return 0
+    fi
+  done
+  return 1
+}}
+
 complete -F _complete-{identifier} {command}
 """
-  start_check_template = """
-  if [[ "$start" == "{start}" ]] ; then
-    opts="{completions}"
-  fi"""
 
-  start_checks = '\n'.join(
-      start_check_template.format(
-          start=start,
-          completions=' '.join(sorted(options_map[start]))
-      )
-      for start in options_map
+  check_wrapper = """
+  case "${{lastcommand}}" in
+  {lastcommand_checks}
+  esac"""
+
+  lastcommand_check_template = """
+    {command})
+      {opts_assignment}
+      opts=$(filter_options $opts)
+    ;;"""
+
+  opts_assignment_subcommand_template = """
+      if is_prev_global; then
+        opts="${{GLOBAL_OPTIONS}}"
+      else
+        opts="{options} ${{GLOBAL_OPTIONS}}"
+      fi"""
+
+  opts_assignment_main_command_template = """
+      opts="{options} ${{GLOBAL_OPTIONS}}" """
+
+  def _GetOptsAssignmentTemplate(command):
+    if command == name:
+      return opts_assignment_main_command_template
+    else:
+      return opts_assignment_subcommand_template
+
+  lines = []
+  for command in set(subcommands_map.keys()).union(set(options_map.keys())):
+    opts_assignment = _GetOptsAssignmentTemplate(command).format(
+        options=' '.join(
+            sorted(options_map[command].union(subcommands_map[command]))
+        ),
+    )
+    lines.append(
+        lastcommand_check_template.format(
+            command=command,
+            opts_assignment=opts_assignment)
+    )
+  lastcommand_checks = '\n'.join(lines)
+
+  checks = check_wrapper.format(
+      lastcommand_checks=lastcommand_checks,
   )
 
   return (
       bash_completion_template.format(
           name=name,
           command=name,
-          start_checks=start_checks,
+          checks=checks,
           default_options=' '.join(default_options),
-          identifier=name.replace('/', '').replace('.', '').replace(',', '')
+          identifier=name.replace('/', '').replace('.', '').replace(',', ''),
+          global_options=' '.join(global_options),
       )
   )
 
@@ -114,55 +200,143 @@ def _FishScript(name, commands, default_options=None):
     completion in Fish.
   """
   default_options = default_options or set()
-  options_map = defaultdict(lambda: copy(default_options))
-  for command in commands:
-    start = (name + ' ' + ' '.join(command[:-1])).strip()
-    completion = _FormatForCommand(command[-1])
-    options_map[start].add(completion)
-    options_map[start.replace('_', '-')].add(completion)
+  global_options, options_map, subcommands_map = _GetMaps(
+      name, commands, default_options
+  )
+
   fish_source = """function __fish_using_command
     set cmd (commandline -opc)
-    if [ (count $cmd) -eq (count $argv) ]
-        for i in (seq (count $argv))
-            if [ $cmd[$i] != $argv[$i] ]
+    for i in (seq (count $cmd) 1)
+        switch $cmd[$i]
+        case "-*"
+        case "*"
+            if [ $cmd[$i] = $argv[1] ]
+                return 0
+            else
                 return 1
             end
         end
-        return 0
     end
     return 1
 end
+
+function __option_entered_check
+    set cmd (commandline -opc)
+    for i in (seq (count $cmd))
+        switch $cmd[$i]
+        case "-*"
+            if [ $cmd[$i] = $argv[1] ]
+                return 1
+            end
+        end
+    end
+    return 0
+end
+
+function __is_prev_global
+    set cmd (commandline -opc)
+    set global_options {global_options}
+    set prev (count $cmd)
+
+    for opt in $global_options
+        if [ "--$opt" = $cmd[$prev] ]
+            echo $prev
+            return 0
+        end
+    end
+    return 1
+end
+
 """
-  subcommand_template = "complete -c {name} -n " \
-          "'__fish_using_command {start}' -f -a {subcommand}\n"
-  flag_template = "complete -c {name} -n " \
-          "'__fish_using_command {start}' -l {option}\n"
-  for start in options_map:
-    for option in sorted(options_map[start]):
-      if option.startswith('--'):
-        fish_source += flag_template.format(
-            name=name,
-            start=start,
-            option=option[2:]
-        )
-      else:
-        fish_source += subcommand_template.format(
-            name=name,
-            start=start,
-            subcommand=option
-        )
-  return fish_source
+
+  subcommand_template = ("complete -c {name} -n '__fish_using_command "
+                         "{command}' -f -a {subcommand}\n")
+  flag_template = ("complete -c {name} -n "
+                   "'__fish_using_command {command};{prev_global_check} and "
+                   "__option_entered_check --{option}' -l {option}\n")
+
+  prev_global_check = ' and __is_prev_global;'
+  for command in set(subcommands_map.keys()).union(set(options_map.keys())):
+    for subcommand in subcommands_map[command]:
+      fish_source += subcommand_template.format(
+          name=name,
+          command=command,
+          subcommand=subcommand,
+      )
+
+    for option in options_map[command].union(global_options):
+      check_needed = command != name
+      fish_source += flag_template.format(
+          name=name,
+          command=command,
+          prev_global_check=prev_global_check if check_needed else '',
+          option=option.lstrip('--'),
+      )
+
+  return fish_source.format(
+      global_options=' '.join(
+          '"{option}"'.format(option=option)
+          for option in global_options
+      )
+  )
 
 
-def _IncludeMember(name, verbose):
+def MemberVisible(component, name, member, class_attrs=None, verbose=False):
+  """Returns whether a member should be included in auto-completion or help.
+
+  Determines whether a member of an object with the specified name should be
+  included in auto-completion or help text(both usage and detailed help).
+
+  If the member name starts with '__', it will always be excluded. If it
+  starts with only one '_', it will be included for all non-string types. If
+  verbose is True, the members, including the private members, are included.
+
+  When not in verbose mode, some modules and functions are excluded as well.
+
+  Args:
+    component: The component containing the member.
+    name: The name of the member.
+    member: The member itself.
+    class_attrs: (optional) If component is a class, provide this as:
+      inspectutils.GetClassAttrsDict(component). If not provided, it will be
+      computed.
+    verbose: Whether to include private members.
+  Returns
+    A boolean value indicating whether the member should be included.
+  """
+  if isinstance(name, six.string_types) and name.startswith('__'):
+    return False
   if verbose:
     return True
+  if member in (absolute_import, division, print_function):
+    return False
+  if isinstance(member, type(absolute_import)) and six.PY34:
+    return False
+  if inspect.ismodule(member) and member is six:
+    # TODO(dbieber): Determine more generally which modules to hide.
+    return False
+  if inspect.isclass(component):
+    # If class_attrs has not been provided, compute it.
+    if class_attrs is None:
+      class_attrs = inspectutils.GetClassAttrsDict(class_attrs) or {}
+    class_attr = class_attrs.get(name)
+    if class_attr and class_attr.kind in ('method', 'property'):
+      # methods and properties should be accessed on instantiated objects,
+      # not uninstantiated classes.
+      return False
+  if (six.PY2 and inspect.isfunction(component)
+      and name in ('func_closure', 'func_code', 'func_defaults',
+                   'func_dict', 'func_doc', 'func_globals', 'func_name')):
+    return False
+  if (six.PY2 and inspect.ismethod(component)
+      and name in ('im_class', 'im_func', 'im_self')):
+    return False
   if isinstance(name, six.string_types):
-    return name and name[0] != '_'
+    return not name.startswith('_')
   return True  # Default to including the member
 
 
-def _Members(component, verbose=False):
+def VisibleMembers(component, class_attrs=None, verbose=False):
   """Returns a list of the members of the given component.
 
   If verbose is True, then members starting with _ (normally ignored) are
@@ -170,6 +344,12 @@ def _Members(component, verbose=False):
 
   Args:
     component: The component whose members to list.
+    class_attrs: (optional) If component is a class, you may provide this as:
+      inspectutils.GetClassAttrsDict(component). If not provided, it will be
+      computed. If provided, this determines how class members will be treated
+      for visibility. In particular, methods are generally hidden for
+      non-instantiated classes, but if you wish them to be shown (e.g. for
+      completion scripts) then pass in a different class_attr for them.
     verbose: Whether to include private members.
   Returns:
     A list of tuples (member_name, member) of all members of the component.
@@ -179,10 +359,13 @@ def _Members(component, verbose=False):
   else:
     members = inspect.getmembers(component)
 
+  # If class_attrs has not been provided, compute it.
+  if class_attrs is None:
+    class_attrs = inspectutils.GetClassAttrsDict(component)
   return [
-      (member_name, member)
-      for member_name, member in members
-      if _IncludeMember(member_name, verbose)
+      (member_name, member) for member_name, member in members
+      if MemberVisible(component, member_name, member, class_attrs=class_attrs,
+                       verbose=verbose)
   ]
 
 
@@ -221,12 +404,12 @@ def Completions(component, verbose=False):
     return [str(index) for index in range(len(component))]
 
   if inspect.isgenerator(component):
-    # TODO: There are currently no commands available for generators.
+    # TODO(dbieber): There are currently no commands available for generators.
     return []
 
   return [
       _FormatForCommand(member_name)
-      for member_name, unused_member in _Members(component, verbose)
+      for member_name, _ in VisibleMembers(component, verbose=verbose)
   ]
 
 
@@ -267,7 +450,7 @@ def _Commands(component, depth=3):
     Only traverses the member DAG up to a depth of depth.
   """
   if inspect.isroutine(component) or inspect.isclass(component):
-    for completion in Completions(component):
+    for completion in Completions(component, verbose=False):
       yield (completion,)
   if inspect.isroutine(component):
     return  # Don't descend into routines.
@@ -275,11 +458,59 @@ def _Commands(component, depth=3):
   if depth < 1:
     return
 
-  for member_name, member in _Members(component):
-    # TODO: Also skip components we've already seen.
+  # By setting class_attrs={} we don't hide methods in completion.
+  for member_name, member in VisibleMembers(component, class_attrs={},
+                                            verbose=False):
+    # TODO(dbieber): Also skip components we've already seen.
     member_name = _FormatForCommand(member_name)
 
     yield (member_name,)
 
     for command in _Commands(member, depth - 1):
       yield (member_name,) + command
+
+
+def _IsOption(arg):
+  return arg.startswith('-')
+
+
+def _GetMaps(name, commands, default_options):
+  """Returns sets of subcommands and options for each command.
+
+  Args:
+    name: The first token in the commands, also the name of the command.
+    commands: A list of all possible commands that tab completion can complete
+        to. Each command is a list or tuple of the string tokens that make up
+        that command.
+    default_options: A dict of options that can be used with any command. Use
+        this if there are flags that can always be appended to a command.
+  Returns:
+    global_options: A set of all options of the first token of the command.
+    subcommands_map: A dict storing set of subcommands for each
+        command/subcommand.
+    options_map: A dict storing set of options for each subcommand.
+  """
+  global_options = copy.copy(default_options)
+  options_map = collections.defaultdict(lambda: copy.copy(default_options))
+  subcommands_map = collections.defaultdict(set)
+
+  for command in commands:
+    if len(command) == 1:
+      if _IsOption(command[0]):
+        global_options.add(command[0])
+      else:
+        subcommands_map[name].add(command[0])
+
+    elif command:
+      subcommand = command[-2]
+      arg = _FormatForCommand(command[-1])
+
+      if _IsOption(arg):
+        args_map = options_map
+      else:
+        args_map = subcommands_map
+
+      args_map[subcommand].add(arg)
+      args_map[subcommand.replace('_', '-')].add(arg)
+
+  return global_options, options_map, subcommands_map

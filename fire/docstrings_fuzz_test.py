@@ -12,27 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for the collector module."""
+"""Fuzz tests for the docstring parser module."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from fire import docstrings
 from fire import testutils
 
-from examples.widget import collector
-from examples.widget import widget
+from hypothesis import example
+from hypothesis import given
+from hypothesis import settings
+from hypothesis import strategies as st
 
 
-class CollectorTest(testutils.BaseTestCase):
+class DocstringsFuzzTest(testutils.BaseTestCase):
 
-  def testCollectorHasWidget(self):
-    col = collector.Collector()
-    self.assertIsInstance(col.widget, widget.Widget)
-
-  def testCollectorWantsMoreWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(col.desired_widget_count, 10)
-
-  def testCollectorGetsWantedWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(len(col.collect_widgets()), 10)
+  @settings(max_examples=1000, deadline=1000)
+  @given(st.text(min_size=1))
+  @example('This is a one-line docstring.')
+  def test_fuzz_parse(self, value):
+    docstrings.parse(value)
 
 
 if __name__ == '__main__':

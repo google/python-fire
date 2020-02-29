@@ -413,7 +413,7 @@ if __name__ == '__main__':
 Now we can draw stuff :).
 
 ```bash
-$ python example.py move 3 3 on move 3 6 on move 6 3 on move 6 6 on move 7 4 on move 7 5 on __str__
+$ python example.py move 3 3 on move 3 6 on move 6 3 on move 6 6 on move 7 4 on move 7 5 on
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
@@ -427,6 +427,16 @@ $ python example.py move 3 3 on move 3 6 on move 6 3 on move 6 6 on move 7 4 on 
 ```
 
 It's supposed to be a smiley face.
+
+### Custom Serialization
+
+You'll notice in the BinaryCanvas example, the canvas with the smiley face was
+printed to the screen. You can determine how a component will be serialized by
+defining its `__str__` method.
+
+If a custom `__str__` method is present on the final component, the object is
+serialized and printed. If there's no custom `__str__` method, then the help
+screen for the object is shown instead.
 
 ### Can we make an even simpler example than Hello World?
 
@@ -461,13 +471,13 @@ class Building(object):
 
   def __init__(self, name, stories=1):
     self.name = name
-    self.stories = 1
+    self.stories = stories
 
   def climb_stairs(self, stairs_per_story=10):
     for story in range(self.stories):
       for stair in range(1, stairs_per_story):
         yield stair
-        yield 'Phew!'
+      yield 'Phew!'
     yield 'Done!'
 
 if __name__ == '__main__':
@@ -585,7 +595,7 @@ $ python example.py [1,2]
 list
 $ python example.py True
 bool
-$ python example.py {name: David}
+$ python example.py {name:David}
 dict
 ```
 

@@ -4,13 +4,34 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+# Workaround for testing Python 3.7:
+# https://github.com/travis-ci/travis-ci/issues/9815
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: yes
 before_install:
   - pip install --upgrade setuptools pip
   - pip install --upgrade pylint pytest pytest-pylint pytest-runner
 install:
+  - pip install termcolor
+  - pip install hypothesis python-Levenshtein
   - python setup.py develop
 script:
   - python -m pytest  # Run the tests without IPython.
   - pip install ipython
   - python -m pytest  # Now run the tests with IPython.
-  - if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py; fi
+  - pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py,console
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then
+      pip install pytype;
+    fi
+  # Run type-checking, excluding files that define or use py3 features in py2.
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
+      pytype -x
+        fire/fire_test.py
+        fire/inspectutils_test.py
+        fire/test_components_py3.py;
+    elif [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then
+      pytype;
+    fi

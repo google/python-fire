@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,8 +56,6 @@ class InspectUtilsTest(testutils.BaseTestCase):
     spec = inspectutils.GetFullArgSpec('test'.upper)
     self.assertEqual(spec.args, [])
     self.assertEqual(spec.defaults, ())
-    self.assertEqual(spec.varargs, 'vars')
-    self.assertEqual(spec.varkw, 'kwargs')
     self.assertEqual(spec.kwonlyargs, [])
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {})
@@ -65,6 +63,26 @@ class InspectUtilsTest(testutils.BaseTestCase):
   def testGetFullArgSpecFromSlotWrapper(self):
     spec = inspectutils.GetFullArgSpec(tc.NoDefaults)
     self.assertEqual(spec.args, [])
+    self.assertEqual(spec.defaults, ())
+    self.assertEqual(spec.varargs, None)
+    self.assertEqual(spec.varkw, None)
+    self.assertEqual(spec.kwonlyargs, [])
+    self.assertEqual(spec.kwonlydefaults, {})
+    self.assertEqual(spec.annotations, {})
+
+  def testGetFullArgSpecFromNamedTuple(self):
+    spec = inspectutils.GetFullArgSpec(tc.NamedTuplePoint)
+    self.assertEqual(spec.args, ['x', 'y'])
+    self.assertEqual(spec.defaults, ())
+    self.assertEqual(spec.varargs, None)
+    self.assertEqual(spec.varkw, None)
+    self.assertEqual(spec.kwonlyargs, [])
+    self.assertEqual(spec.kwonlydefaults, {})
+    self.assertEqual(spec.annotations, {})
+
+  def testGetFullArgSpecFromNamedTupleSubclass(self):
+    spec = inspectutils.GetFullArgSpec(tc.SubPoint)
+    self.assertEqual(spec.args, ['x', 'y'])
     self.assertEqual(spec.defaults, ())
     self.assertEqual(spec.varargs, None)
     self.assertEqual(spec.varkw, None)
@@ -113,6 +131,10 @@ class InspectUtilsTest(testutils.BaseTestCase):
       self.assertEqual(info.get('type_name'), 'type')
     self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
+
+  def testInfoNoDocstring(self):
+    info = inspectutils.Info(tc.NoDefaults)
+    self.assertEqual(info['docstring'], None, 'Docstring should be None')
 
 
 if __name__ == '__main__':

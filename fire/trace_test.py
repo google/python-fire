@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,10 +51,20 @@ class FireTraceTest(testutils.BaseTestCase):
         str(t),
         '1. Initial component\n2. Accessed property "prop" (sample.py:12)')
 
+  def testAddCalledCallable(self):
+    t = trace.FireTrace('initial object')
+    args = ('example', 'args')
+    t.AddCalledComponent('result', 'cell', args, 'sample.py', 10, False,
+                         action=trace.CALLED_CALLABLE)
+    self.assertEqual(
+        str(t),
+        '1. Initial component\n2. Called callable "cell" (sample.py:10)')
+
   def testAddCalledRoutine(self):
     t = trace.FireTrace('initial object')
     args = ('example', 'args')
-    t.AddCalledRoutine('result', 'run', args, 'sample.py', 12, False)
+    t.AddCalledComponent('result', 'run', args, 'sample.py', 12, False,
+                         action=trace.CALLED_ROUTINE)
     self.assertEqual(
         str(t),
         '1. Initial component\n2. Called routine "run" (sample.py:12)')
@@ -62,8 +72,9 @@ class FireTraceTest(testutils.BaseTestCase):
   def testAddInstantiatedClass(self):
     t = trace.FireTrace('initial object')
     args = ('example', 'args')
-    t.AddInstantiatedClass(
-        'Classname', 'classname', args, 'sample.py', 12, False)
+    t.AddCalledComponent(
+        'Classname', 'classname', args, 'sample.py', 12, False,
+        action=trace.INSTANTIATED_CLASS)
     target = """1. Initial component
 2. Instantiated class "classname" (sample.py:12)"""
     self.assertEqual(str(t), target)
@@ -85,19 +96,22 @@ class FireTraceTest(testutils.BaseTestCase):
   def testGetCommand(self):
     t = trace.FireTrace('initial object')
     args = ('example', 'args')
-    t.AddCalledRoutine('result', 'run', args, 'sample.py', 12, False)
+    t.AddCalledComponent('result', 'run', args, 'sample.py', 12, False,
+                         action=trace.CALLED_ROUTINE)
     self.assertEqual(t.GetCommand(), 'example args')
 
   def testGetCommandWithQuotes(self):
     t = trace.FireTrace('initial object')
     args = ('example', 'spaced arg')
-    t.AddCalledRoutine('result', 'run', args, 'sample.py', 12, False)
+    t.AddCalledComponent('result', 'run', args, 'sample.py', 12, False,
+                         action=trace.CALLED_ROUTINE)
     self.assertEqual(t.GetCommand(), "example 'spaced arg'")
 
   def testGetCommandWithFlagQuotes(self):
     t = trace.FireTrace('initial object')
     args = ('--example=spaced arg',)
-    t.AddCalledRoutine('result', 'run', args, 'sample.py', 12, False)
+    t.AddCalledComponent('result', 'run', args, 'sample.py', 12, False,
+                         action=trace.CALLED_ROUTINE)
     self.assertEqual(t.GetCommand(), "--example='spaced arg'")
 
 

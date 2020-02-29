@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ def SetParseFns(*positional, **named):
   Python arguments with which to call the function.
 
   A parse function should accept a single string argument and return a value to
-  be used in it's place when calling the decorated function.
+  be used in its place when calling the decorated function.
 
   Args:
     *positional: The functions to be used for parsing positional arguments.
@@ -85,8 +85,10 @@ def _SetMetadata(fn, attribute, value):
 
 
 def GetMetadata(fn):
+  # Class __init__ functions and object __call__ functions require flag style
+  # arguments. Other methods and functions may accept positional args.
   default = {
-      ACCEPTS_POSITIONAL_ARGS: not inspect.isclass(fn),
+      ACCEPTS_POSITIONAL_ARGS: inspect.isroutine(fn),
   }
   return getattr(fn, FIRE_METADATA, default)
 

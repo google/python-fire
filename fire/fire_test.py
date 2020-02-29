@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ from __future__ import print_function
 
 import os
 import sys
-import unittest
 
 import fire
 from fire import test_components as tc
@@ -60,7 +59,7 @@ class FireTest(testutils.BaseTestCase):
     with mock.patch.object(sys, 'argv',
                            [os.path.join('python-fire', 'fire',
                                          'base_filename.py')]):
-      with self.assertOutputMatches(stdout='Usage:       base_filename.py',
+      with self.assertOutputMatches(stdout='SYNOPSIS.*base_filename.py',
                                     stderr=None):
         fire.Fire(tc.Empty)
 
@@ -92,11 +91,29 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.OldStyleWithDefaults, command=['triple', '--count', '5']),
         15)
 
+  def testFireNamedArgsSingleHyphen(self):
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['double', '-count', '5']), 10)
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['triple', '-count', '5']), 15)
+    self.assertEqual(
+        fire.Fire(tc.OldStyleWithDefaults, command=['double', '-count', '5']),
+        10)
+    self.assertEqual(
+        fire.Fire(tc.OldStyleWithDefaults, command=['triple', '-count', '5']),
+        15)
+
   def testFireNamedArgsWithEquals(self):
     self.assertEqual(fire.Fire(tc.WithDefaults,
                                command=['double', '--count=5']), 10)
     self.assertEqual(fire.Fire(tc.WithDefaults,
                                command=['triple', '--count=5']), 15)
+
+  def testFireNamedArgsWithEqualsSingleHyphen(self):
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['double', '-count=5']), 10)
+    self.assertEqual(fire.Fire(tc.WithDefaults,
+                               command=['triple', '-count=5']), 15)
 
   def testFireAllNamedArgs(self):
     self.assertEqual(fire.Fire(tc.MixedDefaults, command=['sum', '1', '2']), 5)
@@ -167,7 +184,7 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(fire.Fire(tc.Annotations, command=['double', '5']), 10)
     self.assertEqual(fire.Fire(tc.Annotations, command=['triple', '5']), 15)
 
-  @unittest.skipIf(six.PY2, 'Keyword-only arguments not in Python 2.')
+  @testutils.skipIf(six.PY2, 'Keyword-only arguments not in Python 2.')
   def testFireKeywordOnlyArgs(self):
     with self.assertRaisesFireExit(2):
       # Keyword arguments must be passed with flag syntax.
@@ -277,6 +294,16 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(
         fire.Fire(tc.TypedProperties, command=['delta', 'nest', '0']), 'a')
 
+  def testFireSet(self):
+    component = tc.simple_set()
+    result = fire.Fire(component, command=[])
+    self.assertEqual(len(result), 3)
+
+  def testFireFrozenset(self):
+    component = tc.simple_frozenset()
+    result = fire.Fire(component, command=[])
+    self.assertEqual(len(result), 3)
+
   def testFireList(self):
     component = ['zero', 'one', 'two', 'three']
     self.assertEqual(fire.Fire(component, command=['2']), 'two')
@@ -294,6 +321,16 @@ class FireTest(testutils.BaseTestCase):
                      'carry')
     self.assertEqual(fire.Fire(tc.TypedProperties, command=['fox', '1']),
                      'divide')
+
+  def testFireObjectWithListAsObject(self):
+    self.assertEqual(
+        fire.Fire(tc.TypedProperties, command=['echo', 'count', 'bethany']),
+        1)
+
+  def testFireObjectWithTupleAsObject(self):
+    self.assertEqual(
+        fire.Fire(tc.TypedProperties, command=['fox', 'count', 'divide']),
+        1)
 
   def testFireNoComponent(self):
     self.assertEqual(fire.Fire(command=['tc', 'WithDefaults', 'double', '10']),
@@ -359,6 +396,23 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.MixedDefaults, command=['identity', '10', '--beta']),
         (10, True))
 
+  def testBoolParsingSingleHyphen(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha=False', '10']), (False, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha', '-beta', '10']), (True, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha', '-beta=10']), (True, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-noalpha', '-beta']), (False, True))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-alpha', '-10', '-beta']), (-10, True))
+
   def testBoolParsingLessExpectedCases(self):
     # Note: Does not return (True, 10).
     self.assertEqual(
@@ -389,6 +443,70 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(
         fire.Fire(tc.MixedDefaults, command=r'identity --alpha \"--test\"'),
         ('--test', '0'))
+
+  def testSingleCharFlagParsing(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a']), (True, '0'))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '--beta=10']), (True, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '-b']), (True, True))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '42', '-b']), (42, True))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '42', '-b', '10']), (42, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '--alpha', 'True', '-b', '10']),
+        (True, 10))
+    with self.assertRaisesFireExit(2):
+      # This test attempts to use an ambiguous shortcut flag on a function with
+      # a naming conflict for the shortcut, triggering a FireError.
+      fire.Fire(tc.SimilarArgNames, command=['identity', '-b'])
+
+  def testSingleCharFlagParsingEqualSign(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=True']), (True, '0'))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=3', '--beta=10']), (3, 10))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=False', '-b=15']), (False, 15))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a', '42', '-b=12']), (42, 12))
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['identity', '-a=42', '-b', '10']), (42, 10))
+
+  def testSingleCharFlagParsingExactMatch(self):
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-a']), (True, None))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-a=10']), (10, None))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '--a']), (True, None))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-alpha']), (None, True))
+    self.assertEqual(
+        fire.Fire(tc.SimilarArgNames,
+                  command=['identity2', '-a', '-alpha']), (True, True))
+
+  def testSingleCharFlagParsingCapitalLetter(self):
+    self.assertEqual(
+        fire.Fire(tc.CapitalizedArgNames,
+                  command=['sum', '-D', '5', '-G', '10']), 15)
 
   def testBoolParsingWithNo(self):
     # In these examples --nothing always refers to the nothing argument:
@@ -442,12 +560,12 @@ class FireTest(testutils.BaseTestCase):
       fire.Fire(tc.BoolConverter, command=['--', '--help'])
 
   def testHelpFlagAndTraceFlag(self):
-    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*SYNOPSIS'):
       fire.Fire(tc.BoolConverter,
                 command=['as-bool', 'True', '--', '--help', '--trace'])
-    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*SYNOPSIS'):
       fire.Fire(tc.BoolConverter, command=['as-bool', 'True', '--', '-h', '-t'])
-    with self.assertRaisesFireExit(0, 'Fire trace:\n.*Usage:'):
+    with self.assertRaisesFireExit(0, 'Fire trace:\n.*SYNOPSIS'):
       fire.Fire(tc.BoolConverter, command=['--', '-h', '--trace'])
 
   def testTabCompletionNoName(self):
@@ -519,7 +637,7 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.ReturnsObj,
                   command=['get-obj', 'arg1', 'arg2', 'as-bool', 'True']),
         tc.BoolConverter)
-    # With a separator only the preceeding args are consumed by get_obj.
+    # With a separator only the preceding args are consumed by get_obj.
     self.assertEqual(
         fire.Fire(
             tc.ReturnsObj,
@@ -534,6 +652,11 @@ class FireTest(testutils.BaseTestCase):
                   command=['get-obj', 'arg1', '$$', 'as-bool', 'True', '--',
                            '--separator', '$$']),
         True)
+
+  def testNegativeNumbers(self):
+    self.assertEqual(
+        fire.Fire(tc.MixedDefaults,
+                  command=['sum', '--alpha', '-3', '--beta', '-4']), -11)
 
   def testFloatForExpectedInt(self):
     self.assertEqual(
@@ -583,6 +706,24 @@ class FireTest(testutils.BaseTestCase):
       fire.Fire(tc.InstanceVars, command=['a1', 'a2', '-', 'jog'])
     with self.assertRaisesFireExit(2):
       fire.Fire(tc.InstanceVars, command=['--arg1=a1', '--arg2=a2', '-', 'jog'])
+
+  def testClassWithDefaultMethod(self):
+    self.assertEqual(
+        fire.Fire(tc.DefaultMethod, command=['double', '10']), 20
+    )
+
+  def testClassWithInvalidProperty(self):
+    self.assertEqual(
+        fire.Fire(tc.InvalidProperty, command=['double', '10']), 20
+    )
+
+  @testutils.skipIf(six.PY2, 'Cannot inspect wrapped signatures in Python 2.')
+  def testHelpKwargsDecorator(self):
+    # Issue #190, follow the wrapped method instead of crashing.
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.decorated_method, command=['-h'])
+    with self.assertRaisesFireExit(0):
+      fire.Fire(tc.decorated_method, command=['--help'])
 
 
 if __name__ == '__main__':

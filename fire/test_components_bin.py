@@ -12,28 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for the collector module."""
+"""Python Fire test components Fire CLI.
 
-from fire import testutils
+This file is useful for replicating test results manually.
+"""
 
-from examples.widget import collector
-from examples.widget import widget
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import fire
+from fire import test_components
 
 
-class CollectorTest(testutils.BaseTestCase):
-
-  def testCollectorHasWidget(self):
-    col = collector.Collector()
-    self.assertIsInstance(col.widget, widget.Widget)
-
-  def testCollectorWantsMoreWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(col.desired_widget_count, 10)
-
-  def testCollectorGetsWantedWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(len(col.collect_widgets()), 10)
-
+def main():
+  fire.Fire(test_components)
 
 if __name__ == '__main__':
-  testutils.main()
+  main()

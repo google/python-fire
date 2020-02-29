@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ from fire import test_components as tc
 from fire import testutils
 from fire import trace
 import mock
+
+import six
 
 
 class CoreTest(testutils.BaseTestCase):
@@ -72,14 +74,43 @@ class CoreTest(testutils.BaseTestCase):
     self.assertEqual(variables['D'], tc.WithDefaults)
     self.assertIsInstance(variables['trace'], trace.FireTrace)
 
-  def testImproperUseOfHelp(self):
-    # This should produce a warning explaining the proper use of help.
-    with self.assertRaisesFireExit(2, 'The proper way to show help.*Usage:'):
-      core.Fire(tc.TypedProperties, command=['alpha', '--help'])
+  # TODO(dbieber): Use parameterized tests to break up repetitive tests.
+  def testHelpWithClass(self):
+    with self.assertRaisesFireExit(0, 'SYNOPSIS.*ARG1'):
+      core.Fire(tc.InstanceVars, command=['--', '--help'])
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*ARG1'):
+      core.Fire(tc.InstanceVars, command=['--help'])
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*ARG1'):
+      core.Fire(tc.InstanceVars, command=['-h'])
 
-  def testProperUseOfHelp(self):
-    with self.assertRaisesFireExit(0, 'Usage:.*upper'):
+  def testHelpWithMember(self):
+    with self.assertRaisesFireExit(0, 'SYNOPSIS.*capitalize'):
       core.Fire(tc.TypedProperties, command=['gamma', '--', '--help'])
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*capitalize'):
+      core.Fire(tc.TypedProperties, command=['gamma', '--help'])
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*capitalize'):
+      core.Fire(tc.TypedProperties, command=['gamma', '-h'])
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*delta'):
+      core.Fire(tc.TypedProperties, command=['delta', '--help'])
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*echo'):
+      core.Fire(tc.TypedProperties, command=['echo', '--help'])
+
+  def testHelpOnErrorInConstructor(self):
+    with self.assertRaisesFireExit(0, 'SYNOPSIS.*VALUE'):
+      core.Fire(tc.ErrorInConstructor, command=['--', '--help'])
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*VALUE'):
+      core.Fire(tc.ErrorInConstructor, command=['--help'])
+
+  def testHelpWithNamespaceCollision(self):
+    # Tests cases when calling the help shortcut should not show help.
+    with self.assertOutputMatches(stdout='DESCRIPTION.*', stderr=None):
+      core.Fire(tc.WithHelpArg, command=['--help', 'False'])
+    with self.assertOutputMatches(stdout='help in a dict', stderr=None):
+      core.Fire(tc.WithHelpArg, command=['dictionary', '__help'])
+    with self.assertOutputMatches(stdout='{}', stderr=None):
+      core.Fire(tc.WithHelpArg, command=['dictionary', '--help'])
+    with self.assertOutputMatches(stdout='False', stderr=None):
+      core.Fire(tc.function_with_help, command=['False'])
 
   def testInvalidParameterRaisesFireExit(self):
     with self.assertRaisesFireExit(2, 'runmisspelled'):
@@ -104,6 +135,76 @@ class CoreTest(testutils.BaseTestCase):
       core.Fire(tc.EmptyDictOutput, command=['totally_empty'])
     with self.assertOutputMatches(stdout='{}', stderr=None):
       core.Fire(tc.EmptyDictOutput, command=['nothing_printable'])
+
+  def testPrintOrderedDict(self):
+    with self.assertOutputMatches(stdout=r'A:\s+A\s+2:\s+2\s+', stderr=None):
+      core.Fire(tc.OrderedDictionary, command=['non_empty'])
+    with self.assertOutputMatches(stdout='{}'):
+      core.Fire(tc.OrderedDictionary, command=['empty'])
+
+  def testPrintNamedTupleField(self):
+    with self.assertOutputMatches(stdout='11', stderr=None):
+      core.Fire(tc.NamedTuple, command=['point', 'x'])
+
+  def testPrintNamedTupleFieldNameEqualsValue(self):
+    with self.assertOutputMatches(stdout='x', stderr=None):
+      core.Fire(tc.NamedTuple, command=['matching_names', 'x'])
+
+  def testPrintNamedTupleIndex(self):
+    with self.assertOutputMatches(stdout='22', stderr=None):
+      core.Fire(tc.NamedTuple, command=['point', '1'])
+
+  def testPrintSet(self):
+    with self.assertOutputMatches(stdout='.*three.*', stderr=None):
+      core.Fire(tc.simple_set(), command=[])
+
+  def testPrintFrozenSet(self):
+    with self.assertOutputMatches(stdout='.*three.*', stderr=None):
+      core.Fire(tc.simple_frozenset(), command=[])
+
+  def testPrintNamedTupleNegativeIndex(self):
+    with self.assertOutputMatches(stdout='11', stderr=None):
+      core.Fire(tc.NamedTuple, command=['point', '-2'])
+
+  def testCallable(self):
+    with self.assertOutputMatches(stdout=r'foo:\s+foo\s+', stderr=None):
+      core.Fire(tc.CallableWithKeywordArgument(), command=['--foo=foo'])
+    with self.assertOutputMatches(stdout=r'foo\s+', stderr=None):
+      core.Fire(tc.CallableWithKeywordArgument(), command=['print_msg', 'foo'])
+    with self.assertOutputMatches(stdout=r'', stderr=None):
+      core.Fire(tc.CallableWithKeywordArgument(), command=[])
+
+  def testCallableWithPositionalArgs(self):
+    with self.assertRaisesFireExit(2, ''):
+      # This does not give 7 since positional args are disallowed for callable
+      # objects.
+      core.Fire(tc.CallableWithPositionalArgs(), command=['3', '4'])
+
+  def testStaticMethod(self):
+    self.assertEqual(
+        core.Fire(tc.HasStaticAndClassMethods,
+                  command=['static_fn', 'alpha']),
+        'alpha',
+    )
+
+  def testClassMethod(self):
+    self.assertEqual(
+        core.Fire(tc.HasStaticAndClassMethods,
+                  command=['class_fn', '6']),
+        7,
+    )
+
+  @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
+  def testLruCacheDecoratorBoundArg(self):
+    self.assertEqual(
+        core.Fire(tc.py3.LruCacheDecoratedMethod,  # pytype: disable=module-attr
+                  command=['lru_cache_in_class', 'foo']), 'foo')
+
+  @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
+  def testLruCacheDecorator(self):
+    self.assertEqual(
+        core.Fire(tc.py3.lru_cache_decorated,  # pytype: disable=module-attr
+                  command=['foo']), 'foo')
 
 
 if __name__ == '__main__':

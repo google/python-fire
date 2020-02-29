@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
 
 """The setup.py file for Python Fire."""
 
+import sys
 from setuptools import setup
-
 
 LONG_DESCRIPTION = """
 Python Fire is a library for automatically generating command line interfaces
@@ -31,7 +31,8 @@ A library for automatically generating command line interfaces.""".strip()
 
 DEPENDENCIES = [
     'six',
-]
+    'termcolor',
+] + (['enum34'] if sys.version < '3.4' else [])
 
 TEST_DEPENDENCIES = [
     'hypothesis',
@@ -39,7 +40,7 @@ TEST_DEPENDENCIES = [
     'python-Levenshtein',
 ]
 
-VERSION = '0.1.3'
+VERSION = '0.2.2'
 URL = 'https://github.com/google/python-fire'
 
 setup(
@@ -68,6 +69,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
 
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
@@ -77,7 +79,7 @@ setup(
 
     keywords='command line interface cli python fire interactive bash tool',
 
-    packages=['fire'],
+    packages=['fire', 'fire.console'],
 
     install_requires=DEPENDENCIES,
     tests_require=TEST_DEPENDENCIES,

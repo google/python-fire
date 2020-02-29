@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ class ParserFuzzTest(testutils.BaseTestCase):
       raise
 
     try:
-      uvalue = six.u(value)
-      uresult = six.u(result)
+      uvalue = six.text_type(value)
+      uresult = six.text_type(result)
     except UnicodeDecodeError:
       # This is not what we're testing.
       return

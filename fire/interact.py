@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This module enables interactive mode in Python Fire."""
+"""This module enables interactive mode in Python Fire.
+
+It uses IPython as an optional dependency. When IPython is installed, the
+interactive flag will use IPython's REPL. When IPython is not installed, the
+interactive flag will start a Python REPL with the builtin `code` module's
+InteractiveConsole class.
+"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -83,11 +89,11 @@ def _EmbedIPython(variables, argv=None):
         Values are variable values.
     argv: The argv to use for starting ipython. Defaults to an empty list.
   """
-  import IPython  # pylint: disable=g-import-not-at-top
+  import IPython  # pylint: disable=import-outside-toplevel,g-import-not-at-top
   argv = argv or []
   IPython.start_ipython(argv=argv, user_ns=variables)
 
 
 def _EmbedCode(variables):
-  import code  # pylint: disable=g-import-not-at-top
+  import code  # pylint: disable=import-outside-toplevel,g-import-not-at-top
   code.InteractiveConsole(variables).interact()

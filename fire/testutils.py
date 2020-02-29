@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -95,5 +95,8 @@ class BaseTestCase(unittest.TestCase):
           raise
 
 
-def main():
-  unittest.main()
+# pylint: disable=invalid-name
+main = unittest.main
+skip = unittest.skip
+skipIf = unittest.skipIf
+# pylint: enable=invalid-name

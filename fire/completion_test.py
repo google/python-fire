@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,10 @@ class TabCompletionTest(testutils.BaseTestCase):
     script = completion._BashScript(name='command', commands=commands)  # pylint: disable=protected-access
     self.assertIn('command', script)
     self.assertIn('halt', script)
-    self.assertIn('"$start" == "command"', script)
+
+    assert_template = '{command})'
+    for last_command in ['command', 'halt']:
+      self.assertIn(assert_template.format(command=last_command), script)
 
   def testCompletionFishScript(self):
     # A sanity check test to make sure the fish completion script satisfies

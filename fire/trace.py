@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright (C) 2018 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,9 +31,12 @@ from __future__ import print_function
 
 import pipes
 
+from fire import inspectutils
+
 INITIAL_COMPONENT = 'Initial component'
 INSTANTIATED_CLASS = 'Instantiated class'
 CALLED_ROUTINE = 'Called routine'
+CALLED_CALLABLE = 'Called callable'
 ACCESSED_PROPERTY = 'Accessed property'
 COMPLETION_SCRIPT = 'Generated completion script'
 INTERACTIVE_MODE = 'Entered interactive mode'
@@ -63,7 +66,9 @@ class FireTrace(object):
 
   def GetResult(self):
     """Returns the component from the last element of the trace."""
+    # pytype: disable=attribute-error
     return self.GetLastHealthyElement().component
+    # pytype: enable=attribute-error
 
   def GetLastHealthyElement(self):
     """Returns the last element of the trace that is not an error.
@@ -93,44 +98,24 @@ class FireTrace(object):
     )
     self.elements.append(element)
 
-  def AddCalledRoutine(self, component, target, args, filename, lineno,
-                       capacity):
-    """Adds an element to the trace indicating that a routine was called.
+  def AddCalledComponent(self, component, target, args, filename, lineno,
+                         capacity, action=CALLED_CALLABLE):
+    """Adds an element to the trace indicating that a component was called.
+
+    Also applies to instantiating a class.
 
     Args:
-      component: The result of calling the routine.
-      target: The name of the routine.
-      args: The args consumed in order to call this routine.
-      filename: The file in which the routine is defined, or None if N/A.
-      lineno: The line number on which the routine is defined, or None if N/A.
-      capacity: (bool) Whether the routine could have accepted additional args.
+      component: The result of calling the callable.
+      target: The name of the callable.
+      args: The args consumed in order to call this callable.
+      filename: The file in which the callable is defined, or None if N/A.
+      lineno: The line number on which the callable is defined, or None if N/A.
+      capacity: (bool) Whether the callable could have accepted additional args.
+      action: The value to include as the action in the FireTraceElement.
     """
     element = FireTraceElement(
         component=component,
-        action=CALLED_ROUTINE,
-        target=target,
-        args=args,
-        filename=filename,
-        lineno=lineno,
-        capacity=capacity,
-    )
-    self.elements.append(element)
-
-  def AddInstantiatedClass(self, component, target, args, filename, lineno,
-                           capacity):
-    """Adds an element to the trace indicating that a class was instantiated.
-
-    Args:
-      component: The result of instantiating the class.
-      target: The name of the class.
-      args: The args consumed in order to instantiate the class.
-      filename: The file in which the class is defined, or None if N/A.
-      lineno: The line number on which the class is defined, or None if N/A.
-      capacity: (bool) Whether cls.__init__ could have accepted additional args.
-    """
-    element = FireTraceElement(
-        component=component,
-        action=INSTANTIATED_CLASS,
+        action=action,
         target=target,
         args=args,
         filename=filename,
@@ -184,8 +169,11 @@ class FireTrace(object):
       return pipes.quote(prefix) + '=' + pipes.quote(value)
     return pipes.quote(arg)
 
-  def GetCommand(self):
+  def GetCommand(self, include_separators=True):
     """Returns the command representing the trace up to this point.
+
+    Args:
+      include_separators: Whether or not to include separators in the command.
 
     Returns:
       A string representing a Fire CLI command that would produce this trace.
@@ -199,10 +187,10 @@ class FireTrace(object):
         continue
       if element.args:
         args.extend(element.args)
-      if element.HasSeparator():
+      if element.HasSeparator() and include_separators:
         args.append(self.separator)
 
-    if self.NeedsSeparator():
+    if self.NeedsSeparator() and include_separators:
       args.append(self.separator)
 
     return ' '.join(self._Quote(arg) for arg in args)
@@ -226,13 +214,35 @@ class FireTrace(object):
     return element.HasCapacity() and not element.HasSeparator()
 
   def __str__(self):
-    return '\n'.join(
-        '{index}. {trace_string}'.format(
-            index=index + 1,
-            trace_string=element,
-        )
-        for index, element in enumerate(self.elements)
-    )
+    lines = []
+    for index, element in enumerate(self.elements):
+      line = '{index}. {trace_string}'.format(
+          index=index + 1,
+          trace_string=element,
+      )
+      lines.append(line)
+    return '\n'.join(lines)
+
+  def NeedsSeparatingHyphenHyphen(self, flag='help'):
+    """Returns whether a the trace need '--' before '--help'.
+
+    '--' is needed when the component takes keyword arguments, when the value of
+    flag matches one of the argument of the component, or the component takes in
+    keyword-only arguments(e.g. argument with default value).
+
+    Args:
+      flag: the flag available for the trace
+
+    Returns:
+      True for needed '--', False otherwise.
+
+    """
+    element = self.GetLastHealthyElement()
+    component = element.component
+    spec = inspectutils.GetFullArgSpec(component)
+    return (spec.varkw is not None
+            or flag in spec.args
+            or flag in spec.kwonlyargs)
 
 
 class FireTraceElement(object):
@@ -285,8 +295,13 @@ class FireTraceElement(object):
   def AddSeparator(self):
     self._separator = True
 
+  def ErrorAsStr(self):
+    return ' '.join(str(arg) for arg in self._error.args)
+
   def __str__(self):
-    if not self.HasError():
+    if self.HasError():
+      return self.ErrorAsStr()
+    else:
       # Format is: {action} "{target}" ({filename}:{lineno})
       string = self._action
       if self._target is not None:
@@ -298,5 +313,3 @@ class FireTraceElement(object):
 
         string += ' ({path})'.format(path=path)
       return string
-    else:
-      return str(self._error)
