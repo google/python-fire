@@ -36,11 +36,11 @@ if sys.platform.startswith('win'):
   if HAS_COLORAMA:
     SHOULD_WRAP = True
     if sys.stdout.isatty() and platform.release() == '10':
-      """Enables native ANSI sequences in console. Windows 10,
-      2016, and 2019 only."""
+      # Enables native ANSI sequences in console. Windows 10,
+      # 2016, and 2019 only.
       import ctypes
       import subprocess
-      
+
       SHOULD_WRAP = False
       KERNEL32 = ctypes.windll.kernel32
       ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x04
@@ -49,7 +49,7 @@ if sys.platform.startswith('win'):
       MODE = ctypes.wintypes.DWORD()
       if KERNEL32.GetConsoleMode(OUT_HANDLE, ctypes.byref(MODE)) == 0:
         SHOULD_WRAP = True
-      if not (MODE.value & ENABLE_VIRTUAL_TERMINAL_PROCESSING):
+      if not MODE.value & ENABLE_VIRTUAL_TERMINAL_PROCESSING:
         if KERNEL32.SetConsoleMode(
             OUT_HANDLE, MODE.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0:
           print(
