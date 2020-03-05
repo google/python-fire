@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import sys
 import os
+import platform
 import termcolor
 
 ELLIPSIS = '...'
@@ -34,7 +35,7 @@ if sys.platform.startswith('win'):
 
   if HAS_COLORAMA:
     SHOULD_WRAP = True
-    if sys.stdout.isatty() and sys.getwindowsversion().major == 10: # pylint: disable=no-member
+    if sys.stdout.isatty() and platform.release() == '10':
       """Enables native ANSI sequences in console. Windows 10,
       2016, and 2019 only."""
       import ctypes
