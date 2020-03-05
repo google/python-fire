@@ -22,23 +22,41 @@ import sys
 import os
 import termcolor
 
-try:
-  import colorama
-  HAS_COLORAMA = True
-except ImportError:
-  HAS_COLORAMA = False
+ELLIPSIS = '...'
 
+# Enable ANSI processing on Windows or disable entirely
 if sys.platform.startswith('win'):
+  try:
+    import colorama
+    HAS_COLORAMA = True
+  except ImportError:
+    HAS_COLORAMA = False
+
   if HAS_COLORAMA:
     SHOULD_WRAP = True
-    if sys.stdout.isatty() and sys.getwindowsversion().major == '10': # pylint: disable=no-member
-      if EnableNativeANSI():
+    if sys.stdout.isatty() and sys.getwindowsversion().major == 10: # pylint: disable=no-member
+      """Enables native ANSI sequences in console. Windows 10,
+      2016, and 2019 only."""
+      import ctypes
+      import subprocess
+
+      KERNEL32 = ctypes.windll.kernel32
+      ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x04
+      OUT_HANDLE = KERNEL32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)
+      # GetConsoleMode fails if the terminal isn't native.
+      MODE = ctypes.wintypes.DWORD()
+      if KERNEL32.GetConsoleMode(OUT_HANDLE, ctypes.byref(MODE)) == 0:
         SHOULD_WRAP = False
+      if not (MODE.value & ENABLE_VIRTUAL_TERMINAL_PROCESSING):
+        if KERNEL32.SetConsoleMode(
+            OUT_HANDLE, MODE.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0:
+          print(
+              'kernel32.SetConsoleMode to enable ANSI sequences failed',
+              file=sys.stderr)
+          SHOULD_WRAP = False
     colorama.init(wrap=SHOULD_WRAP)
   else:
     os.environ['ANSI_COLORS_DISABLED'] = "1"
-
-ELLIPSIS = '...'
 
 
 def Indent(text, spaces=2):
@@ -111,26 +129,3 @@ def EllipsisMiddleTruncate(text, available_space, line_length):
 
 def DoubleQuote(text):
   return '"%s"' % text
-
-def EnableNativeANSI():
-  """Enables native ANSI sequences in console. Windows 10,
-  2016, and 2019 only. Returns whether successful.
-  """
-  import ctypes
-  import subprocess
-
-  kernel32 = ctypes.windll.kernel32
-  enable_virtual_terminal_processing = 0x04
-  out_handle = kernel32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)
-  # GetConsoleMode fails if the terminal isn't native.
-  mode = ctypes.wintypes.DWORD()
-  if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:
-    return False
-  if not (mode.value & enable_virtual_terminal_processing):
-    if kernel32.SetConsoleMode(
-        out_handle, mode.value | enable_virtual_terminal_processing) == 0:
-      print(
-          'kernel32.SetConsoleMode to enable ANSI sequences failed',
-          file=sys.stderr)
-      return False
-  return True
