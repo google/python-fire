@@ -18,7 +18,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
+import os
 import termcolor
+
+try:
+  import colorama
+  HAS_COLORAMA = True
+except ImportError:
+  HAS_COLORAMA = False
+
+if sys.platform.startswith('win'):
+  if HAS_COLORAMA:
+    SHOULD_WRAP = True
+    if sys.stdout.isatty() and sys.getwindowsversion().major == '10': # pylint: disable=no-member
+      if EnableNativeANSI():
+        SHOULD_WRAP = False
+    colorama.init(wrap=SHOULD_WRAP)
+  else:
+    os.environ['ANSI_COLORS_DISABLED'] = "1"
 
 ELLIPSIS = '...'
 
@@ -93,3 +111,26 @@ def EllipsisMiddleTruncate(text, available_space, line_length):
 
 def DoubleQuote(text):
   return '"%s"' % text
+
+def EnableNativeANSI():
+  """Enables native ANSI sequences in console. Windows 10,
+  2016, and 2019 only. Returns whether successful.
+  """
+  import ctypes
+  import subprocess
+
+  kernel32 = ctypes.windll.kernel32
+  enable_virtual_terminal_processing = 0x04
+  out_handle = kernel32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)
+  # GetConsoleMode fails if the terminal isn't native.
+  mode = ctypes.wintypes.DWORD()
+  if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:
+    return False
+  if not (mode.value & enable_virtual_terminal_processing):
+    if kernel32.SetConsoleMode(
+        out_handle, mode.value | enable_virtual_terminal_processing) == 0:
+      print(
+          'kernel32.SetConsoleMode to enable ANSI sequences failed',
+          file=sys.stderr)
+      return False
+  return True
