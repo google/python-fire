@@ -33,7 +33,7 @@ if sys.platform.startswith('win'):
     HAS_COLORAMA = False
 
   if HAS_COLORAMA:
-    SHOULD_WRAP = True
+    SHOULD_WRAP = False
     if sys.stdout.isatty() and sys.getwindowsversion().major == 10: # pylint: disable=no-member
       """Enables native ANSI sequences in console. Windows 10,
       2016, and 2019 only."""
@@ -46,14 +46,14 @@ if sys.platform.startswith('win'):
       # GetConsoleMode fails if the terminal isn't native.
       MODE = ctypes.wintypes.DWORD()
       if KERNEL32.GetConsoleMode(OUT_HANDLE, ctypes.byref(MODE)) == 0:
-        SHOULD_WRAP = False
+        SHOULD_WRAP = True
       if not (MODE.value & ENABLE_VIRTUAL_TERMINAL_PROCESSING):
         if KERNEL32.SetConsoleMode(
             OUT_HANDLE, MODE.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0:
           print(
               'kernel32.SetConsoleMode to enable ANSI sequences failed',
               file=sys.stderr)
-          SHOULD_WRAP = False
+          SHOULD_WRAP = True
     colorama.init(wrap=SHOULD_WRAP)
   else:
     os.environ['ANSI_COLORS_DISABLED'] = "1"
