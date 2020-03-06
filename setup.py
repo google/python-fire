@@ -40,7 +40,7 @@ TEST_DEPENDENCIES = [
     'python-Levenshtein',
 ]
 
-VERSION = '0.2.2'
+VERSION = '0.3.0'
 URL = 'https://github.com/google/python-fire'
 
 setup(
