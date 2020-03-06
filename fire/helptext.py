@@ -45,7 +45,7 @@ SECTION_INDENTATION = 4
 
 
 def HelpText(component, trace=None, verbose=False):
-  """Gets the help string for the current component, suitalbe for a help screen.
+  """Gets the help string for the current component, suitable for a help screen.
 
   Args:
     component: The component to construct the help string for.
