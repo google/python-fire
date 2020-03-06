@@ -18,9 +18,45 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+import platform
+import sys
 import termcolor
 
 ELLIPSIS = '...'
+
+# Enable ANSI processing on Windows or disable entirely.
+if sys.platform.startswith('win'):
+  try:
+    import colorama  # pylint: disable=g-import-not-at-top,  # pytype: disable=import-error
+    HAS_COLORAMA = True
+  except ImportError:
+    HAS_COLORAMA = False
+
+  if HAS_COLORAMA:
+    SHOULD_WRAP = True
+    if sys.stdout.isatty() and platform.release() == '10':
+      # Enables native ANSI sequences in console.
+      # Windows 10, 2016, and 2019 only.
+      import ctypes  # pylint: disable=g-import-not-at-top
+      import subprocess  # pylint: disable=g-import-not-at-top
+
+      SHOULD_WRAP = False
+      KERNEL32 = ctypes.windll.kernel32  # pytype: disable=module-attr
+      ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x04
+      OUT_HANDLE = KERNEL32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)  # pytype: disable=module-attr
+      # GetConsoleMode fails if the terminal isn't native.
+      MODE = ctypes.wintypes.DWORD()
+      if KERNEL32.GetConsoleMode(OUT_HANDLE, ctypes.byref(MODE)) == 0:
+        SHOULD_WRAP = True
+      if not MODE.value & ENABLE_VIRTUAL_TERMINAL_PROCESSING:
+        if KERNEL32.SetConsoleMode(
+            OUT_HANDLE, MODE.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0:
+          # kernel32.SetConsoleMode to enable ANSI sequences failed
+          SHOULD_WRAP = True
+    colorama.init(wrap=SHOULD_WRAP)
+  else:
+    os.environ['ANSI_COLORS_DISABLED'] = '1'
 
 
 def Indent(text, spaces=2):
