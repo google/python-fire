@@ -24,16 +24,16 @@ import platform
 import subprocess
 import sys
 
+try:
+  import colorama  # pylint: disable=g-import-not-at-top,  # pytype: disable=import-error
+  HAS_COLORAMA = True
+except ImportError:
+  HAS_COLORAMA = False
+
 
 def initialize_or_disable():
   """Enables ANSI processing on Windows or disables it as needed."""
-  try:
-    import colorama  # pylint: disable=g-import-not-at-top,  # pytype: disable=import-error
-    has_colorama = True
-  except ImportError:
-    has_colorama = False
-
-  if has_colorama:
+  if HAS_COLORAMA:
     wrap = True
     if sys.stdout.isatty() and platform.release() == '10':
       # Enables native ANSI sequences in console.
