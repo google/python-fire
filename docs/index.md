@@ -3,13 +3,17 @@
 _Python Fire is a library for automatically generating command line interfaces
 (CLIs) from absolutely any Python object._
 
-- Python Fire is a simple way to create a CLI in Python. [[1]](benefits.md#simple-cli)
-- Python Fire is a helpful tool for developing and debugging Python code. [[2]](benefits.md#debugging)
-- Python Fire helps with exploring existing code or turning other people's code
-into a CLI. [[3]](benefits.md#exploring)
-- Python Fire makes transitioning between Bash and Python easier. [[4]](benefits.md#bash)
-- Python Fire makes using a Python REPL easier by setting up the REPL with the
-modules and variables you'll need already imported and created. [[5]](benefits.md#repl)
+-   Python Fire is a simple way to create a CLI in Python.
+    [[1]](benefits.md#simple-cli)
+-   Python Fire is a helpful tool for developing and debugging Python code.
+    [[2]](benefits.md#debugging)
+-   Python Fire helps with exploring existing code or turning other people's
+    code into a CLI. [[3]](benefits.md#exploring)
+-   Python Fire makes transitioning between Bash and Python easier.
+    [[4]](benefits.md#bash)
+-   Python Fire makes using a Python REPL easier by setting up the REPL with the
+    modules and variables you'll need already imported and created.
+    [[5]](benefits.md#repl)
 
 ## Installation
 

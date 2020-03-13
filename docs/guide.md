@@ -99,6 +99,22 @@ def main():
   fire.Fire(hello)
 ```
 
+##### Version 4: Fire Without Code Changes
+
+If you have a file `example.py` that doesn't even import fire:
+
+```python
+def hello(name):
+  return 'Hello {name}!'.format(name=name)
+```
+
+Then you can use it with Fire like this:
+
+```bash
+$ python -m fire example hello --name=World
+Hello World!
+```
+
 ### Exposing Multiple Commands
 
 In the previous example, we exposed a single function to the command line. Now
@@ -685,8 +701,9 @@ You can add the help flag to any command to see help and usage information. Fire
 incorporates your docstrings into the help and usage information that it
 generates. Fire will try to provide help even if you omit the isolated `--`
 separating the flags from the Fire command, but may not always be able to, since
-`help` is a valid argument name. Use this feature like this:
-`python example.py -- --help`.
+`help` is a valid argument name. Use this feature like this: `python
+example.py -- --help` or `python example.py --help` (or even `python example.py
+-h`).
 
 The complete set of flags available is shown below, in the reference section.
 
