@@ -20,12 +20,14 @@ from __future__ import print_function
 
 import os
 import textwrap
+import unittest
 
 from fire import formatting
 from fire import helptext
 from fire import test_components as tc
 from fire import testutils
 from fire import trace
+import six
 
 
 class HelpTest(testutils.BaseTestCase):
@@ -157,6 +159,26 @@ class HelpTest(testutils.BaseTestCase):
         trace=trace.FireTrace(component, 'OldStyleEmpty'))
     self.assertIn('NAME\n    OldStyleEmpty', help_screen)
     self.assertIn('SYNOPSIS\n    OldStyleEmpty', help_screen)
+
+  @unittest.skipIf(
+      six.PY2,
+      'Python 2 does not support single asterisk in function definition')
+  def testHelpTextKeywordOnlyArgumentsWithDefault(self):
+    component = tc.py3.KeywordOnly.with_default
+    output = helptext.HelpText(
+        component=component, trace=trace.FireTrace(component, 'with_default'))
+    self.assertIn('NAME\n    with_default', output)
+    self.assertIn('FLAGS\n    --x=X', output)
+
+  @unittest.skipIf(
+      six.PY2,
+      'Python 2 does not support single asterisk in function definition')
+  def testHelpTextKeywordOnlyArgumentsWithoutDefault(self):
+    component = tc.py3.KeywordOnly.double
+    output = helptext.HelpText(
+        component=component, trace=trace.FireTrace(component, 'double'))
+    self.assertIn('NAME\n    double', output)
+    self.assertIn('FLAGS\n    --count=COUNT (required)', output)
 
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()

@@ -32,6 +32,9 @@ class KeywordOnly(object):
   def triple(self, *, count):
     return count * 3
 
+  def with_default(self, *, x="x"):
+    print("x: " + x)
+
 
 class LruCacheDecoratedMethod(object):
 

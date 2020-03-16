@@ -33,6 +33,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import itertools
+
 from fire import completion
 from fire import custom_descriptions
 from fire import decorators
@@ -167,6 +169,11 @@ def _DescriptionSection(component, info):
     return None
 
 
+def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
+  return _CreateFlagItem(
+      flag, docstring_info, required=flag not in spec.kwonlydefaults)
+
+
 def _ArgsAndFlagsSections(info, spec, metadata):
   """The "Args and Flags" sections of the help string."""
   args_with_no_defaults = spec.args[:len(spec.args) - len(spec.defaults)]
@@ -199,15 +206,15 @@ def _ArgsAndFlagsSections(info, spec, metadata):
           ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
       )
 
-  optional_flag_items = [
+  positional_flag_items = [
       _CreateFlagItem(flag, docstring_info, required=False)
       for flag in args_with_defaults
   ]
-  required_flag_items = [
-      _CreateFlagItem(flag, docstring_info, required=True)
+  kwonly_flag_items = [
+      _CreateKeywordOnlyFlagItem(flag, docstring_info, spec)
       for flag in spec.kwonlyargs
   ]
-  flag_items = optional_flag_items + required_flag_items
+  flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
     description = _GetArgDescription(spec.varkw, docstring_info)
@@ -382,9 +389,7 @@ def _CreateFlagItem(flag, docstring_info, required=False):
     flag: The name of the flag.
     docstring_info: A docstrings.DocstringInfo namedtuple with information about
       the containing function's docstring.
-    required: Whether the flag is required. Keyword-only arguments (only in
-      Python 3) become required flags, whereas normal keyword arguments become
-      optional flags.
+    required: Whether the flag is required.
   Returns:
     A string to be used in constructing the help screen for the function.
   """
@@ -570,13 +575,21 @@ def _GetCallableUsageItems(spec, metadata):
   return items
 
 
+def _KeywordOnlyArguments(spec, required=True):
+  return (flag for flag in spec.kwonlyargs
+          if required == (flag in spec.kwonlydefaults))
+
+
 def _GetCallableAvailabilityLines(spec):
   """The list of availability lines for a callable for use in a usage string."""
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
 
   # TODO(dbieber): Handle args_with_no_defaults if not accepts_positional_args.
-  optional_flags = [('--' + flag) for flag in args_with_defaults]
-  required_flags = [('--' + flag) for flag in spec.kwonlyargs]
+  optional_flags = [('--' + flag) for flag in itertools.chain(
+      args_with_defaults, _KeywordOnlyArguments(spec, required=False))]
+  required_flags = [
+      ('--' + flag) for flag in _KeywordOnlyArguments(spec, required=True)
+  ]
 
   # Flags section:
   availability_lines = []
