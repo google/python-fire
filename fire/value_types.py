@@ -55,7 +55,7 @@ def IsSimpleGroup(component):
   """
   assert isinstance(component, dict)
   for unused_key, value in component.items():
-    if not IsValue(value) and not isinstance(value, (list, dict)):
+    if not IsValue(value) and not isinstance(value, (list, dict, tuple)):
       return False
   return True
 
