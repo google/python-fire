@@ -20,7 +20,6 @@ from __future__ import print_function
 
 import os
 import textwrap
-import unittest
 
 from fire import formatting
 from fire import helptext
@@ -160,21 +159,19 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    OldStyleEmpty', help_screen)
     self.assertIn('SYNOPSIS\n    OldStyleEmpty', help_screen)
 
-  @unittest.skipIf(
-      six.PY2,
-      'Python 2 does not support single asterisk in function definition')
+  @testutils.skipIf(
+      six.PY2, 'Python 2 does not support keyword-only arguments.')
   def testHelpTextKeywordOnlyArgumentsWithDefault(self):
-    component = tc.py3.KeywordOnly.with_default
+    component = tc.py3.KeywordOnly.with_default  # pytype: disable=module-attr
     output = helptext.HelpText(
         component=component, trace=trace.FireTrace(component, 'with_default'))
     self.assertIn('NAME\n    with_default', output)
     self.assertIn('FLAGS\n    --x=X', output)
 
-  @unittest.skipIf(
-      six.PY2,
-      'Python 2 does not support single asterisk in function definition')
+  @testutils.skipIf(
+      six.PY2, 'Python 2 does not support keyword-only arguments.')
   def testHelpTextKeywordOnlyArgumentsWithoutDefault(self):
-    component = tc.py3.KeywordOnly.double
+    component = tc.py3.KeywordOnly.double  # pytype: disable=module-attr
     output = helptext.HelpText(
         component=component, trace=trace.FireTrace(component, 'double'))
     self.assertIn('NAME\n    double', output)
