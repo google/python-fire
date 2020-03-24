@@ -83,6 +83,15 @@
     <a class="current" href="./">Reference</a>
     <ul class="subnav">
             
+    <li class="toctree-l2"><a href="#python-fire-quick-reference">Python Fire Quick Reference</a></li>
+    
+
+    <li class="toctree-l2"><a href="#arguments-for-calling-firefire">Arguments for Calling fire.Fire()</a></li>
+    
+
+    <li class="toctree-l2"><a href="#using-a-fire-cli-without-modifying-any-code">Using a Fire CLI without modifying any code</a></li>
+    
+
     </ul>
 	    </li>
           
@@ -118,7 +127,8 @@
           <div role="main">
             <div class="section">
               
-                <table>
+                <h2 id="python-fire-quick-reference">Python Fire Quick Reference</h2>
+<table>
 <thead>
 <tr>
 <th align="left">Setup</th>
@@ -171,37 +181,208 @@
 <tbody>
 <tr>
 <td align="left"><a href="../using-cli/#help-flag">Help</a></td>
-<td align="left"><code>command -- --help</code></td>
+<td align="left">`command</td>
+<td align="left">Show the help</td>
+</tr>
+<tr>
+<td align="left">:                                            : --help`        : screen.        :</td>
+<td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr>
 <td align="left"><a href="../using-cli/#interactive-flag">REPL</a></td>
-<td align="left"><code>command -- --interactive</code></td>
-<td align="left">Enters interactive mode.</td>
+<td align="left">`command --</td>
+<td align="left">Enters</td>
+</tr>
+<tr>
+<td align="left">:                                            : --interactive` : interactive    :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            :                : mode.          :</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><a href="../using-cli/#separator-flag">Separator</a></td>
-<td align="left"><code>command -- --separator=X</code></td>
-<td align="left">This sets the separator to <code>X</code>. The default separator is <code>-</code>.</td>
+<td align="left">`command --</td>
+<td align="left">This sets the</td>
+</tr>
+<tr>
+<td align="left">:                                            : --separator=X` : separator to   :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            :                : <code>X</code>. The       :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            :                : default        :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            :                : separator is   :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            :                : <code>-</code>.           :</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><a href="../using-cli/#completion-flag">Completion</a></td>
-<td align="left"><code>command -- --completion [shell]</code></td>
-<td align="left">Generate a completion script for the CLI.</td>
+<td align="left">`command --</td>
+<td align="left">Generate a</td>
+</tr>
+<tr>
+<td align="left">:                                            : --completion   : completion     :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            : [shell]`       : script for the :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            :                : CLI.           :</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><a href="../using-cli/#trace-flag">Trace</a></td>
-<td align="left"><code>command -- --trace</code></td>
-<td align="left">Gets a Fire trace for the command.</td>
+<td align="left">`command --</td>
+<td align="left">Gets a Fire</td>
+</tr>
+<tr>
+<td align="left">:                                            : --trace`       : trace for the  :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            :                : command.       :</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><a href="../using-cli/#verbose-flag">Verbose</a></td>
-<td align="left"><code>command -- --verbose</code></td>
+<td align="left">`command --</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:                                            : --verbose`     :                :</td>
+<td align="left"></td>
 <td align="left"></td>
 </tr>
 </tbody>
 </table>
-<p><em>Note that flags are separated from the Fire command by an isolated <code>--</code> arg.</em></p>
+<p><em>Note that flags are separated from the Fire command by an isolated <code>--</code> arg.
+Help is an exception; the isolated <code>--</code> is optional for getting help.</em></p>
+<h2 id="arguments-for-calling-firefire">Arguments for Calling fire.Fire()</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Argument</th>
+<th align="left">Usage</th>
+<th align="left">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">component</td>
+<td align="left"><code>fire.Fire(component)</code></td>
+<td align="left">If omitted, defaults to a dict of</td>
+</tr>
+<tr>
+<td align="left">:           :                           : all locals and globals.              :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">command</td>
+<td align="left">`fire.Fire(command='hello</td>
+<td align="left">Either a string or a list of</td>
+</tr>
+<tr>
+<td align="left">:           : --name=5')`               : arguments. If a string is provided,  :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : it is split to determine the         :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : arguments. If a list or tuple is     :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : provided, they are the arguments. If :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : <code>command</code> is omitted, then           :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : <code>sys.argv[1\:]</code> (the arguments from  :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : the command line) are used by        :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : default.                             :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">name</td>
+<td align="left"><code>fire.Fire(name='tool')</code></td>
+<td align="left">The name of the CLI, ideally the</td>
+</tr>
+<tr>
+<td align="left">:           :                           : name users will enter to run the     :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : CLI. This name will be used in the   :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : CLI's help screens. If the argument  :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : is omitted, it will be inferred      :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">:           :                           : automatically.                       :</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<h2 id="using-a-fire-cli-without-modifying-any-code">Using a Fire CLI without modifying any code</h2>
+<p><code>python -m fire &lt;module&gt; &lt;arguments&gt;</code></p>
+<p>For example, <code>python -m fire calendar -h</code>.</p>
               
             </div>
           </div>

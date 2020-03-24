@@ -228,6 +228,17 @@ def main():
   fire.Fire(hello)
 </code></pre>
 
+<h5 id="version-4-fire-without-code-changes">Version 4: Fire Without Code Changes</h5>
+<p>If you have a file <code>example.py</code> that doesn't even import fire:</p>
+<pre><code class="python">def hello(name):
+  return 'Hello {name}!'.format(name=name)
+</code></pre>
+
+<p>Then you can use it with Fire like this:</p>
+<pre><code class="bash">$ python -m fire example hello --name=World
+Hello World!
+</code></pre>
+
 <h3 id="exposing-multiple-commands">Exposing Multiple Commands</h3>
 <p>In the previous example, we exposed a single function to the command line. Now
 we'll look at ways of exposing multiple functions to the command line.</p>
@@ -631,7 +642,7 @@ $ python example.py [1,2]
 list
 $ python example.py True
 bool
-$ python example.py {name: David}
+$ python example.py {name:David}
 dict
 </code></pre>
 
@@ -705,8 +716,9 @@ this feature like this: <code>python example.py -- --interactive</code>.</p>
 incorporates your docstrings into the help and usage information that it
 generates. Fire will try to provide help even if you omit the isolated <code>--</code>
 separating the flags from the Fire command, but may not always be able to, since
-<code>help</code> is a valid argument name. Use this feature like this:
-<code>python example.py -- --help</code>.</p>
+<code>help</code> is a valid argument name. Use this feature like this: <code>python
+example.py -- --help</code> or <code>python example.py --help</code> (or even <code>python example.py
+-h</code>).</p>
 <p>The complete set of flags available is shown below, in the reference section.</p>
 <h3 id="reference">Reference</h3>
 <table>
