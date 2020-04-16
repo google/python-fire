@@ -93,18 +93,18 @@ Please see [The Python Fire Guide](docs/guide.md).
 
 | Creating a CLI | Command                | Notes
 | :--------------| :--------------------- | :---------
-| import         | `import fire`          |
+| import         | `import fire`          | 
 | Call           | `fire.Fire()`          | Turns the current module into a Fire CLI.
 | Call           | `fire.Fire(component)` | Turns `component` into a Fire CLI.
 
 | Using a CLI                                     | Command                                 | Notes
 | :---------------------------------------------- | :-------------------------------------- | :----
-| [Help](docs/using-cli.md#help-flag)             | `command --help` or `command -- --help` |
+| [Help](docs/using-cli.md#help-flag)             | `command --help` or `command -- --help` | Shows help and usage information.
 | [REPL](docs/using-cli.md#interactive-flag)      | `command -- --interactive`              | Enters interactive mode.
 | [Separator](docs/using-cli.md#separator-flag)   | `command -- --separator=X`              | Sets the separator to `X`. The default separator is `-`.
 | [Completion](docs/using-cli.md#completion-flag) | `command -- --completion [shell]`       | Generates a completion script for the CLI.
 | [Trace](docs/using-cli.md#trace-flag)           | `command -- --trace`                    | Gets a Fire trace for the command.
-| [Verbose](docs/using-cli.md#verbose-flag)       | `command -- --verbose`                  |
+| [Verbose](docs/using-cli.md#verbose-flag)       | `command -- --verbose`                  | 
 
 _Note that these flags are separated from the Fire command by an isolated `--`._
 
