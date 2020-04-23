@@ -53,6 +53,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import asyncio
 import inspect
 import json
 import os
@@ -670,6 +671,8 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   parse = _MakeParseFn(fn, metadata)
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
   component = fn(*varargs, **kwargs)
+  if inspect.iscoroutine(component):
+      component = asyncio.run(component)
 
   if treatment == 'class':
     action = trace.INSTANTIATED_CLASS
