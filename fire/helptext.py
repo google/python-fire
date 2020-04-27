@@ -449,7 +449,7 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False):
     arg_default = arg_default[:clip_length] + suffix
 
   description = '\n'.join(
-    part for part in (arg_type, arg_default, description) if part
+      part for part in (arg_type, arg_default, description) if part
   )
 
   return _CreateItem(flag_string, description, indent=SUBSECTION_INDENTATION)

@@ -27,6 +27,8 @@ import sys
 
 if six.PY3:
   from fire import test_components_py3 as py3  # pylint: disable=unused-import,no-name-in-module,g-import-not-at-top
+if sys.version_info[0:2] >= (3, 5):
+  from fire import test_components_py3p5 as py3p5  # pylint: disable=unused-import,no-name-in-module
 
 
 def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=keyword-arg-before-vararg
@@ -107,53 +109,12 @@ class WithDefaults(object):
     return 3 * count
 
   def text(
-    self,
-    string=('0001020304050607080910111213141516171819'
-            '2021222324252627282930313233343536373839')
+      self,
+      string=('0001020304050607080910111213141516171819'
+              '2021222324252627282930313233343536373839')
   ):
     return string
 
-
-if sys.version_info[0:2] >= (3, 5):
-  # Python < 3.5 does not support type hints.
-  exec('''
-from typing import Tuple
-
-class WithTypes(object):
-  """Class with functions that have default arguments and types."""
-
-  def double(self, count: float) -> float:
-    """Returns the input multiplied by 2.
-
-    Args:
-      count: Input number that you want to double.
-
-    Returns:
-      A number that is the double of count.s
-    """
-    return 2 * count
-
-  def long_type(self, long_obj: Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[int]]]]]]]]]]]]):
-    return long_obj
-
-
-class WithDefaultsAndTypes(object):
-  """Class with functions that have default arguments and types."""
-
-  def double(self, count: float = 0) -> float:
-    """Returns the input multiplied by 2.
-
-    Args:
-      count: Input number that you want to double.
-
-    Returns:
-      A number that is the double of count.s
-    """
-    return 2 * count
-
-  def get_int(self, value: int = None):
-    return 0 if value is None else value
-  ''')
 
 class OldStyleWithDefaults:  # pylint: disable=old-style-class,no-init
 

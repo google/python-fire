@@ -100,10 +100,10 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('NOTES', help_screen)
 
   @testutils.skipIf(
-    sys.version_info[0:2] < (3, 5),
-    'Python < 3.5 does not support type hints.')
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithDefaultsAndTypes(self):
-    component = tc.WithDefaultsAndTypes().double
+    component = tc.py3p5.WithDefaultsAndTypes().double
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='double'))
@@ -116,10 +116,10 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('NOTES', help_screen)
 
   @testutils.skipIf(
-    sys.version_info[0:2] < (3, 5),
-    'Python < 3.5 does not support type hints.')
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypesAndDefaultNone(self):
-    component = tc.WithDefaultsAndTypes().get_int
+    component = tc.py3p5.WithDefaultsAndTypes().get_int
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='get_int'))
@@ -133,10 +133,10 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('NOTES', help_screen)
 
   @testutils.skipIf(
-    sys.version_info[0:2] < (3, 5),
-    'Python < 3.5 does not support type hints.')
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypes(self):
-    component = tc.WithTypes().double
+    component = tc.py3p5.WithTypes().double
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='double'))
@@ -151,10 +151,10 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
 
   @testutils.skipIf(
-    sys.version_info[0:2] < (3, 5),
-    'Python < 3.5 does not support type hints.')
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithLongTypes(self):
-    component = tc.WithTypes().long_type
+    component = tc.py3p5.WithTypes().long_type
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='long_type'))
