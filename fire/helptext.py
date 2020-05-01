@@ -380,17 +380,20 @@ def _CreateArgItem(arg, docstring_info, spec):
   Returns:
     A string to be used in constructing the help screen for the function.
   """
+
+  # The help string is indented, so calculate the maximum permitted length
+  # before indentation to avoid exceeding the maximum line length.
+  max_str_length = LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION
+
   description = _GetArgDescription(arg, docstring_info)
 
   arg_string = formatting.BoldUnderline(arg.upper())
 
   arg_type = _GetArgType(arg, spec)
   arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
-  if len(arg_type) + SECTION_INDENTATION + SUBSECTION_INDENTATION > LINE_LENGTH:
-    suffix = '... <clipped>'
-    clip_length = \
-      LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION - len(suffix)
-    arg_type = arg_type[:clip_length] + suffix
+  available_space = max_str_length - len(arg_type)
+  arg_type = \
+    formatting.EllipsisTruncate(arg_type, available_space, max_str_length)
 
   description = '\n'.join(part for part in (arg_type, description) if part)
 
@@ -415,6 +418,11 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False):
   #  FullArgSpec. This would require updating fire.docstrings.parser() and a
   #  decision would need to be made about which takes priority if the docstrings
   #  and function definition disagree.
+
+  # The help string is indented, so calculate the maximum permitted length
+  # before indentation to avoid exceeding the maximum line length.
+  max_str_length = LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION
+
   description = _GetArgDescription(flag, docstring_info)
 
   flag_string_template = '--{flag_name}={flag_name_upper}'
@@ -433,20 +441,14 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False):
     arg_type = 'Optional[{}]'.format(arg_type)
 
   arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
-  text_len = len(arg_type) + SECTION_INDENTATION + SUBSECTION_INDENTATION
-  if text_len > LINE_LENGTH:
-    suffix = '... <clipped>'
-    clip_length = \
-      LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION - len(suffix)
-    arg_type = arg_type[:clip_length] + suffix
+  available_space = max_str_length - len(arg_type)
+  arg_type = \
+    formatting.EllipsisTruncate(arg_type, available_space, max_str_length)
 
   arg_default = 'Default: {}'.format(arg_default) if arg_default else ''
-  text_len = len(arg_default) + SECTION_INDENTATION + SUBSECTION_INDENTATION
-  if text_len > LINE_LENGTH:
-    suffix = '... <clipped>'
-    clip_length = \
-      LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION - len(suffix)
-    arg_default = arg_default[:clip_length] + suffix
+  available_space = max_str_length - len(arg_default)
+  arg_default = \
+    formatting.EllipsisTruncate(arg_default, available_space, max_str_length)
 
   description = '\n'.join(
       part for part in (arg_type, arg_default, description) if part

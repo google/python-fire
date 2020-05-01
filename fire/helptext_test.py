@@ -95,7 +95,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn(
         'FLAGS\n    --string=STRING\n'
         '        Default: \'0001020304050607080910'
-        '111213141516171819202122232... <clipped>',
+        '1112131415161718192021222324252627282...',
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
@@ -164,7 +164,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn(
         'POSITIONAL ARGUMENTS\n    LONG_OBJ\n'
         '        Type: typing.Tuple[typing.Tuple['
-        'typing.Tuple[typing.Tuple[t... <clipped>',
+        'typing.Tuple[typing.Tuple[typing.Tupl...',
         help_screen)
     self.assertIn(
         'NOTES\n    You can also use flags syntax for POSITIONAL ARGUMENTS',
