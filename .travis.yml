@@ -11,8 +11,8 @@ before_install:
   - pip install --upgrade pylint pytest pytest-pylint pytest-runner
 
 install:
-  - pip install termcolor
-  - pip install hypothesis python-Levenshtein
+  - pip install termcolor hypothesis python-Levenshtein
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then pip install pytype; fi
   - python setup.py develop
 
 script:
@@ -20,15 +20,12 @@ script:
   - pip install ipython
   - python -m pytest  # Now run the tests with IPython.
   - pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py,console
-  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then
-      pip install pytype;
-    fi
   # Run type-checking, excluding files that define or use py3 features in py2.
   - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
       pytype -x
         fire/fire_test.py
         fire/inspectutils_test.py
         fire/test_components_py3.py;
-    elif [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then
-      pytype;
     fi
+  # Waiting for Python 3.8 support: https://github.com/google/pytype/pull/587
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.* && $TRAVIS_PYTHON_VERSION != 3.[48] ]]; then pytype; fi
