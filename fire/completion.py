@@ -326,7 +326,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
         # not uninstantiated classes.
         return False
       tuplegetter = getattr(collections, '_tuplegetter', type(None))
-      if tuplegetter is not None and isinstance(class_attr.object, tuplegetter):
+      if isinstance(class_attr.object, tuplegetter):
         # backward compatibility: namedtuple attributes were properties
         return False
   if (six.PY2 and inspect.isfunction(component)
