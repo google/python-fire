@@ -325,7 +325,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
         # methods and properties should be accessed on instantiated objects,
         # not uninstantiated classes.
         return False
-      tuplegetter = getattr(collections, '_tuplegetter', None)
+      tuplegetter = getattr(collections, '_tuplegetter', type(None))
       if tuplegetter is not None and isinstance(class_attr.object, tuplegetter):
         # backward compatibility: namedtuple attributes were properties
         return False
