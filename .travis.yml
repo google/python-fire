@@ -28,4 +28,4 @@ script:
         fire/test_components_py3.py;
     fi
   # Waiting for Python 3.8 support: https://github.com/google/pytype/pull/587
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.* && $TRAVIS_PYTHON_VERSION != 3.[48] ]]; then pytype; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.* && $TRAVIS_PYTHON_VERSION != 3.4 ]]; then pytype; fi
