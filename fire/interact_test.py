@@ -21,7 +21,10 @@ from __future__ import print_function
 from fire import interact
 from fire import testutils
 
-import mock
+try:
+  import mock  # python 2.x
+except ModuleNotFoundError:
+  from unittest import mock  # python 3.x
 
 
 try:
