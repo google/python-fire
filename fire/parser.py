@@ -27,7 +27,7 @@ def CreateParser():
   parser.add_argument('--verbose', '-v', action='store_true')
   parser.add_argument('--interactive', '-i', action='store_true')
   parser.add_argument('--separator', default='-')
-  parser.add_argument('--completion', nargs='?', const='bash', type=str)
+  parser.add_argument('--completion', nargs='*')
   parser.add_argument('--help', '-h', action='store_true')
   parser.add_argument('--trace', '-t', action='store_true')
   # TODO(dbieber): Consider allowing name to be passed as an argument.
