@@ -320,10 +320,16 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
     if class_attrs is None:
       class_attrs = inspectutils.GetClassAttrsDict(class_attrs) or {}
     class_attr = class_attrs.get(name)
-    if class_attr and class_attr.kind in ('method', 'property'):
-      # methods and properties should be accessed on instantiated objects,
-      # not uninstantiated classes.
-      return False
+    if class_attr:
+      # Methods and properties should only be accessible on instantiated
+      # objects, not on uninstantiated classes.
+      if class_attr.kind in ('method', 'property'):
+        return False
+      # Backward compatibility notes: Before Python 3.8, namedtuple attributes
+      # were properties. In Python 3.8, they have type tuplegetter.
+      tuplegetter = getattr(collections, '_tuplegetter', type(None))
+      if isinstance(class_attr.object, tuplegetter):
+        return False
   if (six.PY2 and inspect.isfunction(component)
       and name in ('func_closure', 'func_code', 'func_defaults',
                    'func_dict', 'func_doc', 'func_globals', 'func_name')):

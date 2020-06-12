@@ -3,14 +3,9 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
-  - "3.6"
-# Workaround for testing Python 3.7:
-# https://github.com/travis-ci/travis-ci/issues/9815
-matrix:
-  include:
-    - python: 3.7
-      dist: xenial
-      sudo: yes
+  - "3.7"
+  - "3.8"
+
 before_install:
   - pip install --upgrade setuptools pip
   - pip install --upgrade pylint pytest pytest-pylint pytest-runner
