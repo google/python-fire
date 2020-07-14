@@ -103,7 +103,8 @@ class HelpTest(testutils.BaseTestCase):
       sys.version_info[0:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithDefaultsAndTypes(self):
-    component = tc.py3.WithDefaultsAndTypes().double
+    component = (
+        tc.py3.WithDefaultsAndTypes().double)  # pytype: disable=module-attr
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='double'))
@@ -119,7 +120,8 @@ class HelpTest(testutils.BaseTestCase):
       sys.version_info[0:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypesAndDefaultNone(self):
-    component = tc.py3.WithDefaultsAndTypes().get_int
+    component = (
+        tc.py3.WithDefaultsAndTypes().get_int)  # pytype: disable=module-attr
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='get_int'))
@@ -136,7 +138,7 @@ class HelpTest(testutils.BaseTestCase):
       sys.version_info[0:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypes(self):
-    component = tc.py3.WithTypes().double
+    component = tc.py3.WithTypes().double  # pytype: disable=module-attr
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='double'))
@@ -154,7 +156,7 @@ class HelpTest(testutils.BaseTestCase):
       sys.version_info[0:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithLongTypes(self):
-    component = tc.py3.WithTypes().long_type
+    component = tc.py3.WithTypes().long_type  # pytype: disable=module-attr
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='long_type'))
