@@ -16,6 +16,7 @@
 """This module has components that use Python 3 specific syntax."""
 
 import functools
+from typing import Tuple
 
 
 # pylint: disable=keyword-arg-before-vararg
@@ -46,3 +47,43 @@ class LruCacheDecoratedMethod(object):
 @functools.lru_cache()
 def lru_cache_decorated(arg1):
   return arg1
+
+
+class WithTypes(object):
+  """Class with functions that have default arguments and types."""
+
+  def double(self, count: float) -> float:
+    """Returns the input multiplied by 2.
+
+    Args:
+      count: Input number that you want to double.
+
+    Returns:
+      A number that is the double of count.s
+    """
+    return 2 * count
+
+  def long_type(
+      self,
+      long_obj: (Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[
+          Tuple[Tuple[Tuple[Tuple[Tuple[int]]]]]]]]]]]])
+  ):
+    return long_obj
+
+
+class WithDefaultsAndTypes(object):
+  """Class with functions that have default arguments and types."""
+
+  def double(self, count: float = 0) -> float:
+    """Returns the input multiplied by 2.
+
+    Args:
+      count: Input number that you want to double.
+
+    Returns:
+      A number that is the double of count.s
+    """
+    return 2 * count
+
+  def get_int(self, value: int = None):
+    return 0 if value is None else value

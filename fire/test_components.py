@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import enum
 import functools
 
-import enum
 import six
 
 if six.PY3:
@@ -104,6 +104,13 @@ class WithDefaults(object):
 
   def triple(self, count=0):
     return 3 * count
+
+  def text(
+      self,
+      string=('0001020304050607080910111213141516171819'
+              '2021222324252627282930313233343536373839')
+  ):
+    return string
 
 
 class OldStyleWithDefaults:  # pylint: disable=old-style-class,no-init

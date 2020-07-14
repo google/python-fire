@@ -34,6 +34,7 @@ from __future__ import division
 from __future__ import print_function
 
 import itertools
+import sys
 
 from fire import completion
 from fire import custom_descriptions
@@ -44,6 +45,7 @@ from fire import value_types
 
 LINE_LENGTH = 80
 SECTION_INDENTATION = 4
+SUBSECTION_INDENTATION = 4
 
 
 def HelpText(component, trace=None, verbose=False):
@@ -171,7 +173,7 @@ def _DescriptionSection(component, info):
 
 def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
   return _CreateFlagItem(
-      flag, docstring_info, required=flag not in spec.kwonlydefaults)
+      flag, docstring_info, spec, required=flag not in spec.kwonlydefaults)
 
 
 def _ArgsAndFlagsSections(info, spec, metadata):
@@ -188,13 +190,13 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   docstring_info = info['docstring_info']
 
   arg_items = [
-      _CreateArgItem(arg, docstring_info)
+      _CreateArgItem(arg, docstring_info, spec)
       for arg in args_with_no_defaults
   ]
 
   if spec.varargs:
     arg_items.append(
-        _CreateArgItem(spec.varargs, docstring_info)
+        _CreateArgItem(spec.varargs, docstring_info, spec)
     )
 
   if arg_items:
@@ -207,7 +209,7 @@ def _ArgsAndFlagsSections(info, spec, metadata):
       )
 
   positional_flag_items = [
-      _CreateFlagItem(flag, docstring_info, required=False)
+      _CreateFlagItem(flag, docstring_info, spec, required=False)
       for flag in args_with_defaults
   ]
   kwonly_flag_items = [
@@ -365,43 +367,139 @@ def _CreateOutputSection(name, content):
     content=formatting.Indent(content, SECTION_INDENTATION))
 
 
-def _CreateArgItem(arg, docstring_info):
+def _CreateArgItem(arg, docstring_info, spec):
   """Returns a string describing a positional argument.
 
   Args:
     arg: The name of the positional argument.
     docstring_info: A docstrings.DocstringInfo namedtuple with information about
       the containing function's docstring.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
 
   Returns:
     A string to be used in constructing the help screen for the function.
   """
+
+  # The help string is indented, so calculate the maximum permitted length
+  # before indentation to avoid exceeding the maximum line length.
+  max_str_length = LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION
+
   description = _GetArgDescription(arg, docstring_info)
 
-  arg = arg.upper()
-  return _CreateItem(formatting.BoldUnderline(arg), description, indent=4)
+  arg_string = formatting.BoldUnderline(arg.upper())
+
+  arg_type = _GetArgType(arg, spec)
+  arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
+  available_space = max_str_length - len(arg_type)
+  arg_type = (
+      formatting.EllipsisTruncate(arg_type, available_space, max_str_length))
+
+  description = '\n'.join(part for part in (arg_type, description) if part)
+
+  return _CreateItem(arg_string, description, indent=SUBSECTION_INDENTATION)
 
 
-def _CreateFlagItem(flag, docstring_info, required=False):
-  """Returns a string describing a flag using information from the docstring.
+def _CreateFlagItem(flag, docstring_info, spec, required=False):
+  """Returns a string describing a flag using docstring and FullArgSpec info.
 
   Args:
     flag: The name of the flag.
     docstring_info: A docstrings.DocstringInfo namedtuple with information about
       the containing function's docstring.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
     required: Whether the flag is required.
   Returns:
     A string to be used in constructing the help screen for the function.
   """
+  # pylint: disable=g-bad-todo
+  # TODO(MichaelCG8): Get type and default information from docstrings if it is
+  # not available in FullArgSpec. This will require updating
+  # fire.docstrings.parser().
+
+  # The help string is indented, so calculate the maximum permitted length
+  # before indentation to avoid exceeding the maximum line length.
+  max_str_length = LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION
+
   description = _GetArgDescription(flag, docstring_info)
 
   flag_string_template = '--{flag_name}={flag_name_upper}'
-  flag = flag_string_template.format(
+  flag_string = flag_string_template.format(
       flag_name=flag,
       flag_name_upper=formatting.Underline(flag.upper()))
   if required:
-    flag += ' (required)'
-  return _CreateItem(flag, description, indent=4)
+    flag_string += ' (required)'
+
+  arg_type = _GetArgType(flag, spec)
+  arg_default = _GetArgDefault(flag, spec)
+
+  # We need to handle the case where there is a default of None, but otherwise
+  # the argument has another type.
+  if arg_default == 'None':
+    arg_type = 'Optional[{}]'.format(arg_type)
+
+  arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
+  available_space = max_str_length - len(arg_type)
+  arg_type = (
+      formatting.EllipsisTruncate(arg_type, available_space, max_str_length))
+
+  arg_default = 'Default: {}'.format(arg_default) if arg_default else ''
+  available_space = max_str_length - len(arg_default)
+  arg_default = (
+      formatting.EllipsisTruncate(arg_default, available_space, max_str_length))
+
+  description = '\n'.join(
+      part for part in (arg_type, arg_default, description) if part
+  )
+
+  return _CreateItem(flag_string, description, indent=SUBSECTION_INDENTATION)
+
+
+def _GetArgType(arg, spec):
+  """Returns a string describing the type of an argument.
+
+  Args:
+    arg: The name of the argument.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
+  Returns:
+    A string to be used in constructing the help screen for the function, the
+    empty string if the argument type is not available.
+  """
+  if arg in spec.annotations:
+    arg_type = spec.annotations[arg]
+    try:
+      if sys.version_info[0:2] >= (3, 3):
+        return arg_type.__qualname__
+      return arg_type.__name__
+    except AttributeError:
+      # Some typing objects, such as typing.Union do not have either a __name__
+      # or __qualname__ attribute.
+      # repr(typing.Union[int, str]) will return ': typing.Union[int, str]'
+      return repr(arg_type)
+  return ''
+
+
+def _GetArgDefault(flag, spec):
+  """Returns a string describing a flag's default value.
+
+  Args:
+    flag: The name of the flag.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
+  Returns:
+    A string to be used in constructing the help screen for the function, the
+    empty string if the flag does not have a default or the default is not
+    available.
+  """
+  num_defaults = len(spec.defaults)
+  args_with_defaults = spec.args[-num_defaults:]
+
+  for arg, default in zip(args_with_defaults, spec.defaults):
+    if arg == flag:
+      return repr(default)
+  return ''
 
 
 def _CreateItem(name, description, indent=2):

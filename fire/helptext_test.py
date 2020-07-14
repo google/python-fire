@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import sys
 import textwrap
 
 from fire import formatting
@@ -80,8 +81,96 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    triple', help_screen)
     self.assertIn('SYNOPSIS\n    triple <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
-    self.assertIn('FLAGS\n    --count=COUNT', help_screen)
+    self.assertIn('FLAGS\n    --count=COUNT\n        Default: 0', help_screen)
     self.assertNotIn('NOTES', help_screen)
+
+  def testHelpTextFunctionWithLongDefaults(self):
+    component = tc.WithDefaults().text
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='text'))
+    self.assertIn('NAME\n    text', help_screen)
+    self.assertIn('SYNOPSIS\n    text <flags>', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn(
+        'FLAGS\n    --string=STRING\n'
+        '        Default: \'0001020304050607080910'
+        '1112131415161718192021222324252627282...',
+        help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
+  @testutils.skipIf(
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
+  def testHelpTextFunctionWithDefaultsAndTypes(self):
+    component = tc.py3.WithDefaultsAndTypes().double
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='double'))
+    self.assertIn('NAME\n    double', help_screen)
+    self.assertIn('SYNOPSIS\n    double <flags>', help_screen)
+    self.assertIn('DESCRIPTION', help_screen)
+    self.assertIn(
+        'FLAGS\n    --count=COUNT\n        Type: float\n        Default: 0',
+        help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
+  @testutils.skipIf(
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
+  def testHelpTextFunctionWithTypesAndDefaultNone(self):
+    component = tc.py3.WithDefaultsAndTypes().get_int
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='get_int'))
+    self.assertIn('NAME\n    get_int', help_screen)
+    self.assertIn('SYNOPSIS\n    get_int <flags>', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn(
+        'FLAGS\n    --value=VALUE\n'
+        '        Type: Optional[int]\n        Default: None',
+        help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
+  @testutils.skipIf(
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
+  def testHelpTextFunctionWithTypes(self):
+    component = tc.py3.WithTypes().double
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='double'))
+    self.assertIn('NAME\n    double', help_screen)
+    self.assertIn('SYNOPSIS\n    double COUNT', help_screen)
+    self.assertIn('DESCRIPTION', help_screen)
+    self.assertIn(
+        'POSITIONAL ARGUMENTS\n    COUNT\n        Type: float',
+        help_screen)
+    self.assertIn(
+        'NOTES\n    You can also use flags syntax for POSITIONAL ARGUMENTS',
+        help_screen)
+
+  @testutils.skipIf(
+      sys.version_info[0:2] < (3, 5),
+      'Python < 3.5 does not support type hints.')
+  def testHelpTextFunctionWithLongTypes(self):
+    component = tc.py3.WithTypes().long_type
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='long_type'))
+    self.assertIn('NAME\n    long_type', help_screen)
+    self.assertIn('SYNOPSIS\n    long_type LONG_OBJ', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    # TODO(dbieber): Assert type is displayed correctly. Type displays
+    # differently in Travis vs in Google.
+    # self.assertIn(
+    #     'POSITIONAL ARGUMENTS\n    LONG_OBJ\n'
+    #     '        Type: typing.Tuple[typing.Tuple['
+    #     'typing.Tuple[typing.Tuple[typing.Tupl...',
+    #     help_screen)
+    self.assertIn(
+        'NOTES\n    You can also use flags syntax for POSITIONAL ARGUMENTS',
+        help_screen)
 
   def testHelpTextFunctionWithBuiltin(self):
     component = 'test'.upper
@@ -244,6 +333,7 @@ VALUES
 
     FLAGS
         --count=COUNT
+            Default: 0
             Input number that you want to double."""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
                      help_output.strip())
