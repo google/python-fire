@@ -42,6 +42,7 @@ from fire import decorators
 from fire import formatting
 from fire import inspectutils
 from fire import value_types
+from fire.docstrings import KwargInfo
 
 LINE_LENGTH = 80
 SECTION_INDENTATION = 4
@@ -219,10 +220,27 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
+    documented_kwargs = [
+        _CreateFlagItem(flag.name, docstring_info, spec,
+                        flag_string=f"--{flag.name}")
+        for flag in docstring_info.args
+        if isinstance(flag, KwargInfo)
+    ]
+    if documented_kwargs:
+      message = 'The following flags are also accepted.'
+      item = _CreateItem(message, None, indent=4)
+      flag_items.append('')
+      flag_items.append(item)
+      flag_items.extend(documented_kwargs)
+      flag_items.append('')
+
     description = _GetArgDescription(spec.varkw, docstring_info)
-    message = ('Additional flags are accepted.'
-               if flag_items else
-               'Flags are accepted.')
+    if documented_kwargs:
+      message = 'Additional undocumented flags may also be accepted.'
+    elif flag_items:
+      message = 'Additional flags are accepted.'
+    else:
+      message = 'Flags are accepted.'
     item = _CreateItem(message, description, indent=4)
     flag_items.append(item)
 
@@ -400,7 +418,8 @@ def _CreateArgItem(arg, docstring_info, spec):
   return _CreateItem(arg_string, description, indent=SUBSECTION_INDENTATION)
 
 
-def _CreateFlagItem(flag, docstring_info, spec, required=False):
+def _CreateFlagItem(flag, docstring_info, spec, required=False,
+                    flag_string=None):
   """Returns a string describing a flag using docstring and FullArgSpec info.
 
   Args:
@@ -424,10 +443,11 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False):
 
   description = _GetArgDescription(flag, docstring_info)
 
-  flag_string_template = '--{flag_name}={flag_name_upper}'
-  flag_string = flag_string_template.format(
-      flag_name=flag,
-      flag_name_upper=formatting.Underline(flag.upper()))
+  if not flag_string:
+    flag_string_template = '--{flag_name}={flag_name_upper}'
+    flag_string = flag_string_template.format(
+        flag_name=flag,
+        flag_name_upper=formatting.Underline(flag.upper()))
   if required:
     flag_string += ' (required)'
 

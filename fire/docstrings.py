@@ -77,6 +77,11 @@ class ArgInfo(
 ArgInfo.__new__.__defaults__ = (None,) * len(ArgInfo._fields)
 
 
+class KwargInfo(ArgInfo):
+  pass
+KwargInfo.__new__.__defaults__ = (None,) * len(KwargInfo._fields)
+
+
 class Namespace(dict):
   """A dict with attribute (dot-notation) access enabled."""
 
@@ -108,7 +113,7 @@ class Formats(enum.Enum):
 
 
 SECTION_TITLES = {
-    Sections.ARGS: ('argument', 'arg', 'parameter', 'param'),
+    Sections.ARGS: ('argument', 'arg', 'parameter', 'param', 'key'),
     Sections.RETURNS: ('return',),
     Sections.YIELDS: ('yield',),
     Sections.RAISES: ('raise', 'except', 'exception', 'throw', 'error', 'warn'),
@@ -169,6 +174,7 @@ def parse(docstring):
   state.summary.lines = []
   state.description.lines = []
   state.args = []
+  state.kwargs = []
   state.current_arg = None
   state.returns.lines = []
   state.yields.lines = []
@@ -193,6 +199,10 @@ def parse(docstring):
   args = [ArgInfo(
       name=arg.name, type=_cast_to_known_type(_join_lines(arg.type.lines)),
       description=_join_lines(arg.description.lines)) for arg in state.args]
+
+  args.extend([KwargInfo(
+      name=arg.name, type=_cast_to_known_type(_join_lines(arg.type.lines)),
+      description=_join_lines(arg.description.lines)) for arg in state.kwargs])
 
   return DocstringInfo(
       summary=summary,
@@ -267,7 +277,7 @@ def _join_lines(lines):
   return '\n\n'.join(group_texts)
 
 
-def _get_or_create_arg_by_name(state, name):
+def _get_or_create_arg_by_name(state, name, is_kwarg=False):
   """Gets or creates a new Arg.
 
   These Arg objects (Namespaces) are turned into the ArgInfo namedtuples
@@ -287,7 +297,10 @@ def _get_or_create_arg_by_name(state, name):
   arg.name = name
   arg.type.lines = []
   arg.description.lines = []
-  state.args.append(arg)
+  if is_kwarg:
+    state.kwargs.append(arg)
+  else:
+    state.args.append(arg)
   return arg
 
 
@@ -429,7 +442,11 @@ def _consume_line(line_info, state):
     directive_tokens = directive.split()  # pytype: disable=attribute-error
     if state.section.title == Sections.ARGS:
       name = directive_tokens[-1]
-      arg = _get_or_create_arg_by_name(state, name)
+      arg = _get_or_create_arg_by_name(
+          state,
+          name,
+          is_kwarg=directive_tokens[0] == 'key'
+      )
       if len(directive_tokens) == 3:
         # A param directive of the form ":param type arg:".
         arg.type.lines.append(directive_tokens[1])
