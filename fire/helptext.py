@@ -220,9 +220,10 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
+    flag_string = '--{flag_name}'
     documented_kwargs = [
         _CreateFlagItem(flag.name, docstring_info, spec,
-                        flag_string=f"--{flag.name}")
+                        flag_string=flag_string.format(flag_name=flag.name))
         for flag in docstring_info.args
         if isinstance(flag, KwargInfo)
     ]
