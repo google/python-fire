@@ -220,20 +220,21 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
-    flag_string = '--{flag_name}'
+    # Include kwargs documented via :key param:
+    flag_string = '--{name}'
     documented_kwargs = [
         _CreateFlagItem(flag.name, docstring_info, spec,
-                        flag_string=flag_string.format(flag_name=flag.name))
-        for flag in docstring_info.args
+                        flag_string=flag_string.format(name=flag.name))
+        for flag in docstring_info.args or []
         if isinstance(flag, KwargInfo)
     ]
     if documented_kwargs:
-      message = 'The following flags are also accepted.'
-      item = _CreateItem(message, None, indent=4)
-      flag_items.append('')
-      flag_items.append(item)
+      # Separate documented kwargs from other flags using a message
+      if flag_items:
+        message = 'The following flags are also accepted.'
+        item = _CreateItem(message, None, indent=4)
+        flag_items.append(item)
       flag_items.extend(documented_kwargs)
-      flag_items.append('')
 
     description = _GetArgDescription(spec.varkw, docstring_info)
     if documented_kwargs:

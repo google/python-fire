@@ -290,7 +290,7 @@ def _get_or_create_arg_by_name(state, name, is_kwarg=False):
   Returns:
     The new Arg.
   """
-  for arg in state.args:
+  for arg in state.args + state.kwargs:
     if arg.name == name:
       return arg
   arg = Namespace()  # TODO(dbieber): Switch to an explicit class.
