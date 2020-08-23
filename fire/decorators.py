@@ -90,7 +90,11 @@ def GetMetadata(fn):
   default = {
       ACCEPTS_POSITIONAL_ARGS: inspect.isroutine(fn),
   }
-  return getattr(fn, FIRE_METADATA, default)
+  try:
+    if ACCEPTS_POSITIONAL_ARGS in getattr(fn, FIRE_METADATA, default):
+      return getattr(fn, FIRE_METADATA, default)
+  except:
+      return default
 
 
 def GetParseFns(fn):
