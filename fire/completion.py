@@ -308,7 +308,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
     return False
   if verbose:
     return True
-  if type(member) in (absolute_import, division, print_function):
+  if (member is absolute_import or member is division or member is print_function):
     return False
   if isinstance(member, type(absolute_import)) and six.PY34:
     return False
