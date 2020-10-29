@@ -15,6 +15,7 @@
 """Test using Fire via `python -m fire`."""
 
 import os
+import tempfile
 
 from fire import __main__
 from fire import testutils
@@ -31,11 +32,60 @@ class MainModuleTest(testutils.BaseTestCase):
   def testArgPassing(self):
     expected = os.path.join('part1', 'part2', 'part3')
     with self.assertOutputMatches('%s\n' % expected):
-      __main__.main(['__main__.py', 'os.path', 'join', 'part1', 'part2',
-                     'part3'])
+      __main__.main(
+          ['__main__.py', 'os.path', 'join', 'part1', 'part2', 'part3'])
     with self.assertOutputMatches('%s\n' % expected):
-      __main__.main(['__main__.py', 'os', 'path', '-', 'join', 'part1',
-                     'part2', 'part3'])
+      __main__.main(
+          ['__main__.py', 'os', 'path', '-', 'join', 'part1', 'part2', 'part3'])
+
+
+class MainModuleFileTest(testutils.BaseTestCase):
+  """Tests to verify correct import behavior for file executables."""
+
+  def setUp(self):
+    super(MainModuleFileTest, self).setUp()
+    self.file = tempfile.NamedTemporaryFile(suffix='.py')
+    self.file.write(b'class Foo:\n  def double(self, n):\n    return 2 * n\n')
+    self.file.flush()
+
+    self.file2 = tempfile.NamedTemporaryFile()
+
+  def testFileNameFire(self):
+    # Confirm that the file is correctly imported and doubles the number.
+    with self.assertOutputMatches('4'):
+      __main__.main(
+          ['__main__.py', self.file.name, 'Foo', 'double', '--n', '2'])
+
+  def testFileNameFailure(self):
+    # Confirm that an existing file without a .py suffix raises a ValueError.
+    with self.assertRaises(ValueError):
+      __main__.main(
+          ['__main__.py', self.file2.name, 'Foo', 'double', '--n', '2'])
+
+  def testFileNameModuleDuplication(self):
+    # Confirm that a file that masks a module still loads the module.
+    with self.assertOutputMatches('gettempdir'):
+      file = self.create_tempfile('tempfile')
+
+      with testutils.ChangeDirectory(os.path.dirname(file.full_path)):
+        __main__.main([
+            '__main__.py',
+            'tempfile',
+        ])
+
+  def testFileNameModuleFileFailure(self):
+    # Confirm that an invalid file that masks a non-existent module fails.
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, 'Fire can only be called on .py files.'):
+      file = self.create_tempfile('foobar')
+
+      with testutils.ChangeDirectory(os.path.dirname(file.full_path)):
+        assert os.path.exists('foobar')
+
+        __main__.main([
+            '__main__.py',
+            'foobar',
+        ])
 
 
 if __name__ == '__main__':

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import contextlib
+import os
 import re
 import sys
 import unittest
@@ -44,6 +45,7 @@ class BaseTestCase(unittest.TestCase):
       stdout: (str) regexp to match against stdout (None will check no stdout)
       stderr: (str) regexp to match against stderr (None will check no stderr)
       capture: (bool, default True) do not bubble up stdout or stderr
+
     Yields:
       Yields to the wrapped context.
     """
@@ -80,6 +82,7 @@ class BaseTestCase(unittest.TestCase):
     Args:
       code: The status code that the FireExit should contain.
       regexp: stdout must match this regex.
+
     Yields:
       Yields to the wrapped context.
     """
@@ -89,10 +92,21 @@ class BaseTestCase(unittest.TestCase):
           yield
         except core.FireExit as exc:
           if exc.code != code:
-            raise AssertionError('Incorrect exit code: %r != %r' % (exc.code,
-                                                                    code))
+            raise AssertionError('Incorrect exit code: %r != %r' %
+                                 (exc.code, code))
           self.assertIsInstance(exc.trace, trace.FireTrace)
           raise
+
+
+@contextlib.contextmanager
+def ChangeDirectory(directory):
+  cwdir = os.getcwd()
+  os.chdir(directory)
+
+  try:
+    yield directory
+  finally:
+    os.chdir(cwdir)
 
 
 # pylint: disable=invalid-name

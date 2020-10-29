@@ -19,14 +19,79 @@ This allows using Fire with third-party libraries without modifying their code.
 """
 
 import importlib
+import os
 import sys
 
 import fire
 
+cli_string = """usage: python -m fire [module] [arg] ..."
+
+Python Fire is a library for creating CLIs from absolutely any Python
+object or program. To run Python Fire from the command line on an
+existing Python file, it can be invoked with "python -m fire [module]"
+and passed a Python module using module notation:
+
+"python -m fire packageA.packageB.module"
+
+or with a file path:
+
+"python -m fire packageA/packageB/module.py" """
+
+
+def import_from_file_path(path):
+  """Performs a module import given the filename."""
+  module_name = os.path.basename(path)
+
+  if sys.version_info.major == 3:
+    from importlib import util  # pylint: disable=g-import-not-at-top
+    spec = util.spec_from_file_location(module_name, path)
+
+    if spec is None:
+      raise IOError('Unable to load module from specified path.')
+
+    module = util.module_from_spec(spec)
+    spec.loader.exec_module(module)  # pytype: disable=attribute-error
+  else:
+    import imp  # pylint: disable=g-import-not-at-top
+    module = imp.load_source(module_name, path)
+
+  return module, module_name
+
+
+def import_from_module_name(module_name):
+  module = importlib.import_module(module_name)
+  return module, module_name
+
+
+def import_module(module_or_filename):
+  """Imports a given module or filename."""
+
+  if os.path.exists(module_or_filename):
+    # importlib.util.spec_from_file_location requires .py
+    if not module_or_filename.endswith('.py'):
+      try:  # try as module instead
+        return import_from_module_name(module_or_filename)
+      except ImportError:
+        raise ValueError('Fire can only be called on .py files.')
+
+    return import_from_file_path(module_or_filename)
+
+  if os.path.sep in module_or_filename:  # Use / to detect if it was a filename.
+    raise IOError('Fire was passed a filename which could not be found.')
+
+  return import_from_module_name(module_or_filename)  # Assume it's a module.
+
 
 def main(args):
-  module_name = args[1]
-  module = importlib.import_module(module_name)
+  """Entrypoint for fire when invoked as a module with python -m fire."""
+
+  if len(args) < 2:
+    print(cli_string)
+    exit(1)
+
+  module_or_filename = args[1]
+  module, module_name = import_module(module_or_filename)
+
   fire.Fire(module, name=module_name, command=args[2:])
 
 
