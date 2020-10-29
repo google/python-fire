@@ -42,7 +42,17 @@ def import_from_file_path(path):
   """Performs a module import given the filename."""
   module_name = os.path.basename(path)
 
-  if sys.version_info.major == 3:
+  if sys.version_info.major == 3 and sys.version_info.minor < 5:
+    loader = importlib.machinery.SourceFileLoader(
+        fullname=module_name,
+        path=path,
+    )
+    spec = importlib.util.spec_from_loader(loader.name, loader, origin=path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[loader.name] = module
+    loader.exec_module(module)
+
+  elif sys.version_info.major == 3:
     from importlib import util  # pylint: disable=g-import-not-at-top
     spec = util.spec_from_file_location(module_name, path)
 
@@ -51,6 +61,7 @@ def import_from_file_path(path):
 
     module = util.module_from_spec(spec)
     spec.loader.exec_module(module)  # pytype: disable=attribute-error
+
   else:
     import imp  # pylint: disable=g-import-not-at-top
     module = imp.load_source(module_name, path)

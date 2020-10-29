@@ -65,27 +65,29 @@ class MainModuleFileTest(testutils.BaseTestCase):
   def testFileNameModuleDuplication(self):
     # Confirm that a file that masks a module still loads the module.
     with self.assertOutputMatches('gettempdir'):
-      file = self.create_tempfile('tempfile')
+      dirname = os.path.dirname(self.file.name)
+      with testutils.ChangeDirectory(dirname):
+        with open('tempfile', 'w'):
+          __main__.main([
+              '__main__.py',
+              'tempfile',
+          ])
 
-      with testutils.ChangeDirectory(os.path.dirname(file.full_path)):
-        __main__.main([
-            '__main__.py',
-            'tempfile',
-        ])
+        os.remove('tempfile')
 
   def testFileNameModuleFileFailure(self):
     # Confirm that an invalid file that masks a non-existent module fails.
-    with self.assertRaisesWithLiteralMatch(
-        ValueError, 'Fire can only be called on .py files.'):
-      file = self.create_tempfile('foobar')
+    with self.assertRaisesRegex(ValueError,
+                                r'Fire can only be called on \.py files\.'):
+      dirname = os.path.dirname(self.file.name)
+      with testutils.ChangeDirectory(dirname):
+        with open('foobar', 'w'):
+          __main__.main([
+              '__main__.py',
+              'foobar',
+          ])
 
-      with testutils.ChangeDirectory(os.path.dirname(file.full_path)):
-        assert os.path.exists('foobar')
-
-        __main__.main([
-            '__main__.py',
-            'foobar',
-        ])
+        os.remove('foobar')
 
 
 if __name__ == '__main__':
