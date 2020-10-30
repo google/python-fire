@@ -77,7 +77,7 @@ class BaseTestCase(unittest.TestCase):
     if sys.version_info.major == 2:
       return super(BaseTestCase, self).assertRaisesRegexp(*args, **kwargs)  # pylint: disable=deprecated-method
     else:
-      return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)
+      return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member,arguments-differ
 
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp='.*'):

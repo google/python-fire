@@ -19,6 +19,10 @@
 This allows using Fire with third-party libraries without modifying their code.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import importlib
 import os
 import sys
@@ -59,7 +63,7 @@ def import_from_file_path(path):
   module_name = os.path.basename(path)
 
   if sys.version_info.major == 3 and sys.version_info.minor < 5:
-    loader = importlib.machinery.SourceFileLoader(
+    loader = importlib.machinery.SourceFileLoader(  # pylint: disable=no-member
         fullname=module_name,
         path=path,
     )
@@ -67,13 +71,13 @@ def import_from_file_path(path):
     module = loader.load_module(module_name)  # pylint: disable=deprecated-method
 
   elif sys.version_info.major == 3:
-    from importlib import util  # pylint: disable=g-import-not-at-top,import-outside-toplevel
+    from importlib import util  # pylint: disable=g-import-not-at-top,import-outside-toplevel,no-name-in-module
     spec = util.spec_from_file_location(module_name, path)
 
     if spec is None:
       raise IOError('Unable to load module from specified path.')
 
-    module = util.module_from_spec(spec)
+    module = util.module_from_spec(spec)  # pylint: disable=no-member
     spec.loader.exec_module(module)  # pytype: disable=attribute-error
 
   else:
