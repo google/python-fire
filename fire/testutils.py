@@ -73,11 +73,11 @@ class BaseTestCase(unittest.TestCase):
           raise AssertionError('%s: Expected %r to match %r' %
                                (name, value, regexp))
 
-  def assertRaisesRegex(self, *args, **kwargs):
+  def assertRaisesRegex(self, *args, **kwargs):  # pylint: disable=arguments-differ
     if sys.version_info.major == 2:
       return super(BaseTestCase, self).assertRaisesRegexp(*args, **kwargs)  # pylint: disable=deprecated-method
     else:
-      return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member,arguments-differ
+      return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member
 
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp='.*'):
