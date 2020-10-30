@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Lint as: python2, python3
 # pylint: disable=invalid-name
-"""Enables use of Python Fire as a "main" function (i.e. `python -m fire`).
+"""Enables use of Python Fire as a "main" function (i.e. "python -m fire").
 
 This allows using Fire with third-party libraries without modifying their code.
 """
@@ -39,7 +40,22 @@ or with a file path:
 
 
 def import_from_file_path(path):
-  """Performs a module import given the filename."""
+  """Performs a module import given the filename.
+
+  Args:
+    path (str): the path to the file to be imported.
+
+  Raises:
+    IOError: if the given file does not exist or importlib fails to load it.
+
+  Returns:
+    Tuple[ModuleType, str]: returns the imported module and the module name,
+      usually extracted from the path itself.
+  """
+
+  if not os.path.exists(path):
+    raise IOError('Given file path does not exist.')
+
   module_name = os.path.basename(path)
 
   if sys.version_info.major == 3 and sys.version_info.minor < 5:
@@ -47,13 +63,11 @@ def import_from_file_path(path):
         fullname=module_name,
         path=path,
     )
-    spec = importlib.util.spec_from_loader(loader.name, loader, origin=path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[loader.name] = module
-    loader.exec_module(module)
+
+    module = loader.load_module(module_name)  # pylint: disable=deprecated-method
 
   elif sys.version_info.major == 3:
-    from importlib import util  # pylint: disable=g-import-not-at-top
+    from importlib import util  # pylint: disable=g-import-not-at-top,import-outside-toplevel
     spec = util.spec_from_file_location(module_name, path)
 
     if spec is None:
@@ -63,19 +77,35 @@ def import_from_file_path(path):
     spec.loader.exec_module(module)  # pytype: disable=attribute-error
 
   else:
-    import imp  # pylint: disable=g-import-not-at-top
+    import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel
     module = imp.load_source(module_name, path)
 
   return module, module_name
 
 
 def import_from_module_name(module_name):
+  """Imports a module and returns it and its name."""
   module = importlib.import_module(module_name)
   return module, module_name
 
 
 def import_module(module_or_filename):
-  """Imports a given module or filename."""
+  """Imports a given module or filename.
+
+  If the module_or_filename exists in the file system and ends with .py, we
+  attempt to import it. If that import fails, try to import it as a module.
+
+  Args:
+    module_or_filename (str): string name of path or module.
+
+  Raises:
+    ValueError: if the given file is invalid.
+    IOError: if the file or module can not be found or imported.
+
+  Returns:
+    Tuple[ModuleType, str]: returns the imported module and the module name,
+      usually extracted from the path itself.
+  """
 
   if os.path.exists(module_or_filename):
     # importlib.util.spec_from_file_location requires .py
@@ -98,7 +128,7 @@ def main(args):
 
   if len(args) < 2:
     print(cli_string)
-    exit(1)
+    sys.exit(1)
 
   module_or_filename = args[1]
   module, module_name = import_module(module_or_filename)

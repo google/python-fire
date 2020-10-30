@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Lint as: python2, python3
 """Utilities for Python Fire's tests."""
 
 from __future__ import absolute_import
@@ -72,6 +73,12 @@ class BaseTestCase(unittest.TestCase):
           raise AssertionError('%s: Expected %r to match %r' %
                                (name, value, regexp))
 
+  def assertRaisesRegex(self, *args, **kwargs):
+    if sys.version_info.major == 2:
+      return super(BaseTestCase, self).assertRaisesRegexp(*args, **kwargs)  # pylint: disable=deprecated-method
+    else:
+      return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)
+
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp='.*'):
     """Asserts that a FireExit error is raised in the context.
@@ -100,6 +107,7 @@ class BaseTestCase(unittest.TestCase):
 
 @contextlib.contextmanager
 def ChangeDirectory(directory):
+  """Context manager to mock a directory change and revert on exit."""
   cwdir = os.getcwd()
   os.chdir(directory)
 
