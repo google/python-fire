@@ -5,7 +5,18 @@ python:
   - "3.5"
   - "3.7"
   - "3.8"
-
+jobs:
+  include:
+   - arch : ppc64le
+     python : '3.4'
+     dist: xenial
+   - arch : ppc64le
+     python : '3.7'
+     dist: bionic
+   - arch : ppc64le
+     python : '3.8'
+     dist: bionic
+     
 before_install:
   - pip install --upgrade setuptools pip
   - pip install --upgrade pylint pytest pytest-pylint pytest-runner
