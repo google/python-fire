@@ -71,7 +71,7 @@ def SetParseFns(*positional, **named):
   def _Decorator(fn):
     parse_fns = GetParseFns(fn)
     parse_fns['positional'] = positional
-    parse_fns['named'].update(named)
+    parse_fns['named'].update(named)  # pytype: disable=attribute-error
     _SetMetadata(fn, FIRE_PARSE_FNS, parse_fns)
     return fn
 
@@ -85,15 +85,31 @@ def _SetMetadata(fn, attribute, value):
 
 
 def GetMetadata(fn):
+  # type: (...) -> dict
+  """Gets metadata attached to the function `fn` as an attribute.
+
+  Args:
+    fn: The function from which to retrieve the function metadata.
+  Returns:
+    A dictionary mapping property strings to their value.
+  """
   # Class __init__ functions and object __call__ functions require flag style
   # arguments. Other methods and functions may accept positional args.
   default = {
       ACCEPTS_POSITIONAL_ARGS: inspect.isroutine(fn),
   }
-  return getattr(fn, FIRE_METADATA, default)
+  try:
+    metadata = getattr(fn, FIRE_METADATA, default)
+    if ACCEPTS_POSITIONAL_ARGS in metadata:
+      return metadata
+    else:
+      return default
+  except:  # pylint: disable=bare-except
+    return default
 
 
 def GetParseFns(fn):
+  # type: (...) -> dict
   metadata = GetMetadata(fn)
   default = dict(default=None, positional=[], named={})
   return metadata.get(FIRE_PARSE_FNS, default)

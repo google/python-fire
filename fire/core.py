@@ -75,7 +75,7 @@ from fire.console import console_io
 import six
 
 if six.PY34:
-  import asyncio  # pylint: disable=g-import-not-at-top,import-error  # pytype: disable=import-error
+  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 def Fire(component=None, command=None, name=None):

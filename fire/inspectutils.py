@@ -27,7 +27,7 @@ from fire import docstrings
 import six
 
 if six.PY34:
-  import asyncio  # pylint: disable=g-import-not-at-top,import-error  # pytype: disable=import-error
+  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 class FullArgSpec(object):
