@@ -18,7 +18,8 @@ script:
   - pip install ipython
   - python -m pytest  # Now run the tests with IPython.
   - pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py,console
-  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 && \
+          $TRAVIS_PYTHON_VERSION != 3.5 ]]; then
       pip install pytype;
     fi
   # Run type-checking, excluding files that define or use py3 features in py2.
@@ -27,6 +28,7 @@ script:
         fire/fire_test.py
         fire/inspectutils_test.py
         fire/test_components_py3.py;
-    elif [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then
+    elif [[ $TRAVIS_PYTHON_VERSION != 3.4 && \
+            $TRAVIS_PYTHON_VERSION != 3.5 ]]; then
       pytype;
     fi
