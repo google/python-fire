@@ -74,6 +74,9 @@ from fire import value_types
 from fire.console import console_io
 import six
 
+if six.PY34:
+  import asyncio  # pylint: disable=g-import-not-at-top,import-error  # pytype: disable=import-error
+
 
 def Fire(component=None, command=None, name=None):
   """This function, Fire, is the main entrypoint for Python Fire.
@@ -669,7 +672,13 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   fn = component.__call__ if treatment == 'callable' else component
   parse = _MakeParseFn(fn, metadata)
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
-  component = fn(*varargs, **kwargs)
+
+  # Call the function.
+  if inspectutils.IsCoroutineFunction(fn):
+    loop = asyncio.get_event_loop()
+    component = loop.run_until_complete(fn(*varargs, **kwargs))
+  else:
+    component = fn(*varargs, **kwargs)
 
   if treatment == 'class':
     action = trace.INSTANTIATED_CLASS

@@ -15,6 +15,7 @@
 # Lint as: python3
 """This module has components that use Python 3 specific syntax."""
 
+import asyncio
 import functools
 from typing import Tuple
 
@@ -47,6 +48,13 @@ class LruCacheDecoratedMethod(object):
 @functools.lru_cache()
 def lru_cache_decorated(arg1):
   return arg1
+
+
+class WithAsyncio(object):
+
+  @asyncio.coroutine
+  def double(self, count=0):
+    return 2 * count
 
 
 class WithTypes(object):

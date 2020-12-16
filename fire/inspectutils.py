@@ -26,6 +26,9 @@ from fire import docstrings
 
 import six
 
+if six.PY34:
+  import asyncio  # pylint: disable=g-import-not-at-top,import-error  # pytype: disable=import-error
+
 
 class FullArgSpec(object):
   """The arguments of a function, as in Python 3's inspect.FullArgSpec."""
@@ -250,7 +253,7 @@ def GetFileAndLine(component):
   try:
     unused_code, lineindex = inspect.findsource(component)
     lineno = lineindex + 1
-  except IOError:
+  except (IOError, IndexError):
     lineno = None
 
   return filename, lineno
@@ -360,3 +363,10 @@ def GetClassAttrsDict(component):
       class_attr.name: class_attr
       for class_attr in class_attrs_list
   }
+
+
+def IsCoroutineFunction(fn):
+  try:
+    return six.PY34 and asyncio.iscoroutinefunction(fn)
+  except:  # pylint: disable=bare-except
+    return False
