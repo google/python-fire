@@ -21,9 +21,11 @@ from __future__ import print_function
 from fire import docstrings
 from fire import testutils
 
-
-DocstringInfo = docstrings.DocstringInfo  # pylint: disable=invalid-name
-ArgInfo = docstrings.ArgInfo  # pylint: disable=invalid-name
+# pylint: disable=invalid-name
+DocstringInfo = docstrings.DocstringInfo
+ArgInfo = docstrings.ArgInfo
+KwargInfo = docstrings.KwargInfo
+# pylint: enable=invalid-name
 
 
 class DocstringsTest(testutils.BaseTestCase):
@@ -276,6 +278,30 @@ class DocstringsTest(testutils.BaseTestCase):
                     description='arg2, default:None'),
             ArgInfo(name='arg3', type='bool', description=None),
         ]
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_rst_format_typed_args_and_kwargs(self):
+    docstring = """Docstring summary.
+
+    :param arg1: Description of arg1.
+    :type arg1: str.
+    :key arg2: Description of arg2.
+    :type arg2: bool.
+    :key arg3: Description of arg3.
+    :type arg3: str.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='Docstring summary.',
+        args=[
+            ArgInfo(name='arg1', type='str',
+                    description='Description of arg1.'),
+            KwargInfo(name='arg2', type='bool',
+                      description='Description of arg2.'),
+            KwargInfo(name='arg3', type='str',
+                      description='Description of arg3.'),
+        ],
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 

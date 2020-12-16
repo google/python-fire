@@ -539,3 +539,27 @@ def simple_decorator(f):
 @simple_decorator
 def decorated_method(name='World'):
   return 'Hello %s' % name
+
+
+# pylint: disable=g-doc-args,g-doc-return-or-yield
+def fn_with_kwarg(arg1, arg2, **kwargs):
+  """Function with kwarg.
+
+  :param arg1: Description of arg1.
+  :param arg2: Description of arg2.
+  :key arg3: Description of arg3.
+  """
+  del arg1, arg2
+  return kwargs.get('arg3')
+
+
+def fn_with_kwarg_and_defaults(arg1, arg2, opt=True, **kwargs):
+  """Function with kwarg and defaults.
+
+  :param arg1: Description of arg1.
+  :param arg2: Description of arg2.
+  :key arg3: Description of arg3.
+  """
+  del arg1, arg2, opt
+  return kwargs.get('arg3')
+# pylint: enable=g-doc-args,g-doc-return-or-yield

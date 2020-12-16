@@ -39,6 +39,7 @@ import sys
 from fire import completion
 from fire import custom_descriptions
 from fire import decorators
+from fire import docstrings
 from fire import formatting
 from fire import inspectutils
 from fire import value_types
@@ -219,10 +220,30 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
+    # Include kwargs documented via :key param:
+    flag_string = '--{name}'
+    documented_kwargs = []
+    for flag in docstring_info.args or []:
+      if isinstance(flag, docstrings.KwargInfo):
+        flag_item = _CreateFlagItem(
+            flag.name, docstring_info, spec,
+            flag_string=flag_string.format(name=flag.name))
+        documented_kwargs.append(flag_item)
+    if documented_kwargs:
+      # Separate documented kwargs from other flags using a message
+      if flag_items:
+        message = 'The following flags are also accepted.'
+        item = _CreateItem(message, None, indent=4)
+        flag_items.append(item)
+      flag_items.extend(documented_kwargs)
+
     description = _GetArgDescription(spec.varkw, docstring_info)
-    message = ('Additional flags are accepted.'
-               if flag_items else
-               'Flags are accepted.')
+    if documented_kwargs:
+      message = 'Additional undocumented flags may also be accepted.'
+    elif flag_items:
+      message = 'Additional flags are accepted.'
+    else:
+      message = 'Flags are accepted.'
     item = _CreateItem(message, description, indent=4)
     flag_items.append(item)
 
@@ -400,7 +421,8 @@ def _CreateArgItem(arg, docstring_info, spec):
   return _CreateItem(arg_string, description, indent=SUBSECTION_INDENTATION)
 
 
-def _CreateFlagItem(flag, docstring_info, spec, required=False):
+def _CreateFlagItem(flag, docstring_info, spec, required=False,
+                    flag_string=None):
   """Returns a string describing a flag using docstring and FullArgSpec info.
 
   Args:
@@ -410,6 +432,8 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False):
     spec: An instance of fire.inspectutils.FullArgSpec, containing type and
      default information about the arguments to a callable.
     required: Whether the flag is required.
+    flag_string: If provided, use this string for the flag, rather than
+      constructing one from the flag name.
   Returns:
     A string to be used in constructing the help screen for the function.
   """
@@ -424,10 +448,11 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False):
 
   description = _GetArgDescription(flag, docstring_info)
 
-  flag_string_template = '--{flag_name}={flag_name_upper}'
-  flag_string = flag_string_template.format(
-      flag_name=flag,
-      flag_name_upper=formatting.Underline(flag.upper()))
+  if not flag_string:
+    flag_string_template = '--{flag_name}={flag_name_upper}'
+    flag_string = flag_string_template.format(
+        flag_name=flag,
+        flag_name_upper=formatting.Underline(flag.upper()))
   if required:
     flag_string += ' (required)'
 

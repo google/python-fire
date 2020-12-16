@@ -99,6 +99,34 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
+  def testHelpTextFunctionWithKwargs(self):
+    component = tc.fn_with_kwarg
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='text'))
+    self.assertIn('NAME\n    text', help_screen)
+    self.assertIn('SYNOPSIS\n    text ARG1 ARG2 <flags>', help_screen)
+    self.assertIn('DESCRIPTION\n    Function with kwarg', help_screen)
+    self.assertIn(
+        'FLAGS\n    --arg3\n        Description of arg3.\n    '
+        'Additional undocumented flags may also be accepted.',
+        help_screen)
+
+  def testHelpTextFunctionWithKwargsAndDefaults(self):
+    component = tc.fn_with_kwarg_and_defaults
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='text'))
+    self.assertIn('NAME\n    text', help_screen)
+    self.assertIn('SYNOPSIS\n    text ARG1 ARG2 <flags>', help_screen)
+    self.assertIn('DESCRIPTION\n    Function with kwarg', help_screen)
+    self.assertIn(
+        'FLAGS\n    --opt=OPT\n        Default: True\n'
+        '    The following flags are also accepted.'
+        '\n    --arg3\n        Description of arg3.\n    '
+        'Additional undocumented flags may also be accepted.',
+        help_screen)
+
   @testutils.skipIf(
       sys.version_info[0:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
