@@ -233,8 +233,7 @@ class Pager(object):
         if c in ('<PAGE-UP>', '<LEFT-ARROW>', 'b', '\x02'):
           # Previous page.
           nxt = pos - self._height
-          if nxt < 0:
-            nxt = 0
+          nxt = max(nxt, 0)
         elif c in ('<PAGE-DOWN>', '<RIGHT-ARROW>', 'f', '\x06', ' '):
           # Next page.
           if nxt >= len(self._lines):
@@ -247,15 +246,13 @@ class Pager(object):
           nxt = count - 1
           if nxt > len(self._lines) - self._height:
             nxt = len(self._lines) - self._height
-          if nxt < 0:
-            nxt = 0
+          nxt = max(nxt, 0)
         elif c in ('<END>', 'G'):
           # Last page.
           nxt = len(self._lines) - count
           if nxt > len(self._lines) - self._height:
             nxt = len(self._lines) - self._height
-          if nxt < 0:
-            nxt = 0
+          nxt = max(nxt, 0)
         elif c == 'h':
           self._Help()
           # Special case when we want to reprint the previous display.
@@ -272,8 +269,7 @@ class Pager(object):
         elif c in ('<UP-ARROW>', 'k', '-'):
           # Previous line.
           nxt = pos - 1
-          if nxt < 0:
-            nxt = 0
+          nxt = max(nxt, 0)
         elif c in ('n', 'N'):
           # Next pattern match search.
           if not self._search_pattern:
