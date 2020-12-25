@@ -69,7 +69,7 @@ def Decode(data, encoding=None):
   # First we are going to get the data object to be a text string.
   # Don't use six.string_types here because on Python 3 bytes is not considered
   # a string type and we want to include that.
-  if isinstance(data, six.text_type) or isinstance(data, six.binary_type):
+  if isinstance(data, (six.text_type, six.binary_type)):
     string = data
   else:
     # Some non-string type of object.
