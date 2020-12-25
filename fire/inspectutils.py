@@ -100,7 +100,7 @@ def Py2GetArgSpec(fn):
   try:
     return inspect.getargspec(fn)  # pylint: disable=deprecated-method
   except TypeError:
-    if hasattr(fn, '__call__'):
+    if callable(fn):
       return inspect.getargspec(fn.__call__)  # pylint: disable=deprecated-method
     raise
 
