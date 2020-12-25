@@ -503,7 +503,8 @@ def _consume_line(line_info, state):
     state.raises.lines.append(line_info.remaining.strip())
   elif state.section.title == Sections.TYPE:
     if state.section.format == Formats.RST:
-      assert state.current_arg is not None
+      if state.current_arg is None:
+        raise AssertionError
       state.current_arg.type.lines.append(line_info.remaining.strip())
     else:
       pass
