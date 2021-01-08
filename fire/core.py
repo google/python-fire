@@ -74,11 +74,8 @@ from fire import value_types
 from fire.console import console_io
 import six
 
-if six.PY34:
-  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
-
-def Fire(component=None, command=None, name=None):
+def Fire(component=None, command=None, name=None, help_sequence=None):
   """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
@@ -158,7 +155,7 @@ def Fire(component=None, command=None, name=None):
   if component_trace.show_help:
     result = component_trace.GetResult()
     help_text = helptext.HelpText(
-        result, trace=component_trace, verbose=component_trace.verbose)
+        result, trace=component_trace, verbose=component_trace.verbose, help_sequence=help_sequence)
     output = [help_text]
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
@@ -672,13 +669,7 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   fn = component.__call__ if treatment == 'callable' else component
   parse = _MakeParseFn(fn, metadata)
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
-
-  # Call the function.
-  if inspectutils.IsCoroutineFunction(fn):
-    loop = asyncio.get_event_loop()
-    component = loop.run_until_complete(fn(*varargs, **kwargs))
-  else:
-    component = fn(*varargs, **kwargs)
+  component = fn(*varargs, **kwargs)
 
   if treatment == 'class':
     action = trace.INSTANTIATED_CLASS
