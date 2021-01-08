@@ -34,16 +34,19 @@ from __future__ import division
 from __future__ import print_function
 
 import itertools
+import sys
 
 from fire import completion
 from fire import custom_descriptions
 from fire import decorators
+from fire import docstrings
 from fire import formatting
 from fire import inspectutils
 from fire import value_types
 
 LINE_LENGTH = 80
 SECTION_INDENTATION = 4
+SUBSECTION_INDENTATION = 4
 
 
 def HelpText(component, trace=None, verbose=False, help_sequence=None):
@@ -79,6 +82,7 @@ def HelpText(component, trace=None, verbose=False, help_sequence=None):
     notes_sections = []
   usage_details_sections = _UsageDetailsSections(component,
                                                  actions_grouped_by_kind, help_sequence=help_sequence)
+
   sections = (
       [name_section, synopsis_section, description_section]
       + args_and_flags_sections
@@ -170,7 +174,7 @@ def _DescriptionSection(component, info):
 
 def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
   return _CreateFlagItem(
-      flag, docstring_info, required=flag not in spec.kwonlydefaults)
+      flag, docstring_info, spec, required=flag not in spec.kwonlydefaults)
 
 
 def _ArgsAndFlagsSections(info, spec, metadata):
@@ -187,13 +191,13 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   docstring_info = info['docstring_info']
 
   arg_items = [
-      _CreateArgItem(arg, docstring_info)
+      _CreateArgItem(arg, docstring_info, spec)
       for arg in args_with_no_defaults
   ]
 
   if spec.varargs:
     arg_items.append(
-        _CreateArgItem(spec.varargs, docstring_info)
+        _CreateArgItem(spec.varargs, docstring_info, spec)
     )
 
   if arg_items:
@@ -206,7 +210,7 @@ def _ArgsAndFlagsSections(info, spec, metadata):
       )
 
   positional_flag_items = [
-      _CreateFlagItem(flag, docstring_info, required=False)
+      _CreateFlagItem(flag, docstring_info, spec, required=False)
       for flag in args_with_defaults
   ]
   kwonly_flag_items = [
@@ -216,10 +220,30 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
+    # Include kwargs documented via :key param:
+    flag_string = '--{name}'
+    documented_kwargs = []
+    for flag in docstring_info.args or []:
+      if isinstance(flag, docstrings.KwargInfo):
+        flag_item = _CreateFlagItem(
+            flag.name, docstring_info, spec,
+            flag_string=flag_string.format(name=flag.name))
+        documented_kwargs.append(flag_item)
+    if documented_kwargs:
+      # Separate documented kwargs from other flags using a message
+      if flag_items:
+        message = 'The following flags are also accepted.'
+        item = _CreateItem(message, None, indent=4)
+        flag_items.append(item)
+      flag_items.extend(documented_kwargs)
+
     description = _GetArgDescription(spec.varkw, docstring_info)
-    message = ('Additional flags are accepted.'
-               if flag_items else
-               'Flags are accepted.')
+    if documented_kwargs:
+      message = 'Additional undocumented flags may also be accepted.'
+    elif flag_items:
+      message = 'Additional flags are accepted.'
+    else:
+      message = 'Flags are accepted.'
     item = _CreateItem(message, description, indent=4)
     flag_items.append(item)
 
@@ -230,14 +254,15 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   return args_and_flags_sections, notes_sections
 
 
-def _UsageDetailsSections(component, actions_grouped_by_kind,help_sequence=None):
+def _UsageDetailsSections(component, actions_grouped_by_kind, help_sequence=None):
   """The usage details sections of the help string."""
   groups, commands, values, indexes = actions_grouped_by_kind
+
   sections = []
   if groups.members:
     sections.append(_MakeUsageDetailsSection(groups))
   if commands.members:
-    sections.append(_MakeUsageDetailsSection(commands,help_sequence))
+    sections.append(_MakeUsageDetailsSection(commands,help_sequence=help_sequence))
   if values.members:
     sections.append(_ValuesUsageDetailsSection(component, values))
   if indexes.members:
@@ -363,43 +388,143 @@ def _CreateOutputSection(name, content):
     content=formatting.Indent(content, SECTION_INDENTATION))
 
 
-def _CreateArgItem(arg, docstring_info):
+def _CreateArgItem(arg, docstring_info, spec):
   """Returns a string describing a positional argument.
 
   Args:
     arg: The name of the positional argument.
     docstring_info: A docstrings.DocstringInfo namedtuple with information about
       the containing function's docstring.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
 
   Returns:
     A string to be used in constructing the help screen for the function.
   """
+
+  # The help string is indented, so calculate the maximum permitted length
+  # before indentation to avoid exceeding the maximum line length.
+  max_str_length = LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION
+
   description = _GetArgDescription(arg, docstring_info)
 
-  arg = arg.upper()
-  return _CreateItem(formatting.BoldUnderline(arg), description, indent=4)
+  arg_string = formatting.BoldUnderline(arg.upper())
+
+  arg_type = _GetArgType(arg, spec)
+  arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
+  available_space = max_str_length - len(arg_type)
+  arg_type = (
+      formatting.EllipsisTruncate(arg_type, available_space, max_str_length))
+
+  description = '\n'.join(part for part in (arg_type, description) if part)
+
+  return _CreateItem(arg_string, description, indent=SUBSECTION_INDENTATION)
 
 
-def _CreateFlagItem(flag, docstring_info, required=False):
-  """Returns a string describing a flag using information from the docstring.
+def _CreateFlagItem(flag, docstring_info, spec, required=False,
+                    flag_string=None):
+  """Returns a string describing a flag using docstring and FullArgSpec info.
 
   Args:
     flag: The name of the flag.
     docstring_info: A docstrings.DocstringInfo namedtuple with information about
       the containing function's docstring.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
     required: Whether the flag is required.
+    flag_string: If provided, use this string for the flag, rather than
+      constructing one from the flag name.
   Returns:
     A string to be used in constructing the help screen for the function.
   """
+  # pylint: disable=g-bad-todo
+  # TODO(MichaelCG8): Get type and default information from docstrings if it is
+  # not available in FullArgSpec. This will require updating
+  # fire.docstrings.parser().
+
+  # The help string is indented, so calculate the maximum permitted length
+  # before indentation to avoid exceeding the maximum line length.
+  max_str_length = LINE_LENGTH - SECTION_INDENTATION - SUBSECTION_INDENTATION
+
   description = _GetArgDescription(flag, docstring_info)
 
-  flag_string_template = '--{flag_name}={flag_name_upper}'
-  flag = flag_string_template.format(
-      flag_name=flag,
-      flag_name_upper=formatting.Underline(flag.upper()))
+  if not flag_string:
+    flag_string_template = '--{flag_name}={flag_name_upper}'
+    flag_string = flag_string_template.format(
+        flag_name=flag,
+        flag_name_upper=formatting.Underline(flag.upper()))
   if required:
-    flag += ' (required)'
-  return _CreateItem(flag, description, indent=4)
+    flag_string += ' (required)'
+
+  arg_type = _GetArgType(flag, spec)
+  arg_default = _GetArgDefault(flag, spec)
+
+  # We need to handle the case where there is a default of None, but otherwise
+  # the argument has another type.
+  if arg_default == 'None':
+    arg_type = 'Optional[{}]'.format(arg_type)
+
+  arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
+  available_space = max_str_length - len(arg_type)
+  arg_type = (
+      formatting.EllipsisTruncate(arg_type, available_space, max_str_length))
+
+  arg_default = 'Default: {}'.format(arg_default) if arg_default else ''
+  available_space = max_str_length - len(arg_default)
+  arg_default = (
+      formatting.EllipsisTruncate(arg_default, available_space, max_str_length))
+
+  description = '\n'.join(
+      part for part in (arg_type, arg_default, description) if part
+  )
+
+  return _CreateItem(flag_string, description, indent=SUBSECTION_INDENTATION)
+
+
+def _GetArgType(arg, spec):
+  """Returns a string describing the type of an argument.
+
+  Args:
+    arg: The name of the argument.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
+  Returns:
+    A string to be used in constructing the help screen for the function, the
+    empty string if the argument type is not available.
+  """
+  if arg in spec.annotations:
+    arg_type = spec.annotations[arg]
+    try:
+      if sys.version_info[0:2] >= (3, 3):
+        return arg_type.__qualname__
+      return arg_type.__name__
+    except AttributeError:
+      # Some typing objects, such as typing.Union do not have either a __name__
+      # or __qualname__ attribute.
+      # repr(typing.Union[int, str]) will return ': typing.Union[int, str]'
+      return repr(arg_type)
+  return ''
+
+
+def _GetArgDefault(flag, spec):
+  """Returns a string describing a flag's default value.
+
+  Args:
+    flag: The name of the flag.
+    spec: An instance of fire.inspectutils.FullArgSpec, containing type and
+     default information about the arguments to a callable.
+  Returns:
+    A string to be used in constructing the help screen for the function, the
+    empty string if the flag does not have a default or the default is not
+    available.
+  """
+  num_defaults = len(spec.defaults)
+  args_with_defaults = spec.args[-num_defaults:]
+
+  for arg, default in zip(args_with_defaults, spec.defaults):
+    if arg == flag:
+      return repr(default)
+  return ''
 
 
 def _CreateItem(name, description, indent=2):
@@ -418,7 +543,7 @@ def _GetArgDescription(name, docstring_info):
   return None
 
 
-def _MakeUsageDetailsSection(action_group, help_sequence):
+def _MakeUsageDetailsSection(action_group, help_sequence=None):
   """Creates a usage details section for the provided action group."""
   item_strings = []
   for name, member in action_group.GetItems():
@@ -435,13 +560,11 @@ def _MakeUsageDetailsSection(action_group, help_sequence):
       summary = None
     item = _CreateItem(name, summary)
     item_strings.append(item)
-
   if help_sequence:
     help_sequence = [x for x in help_sequence if x in item_strings]
     item_strings = [x for x in item_strings if x not in help_sequence]
     help_sequence.extend(item_strings)
     item_strings = help_sequence
-
   return (action_group.plural.upper(),
           _NewChoicesSection(action_group.name.upper(), item_strings))
 
