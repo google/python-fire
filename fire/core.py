@@ -147,7 +147,7 @@ def Fire(component=None, command=None, name=None, help_sequence=None):
     output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
     result = component_trace.GetResult()
     help_text = helptext.HelpText(
-        result, trace=component_trace, verbose=component_trace.verbose)
+        result, trace=component_trace, verbose=component_trace.verbose, help_sequence=help_sequence)
     output.append(help_text)
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
@@ -164,7 +164,7 @@ def Fire(component=None, command=None, name=None, help_sequence=None):
     raise FireExit(0, component_trace)
 
   # The command succeeded normally; print the result.
-  _PrintResult(component_trace, verbose=component_trace.verbose)
+  _PrintResult(component_trace, verbose=component_trace.verbose, help_sequence=help_sequence)
   result = component_trace.GetResult()
   return result
 
@@ -241,7 +241,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
   return show_help
 
 
-def _PrintResult(component_trace, verbose=False):
+def _PrintResult(component_trace, verbose=False, help_sequence=None):
   """Prints the result of the Fire call to stdout in a human readable way."""
   # TODO(dbieber): Design human readable deserializable serialization method
   # and move serialization to its own module.
@@ -267,7 +267,7 @@ def _PrintResult(component_trace, verbose=False):
       print(result)
   else:
     help_text = helptext.HelpText(
-        result, trace=component_trace, verbose=verbose)
+        result, trace=component_trace, verbose=verbose, help_sequence=help_sequence)
     output = [help_text]
     Display(output, out=sys.stdout)
 
