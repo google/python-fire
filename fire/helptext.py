@@ -560,11 +560,15 @@ def _MakeUsageDetailsSection(action_group, help_sequence=None):
       summary = None
     item = _CreateItem(name, summary)
     item_strings.append(item)
+
+
   if help_sequence:
-    help_sequence = [x for x in help_sequence if x in item_strings]
-    item_strings = [x for x in item_strings if x not in help_sequence]
-    help_sequence.extend(item_strings)
-    item_strings = help_sequence
+    com_names = [name for name, memeber in action_group.GetItems()]
+    help_sequence = [x for x in help_sequence if x in com_names]
+    com_names_reorder = [x for x in com_names if x not in help_sequence]
+    help_sequence.extend(com_names_reorder)
+    com_names_reorder = help_sequence
+    item_strings = [item_strings[i] for x in com_names_reorder for i in range(len(com_names)) if x == com_names[i]]
   return (action_group.plural.upper(),
           _NewChoicesSection(action_group.name.upper(), item_strings))
 
