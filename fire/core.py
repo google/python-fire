@@ -141,7 +141,7 @@ def Fire(component=None, command=None, name=None, help_sequence=None):
   component_trace = _Fire(component, args, parsed_flag_args, context, name)
 
   if component_trace.HasError():
-    _DisplayError(component_trace)
+    _DisplayError(component_trace, help_sequence=help_sequence)
     raise FireExit(2, component_trace)
   if component_trace.show_trace and component_trace.show_help:
     output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
@@ -272,7 +272,7 @@ def _PrintResult(component_trace, verbose=False, help_sequence=None):
     Display(output, out=sys.stdout)
 
 
-def _DisplayError(component_trace):
+def _DisplayError(component_trace, help_sequence=None):
   """Prints the Fire trace and the error to stdout."""
   result = component_trace.GetResult()
 
@@ -287,7 +287,7 @@ def _DisplayError(component_trace):
     print('INFO: Showing help with the command {cmd}.\n'.format(
         cmd=pipes.quote(command)), file=sys.stderr)
     help_text = helptext.HelpText(result, trace=component_trace,
-                                  verbose=component_trace.verbose)
+                                  verbose=component_trace.verbose, help_sequence=help_sequence)
     output.append(help_text)
     Display(output, out=sys.stderr)
   else:
@@ -295,7 +295,7 @@ def _DisplayError(component_trace):
           + component_trace.elements[-1].ErrorAsStr(),
           file=sys.stderr)
     error_text = helptext.UsageText(result, trace=component_trace,
-                                    verbose=component_trace.verbose)
+                                    verbose=component_trace.verbose, help_sequence=help_sequence)
     print(error_text, file=sys.stderr)
 
 
