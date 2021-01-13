@@ -95,7 +95,9 @@ def _LiteralEval(value):
 
   ptr = 0   # Represents the current position in 'value'
   brace_stack = []   # Keeps track of curly braces
-  delimiter = {',', ']', '}', ')', ' '}   # Set of characters that will help distinguish between two container elements
+
+  # Set of characters that will help distinguish between two container elements
+  delimiter = {',', ']', '}', ')', ' '}
 
   while ptr < len(value):
     if value[ptr] in {'{', '[', '('}:
@@ -115,7 +117,8 @@ def _LiteralEval(value):
         right = ptr + 3
 
         # Search for the ending triple quotes
-        while right < len(value) and value[right: right + 3] != value[left: left + 3]:
+        while (right < len(value) and
+               value[right: right + 3] != value[left: left + 3]):
           right += 1
 
         ptr = right + 3
@@ -125,7 +128,8 @@ def _LiteralEval(value):
         right = ptr + 1
 
         # Search for the ending single quote
-        while right < len(value) and value[right] != value[left]:
+        while (right < len(value) and
+               value[right] != value[left]):
           right += 1
 
         ptr = right + 1
@@ -133,14 +137,16 @@ def _LiteralEval(value):
       # Skip all delimiters occuring after this
       while ptr < len(value) and value[ptr] in delimiter:
         if value[ptr] == '}':
-          if len(brace_stack) > 0:
+          if brace_stack:
             brace_stack.pop()
-            if not brace_stack:
-              # All potential dictionaries exited, remove colon (:) from delimiter
-              delimiter.remove(':')
+
+          if not brace_stack:
+            # All potential dictionaries exited,
+            # remove colon (:) from delimiter
+            delimiter.discard(':')
 
         ptr += 1
-    else: 
+    else:
       # Literal encountered
       left = ptr
       right = ptr + 1
@@ -154,7 +160,7 @@ def _LiteralEval(value):
 
       element = value[left: right]  # Single element identified
 
-      # If the element is of type string or ellipsis, (and not any other literal),
+      # If the element is of type string or ellipsis,
       # put quotes around it
       if isinstance(_SingleLiteralEval(element), str) or element == "...":
         value = _InsertQuotes(value, left, right)
@@ -164,13 +170,14 @@ def _LiteralEval(value):
 
       # Skip all delimiters occuring after this
       while ptr < len(value) and value[ptr] in delimiter:
-        if value[ptr] == '}' and brace_stack:
-          brace_stack.pop()
-          if not brace_stack:
-            # All potential dictionaries exited, remove colon (:) from delimiter
-            delimiter.remove(':')
+        if value[ptr] == '}':
+          if brace_stack:
+            brace_stack.pop()
 
-        ptr += 1
+          if not brace_stack:
+            # All potential dictionaries exited,
+            # remove colon (:) from delimiter
+            delimiter.discard(':')
 
   root = ast.parse(value, mode='eval')
 
@@ -209,4 +216,6 @@ def _InsertQuotes(string, left_index, right_index):
   Returns:
     The modified string with quotes inserted at left_index and right_index.
   """
-  return string[:left_index] + "'" + string[left_index: right_index] + "'" + string[right_index:]
+  return (string[:left_index] + "'" +
+          string[left_index: right_index] + "'" +
+          string[right_index:])
