@@ -136,14 +136,12 @@ def _LiteralEval(value):
 
       # Skip all delimiters occuring after this
       while ptr < len(value) and value[ptr] in delimiter:
-        if value[ptr] == '}':
-          if brace_stack:
-            brace_stack.pop()
-
+        if value[ptr] == '}' and brace_stack:
+          brace_stack.pop()
           if not brace_stack:
             # All potential dictionaries exited,
             # remove colon (:) from delimiter
-            delimiter.discard(':')
+            delimiter.remove(':')
 
         ptr += 1
     else:
@@ -170,14 +168,14 @@ def _LiteralEval(value):
 
       # Skip all delimiters occuring after this
       while ptr < len(value) and value[ptr] in delimiter:
-        if value[ptr] == '}':
-          if brace_stack:
-            brace_stack.pop()
-
+        if value[ptr] == '}' and brace_stack:
+          brace_stack.pop()
           if not brace_stack:
             # All potential dictionaries exited,
             # remove colon (:) from delimiter
-            delimiter.discard(':')
+            delimiter.remove(':')
+
+        ptr += 1
 
   root = ast.parse(value, mode='eval')
 
