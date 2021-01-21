@@ -94,6 +94,11 @@ def Fire(component=None, command=None, name=None, help_sequence=None):
         a string or a list of strings; a list of strings is preferred.
     name: Optional. The name of the command as entered at the command line.
         Used in interactive mode and for generating the completion script.
+    help_sequence: Optional. If supplied, the sequence of commands
+        will be reordered based on provided list in argument. They will
+        be displayed before all the other commands. This should be
+        a list of strings.
+
   Returns:
     The result of executing the Fire command. Execution begins with the initial
     target component. The component is updated by using the command arguments

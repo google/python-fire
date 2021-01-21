@@ -57,6 +57,10 @@ def HelpText(component, trace=None, verbose=False, help_sequence=None):
     trace: The Fire trace of the command so far. The command executed so far
       can be extracted from this trace.
     verbose: Whether to include private members in the help screen.
+    help_sequence: Optional. If supplied, the sequence of commands
+        will be reordered based on provided list in argument. They will
+        be displayed before all the other commands. This should be
+        a list of strings.
 
   Returns:
     The full help screen as a string.
