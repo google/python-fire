@@ -30,6 +30,7 @@ script:
         fire/inspectutils_test.py
         fire/test_components_py3.py;
     elif [[ $TRAVIS_PYTHON_VERSION != 3.4 && \
-            $TRAVIS_PYTHON_VERSION != 3.5 ]]; then
+            $TRAVIS_PYTHON_VERSION != 3.5 && \
+            $TRAVIS_PYTHON_VERSION != 3.9 ]]; then
       pytype;
     fi
