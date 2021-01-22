@@ -144,6 +144,32 @@ class DocstringsTest(testutils.BaseTestCase):
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 
+  def test_google_format_multiline_arg_description(self):
+    docstring = """Docstring summary.
+
+    This is a longer description of the docstring. It spans multiple lines, as
+    is allowed.
+
+    Args:
+        param1 (int): The first parameter.
+        param2 (str): The second parameter. This has a lot of text, enough to
+        cover two lines.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='Docstring summary.',
+        description='This is a longer description of the docstring. It spans '
+        'multiple lines, as\nis allowed.',
+        args=[
+            ArgInfo(name='param1', type='int',
+                    description='The first parameter.'),
+            ArgInfo(name='param2', type='str',
+                    description='The second parameter. This has a lot of text, '
+                                'enough to cover two lines.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
   def test_rst_format_typed_args_and_returns(self):
     docstring = """Docstring summary.
 
@@ -204,6 +230,35 @@ class DocstringsTest(testutils.BaseTestCase):
         ],
         # TODO(dbieber): Support return type.
         returns='bool True if successful, False otherwise.',
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_numpy_format_multiline_arg_description(self):
+    docstring = """Docstring summary.
+
+    This is a longer description of the docstring. It spans across multiple
+    lines.
+
+    Parameters
+    ----------
+    param1 : int
+        The first parameter.
+    param2 : str
+        The second parameter. This has a lot of text, enough to cover two
+        lines.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='Docstring summary.',
+        description='This is a longer description of the docstring. It spans '
+        'across multiple\nlines.',
+        args=[
+            ArgInfo(name='param1', type='int',
+                    description='The first parameter.'),
+            ArgInfo(name='param2', type='str',
+                    description='The second parameter. This has a lot of text, '
+                                'enough to cover two lines.'),
+        ],
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 
