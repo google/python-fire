@@ -115,6 +115,14 @@ $ python -m fire example hello --name=World
 Hello World!
 ```
 
+You can also specify the filepath of example.py rather than its module path,
+like so:
+
+```bash
+$ python -m fire example.py hello --name=World
+Hello World!
+```
+
 ### Exposing Multiple Commands
 
 In the previous example, we exposed a single function to the command line. Now
