@@ -5,6 +5,7 @@ python:
   - "3.5"
   - "3.7"
   - "3.8"
+  - "3.9"
 
 before_install:
   - pip install --upgrade setuptools pip
