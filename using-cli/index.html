@@ -7,13 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  
   <link rel="shortcut icon" href="../img/favicon.ico">
   <title>Using a CLI - Python Fire</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -24,7 +25,7 @@
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -35,6 +36,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> Python Fire</a>
         <div role="search">
@@ -45,63 +47,70 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Overview</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../installation/">Installation</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../benefits/">Benefits</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../guide/">The Python Fire Guide</a>
-	    </li>
-          
-            <li class="toctree-l1 current">
-		
-    <a class="current" href="./">Using a CLI</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#using-a-fire-cli">Using a Fire CLI</a></li>
-    
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../benefits/">Benefits</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../guide/">The Python Fire Guide</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Using a CLI</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a>
         <ul>
-        
-            <li><a class="toctree-l3" href="#basic-usage">Basic usage</a></li>
-        
-            <li><a class="toctree-l3" href="#using-flags-with-fire-clis">Using Flags with Fire CLIs </a></li>
-        
-            <li><a class="toctree-l3" href="#python-fires-flags">Python Fire's Flags</a></li>
-        
+    <li class="toctree-l3"><a class="reference internal" href="#accessing-members-of-an-object">Accessing members of an object</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#accessing-members-of-a-dict">Accessing members of a dict</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#accessing-members-of-a-list-or-tuple">Accessing members of a list or tuple</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#calling-a-function">Calling a function</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#instantiating-a-class">Instantiating a class</a>
+    </li>
         </ul>
-    
-
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-flags-with-fire-clis">Using Flags with Fire CLIs </a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#python-fires-flags">Python Fire's Flags</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-interactive-interactive-mode">--interactive: Interactive mode </a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-completion-generating-a-completion-script">--completion: Generating a completion script </a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-help-getting-help">--help: Getting help </a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-trace-getting-a-fire-trace">--trace: Getting a Fire trace </a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-separator-changing-the-separator">--separator: Changing the separator </a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-verbose-verbose-usage">--verbose: Verbose usage </a>
+    </li>
+        </ul>
+    </li>
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../troubleshooting/">Troubleshooting</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../api/">Reference</a>
-	    </li>
-          
-        </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../api/">Reference</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -126,6 +135,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -176,10 +186,9 @@ the result of function_that_returns_list.</p>
 the arguments of this function. Arguments can be specified positionally, or by
 name. To specify an argument by name, use flag syntax.</p>
 <p>For example, suppose your <code>command</code> corresponds to the function <code>double</code>:</p>
-<pre><code class="python">def double(value=0):
+<pre><code class="language-python">def double(value=0):
   return 2 * value
 </code></pre>
-
 <p>Then you can extend your command using named arguments as <code>command --value 5</code>,
 or using positional arguments as <code>command 5</code>. In both cases, the new command
 corresponds to the result of the function, in this case the number 10.</p>
@@ -270,18 +279,16 @@ change the separator. You can choose a new separator by supplying the
 <p>Here's an example to demonstrate separator usage. Let's say you have a function
 that takes a variable number of args, and you want to call that function, and
 then upper case the result. Here's how to do it:</p>
-<pre><code class="python"># Here's the Python function
+<pre><code class="language-python"># Here's the Python function
 def display(arg1, arg2='!'):
   return arg1 + arg2
 </code></pre>
-
-<pre><code class="bash"># Here's what you can do from Bash (Note: the default separator is the hyphen -)
+<pre><code class="language-bash"># Here's what you can do from Bash (Note: the default separator is the hyphen -)
 display hello                         # hello!
 display hello upper                   # helloupper
 display hello - upper                 # HELLO!
 display - SEP upper -- --separator SEP    # -!
 </code></pre>
-
 <p>Notice how in the third and fourth lines, the separator caused the display
 function to be called with the default value for arg2. In the fourth example,
 we change the separator to the string "SEP" so that we can pass '-' as an
@@ -313,7 +320,7 @@ considered a debugging tool, but not fully supported yet.</p>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -323,7 +330,7 @@ considered a debugging tool, but not fully supported yet.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
@@ -337,6 +344,11 @@ considered a debugging tool, but not fully supported yet.</p>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
       <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
