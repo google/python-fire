@@ -191,7 +191,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    long_type', help_screen)
     self.assertIn('SYNOPSIS\n    long_type LONG_OBJ', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
-    # TODO(dbieber): Assert type is displayed correctly. Type displays
+    # TODO(dbieber): Assert type is displayed correctly. Type displayed
     # differently in Travis vs in Google.
     # self.assertIn(
     #     'POSITIONAL ARGUMENTS\n    LONG_OBJ\n'
