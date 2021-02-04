@@ -700,7 +700,7 @@ def _GetCallableUsageItems(spec, metadata):
 
 def _KeywordOnlyArguments(spec, required=True):
   return (flag for flag in spec.kwonlyargs
-          if required == (flag in spec.kwonlydefaults))
+          if required != (flag in spec.kwonlydefaults))
 
 
 def _GetCallableAvailabilityLines(spec):
