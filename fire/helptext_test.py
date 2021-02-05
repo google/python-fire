@@ -435,10 +435,10 @@ VALUES
         formatting.Bold('SYNOPSIS') + '\n    shortargs <flags>',
         help_screen)
     self.assertIn(
-        formatting.Bold('FLAGS') + '\n    -f, --foo',
+        formatting.Bold('FLAGS') + '\n    -f, --first',
         help_screen)
-    self.assertIn('\n    --bar', help_screen)
-    self.assertIn('\n    --baz', help_screen)
+    self.assertIn('\n    --last', help_screen)
+    self.assertIn('\n    --late', help_screen)
 
 
 
