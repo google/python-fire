@@ -258,7 +258,9 @@ def _ArgsAndFlagsSections(info, spec, metadata):
     for flag in flags:
       if isinstance(flag, docstrings.KwargInfo):
         if flag.name[0] in unique_short_flags:
-          flag_string = short_flag_string.format(name=flag.name, short_name=flag.name[0])
+          flag_string = short_flag_string.format(
+            name=flag.name, short_name=flag.name[0]
+          )
         else:
           flag_string = flag_string.format(name=flag.name)
 

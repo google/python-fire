@@ -81,7 +81,9 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    triple', help_screen)
     self.assertIn('SYNOPSIS\n    triple <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
-    self.assertIn('FLAGS\n    -c, --count=COUNT\n        Default: 0', help_screen)
+    self.assertIn(
+      'FLAGS\n    -c, --count=COUNT\n        Default: 0',
+      help_screen)
     self.assertNotIn('NOTES', help_screen)
 
   def testHelpTextFunctionWithLongDefaults(self):
@@ -377,7 +379,8 @@ VALUES
         formatting.Bold('SYNOPSIS') + '\n    triple <flags>',
         help_screen)
     self.assertIn(
-        formatting.Bold('FLAGS') + '\n    -c, --' + formatting.Underline('count'),
+        formatting.Bold('FLAGS') + '\n    -c, --' +
+        formatting.Underline('count'),
         help_screen)
 
   def testHelpTextBoldCommandName(self):
