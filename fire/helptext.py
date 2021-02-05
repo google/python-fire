@@ -35,6 +35,7 @@ from __future__ import print_function
 
 import itertools
 import sys
+from collections import Counter
 
 from fire import completion
 from fire import custom_descriptions
@@ -222,12 +223,24 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   if spec.varkw:
     # Include kwargs documented via :key param:
     flag_string = '--{name}'
+    short_flag_string = '-{short_name}, --{name}'
     documented_kwargs = []
-    for flag in docstring_info.args or []:
+
+    # add short flags if possible
+    flags = docstring_info.args or []
+    short_flags = list(map(lambda f: f.name[0], flags))
+    short_flag_counts = Counter(short_flags)
+    unique_short_args = [v for v in short_flags if short_flag_counts[v] == 1]
+    for flag in flags:
       if isinstance(flag, docstrings.KwargInfo):
+        if flag.name[0] in unique_short_args:
+          flag_string = short_flag_string.format(name=flag.name, short_name=flag.name[0])
+        else:
+          flag_string = flag_string.format(name=flag.name)
+
         flag_item = _CreateFlagItem(
             flag.name, docstring_info, spec,
-            flag_string=flag_string.format(name=flag.name))
+            flag_string=flag_string)
         documented_kwargs.append(flag_item)
     if documented_kwargs:
       # Separate documented kwargs from other flags using a message
