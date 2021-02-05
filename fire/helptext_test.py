@@ -81,7 +81,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    triple', help_screen)
     self.assertIn('SYNOPSIS\n    triple <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
-    self.assertIn('FLAGS\n    --count=COUNT\n        Default: 0', help_screen)
+    self.assertIn('FLAGS\n    -c, --count=COUNT\n        Default: 0', help_screen)
     self.assertNotIn('NOTES', help_screen)
 
   def testHelpTextFunctionWithLongDefaults(self):
@@ -93,7 +93,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('SYNOPSIS\n    text <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
     self.assertIn(
-        'FLAGS\n    --string=STRING\n'
+        'FLAGS\n    -s, --string=STRING\n'
         '        Default: \'0001020304050607080910'
         '1112131415161718192021222324252627282...',
         help_screen)
@@ -121,7 +121,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('SYNOPSIS\n    text ARG1 ARG2 <flags>', help_screen)
     self.assertIn('DESCRIPTION\n    Function with kwarg', help_screen)
     self.assertIn(
-        'FLAGS\n    --opt=OPT\n        Default: True\n'
+        'FLAGS\n    -o, --opt=OPT\n        Default: True\n'
         '    The following flags are also accepted.'
         '\n    --arg3\n        Description of arg3.\n    '
         'Additional undocumented flags may also be accepted.',
@@ -140,7 +140,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('SYNOPSIS\n    double <flags>', help_screen)
     self.assertIn('DESCRIPTION', help_screen)
     self.assertIn(
-        'FLAGS\n    --count=COUNT\n        Type: float\n        Default: 0',
+        'FLAGS\n    -c, --count=COUNT\n        Type: float\n        Default: 0',
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
@@ -157,7 +157,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('SYNOPSIS\n    get_int <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
     self.assertIn(
-        'FLAGS\n    --value=VALUE\n'
+        'FLAGS\n    -v, --value=VALUE\n'
         '        Type: Optional[int]\n        Default: None',
         help_screen)
     self.assertNotIn('NOTES', help_screen)
@@ -285,7 +285,7 @@ class HelpTest(testutils.BaseTestCase):
     output = helptext.HelpText(
         component=component, trace=trace.FireTrace(component, 'with_default'))
     self.assertIn('NAME\n    with_default', output)
-    self.assertIn('FLAGS\n    --x=X', output)
+    self.assertIn('FLAGS\n    -x, --x=X', output)
 
   @testutils.skipIf(
       six.PY2, 'Python 2 does not support keyword-only arguments.')

@@ -173,10 +173,10 @@ def _DescriptionSection(component, info):
     return None
 
 
-def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec, flag_string=None):
+def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec, short_arg):
   return _CreateFlagItem(
       flag, docstring_info, spec, required=flag not in spec.kwonlydefaults,
-      flag_string=flag_string
+      short_arg=short_arg
     )
 
 
@@ -226,31 +226,21 @@ def _ArgsAndFlagsSections(info, spec, metadata):
           ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
       )
 
-  flag_string = '--{name}'
-  short_flag_string = '-{short_name}, --{name}'
-  positional_flag_items = []
   unique_short_args = _GetShortFlags(args_with_defaults)
-  for flag in args_with_defaults:
-    if flag[0] in unique_short_args:
-      positional_flag_items.append(
-        _CreateFlagItem(
-          flag, docstring_info, spec, required=False,
-          flag_string=short_flag_string.format(name=flag, short_name=flag[0])
-        )
-      )
-    else:
-      positional_flag_items.append(
-        _CreateFlagItem(flag, docstring_info, spec, required=False)
-      )
+  positional_flag_items = [
+    _CreateFlagItem(
+      flag, docstring_info, spec, required=False,
+      short_arg=flag[0] in unique_short_args
+    )
+    for flag in args_with_defaults
+  ]
 
   unique_short_kwonly_flags = _GetShortFlags(spec.kwonlyargs)
   kwonly_flag_items = [
       _CreateKeywordOnlyFlagItem(
         flag, docstring_info, spec,
-        flag_string=short_flag_string.format(name=flag, short_name=flag[0])
+        short_arg=flag[0] in unique_short_kwonly_flags
       )
-      if flag[0] in unique_short_kwonly_flags
-      else CreateKeywordOnlyFlagItem(flag, docstring_info, spec)
       for flag in spec.kwonlyargs
   ]
   flag_items = positional_flag_items + kwonly_flag_items
@@ -258,6 +248,8 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   if spec.varkw:
     # Include kwargs documented via :key param:
     documented_kwargs = []
+    flag_string = '--{name}'
+    short_flag_string = '-{short_name}, --{name}'
 
     # add short flags if possible
     flags = docstring_info.args or []
@@ -467,7 +459,7 @@ def _CreateArgItem(arg, docstring_info, spec):
 
 
 def _CreateFlagItem(flag, docstring_info, spec, required=False,
-                    flag_string=None):
+                    flag_string=None, short_arg=False):
   """Returns a string describing a flag using docstring and FullArgSpec info.
 
   Args:
@@ -479,6 +471,7 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
     required: Whether the flag is required.
     flag_string: If provided, use this string for the flag, rather than
       constructing one from the flag name.
+    short_arg: Whether the flag has a short variation or not.
   Returns:
     A string to be used in constructing the help screen for the function.
   """
@@ -500,6 +493,8 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
         flag_name_upper=formatting.Underline(flag.upper()))
   if required:
     flag_string += ' (required)'
+  if short_arg:
+    flag_string = '-{short_arg}, '.format(short_arg=flag[0]) + flag_string
 
   arg_type = _GetArgType(flag, spec)
   arg_default = _GetArgDefault(flag, spec)
