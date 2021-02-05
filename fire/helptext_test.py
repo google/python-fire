@@ -426,6 +426,21 @@ VALUES
     self.assertIn('double -', help_screen)
     self.assertIn('double - -', help_screen)
 
+  def testHelpTextMultipleKeywoardArgumentsWithShortArgs(self):
+    component = tc.fn_with_multiple_defaults
+    t = trace.FireTrace(component, name='shortargs')
+    help_screen = helptext.HelpText(component, t)
+    self.assertIn(formatting.Bold('NAME') + '\n    shortargs', help_screen)
+    self.assertIn(
+        formatting.Bold('SYNOPSIS') + '\n    shortargs <flags>',
+        help_screen)
+    self.assertIn(
+        formatting.Bold('FLAGS') + '\n    -f, --foo',
+        help_screen)
+    self.assertIn('\n    --bar', help_screen)
+    self.assertIn('\n    --baz', help_screen)
+
+
 
 class UsageTest(testutils.BaseTestCase):
 
