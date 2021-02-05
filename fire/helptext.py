@@ -173,9 +173,25 @@ def _DescriptionSection(component, info):
     return None
 
 
-def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
+def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec, flag_string=None):
   return _CreateFlagItem(
-      flag, docstring_info, spec, required=flag not in spec.kwonlydefaults)
+      flag, docstring_info, spec, required=flag not in spec.kwonlydefaults,
+      flag_string=flag_string
+    )
+
+
+def _GetShortFlags(flags):
+  """
+  Args:
+    flags: list of strings representing flags
+
+  Returns:
+    List of single character short flags,
+    where the character occurred at the start of a flag once.
+  """
+  short_flags = [f[0] for f in flags]
+  short_flag_counts = Counter(short_flags)
+  return [v for v in short_flags if short_flag_counts[v] == 1]
 
 
 def _ArgsAndFlagsSections(info, spec, metadata):
@@ -210,30 +226,46 @@ def _ArgsAndFlagsSections(info, spec, metadata):
           ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
       )
 
-  positional_flag_items = [
-      _CreateFlagItem(flag, docstring_info, spec, required=False)
-      for flag in args_with_defaults
-  ]
+  flag_string = '--{name}'
+  short_flag_string = '-{short_name}, --{name}'
+  positional_flag_items = []
+  unique_short_args = _GetShortFlags(args_with_defaults)
+  for flag in args_with_defaults:
+    if flag[0] in unique_short_args:
+      positional_flag_items.append(
+        _CreateFlagItem(
+          flag, docstring_info, spec, required=False,
+          flag_string=short_flag_string.format(name=flag, short_name=flag[0])
+        )
+      )
+    else:
+      positional_flag_items.append(
+        _CreateFlagItem(flag, docstring_info, spec, required=False)
+      )
+
+  unique_short_kwonly_flags = _GetShortFlags(spec.kwonlyargs)
   kwonly_flag_items = [
-      _CreateKeywordOnlyFlagItem(flag, docstring_info, spec)
+      _CreateKeywordOnlyFlagItem(
+        flag, docstring_info, spec,
+        flag_string=short_flag_string.format(name=flag, short_name=flag[0])
+      )
+      if flag[0] in unique_short_kwonly_flags
+      else CreateKeywordOnlyFlagItem(flag, docstring_info, spec)
       for flag in spec.kwonlyargs
   ]
   flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
     # Include kwargs documented via :key param:
-    flag_string = '--{name}'
-    short_flag_string = '-{short_name}, --{name}'
     documented_kwargs = []
 
     # add short flags if possible
     flags = docstring_info.args or []
-    short_flags = list(map(lambda f: f.name[0], flags))
-    short_flag_counts = Counter(short_flags)
-    unique_short_args = [v for v in short_flags if short_flag_counts[v] == 1]
+    flag_names = [f.name for f in flags]
+    unique_short_flags = _GetShortFlags(flag_names)
     for flag in flags:
       if isinstance(flag, docstrings.KwargInfo):
-        if flag.name[0] in unique_short_args:
+        if flag.name[0] in unique_short_flags:
           flag_string = short_flag_string.format(name=flag.name, short_name=flag.name[0])
         else:
           flag_string = flag_string.format(name=flag.name)

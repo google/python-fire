@@ -294,7 +294,7 @@ class HelpTest(testutils.BaseTestCase):
     output = helptext.HelpText(
         component=component, trace=trace.FireTrace(component, 'double'))
     self.assertIn('NAME\n    double', output)
-    self.assertIn('FLAGS\n    --count=COUNT (required)', output)
+    self.assertIn('FLAGS\n    -c, --count=COUNT (required)', output)
 
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
@@ -362,7 +362,7 @@ VALUES
         Returns the input multiplied by 2.
 
     FLAGS
-        --count=COUNT
+        -c, --count=COUNT
             Default: 0
             Input number that you want to double."""
     self.assertEqual(textwrap.dedent(expected_output).strip(),
@@ -377,7 +377,7 @@ VALUES
         formatting.Bold('SYNOPSIS') + '\n    triple <flags>',
         help_screen)
     self.assertIn(
-        formatting.Bold('FLAGS') + '\n    --' + formatting.Underline('count'),
+        formatting.Bold('FLAGS') + '\n    -c, --' + formatting.Underline('count'),
         help_screen)
 
   def testHelpTextBoldCommandName(self):
