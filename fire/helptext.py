@@ -176,8 +176,7 @@ def _DescriptionSection(component, info):
 def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec, short_arg):
   return _CreateFlagItem(
       flag, docstring_info, spec, required=flag not in spec.kwonlydefaults,
-      short_arg=short_arg
-    )
+      short_arg=short_arg)
 
 
 def _GetShortFlags(flags):
@@ -228,18 +227,18 @@ def _ArgsAndFlagsSections(info, spec, metadata):
 
   unique_short_args = _GetShortFlags(args_with_defaults)
   positional_flag_items = [
-    _CreateFlagItem(
-      flag, docstring_info, spec, required=False,
-      short_arg=flag[0] in unique_short_args
-    )
-    for flag in args_with_defaults
+      _CreateFlagItem(
+          flag, docstring_info, spec, required=False,
+          short_arg=flag[0] in unique_short_args
+      )
+      for flag in args_with_defaults
   ]
 
   unique_short_kwonly_flags = _GetShortFlags(spec.kwonlyargs)
   kwonly_flag_items = [
       _CreateKeywordOnlyFlagItem(
-        flag, docstring_info, spec,
-        short_arg=flag[0] in unique_short_kwonly_flags
+          flag, docstring_info, spec,
+          short_arg=flag[0] in unique_short_kwonly_flags
       )
       for flag in spec.kwonlyargs
   ]
@@ -259,7 +258,7 @@ def _ArgsAndFlagsSections(info, spec, metadata):
       if isinstance(flag, docstrings.KwargInfo):
         if flag.name[0] in unique_short_flags:
           flag_string = short_flag_string.format(
-            name=flag.name, short_name=flag.name[0]
+              name=flag.name, short_name=flag.name[0]
           )
         else:
           flag_string = flag_string.format(name=flag.name)

@@ -82,8 +82,8 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('SYNOPSIS\n    triple <flags>', help_screen)
     self.assertNotIn('DESCRIPTION', help_screen)
     self.assertIn(
-      'FLAGS\n    -c, --count=COUNT\n        Default: 0',
-      help_screen)
+        'FLAGS\n    -c, --count=COUNT\n        Default: 0',
+        help_screen)
     self.assertNotIn('NOTES', help_screen)
 
   def testHelpTextFunctionWithLongDefaults(self):
