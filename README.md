@@ -1,3 +1,32 @@
+### Fork Goal
+
+ * [x] Fix typed arguments [issue](https://github.com/google/python-fire/issues/300).
+    
+# Install This Fork
+
+  `pip install git+https://github.com/loynoir/python-fire.git`
+
+# New Feature
+
+
+```python
+import fire
+
+class bar():
+    def hello(self, x: str, y: int, z: float):
+        assert type(x) == str
+        assert type(y) == int
+        assert type(z) == float
+        print("OK")
+
+if __name__ == '__main__':
+    fire.Fire(bar)
+```
+
+```bash
+python foo.py hello 1 2 3 # OK
+```
+
 # Python Fire [![PyPI](https://img.shields.io/pypi/pyversions/fire.svg?style=plastic)](https://github.com/google/python-fire)
 
 _Python Fire is a library for automatically generating command line interfaces
