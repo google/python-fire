@@ -300,7 +300,7 @@ def _DisplayError(component_trace, help_sequence=None):
           + component_trace.elements[-1].ErrorAsStr(),
           file=sys.stderr)
     error_text = helptext.UsageText(result, trace=component_trace,
-                                    verbose=component_trace.verbose, help_sequence=help_sequence)
+                                    verbose=component_trace.verbose)
     print(error_text, file=sys.stderr)
 
 
