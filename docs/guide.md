@@ -39,7 +39,7 @@ if __name__ == '__main__':
 Here's how we can run our program from the command line:
 
 ```bash
-$ python example.py hello World
+$ python example.py World
 Hello World!
 ```
 
