@@ -61,6 +61,7 @@ import re
 import shlex
 import sys
 import types
+import datetime
 
 from fire import completion
 from fire import decorators
@@ -964,10 +965,12 @@ def _ParseValue(value, index, arg, metadata, annotations):
   Returns:
     value, parsed into the appropriate type for calling a function.
   """
-  if arg in annotations and annotations[arg] in (str, int, float):
-    parse_fn = annotations[arg]
-  else:
-    parse_fn = parser.DefaultParseValue
+  parse_fn = parser.DefaultParseValue
+  if arg in annotations:
+    if annotations[arg] in (str, int, float):
+      parse_fn = annotations[arg]
+    elif annotations[arg] in (datetime.datetime, datetime.date, datetime.time):
+      parse_fn = annotations[arg].fromisoformat
 
   # We check to see if any parse function from the fn metadata applies here.
   parse_fns = metadata.get(decorators.FIRE_PARSE_FNS)
