@@ -320,6 +320,7 @@ class Pipeline(object):
   def run(self):
     self.ingestion.run()
     self.digestion.run()
+    return 'Pipeline complete'
 
 if __name__ == '__main__':
   fire.Fire(Pipeline)
