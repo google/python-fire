@@ -392,18 +392,16 @@ def _consume_google_args_line(line_info, state):
   split_line = line_info.remaining.split(':', 1)
   if len(split_line) > 1:
     first, second = split_line  # first is either the "arg" or "arg (type)"
-    new_line = line_info.indentation <= line_info.previous.indentation
+    new_arg = line_info.indentation <= line_info.previous.indentation
     if _is_arg_name(first.strip()) and (
-      state.current_arg is None or new_line
-    ):
+        state.current_arg is None or new_arg):
       arg = _get_or_create_arg_by_name(state, first.strip())
       arg.description.lines.append(second.strip())
       state.current_arg = arg
     else:
       arg_name_and_type = _as_arg_name_and_type(first)
       if arg_name_and_type and (
-        state.current_arg is None or new_line
-      ):
+          state.current_arg is None or new_arg):
         arg_name, type_str = arg_name_and_type
         arg = _get_or_create_arg_by_name(state, arg_name)
         arg.type.lines.append(type_str)
