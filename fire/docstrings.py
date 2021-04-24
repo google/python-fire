@@ -338,7 +338,8 @@ def _as_arg_name_and_type(text):
   tokens = text.split()
   if len(tokens) < 2:
     return None
-  if _is_arg_name(tokens[0]):
+  if _is_arg_name(tokens[0]) and not _is_arg_name(tokens[1]):
+  # if _is_arg_name(tokens[0]):
     type_token = ' '.join(tokens[1:])
     type_token = type_token.lstrip('{([').rstrip('])}')
     return tokens[0], type_token
@@ -406,7 +407,8 @@ def _consume_google_args_line(line_info, state):
         state.current_arg = arg
       else:
         if state.current_arg:
-          state.current_arg.description.lines.append(split_line[0])
+          state.current_arg.description.lines.append(first + ':' + second)
+          # state.current_arg.description.lines.append(split_line[0])
   else:
     if state.current_arg:
       state.current_arg.description.lines.append(split_line[0])
