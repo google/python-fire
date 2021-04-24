@@ -339,7 +339,6 @@ def _as_arg_name_and_type(text):
   if len(tokens) < 2:
     return None
   if _is_arg_name(tokens[0]) and not _is_arg_name(tokens[1]):
-  # if _is_arg_name(tokens[0]):
     type_token = ' '.join(tokens[1:])
     type_token = type_token.lstrip('{([').rstrip('])}')
     return tokens[0], type_token
@@ -393,13 +392,18 @@ def _consume_google_args_line(line_info, state):
   split_line = line_info.remaining.split(':', 1)
   if len(split_line) > 1:
     first, second = split_line  # first is either the "arg" or "arg (type)"
-    if _is_arg_name(first.strip()):
+    new_line = line_info.indentation <= line_info.previous.indentation
+    if _is_arg_name(first.strip()) and (
+      state.current_arg is None or new_line
+    ):
       arg = _get_or_create_arg_by_name(state, first.strip())
       arg.description.lines.append(second.strip())
       state.current_arg = arg
     else:
       arg_name_and_type = _as_arg_name_and_type(first)
-      if arg_name_and_type:
+      if arg_name_and_type and (
+        state.current_arg is None or new_line
+      ):
         arg_name, type_str = arg_name_and_type
         arg = _get_or_create_arg_by_name(state, arg_name)
         arg.type.lines.append(type_str)
@@ -408,7 +412,6 @@ def _consume_google_args_line(line_info, state):
       else:
         if state.current_arg:
           state.current_arg.description.lines.append(first + ':' + second)
-          # state.current_arg.description.lines.append(split_line[0])
   else:
     if state.current_arg:
       state.current_arg.description.lines.append(split_line[0])
