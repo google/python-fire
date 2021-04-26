@@ -156,7 +156,11 @@ complete -F _complete-{identifier} {command}
       return opts_assignment_subcommand_template
 
   lines = []
-  for command in set(subcommands_map.keys()).union(set(options_map.keys())):
+  commands_set = set()
+  commands_set.add(name)
+  commands_set = commands_set.union(set(subcommands_map.keys()))
+  commands_set = commands_set.union(set(options_map.keys()))
+  for command in commands_set:
     opts_assignment = _GetOptsAssignmentTemplate(command).format(
         options=' '.join(
             sorted(options_map[command].union(subcommands_map[command]))
