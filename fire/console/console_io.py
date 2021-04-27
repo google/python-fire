@@ -83,7 +83,11 @@ def More(contents, out, prompt=None, check_pager=True):
     return
   if check_pager:
     pager = encoding.GetEncodedValue(os.environ, 'PAGER', None)
-    if pager == '-':
+    fire_pager = encoding.GetEncodedValue(os.environ, 'FIRE_PAGER', None)
+    if fire_pager:
+      # FIRE_PAGER takes precedence to PAGER
+      pager = fire_pager
+    elif pager == '-':
       # Use the fallback Pager.
       pager = None
     elif not pager:
