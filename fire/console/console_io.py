@@ -87,7 +87,7 @@ def More(contents, out, prompt=None, check_pager=True):
     if fire_pager:
       # FIRE_PAGER takes precedence to PAGER
       pager = fire_pager
-    elif pager == '-':
+    if pager == '-':
       # Use the fallback Pager.
       pager = None
     elif not pager:
