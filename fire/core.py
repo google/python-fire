@@ -61,8 +61,6 @@ import re
 import shlex
 import sys
 import types
-import datetime
-import pathlib
 
 from fire import completion
 from fire import decorators
@@ -71,6 +69,7 @@ from fire import helptext
 from fire import inspectutils
 from fire import interact
 from fire import parser
+from fire.parser_annotations import generate_parse_fn_annotation
 from fire import trace
 from fire import value_types
 from fire.console import console_io
@@ -967,15 +966,12 @@ def _ParseValue(value, index, arg, metadata, annotations):
     value, parsed into the appropriate type for calling a function.
   """
   parse_fn = parser.DefaultParseValue
+
   if arg in annotations:
-    if annotations[arg] in (str, int, float):
-      parse_fn = annotations[arg]
-    elif annotations[arg] in (datetime.datetime, datetime.date, datetime.time):
-      parse_fn = annotations[arg].fromisoformat
-    elif annotations[arg] in (pathlib.Path, pathlib.PosixPath, pathlib.WindowsPath):
-      parse_fn = annotations[arg]
-    elif annotations[arg] in (pathlib.PurePath, pathlib.PurePosixPath, pathlib.PureWindowsPath):
-      parse_fn = annotations[arg]
+    annotation = annotations[arg]
+    parse_fn_annotation = generate_parse_fn_annotation(annotation)
+    if parse_fn_annotation:
+      parse_fn = parse_fn_annotation
 
   # We check to see if any parse function from the fn metadata applies here.
   parse_fns = metadata.get(decorators.FIRE_PARSE_FNS)
