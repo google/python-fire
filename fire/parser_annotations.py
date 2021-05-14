@@ -38,6 +38,7 @@ def generate_parse_fn_annotation(annotation):
             # eg: 'PurePath' -> pathlib.PurePath
             # BOOM: 'PurePath' not in context!
             try:
+                # annotation = typing.get_type_hints(fn)[argName]
                 annotation = eval(annotation)
             except NameError as e:
                 text = """
@@ -53,7 +54,7 @@ import pathlib
 # fn(self, x:pathlib.Path):
 """
                 console_io.More(text, out=sys.stderr)
-                raise NotImplementedError("PartialStringTypeAnnotation")
+                raise NotImplementedError(f"PartialStringTypeAnnotation: {e}")
 
             if isinstance(annotation, str):
                 # case: avoid endless loop
