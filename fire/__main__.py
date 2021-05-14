@@ -44,101 +44,105 @@ or with a file path:
 
 
 def import_from_file_path(path):
-  """Performs a module import given the filename.
+    """Performs a module import given the filename.
 
-  Args:
-    path (str): the path to the file to be imported.
+    Args:
+      path (str): the path to the file to be imported.
 
-  Raises:
-    IOError: if the given file does not exist or importlib fails to load it.
+    Raises:
+      IOError: if the given file does not exist or importlib fails to load it.
 
-  Returns:
-    Tuple[ModuleType, str]: returns the imported module and the module name,
-      usually extracted from the path itself.
-  """
+    Returns:
+      Tuple[ModuleType, str]: returns the imported module and the module name,
+        usually extracted from the path itself.
+    """
 
-  if not os.path.exists(path):
-    raise IOError('Given file path does not exist.')
+    if not os.path.exists(path):
+        raise IOError("Given file path does not exist.")
 
-  module_name = os.path.basename(path)
+    module_name = os.path.basename(path)
 
-  if sys.version_info.major == 3 and sys.version_info.minor < 5:
-    loader = importlib.machinery.SourceFileLoader(  # pylint: disable=no-member
-        fullname=module_name,
-        path=path,
-    )
+    if sys.version_info.major == 3 and sys.version_info.minor < 5:
+        loader = importlib.machinery.SourceFileLoader(  # pylint: disable=no-member
+            fullname=module_name,
+            path=path,
+        )
 
-    module = loader.load_module(module_name)  # pylint: disable=deprecated-method
+        module = loader.load_module(module_name)  # pylint: disable=deprecated-method
 
-  elif sys.version_info.major == 3:
-    from importlib import util  # pylint: disable=g-import-not-at-top,import-outside-toplevel,no-name-in-module
-    spec = util.spec_from_file_location(module_name, path)
+    elif sys.version_info.major == 3:
+        from importlib import (
+            util,
+        )  # pylint: disable=g-import-not-at-top,import-outside-toplevel,no-name-in-module
 
-    if spec is None:
-      raise IOError('Unable to load module from specified path.')
+        spec = util.spec_from_file_location(module_name, path)
 
-    module = util.module_from_spec(spec)  # pylint: disable=no-member
-    spec.loader.exec_module(module)  # pytype: disable=attribute-error
+        if spec is None:
+            raise IOError("Unable to load module from specified path.")
 
-  else:
-    import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel
-    module = imp.load_source(module_name, path)
+        module = util.module_from_spec(spec)  # pylint: disable=no-member
+        spec.loader.exec_module(module)  # pytype: disable=attribute-error
 
-  return module, module_name
+    else:
+        import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel
+
+        module = imp.load_source(module_name, path)
+
+    return module, module_name
 
 
 def import_from_module_name(module_name):
-  """Imports a module and returns it and its name."""
-  module = importlib.import_module(module_name)
-  return module, module_name
+    """Imports a module and returns it and its name."""
+    module = importlib.import_module(module_name)
+    return module, module_name
 
 
 def import_module(module_or_filename):
-  """Imports a given module or filename.
+    """Imports a given module or filename.
 
-  If the module_or_filename exists in the file system and ends with .py, we
-  attempt to import it. If that import fails, try to import it as a module.
+    If the module_or_filename exists in the file system and ends with .py, we
+    attempt to import it. If that import fails, try to import it as a module.
 
-  Args:
-    module_or_filename (str): string name of path or module.
+    Args:
+      module_or_filename (str): string name of path or module.
 
-  Raises:
-    ValueError: if the given file is invalid.
-    IOError: if the file or module can not be found or imported.
+    Raises:
+      ValueError: if the given file is invalid.
+      IOError: if the file or module can not be found or imported.
 
-  Returns:
-    Tuple[ModuleType, str]: returns the imported module and the module name,
-      usually extracted from the path itself.
-  """
+    Returns:
+      Tuple[ModuleType, str]: returns the imported module and the module name,
+        usually extracted from the path itself.
+    """
 
-  if os.path.exists(module_or_filename):
-    # importlib.util.spec_from_file_location requires .py
-    if not module_or_filename.endswith('.py'):
-      try:  # try as module instead
-        return import_from_module_name(module_or_filename)
-      except ImportError:
-        raise ValueError('Fire can only be called on .py files.')
+    if os.path.exists(module_or_filename):
+        # importlib.util.spec_from_file_location requires .py
+        if not module_or_filename.endswith(".py"):
+            try:  # try as module instead
+                return import_from_module_name(module_or_filename)
+            except ImportError:
+                raise ValueError("Fire can only be called on .py files.")
 
-    return import_from_file_path(module_or_filename)
+        return import_from_file_path(module_or_filename)
 
-  if os.path.sep in module_or_filename:  # Use / to detect if it was a filename.
-    raise IOError('Fire was passed a filename which could not be found.')
+    if os.path.sep in module_or_filename:  # Use / to detect if it was a filename.
+        raise IOError("Fire was passed a filename which could not be found.")
 
-  return import_from_module_name(module_or_filename)  # Assume it's a module.
+    return import_from_module_name(module_or_filename)  # Assume it's a module.
 
 
 def main(args):
-  """Entrypoint for fire when invoked as a module with python -m fire."""
+    """Entrypoint for fire when invoked as a module with python -m fire."""
 
-  if len(args) < 2:
-    print(cli_string)
-    sys.exit(1)
+    if len(args) < 2:
+        print(cli_string)
+        sys.exit(1)
 
-  module_or_filename = args[1]
-  module, module_name = import_module(module_or_filename)
+    module_or_filename = args[1]
+    module, module_name = import_module(module_or_filename)
 
-  fire.Fire(module, name=module_name, command=args[2:])
+    fire.Fire(module, name=module_name, command=args[2:])
 
 
-if __name__ == '__main__':
-  main(sys.argv)
+if __name__ == "__main__":
+    main(sys.argv)

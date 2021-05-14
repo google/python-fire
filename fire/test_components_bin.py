@@ -26,7 +26,8 @@ from fire import test_components
 
 
 def main():
-  fire.Fire(test_components)
+    fire.Fire(test_components)
 
-if __name__ == '__main__':
-  main()
+
+if __name__ == "__main__":
+    main()

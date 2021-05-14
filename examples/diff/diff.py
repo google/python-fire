@@ -62,44 +62,62 @@ import fire
 
 
 class DiffLibWrapper(object):
-  """Provides a simple interface to the difflib module.
+    """Provides a simple interface to the difflib module.
 
-  The purpose of this simple interface is to offer a limited subset of the
-  difflib functionality as a command line interface.
-  """
+    The purpose of this simple interface is to offer a limited subset of the
+    difflib functionality as a command line interface.
+    """
 
-  def __init__(self, fromfile, tofile):
-    self._fromfile = fromfile
-    self._tofile = tofile
+    def __init__(self, fromfile, tofile):
+        self._fromfile = fromfile
+        self._tofile = tofile
 
-    self.fromdate = time.ctime(os.stat(fromfile).st_mtime)
-    self.todate = time.ctime(os.stat(tofile).st_mtime)
-    with open(fromfile) as f:
-      self.fromlines = f.readlines()
-    with open(tofile) as f:
-      self.tolines = f.readlines()
+        self.fromdate = time.ctime(os.stat(fromfile).st_mtime)
+        self.todate = time.ctime(os.stat(tofile).st_mtime)
+        with open(fromfile) as f:
+            self.fromlines = f.readlines()
+        with open(tofile) as f:
+            self.tolines = f.readlines()
 
-  def unified_diff(self, lines=3):
-    return difflib.unified_diff(
-        self.fromlines, self.tolines, self._fromfile,
-        self._tofile, self.fromdate, self.todate, n=lines)
+    def unified_diff(self, lines=3):
+        return difflib.unified_diff(
+            self.fromlines,
+            self.tolines,
+            self._fromfile,
+            self._tofile,
+            self.fromdate,
+            self.todate,
+            n=lines,
+        )
 
-  def ndiff(self):
-    return difflib.ndiff(self.fromlines, self.tolines)
+    def ndiff(self):
+        return difflib.ndiff(self.fromlines, self.tolines)
 
-  def make_file(self, context=False, lines=3):
-    return difflib.HtmlDiff().make_file(
-        self.fromlines, self.tolines, self._fromfile, self._tofile,
-        context=context, numlines=lines)
+    def make_file(self, context=False, lines=3):
+        return difflib.HtmlDiff().make_file(
+            self.fromlines,
+            self.tolines,
+            self._fromfile,
+            self._tofile,
+            context=context,
+            numlines=lines,
+        )
 
-  def context_diff(self, lines=3):
-    return difflib.context_diff(
-        self.fromlines, self.tolines, self._fromfile,
-        self._tofile, self.fromdate, self.todate, n=lines)
+    def context_diff(self, lines=3):
+        return difflib.context_diff(
+            self.fromlines,
+            self.tolines,
+            self._fromfile,
+            self._tofile,
+            self.fromdate,
+            self.todate,
+            n=lines,
+        )
 
 
 def main():
-  fire.Fire(DiffLibWrapper, name='diff')
+    fire.Fire(DiffLibWrapper, name="diff")
 
-if __name__ == '__main__':
-  main()
+
+if __name__ == "__main__":
+    main()

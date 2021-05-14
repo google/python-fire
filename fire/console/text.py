@@ -22,82 +22,82 @@ import enum
 
 
 class TextAttributes(object):
-  """Attributes to use to style text with."""
+    """Attributes to use to style text with."""
 
-  def __init__(self, format_str=None, color=None, attrs=None):
-    """Defines a set of attributes for a piece of text.
+    def __init__(self, format_str=None, color=None, attrs=None):
+        """Defines a set of attributes for a piece of text.
 
-    Args:
-      format_str: (str), string that will be used to format the text
-        with. For example '[{}]', to enclose text in brackets.
-      color: (Colors), the color the text should be formatted with.
-      attrs: (Attrs), the attributes to apply to text.
-    """
-    self._format_str = format_str
-    self._color = color
-    self._attrs = attrs or []
+        Args:
+          format_str: (str), string that will be used to format the text
+            with. For example '[{}]', to enclose text in brackets.
+          color: (Colors), the color the text should be formatted with.
+          attrs: (Attrs), the attributes to apply to text.
+        """
+        self._format_str = format_str
+        self._color = color
+        self._attrs = attrs or []
 
-  @property
-  def format_str(self):
-    return self._format_str
+    @property
+    def format_str(self):
+        return self._format_str
 
-  @property
-  def color(self):
-    return self._color
+    @property
+    def color(self):
+        return self._color
 
-  @property
-  def attrs(self):
-    return self._attrs
+    @property
+    def attrs(self):
+        return self._attrs
 
 
 class TypedText(object):
-  """Text with a semantic type that will be used for styling."""
+    """Text with a semantic type that will be used for styling."""
 
-  def __init__(self, texts, text_type=None):
-    """String of text and a corresponding type to use to style that text.
+    def __init__(self, texts, text_type=None):
+        """String of text and a corresponding type to use to style that text.
 
-    Args:
-     texts: (list[str]), list of strs or TypedText objects
-       that should be styled using text_type.
-     text_type: (TextTypes), the semantic type of the text that
-       will be used to style text.
-    """
-    self.texts = texts
-    self.text_type = text_type
+        Args:
+         texts: (list[str]), list of strs or TypedText objects
+           that should be styled using text_type.
+         text_type: (TextTypes), the semantic type of the text that
+           will be used to style text.
+        """
+        self.texts = texts
+        self.text_type = text_type
 
-  def __len__(self):
-    length = 0
-    for text in self.texts:
-      length += len(text)
-    return length
+    def __len__(self):
+        length = 0
+        for text in self.texts:
+            length += len(text)
+        return length
 
-  def __add__(self, other):
-    texts = [self, other]
-    return TypedText(texts)
+    def __add__(self, other):
+        texts = [self, other]
+        return TypedText(texts)
 
-  def __radd__(self, other):
-    texts = [other, self]
-    return TypedText(texts)
+    def __radd__(self, other):
+        texts = [other, self]
+        return TypedText(texts)
 
 
 class _TextTypes(enum.Enum):
-  """Text types base class that defines base functionality."""
+    """Text types base class that defines base functionality."""
 
-  def __call__(self, *args):
-    """Returns a TypedText object using this style."""
-    return TypedText(list(args), self)
+    def __call__(self, *args):
+        """Returns a TypedText object using this style."""
+        return TypedText(list(args), self)
 
 
 # TODO: Add more types.
 class TextTypes(_TextTypes):
-  """Defines text types that can be used for styling text."""
-  RESOURCE_NAME = 1
-  URL = 2
-  USER_INPUT = 3
-  COMMAND = 4
-  INFO = 5
-  URI = 6
-  OUTPUT = 7
-  PT_SUCCESS = 8
-  PT_FAILURE = 9
+    """Defines text types that can be used for styling text."""
 
+    RESOURCE_NAME = 1
+    URL = 2
+    USER_INPUT = 3
+    COMMAND = 4
+    INFO = 5
+    URI = 6
+    OUTPUT = 7
+    PT_SUCCESS = 8
+    PT_FAILURE = 9

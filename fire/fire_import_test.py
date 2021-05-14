@@ -22,19 +22,19 @@ import mock
 
 
 class FireImportTest(testutils.BaseTestCase):
-  """Tests importing Fire."""
+    """Tests importing Fire."""
 
-  def testFire(self):
-    with mock.patch.object(sys, 'argv', ['commandname']):
-      fire.Fire()
+    def testFire(self):
+        with mock.patch.object(sys, "argv", ["commandname"]):
+            fire.Fire()
 
-  def testFireMethods(self):
-    self.assertIsNotNone(fire.Fire)
+    def testFireMethods(self):
+        self.assertIsNotNone(fire.Fire)
 
-  def testNoPrivateMethods(self):
-    self.assertTrue(hasattr(fire, 'Fire'))
-    self.assertFalse(hasattr(fire, '_Fire'))
+    def testNoPrivateMethods(self):
+        self.assertTrue(hasattr(fire, "Fire"))
+        self.assertFalse(hasattr(fire, "_Fire"))
 
 
-if __name__ == '__main__':
-  testutils.main()
+if __name__ == "__main__":
+    testutils.main()

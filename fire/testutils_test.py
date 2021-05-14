@@ -26,34 +26,34 @@ import six
 
 
 class TestTestUtils(testutils.BaseTestCase):
-  """Let's get meta."""
+    """Let's get meta."""
 
-  def testNoCheckOnException(self):
-    with self.assertRaises(ValueError):
-      with self.assertOutputMatches(stdout='blah'):
-        raise ValueError()
+    def testNoCheckOnException(self):
+        with self.assertRaises(ValueError):
+            with self.assertOutputMatches(stdout="blah"):
+                raise ValueError()
 
-  def testCheckStdoutOrStderrNone(self):
-    with six.assertRaisesRegex(self, AssertionError, 'stdout:'):
-      with self.assertOutputMatches(stdout=None):
-        print('blah')
+    def testCheckStdoutOrStderrNone(self):
+        with six.assertRaisesRegex(self, AssertionError, "stdout:"):
+            with self.assertOutputMatches(stdout=None):
+                print("blah")
 
-    with six.assertRaisesRegex(self, AssertionError, 'stderr:'):
-      with self.assertOutputMatches(stderr=None):
-        print('blah', file=sys.stderr)
+        with six.assertRaisesRegex(self, AssertionError, "stderr:"):
+            with self.assertOutputMatches(stderr=None):
+                print("blah", file=sys.stderr)
 
-    with six.assertRaisesRegex(self, AssertionError, 'stderr:'):
-      with self.assertOutputMatches(stdout='apple', stderr=None):
-        print('apple')
-        print('blah', file=sys.stderr)
+        with six.assertRaisesRegex(self, AssertionError, "stderr:"):
+            with self.assertOutputMatches(stdout="apple", stderr=None):
+                print("apple")
+                print("blah", file=sys.stderr)
 
-  def testCorrectOrderingOfAssertRaises(self):
-    # Check to make sure FireExit tests are correct.
-    with self.assertOutputMatches(stdout='Yep.*first.*second'):
-      with self.assertRaises(ValueError):
-        print('Yep, this is the first line.\nThis is the second.')
-        raise ValueError()
+    def testCorrectOrderingOfAssertRaises(self):
+        # Check to make sure FireExit tests are correct.
+        with self.assertOutputMatches(stdout="Yep.*first.*second"):
+            with self.assertRaises(ValueError):
+                print("Yep, this is the first line.\nThis is the second.")
+                raise ValueError()
 
 
-if __name__ == '__main__':
-  testutils.main()
+if __name__ == "__main__":
+    testutils.main()

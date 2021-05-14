@@ -33,88 +33,97 @@ import six
 
 
 class BaseTestCase(unittest.TestCase):
-  """Shared test case for Python Fire tests."""
+    """Shared test case for Python Fire tests."""
 
-  @contextlib.contextmanager
-  def assertOutputMatches(self, stdout='.*', stderr='.*', capture=True):
-    """Asserts that the context generates stdout and stderr matching regexps.
+    @contextlib.contextmanager
+    def assertOutputMatches(self, stdout=".*", stderr=".*", capture=True):
+        """Asserts that the context generates stdout and stderr matching regexps.
 
-    Note: If wrapped code raises an exception, stdout and stderr will not be
-      checked.
+        Note: If wrapped code raises an exception, stdout and stderr will not be
+          checked.
 
-    Args:
-      stdout: (str) regexp to match against stdout (None will check no stdout)
-      stderr: (str) regexp to match against stderr (None will check no stderr)
-      capture: (bool, default True) do not bubble up stdout or stderr
+        Args:
+          stdout: (str) regexp to match against stdout (None will check no stdout)
+          stderr: (str) regexp to match against stderr (None will check no stderr)
+          capture: (bool, default True) do not bubble up stdout or stderr
 
-    Yields:
-      Yields to the wrapped context.
-    """
-    stdout_fp = six.StringIO()
-    stderr_fp = six.StringIO()
-    try:
-      with mock.patch.object(sys, 'stdout', stdout_fp):
-        with mock.patch.object(sys, 'stderr', stderr_fp):
-          yield
-    finally:
-      if not capture:
-        sys.stdout.write(stdout_fp.getvalue())
-        sys.stderr.write(stderr_fp.getvalue())
-
-    for name, regexp, fp in [('stdout', stdout, stdout_fp),
-                             ('stderr', stderr, stderr_fp)]:
-      value = fp.getvalue()
-      if regexp is None:
-        if value:
-          raise AssertionError('%s: Expected no output. Got: %r' %
-                               (name, value))
-      else:
-        if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
-          raise AssertionError('%s: Expected %r to match %r' %
-                               (name, value, regexp))
-
-  def assertRaisesRegex(self, *args, **kwargs):  # pylint: disable=arguments-differ
-    if sys.version_info.major == 2:
-      return super(BaseTestCase, self).assertRaisesRegexp(*args, **kwargs)  # pylint: disable=deprecated-method
-    else:
-      return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member
-
-  @contextlib.contextmanager
-  def assertRaisesFireExit(self, code, regexp='.*'):
-    """Asserts that a FireExit error is raised in the context.
-
-    Allows tests to check that Fire's wrapper around SystemExit is raised
-    and that a regexp is matched in the output.
-
-    Args:
-      code: The status code that the FireExit should contain.
-      regexp: stdout must match this regex.
-
-    Yields:
-      Yields to the wrapped context.
-    """
-    with self.assertOutputMatches(stderr=regexp):
-      with self.assertRaises(core.FireExit):
+        Yields:
+          Yields to the wrapped context.
+        """
+        stdout_fp = six.StringIO()
+        stderr_fp = six.StringIO()
         try:
-          yield
-        except core.FireExit as exc:
-          if exc.code != code:
-            raise AssertionError('Incorrect exit code: %r != %r' %
-                                 (exc.code, code))
-          self.assertIsInstance(exc.trace, trace.FireTrace)
-          raise
+            with mock.patch.object(sys, "stdout", stdout_fp):
+                with mock.patch.object(sys, "stderr", stderr_fp):
+                    yield
+        finally:
+            if not capture:
+                sys.stdout.write(stdout_fp.getvalue())
+                sys.stderr.write(stderr_fp.getvalue())
+
+        for name, regexp, fp in [
+            ("stdout", stdout, stdout_fp),
+            ("stderr", stderr, stderr_fp),
+        ]:
+            value = fp.getvalue()
+            if regexp is None:
+                if value:
+                    raise AssertionError(
+                        "%s: Expected no output. Got: %r" % (name, value)
+                    )
+            else:
+                if not re.search(regexp, value, re.DOTALL | re.MULTILINE):
+                    raise AssertionError(
+                        "%s: Expected %r to match %r" % (name, value, regexp)
+                    )
+
+    def assertRaisesRegex(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        if sys.version_info.major == 2:
+            return super(BaseTestCase, self).assertRaisesRegexp(
+                *args, **kwargs
+            )  # pylint: disable=deprecated-method
+        else:
+            return super(BaseTestCase, self).assertRaisesRegex(
+                *args, **kwargs
+            )  # pylint: disable=no-member
+
+    @contextlib.contextmanager
+    def assertRaisesFireExit(self, code, regexp=".*"):
+        """Asserts that a FireExit error is raised in the context.
+
+        Allows tests to check that Fire's wrapper around SystemExit is raised
+        and that a regexp is matched in the output.
+
+        Args:
+          code: The status code that the FireExit should contain.
+          regexp: stdout must match this regex.
+
+        Yields:
+          Yields to the wrapped context.
+        """
+        with self.assertOutputMatches(stderr=regexp):
+            with self.assertRaises(core.FireExit):
+                try:
+                    yield
+                except core.FireExit as exc:
+                    if exc.code != code:
+                        raise AssertionError(
+                            "Incorrect exit code: %r != %r" % (exc.code, code)
+                        )
+                    self.assertIsInstance(exc.trace, trace.FireTrace)
+                    raise
 
 
 @contextlib.contextmanager
 def ChangeDirectory(directory):
-  """Context manager to mock a directory change and revert on exit."""
-  cwdir = os.getcwd()
-  os.chdir(directory)
+    """Context manager to mock a directory change and revert on exit."""
+    cwdir = os.getcwd()
+    os.chdir(directory)
 
-  try:
-    yield directory
-  finally:
-    os.chdir(cwdir)
+    try:
+        yield directory
+    finally:
+        os.chdir(cwdir)
 
 
 # pylint: disable=invalid-name

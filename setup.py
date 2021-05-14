@@ -28,61 +28,48 @@ it fires off your command.
 SHORT_DESCRIPTION = """
 A library for automatically generating command line interfaces.""".strip()
 
-DEPENDENCIES = [
-    'six',
-    'termcolor',
-    'enum34; python_version < "3.4"'
-]
+DEPENDENCIES = ["six", "termcolor", 'enum34; python_version < "3.4"']
 
 TEST_DEPENDENCIES = [
-    'hypothesis',
-    'mock',
-    'python-Levenshtein',
+    "hypothesis",
+    "mock",
+    "python-Levenshtein",
 ]
 
-VERSION = '0.4.0'
-URL = 'https://github.com/google/python-fire'
+VERSION = "0.4.0"
+URL = "https://github.com/google/python-fire"
 
 setup(
-    name='fire',
+    name="fire",
     version=VERSION,
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     url=URL,
-
-    author='David Bieber',
-    author_email='dbieber@google.com',
-    license='Apache Software License',
-
+    author="David Bieber",
+    author_email="dbieber@google.com",
+    license="Apache Software License",
     classifiers=[
-        'Development Status :: 4 - Beta',
-
-        'Intended Audience :: Developers',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-
-        'License :: OSI Approved :: Apache Software License',
-
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-
-        'Operating System :: OS Independent',
-        'Operating System :: POSIX',
-        'Operating System :: MacOS',
-        'Operating System :: Unix',
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Operating System :: OS Independent",
+        "Operating System :: POSIX",
+        "Operating System :: MacOS",
+        "Operating System :: Unix",
     ],
-
-    keywords='command line interface cli python fire interactive bash tool',
-
-    packages=['fire', 'fire.console'],
-
+    keywords="command line interface cli python fire interactive bash tool",
+    packages=["fire", "fire.console"],
     install_requires=DEPENDENCIES,
     tests_require=TEST_DEPENDENCIES,
 )

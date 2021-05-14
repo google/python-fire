@@ -23,18 +23,18 @@ from fire import testutils
 
 
 class TestComponentsTest(testutils.BaseTestCase):
-  """Tests to verify that the test components are importable and okay."""
+    """Tests to verify that the test components are importable and okay."""
 
-  def testTestComponents(self):
-    self.assertIsNotNone(tc.Empty)
-    self.assertIsNotNone(tc.OldStyleEmpty)
+    def testTestComponents(self):
+        self.assertIsNotNone(tc.Empty)
+        self.assertIsNotNone(tc.OldStyleEmpty)
 
-  def testNonComparable(self):
-    with self.assertRaises(ValueError):
-      tc.NonComparable() != 2  # pylint: disable=expression-not-assigned
-    with self.assertRaises(ValueError):
-      tc.NonComparable() == 2  # pylint: disable=expression-not-assigned
+    def testNonComparable(self):
+        with self.assertRaises(ValueError):
+            tc.NonComparable() != 2  # pylint: disable=expression-not-assigned
+        with self.assertRaises(ValueError):
+            tc.NonComparable() == 2  # pylint: disable=expression-not-assigned
 
 
-if __name__ == '__main__':
-  testutils.main()
+if __name__ == "__main__":
+    testutils.main()

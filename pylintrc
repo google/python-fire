@@ -133,14 +133,14 @@ notes=FIXME,XXX,TODO
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=80
+max-line-length=90
 
 # Maximum number of lines in a module
 max-module-lines=99999
 
 # String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
 # tab).
-indent-string='  '
+indent-string='    '
 
 
 [SIMILARITIES]

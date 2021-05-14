@@ -25,28 +25,31 @@ import mock
 
 
 try:
-  import IPython  # pylint: disable=unused-import, g-import-not-at-top
-  INTERACT_METHOD = 'IPython.start_ipython'
+    import IPython  # pylint: disable=unused-import, g-import-not-at-top
+
+    INTERACT_METHOD = "IPython.start_ipython"
 except ImportError:
-  INTERACT_METHOD = 'code.InteractiveConsole'
+    INTERACT_METHOD = "code.InteractiveConsole"
 
 
 class InteractTest(testutils.BaseTestCase):
+    @mock.patch(INTERACT_METHOD)
+    def testInteract(self, mock_interact_method):
+        self.assertFalse(mock_interact_method.called)
+        interact.Embed({})
+        self.assertTrue(mock_interact_method.called)
 
-  @mock.patch(INTERACT_METHOD)
-  def testInteract(self, mock_interact_method):
-    self.assertFalse(mock_interact_method.called)
-    interact.Embed({})
-    self.assertTrue(mock_interact_method.called)
+    @mock.patch(INTERACT_METHOD)
+    def testInteractVariables(self, mock_interact_method):
+        self.assertFalse(mock_interact_method.called)
+        interact.Embed(
+            {
+                "count": 10,
+                "mock": mock,
+            }
+        )
+        self.assertTrue(mock_interact_method.called)
 
-  @mock.patch(INTERACT_METHOD)
-  def testInteractVariables(self, mock_interact_method):
-    self.assertFalse(mock_interact_method.called)
-    interact.Embed({
-        'count': 10,
-        'mock': mock,
-    })
-    self.assertTrue(mock_interact_method.called)
 
-if __name__ == '__main__':
-  testutils.main()
+if __name__ == "__main__":
+    testutils.main()

@@ -21,19 +21,18 @@ from examples.widget import widget
 
 
 class CollectorTest(testutils.BaseTestCase):
+    def testCollectorHasWidget(self):
+        col = collector.Collector()
+        self.assertIsInstance(col.widget, widget.Widget)
 
-  def testCollectorHasWidget(self):
-    col = collector.Collector()
-    self.assertIsInstance(col.widget, widget.Widget)
+    def testCollectorWantsMoreWidgets(self):
+        col = collector.Collector()
+        self.assertEqual(col.desired_widget_count, 10)
 
-  def testCollectorWantsMoreWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(col.desired_widget_count, 10)
-
-  def testCollectorGetsWantedWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(len(col.collect_widgets()), 10)
+    def testCollectorGetsWantedWidgets(self):
+        col = collector.Collector()
+        self.assertEqual(len(col.collect_widgets()), 10)
 
 
-if __name__ == '__main__':
-  testutils.main()
+if __name__ == "__main__":
+    testutils.main()

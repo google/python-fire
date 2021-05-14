@@ -14,6 +14,7 @@ from fire.console import console_io
 #     def reveal_type(x):
 #         pass
 
+
 def generate_parse_fn_annotation(annotation):
     """Return value parser base on annotation."""
 

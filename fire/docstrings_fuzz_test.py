@@ -28,13 +28,12 @@ from hypothesis import strategies as st
 
 
 class DocstringsFuzzTest(testutils.BaseTestCase):
+    @settings(max_examples=1000, deadline=1000)
+    @given(st.text(min_size=1))
+    @example("This is a one-line docstring.")
+    def test_fuzz_parse(self, value):
+        docstrings.parse(value)
 
-  @settings(max_examples=1000, deadline=1000)
-  @given(st.text(min_size=1))
-  @example('This is a one-line docstring.')
-  def test_fuzz_parse(self, value):
-    docstrings.parse(value)
 
-
-if __name__ == '__main__':
-  testutils.main()
+if __name__ == "__main__":
+    testutils.main()
