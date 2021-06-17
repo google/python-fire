@@ -23,6 +23,7 @@ import sys
 import types
 
 from fire import docstrings
+from typing import get_args
 
 import six
 
@@ -143,7 +144,6 @@ def Py3GetFullArgSpec(fn):
 
   if sig.return_annotation is not sig.empty:
     annotations['return'] = sig.return_annotation
-
   for param in sig.parameters.values():
     kind = param.kind
     name = param.name
@@ -165,6 +165,13 @@ def Py3GetFullArgSpec(fn):
       varkw = name
     if param.annotation is not param.empty:
       annotations[name] = param.annotation
+      if "Optional" in str(annotations[name]) or "Union" in str(annotations[name]):
+        tuple_param1 = get_args(annotations[name])[0].__name__
+        tuple_param2 = get_args(annotations[name])[1].__name__
+        if str(tuple_param2) != "NoneType":
+          annotations[name] = tuple_param1 + ", " + tuple_param2
+        else:
+          annotations[name] = tuple_param
     # pylint: enable=protected-access
 
   if not kwdefaults:
