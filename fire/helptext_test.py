@@ -423,6 +423,39 @@ VALUES
     self.assertIn('double -', help_screen)
     self.assertIn('double - -', help_screen)
 
+  def testHelpTextWithHelpSequence(self):
+    component = tc.ClassWithMultipleCommands()
+    help_output = helptext.HelpText(component=component, help_sequence=['print_msg'])
+    expected_output = """
+        NAME
+     - Test class for testing help text output with help_sequence=True argument.
+
+SYNOPSIS
+     COMMAND | VALUE
+
+DESCRIPTION
+    This is some detail description of this test class.
+
+COMMANDS
+    COMMAND is one of the following:
+
+     print_msg
+       Prints a message.
+
+     append_msg
+       Appends string to current message.
+
+     update_msg
+       Adds a message.
+
+VALUES
+    VALUE is one of the following:
+
+     message
+       The default message to print."""
+    self.assertEqual(textwrap.dedent(expected_output).strip(),
+                     help_output.strip())
+
 
 class UsageTest(testutils.BaseTestCase):
 

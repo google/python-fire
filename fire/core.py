@@ -78,7 +78,7 @@ if six.PY34:
   import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
-def Fire(component=None, command=None, name=None):
+def Fire(component=None, command=None, name=None, help_sequence=None):
   """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
@@ -94,6 +94,11 @@ def Fire(component=None, command=None, name=None):
         a string or a list of strings; a list of strings is preferred.
     name: Optional. The name of the command as entered at the command line.
         Used in interactive mode and for generating the completion script.
+    help_sequence: Optional. If supplied, the sequence of commands
+        will be reordered based on provided list in argument. They will
+        be displayed before all the other commands. This should be
+        a list of strings.
+
   Returns:
     The result of executing the Fire command. Execution begins with the initial
     target component. The component is updated by using the command arguments
@@ -141,13 +146,13 @@ def Fire(component=None, command=None, name=None):
   component_trace = _Fire(component, args, parsed_flag_args, context, name)
 
   if component_trace.HasError():
-    _DisplayError(component_trace)
+    _DisplayError(component_trace, help_sequence=help_sequence)
     raise FireExit(2, component_trace)
   if component_trace.show_trace and component_trace.show_help:
     output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
     result = component_trace.GetResult()
     help_text = helptext.HelpText(
-        result, trace=component_trace, verbose=component_trace.verbose)
+        result, trace=component_trace, verbose=component_trace.verbose, help_sequence=help_sequence)
     output.append(help_text)
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
@@ -158,13 +163,13 @@ def Fire(component=None, command=None, name=None):
   if component_trace.show_help:
     result = component_trace.GetResult()
     help_text = helptext.HelpText(
-        result, trace=component_trace, verbose=component_trace.verbose)
+        result, trace=component_trace, verbose=component_trace.verbose, help_sequence=help_sequence)
     output = [help_text]
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
 
   # The command succeeded normally; print the result.
-  _PrintResult(component_trace, verbose=component_trace.verbose)
+  _PrintResult(component_trace, verbose=component_trace.verbose, help_sequence=help_sequence)
   result = component_trace.GetResult()
   return result
 
@@ -241,7 +246,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
   return show_help
 
 
-def _PrintResult(component_trace, verbose=False):
+def _PrintResult(component_trace, verbose=False, help_sequence=None):
   """Prints the result of the Fire call to stdout in a human readable way."""
   # TODO(dbieber): Design human readable deserializable serialization method
   # and move serialization to its own module.
@@ -267,12 +272,12 @@ def _PrintResult(component_trace, verbose=False):
       print(result)
   else:
     help_text = helptext.HelpText(
-        result, trace=component_trace, verbose=verbose)
+        result, trace=component_trace, verbose=verbose, help_sequence=help_sequence)
     output = [help_text]
     Display(output, out=sys.stdout)
 
 
-def _DisplayError(component_trace):
+def _DisplayError(component_trace, help_sequence=None):
   """Prints the Fire trace and the error to stdout."""
   result = component_trace.GetResult()
 
@@ -287,7 +292,7 @@ def _DisplayError(component_trace):
     print('INFO: Showing help with the command {cmd}.\n'.format(
         cmd=pipes.quote(command)), file=sys.stderr)
     help_text = helptext.HelpText(result, trace=component_trace,
-                                  verbose=component_trace.verbose)
+                                  verbose=component_trace.verbose, help_sequence=help_sequence)
     output.append(help_text)
     Display(output, out=sys.stderr)
   else:

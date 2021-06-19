@@ -49,7 +49,7 @@ SECTION_INDENTATION = 4
 SUBSECTION_INDENTATION = 4
 
 
-def HelpText(component, trace=None, verbose=False):
+def HelpText(component, trace=None, verbose=False, help_sequence=None):
   """Gets the help string for the current component, suitable for a help screen.
 
   Args:
@@ -57,6 +57,10 @@ def HelpText(component, trace=None, verbose=False):
     trace: The Fire trace of the command so far. The command executed so far
       can be extracted from this trace.
     verbose: Whether to include private members in the help screen.
+    help_sequence: Optional. If supplied, the sequence of commands
+        will be reordered based on provided list in argument. They will
+        be displayed before all the other commands. This should be
+        a list of strings.
 
   Returns:
     The full help screen as a string.
@@ -81,7 +85,7 @@ def HelpText(component, trace=None, verbose=False):
     args_and_flags_sections = []
     notes_sections = []
   usage_details_sections = _UsageDetailsSections(component,
-                                                 actions_grouped_by_kind)
+                                                 actions_grouped_by_kind, help_sequence=help_sequence)
 
   sections = (
       [name_section, synopsis_section, description_section]
@@ -254,7 +258,7 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   return args_and_flags_sections, notes_sections
 
 
-def _UsageDetailsSections(component, actions_grouped_by_kind):
+def _UsageDetailsSections(component, actions_grouped_by_kind, help_sequence=None):
   """The usage details sections of the help string."""
   groups, commands, values, indexes = actions_grouped_by_kind
 
@@ -262,7 +266,7 @@ def _UsageDetailsSections(component, actions_grouped_by_kind):
   if groups.members:
     sections.append(_MakeUsageDetailsSection(groups))
   if commands.members:
-    sections.append(_MakeUsageDetailsSection(commands))
+    sections.append(_MakeUsageDetailsSection(commands,help_sequence=help_sequence))
   if values.members:
     sections.append(_ValuesUsageDetailsSection(component, values))
   if indexes.members:
@@ -543,7 +547,7 @@ def _GetArgDescription(name, docstring_info):
   return None
 
 
-def _MakeUsageDetailsSection(action_group):
+def _MakeUsageDetailsSection(action_group, help_sequence=None):
   """Creates a usage details section for the provided action group."""
   item_strings = []
   for name, member in action_group.GetItems():
@@ -560,6 +564,15 @@ def _MakeUsageDetailsSection(action_group):
       summary = None
     item = _CreateItem(name, summary)
     item_strings.append(item)
+
+
+  if help_sequence:
+    com_names = [name for name, memeber in action_group.GetItems()]
+    help_sequence = [x for x in help_sequence if x in com_names]
+    com_names_reorder = [x for x in com_names if x not in help_sequence]
+    help_sequence.extend(com_names_reorder)
+    com_names_reorder = help_sequence
+    item_strings = [item_strings[i] for x in com_names_reorder for i in range(len(com_names)) if x == com_names[i]]
   return (action_group.plural.upper(),
           _NewChoicesSection(action_group.name.upper(), item_strings))
 
