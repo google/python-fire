@@ -201,7 +201,7 @@ class CoreTest(testutils.BaseTestCase):
       if isinstance(x, dict):
         return ', '.join('{}={!r}'.format(k, v) for k, v in x.items())
       if x == 'special':
-        return 'SURPRISE!!'
+        return ['SURPRISE!!', "I'm a list!"]
       return x
 
     ident = lambda x: x
@@ -212,7 +212,7 @@ class CoreTest(testutils.BaseTestCase):
       result = core.Fire(ident, command=['{a:5,b:6}'], formatter=formatter)
     with self.assertOutputMatches(stdout='asdf', stderr=None):
       result = core.Fire(ident, command=['asdf'], formatter=formatter)
-    with self.assertOutputMatches(stdout='SURPRISE!!', stderr=None):
+    with self.assertOutputMatches(stdout="SURPRISE!!\nI'm a list!\n", stderr=None):
       result = core.Fire(ident, command=['special'], formatter=formatter)
 
 
