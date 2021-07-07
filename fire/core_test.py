@@ -200,14 +200,20 @@ class CoreTest(testutils.BaseTestCase):
         return ', '.join(str(xi) for xi in x)
       if isinstance(x, dict):
         return ', '.join('{}={!r}'.format(k, v) for k, v in x.items())
+      if x == 'special':
+        return 'SURPRISE!!'
       return x
+
+    ident = lambda x: x
     
     with self.assertOutputMatches(stdout='a, b', stderr=None):
-      result = core.Fire(lambda x: list(x), command=['[a,b]'], formatter=formatter)
+      result = core.Fire(ident, command=['[a,b]'], formatter=formatter)
     with self.assertOutputMatches(stdout='a=5, b=6', stderr=None):
-      result = core.Fire(lambda x: dict(x), command=['{a:5,b:6}'], formatter=formatter)
+      result = core.Fire(ident, command=['{a:5,b:6}'], formatter=formatter)
     with self.assertOutputMatches(stdout='asdf', stderr=None):
-      result = core.Fire(lambda x: str(x), command=['asdf'], formatter=formatter)
+      result = core.Fire(ident, command=['asdf'], formatter=formatter)
+    with self.assertOutputMatches(stdout='SURPRISE!!', stderr=None):
+      result = core.Fire(ident, command=['special'], formatter=formatter)
 
 
   @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
