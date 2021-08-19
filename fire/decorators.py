@@ -29,6 +29,46 @@ FIRE_PARSE_FNS = 'FIRE_PARSE_FNS'
 ACCEPTS_POSITIONAL_ARGS = 'ACCEPTS_POSITIONAL_ARGS'
 
 
+def UseTypeHints(type_hints_mapping=None):
+  """Instruct fire to use type hints information when parsing args for this
+  function.
+
+  Args:
+    type_hints_mapping: mapping of type hints into parsing functions, by
+      default floats, ints and strings are treated, and all other type
+      hints are ignored (parsed as usual)
+  Returns:
+    The decorated function, which now has metadata telling Fire how to perform
+    according to type hints.
+
+  Examples:
+    @UseTypeHints()
+    def main(a, b:int, c:float=2.0)
+      assert isinstance(b, int)
+      assert isinstance(c, float)
+
+    @UseTypeHints({list: lambda s: s.split(";")})
+    def main(a, c: list):
+      assert isinstance(c, list)
+  """
+  mapping = {float: float, int: int, str: str}
+  if type_hints_mapping is not None:
+    mapping.update(type_hints_mapping)
+  type_hints_mapping = mapping
+
+  def _Decorator(fn):
+    signature = inspect.signature(fn)
+    named = {}
+    for name, param in signature.parameters.items():
+      has_type_hint = param.annotation is not param.empty
+      if has_type_hint and param.annotation in type_hints_mapping:
+        named[name] = type_hints_mapping[param.annotation]
+    decorator = SetParseFns(**named)
+    decorated_func = decorator(fn)
+    return decorated_func
+  return _Decorator
+
+
 def SetParseFn(fn, *arguments):
   """Sets the fn for Fire to use to parse args when calling the decorated fn.
 

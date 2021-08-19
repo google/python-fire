@@ -17,6 +17,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import sys
+import unittest
 
 from fire import core
 from fire import decorators
@@ -88,6 +90,22 @@ class WithVarArgs(object):
   @decorators.SetParseFn(str)
   def example7(self, arg1, arg2=None, *varargs, **kwargs):  # pylint: disable=keyword-arg-before-vararg
     return arg1, arg2, varargs, kwargs
+
+
+if sys.version_info >= (3, 5):
+  from pathlib import Path
+
+
+  class WithTypeHints(object):
+
+    @decorators.UseTypeHints()
+    def example8(self, a: int, b: str, c, d : float = None):
+      return a, b, c, d
+
+    @decorators.UseTypeHints({list: lambda arg: list(map(int, arg.split(";"))),
+                              Path: Path})
+    def example9(self, a: Path, b, c: list, d : list = None):
+      return a, b, c, d
 
 
 class FireDecoratorsTest(testutils.BaseTestCase):
@@ -168,6 +186,24 @@ class FireDecoratorsTest(testutils.BaseTestCase):
         core.Fire(WithVarArgs,
                   command=['example7', '1', '--arg2=2', '3', '4', '--kwarg=5']),
         ('1', '2', ('3', '4'), {'kwarg': '5'}))
+
+  @unittest.skipIf(sys.version_info < (3, 5),
+                   'Type hints were introduced in python 3.5')
+  def testDefaultTypeHints(self):
+    self.assertEqual(
+        core.Fire(WithTypeHints,
+                  command=['example8', '1', '2', '3', '--d=4']),
+        (1, '2', 3, 4)
+    )
+
+  @unittest.skipIf(sys.version_info < (3, 5),
+                   'Type hints were introduced in python 3.5')
+  def testCustomTypeHints(self):
+    self.assertEqual(
+        core.Fire(WithTypeHints,
+                  command=['example9', '1', '2', '3', '--d=4;5;6']),
+        (Path('1'), 2, [3], [4, 5, 6])
+    )
 
 
 if __name__ == '__main__':
