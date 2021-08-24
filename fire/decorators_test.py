@@ -92,22 +92,6 @@ class WithVarArgs(object):
     return arg1, arg2, varargs, kwargs
 
 
-if sys.version_info >= (3, 5):
-  from pathlib import Path
-
-
-  class WithTypeHints(object):
-
-    @decorators.UseTypeHints()
-    def example8(self, a: int, b: str, c, d : float = None):
-      return a, b, c, d
-
-    @decorators.UseTypeHints({list: lambda arg: list(map(int, arg.split(";"))),
-                              Path: Path})
-    def example9(self, a: Path, b, c: list, d : list = None):
-      return a, b, c, d
-
-
 class FireDecoratorsTest(testutils.BaseTestCase):
 
   def testSetParseFnsNamedArgs(self):
@@ -190,19 +174,39 @@ class FireDecoratorsTest(testutils.BaseTestCase):
   @unittest.skipIf(sys.version_info < (3, 5),
                    'Type hints were introduced in python 3.5')
   def testDefaultTypeHints(self):
+    # need to hide type hints syntax behind exec
+    # otherwise old python parser will fail
+    #pylint: disable=exec-used
+    exec("""@decorators.UseTypeHints()
+def exampleWithSimpleTypeHints(a: int, b: str, c, d : float = None):
+  return a, b, c, d""")
+
+
     self.assertEqual(
-        core.Fire(WithTypeHints,
-                  command=['example8', '1', '2', '3', '--d=4']),
+        core.Fire(locals()['exampleWithSimpleTypeHints'],
+                  command=['1', '2', '3', '--d=4']),
         (1, '2', 3, 4)
     )
 
   @unittest.skipIf(sys.version_info < (3, 5),
                    'Type hints were introduced in python 3.5')
   def testCustomTypeHints(self):
+    # need to hide type hints syntax behind exec
+    # otherwise old python parser will fail
+    #pylint: disable=exec-used
+    exec("""from pathlib import Path
+
+
+@decorators.UseTypeHints({
+      list: lambda arg: list(map(int, arg.split(";"))),
+      Path: Path})
+def exampleWithComplexHints(a: Path, b, c: list, d : list = None):
+  return a, b, c, d""")
+
     self.assertEqual(
-        core.Fire(WithTypeHints,
-                  command=['example9', '1', '2', '3', '--d=4;5;6']),
-        (Path('1'), 2, [3], [4, 5, 6])
+        core.Fire(locals()['exampleWithComplexHints'],
+                  command=['1', '2', '3', '--d=4;5;6']),
+        (locals()['Path']('1'), 2, [3], [4, 5, 6])
     )
 
 
