@@ -67,7 +67,7 @@ class WithTypes(object):
       count: Input number that you want to double.
 
     Returns:
-      A number that is the double of count.s
+      A number that is the double of count.
     """
     return 2 * count
 
@@ -89,7 +89,7 @@ class WithDefaultsAndTypes(object):
       count: Input number that you want to double.
 
     Returns:
-      A number that is the double of count.s
+      A number that is the double of count.
     """
     return 2 * count
 

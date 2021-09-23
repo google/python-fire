@@ -307,9 +307,8 @@ def _is_arg_name(name):
   """Returns whether name is a valid arg name.
 
   This is used to prevent multiple words (plaintext) from being misinterpreted
-  as an argument name. So if ":" appears in the middle of a line in a docstring,
-  we don't accidentally interpret the first half of that line as a single arg
-  name.
+  as an argument name. Any line that doesn't match the pattern for a valid
+  argument is treated as not being an argument.
 
   Args:
     name: The name of the potential arg.
@@ -317,9 +316,11 @@ def _is_arg_name(name):
     True if name looks like an arg name, False otherwise.
   """
   name = name.strip()
-  return (name
-          and ' ' not in name
-          and ':' not in name)
+  # arg_pattern is a letter or underscore followed by
+  # zero or more letters, numbers, or underscores.
+  arg_pattern = r'^[a-zA-Z_]\w*$'
+  re.match(arg_pattern, name)
+  return re.match(arg_pattern, name) is not None
 
 
 def _as_arg_name_and_type(text):
@@ -402,6 +403,7 @@ def _consume_google_args_line(line_info, state):
         arg = _get_or_create_arg_by_name(state, arg_name)
         arg.type.lines.append(type_str)
         arg.description.lines.append(second.strip())
+        state.current_arg = arg
       else:
         if state.current_arg:
           state.current_arg.description.lines.append(split_line[0])

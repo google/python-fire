@@ -60,6 +60,14 @@ Help is an exception; the isolated `--` is optional for getting help._
 
 ## Using a Fire CLI without modifying any code
 
+You can use Python Fire on a module without modifying the code of the module.
+The syntax for this is:
+
 `python -m fire <module> <arguments>`
 
-For example, `python -m fire calendar -h`.
+or
+
+`python -m fire <filepath> <arguments>`
+
+For example, `python -m fire calendar -h` will treat the built in `calendar`
+module as a CLI and provide its help.
