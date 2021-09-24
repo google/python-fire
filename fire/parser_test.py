@@ -50,6 +50,10 @@ class ParserTest(testutils.BaseTestCase):
     self.assertEqual(parser.DefaultParseValue('path/file.jpg'), 'path/file.jpg')
     self.assertEqual(parser.DefaultParseValue('hello world'), 'hello world')
     self.assertEqual(parser.DefaultParseValue('--flag'), '--flag')
+    self.assertEqual(
+        parser.DefaultParseValue(
+            '{"[all (delimiters)], are present {in} this:string!"}'),
+        {'[all (delimiters)], are present {in} this:string!'})
 
   def testDefaultParseValueQuotedStrings(self):
     self.assertEqual(parser.DefaultParseValue("'hello'"), 'hello')
@@ -119,6 +123,24 @@ class ParserTest(testutils.BaseTestCase):
     self.assertEqual(
         parser.DefaultParseValue('[(A, 2, "3"), 5, {alph: 10.2, beta: "cat"}]'),
         [('A', 2, '3'), 5, {'alph': 10.2, 'beta': 'cat'}])
+    self.assertEqual(
+        parser.DefaultParseValue(
+            '[1234, "test-item", [nested-list!, "with spaces", 1e5]]'),
+        [1234, 'test-item', ['nested-list!', 'with spaces', 1e5]])
+    self.assertEqual(
+        parser.DefaultParseValue(
+            '{12.34, "test-item", (2+3j, "with spaces", True)}'),
+        {12.34, "test-item", (2+3j, "with spaces", True)})
+    self.assertEqual(
+        parser.DefaultParseValue(
+            '[{"abc": (3+4j), "colon:here": ("spaces, and commas", 123.45), '\
+            '100000.0: {"abc": True}}]'),
+        [{'abc': (3+4j), 'colon:here': ('spaces, and commas', 123.45),
+          100000.0: {'abc': True}}])
+    self.assertEqual(
+        parser.DefaultParseValue(
+            '{12.34, "test-item", (2+3j, "with spaces", True)}'),
+        {12.34, "test-item", (2+3j, "with spaces", True)})
 
   def testDefaultParseValueComments(self):
     self.assertEqual(parser.DefaultParseValue('"0#comments"'), '0#comments')
