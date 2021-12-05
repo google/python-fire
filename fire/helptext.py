@@ -67,10 +67,10 @@ def HelpText(component, trace=None, verbose=False):
   info = inspectutils.Info(component)
   actions_grouped_by_kind = _GetActionsGroupedByKind(component, verbose=verbose)
   spec = inspectutils.GetFullArgSpec(component)
+  spec.args = Checker(spec,component)
   metadata = decorators.GetMetadata(component)
 
   # Sections:
-  spec.args=Checker(spec,component)
   name_section = _NameSection(component, info, trace=trace, verbose=verbose)
   synopsis_section = _SynopsisSection(
       component, actions_grouped_by_kind, spec, metadata, trace=trace)
@@ -124,12 +124,12 @@ def ReturnAllArgs(Inherit_classes_list):
     Return: list of all arguments which is retrieved from parent classes.
   """
   all_args = []
-  if len(Inherit_classes_list)>2:
-    for classes in Inherit_classes_list:
-      argspec_tuple=inspect.getargspec(classes)
-      args_list=argspec_tuple[0]
-      for arg in args_list[1:]:
-        all_args.append(arg)
+
+  for classes in Inherit_classes_list:
+    argspec_tuple=inspect.getargspec(classes)
+    args_list=argspec_tuple[0]
+    for arg in args_list[1:]:
+      all_args.append(arg)
 
   return all_args
 
