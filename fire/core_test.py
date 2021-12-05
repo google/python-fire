@@ -194,8 +194,8 @@ class CoreTest(testutils.BaseTestCase):
         7,
     )
 
-  def testCustomFormatter(self):
-    def formatter(x):
+  def testCustomSerialize(self):
+    def serialize(x):
       if isinstance(x, list):
         return ', '.join(str(xi) for xi in x)
       if isinstance(x, dict):
@@ -207,13 +207,13 @@ class CoreTest(testutils.BaseTestCase):
     ident = lambda x: x
     
     with self.assertOutputMatches(stdout='a, b', stderr=None):
-      result = core.Fire(ident, command=['[a,b]'], formatter=formatter)
+      result = core.Fire(ident, command=['[a,b]'], serialize=serialize)
     with self.assertOutputMatches(stdout='a=5, b=6', stderr=None):
-      result = core.Fire(ident, command=['{a:5,b:6}'], formatter=formatter)
+      result = core.Fire(ident, command=['{a:5,b:6}'], serialize=serialize)
     with self.assertOutputMatches(stdout='asdf', stderr=None):
-      result = core.Fire(ident, command=['asdf'], formatter=formatter)
+      result = core.Fire(ident, command=['asdf'], serialize=serialize)
     with self.assertOutputMatches(stdout="SURPRISE!!\nI'm a list!\n", stderr=None):
-      result = core.Fire(ident, command=['special'], formatter=formatter)
+      result = core.Fire(ident, command=['special'], serialize=serialize)
 
 
   @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
