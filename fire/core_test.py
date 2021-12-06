@@ -214,6 +214,8 @@ class CoreTest(testutils.BaseTestCase):
       result = core.Fire(ident, command=['asdf'], serialize=serialize)
     with self.assertOutputMatches(stdout="SURPRISE!!\nI'm a list!\n", stderr=None):
       result = core.Fire(ident, command=['special'], serialize=serialize)
+    with self.assertRaises(core.FireError):
+      core.Fire(ident, command=['asdf'], serialize=55)
 
 
   @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
