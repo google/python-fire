@@ -249,7 +249,9 @@ def _PrintResult(component_trace, verbose=False, serialize=None):
 
   # Allow users to modify the return value of the component and provide 
   # custom formatting.
-  if callable(serialize):
+  if serialize:
+    if not callable(serialize):
+      raise FireError("serialize must be callable.")
     result = serialize(result)
 
   if value_types.HasCustomStr(result):
