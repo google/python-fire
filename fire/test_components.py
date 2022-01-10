@@ -278,8 +278,7 @@ class EmptyDictOutput(object):
 class CircularReference(object):
 
   def create(self):
-    x = {}
-    x['y'] = x
+    x = {'y': x}
     return x
 
 
