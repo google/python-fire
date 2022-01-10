@@ -634,10 +634,7 @@ def _matches_section(title, section):
     True or False, indicating whether title is a match for the specified
     section.
   """
-  for section_title in SECTION_TITLES[section]:
-    if _matches_section_title(title, section_title):
-      return True
-  return False
+  return any(_matches_section_title(title, section_title) for section_title in SECTION_TITLES[section])
 
 
 def _section_from_possible_title(possible_title):
