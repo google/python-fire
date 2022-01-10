@@ -25,36 +25,39 @@ import subprocess
 import sys
 
 try:
-  import colorama  # pylint: disable=g-import-not-at-top,  # pytype: disable=import-error
-  HAS_COLORAMA = True
+    import colorama  # pylint: disable=g-import-not-at-top,  # pytype: disable=import-error
+
+    HAS_COLORAMA = True
 except ImportError:
-  HAS_COLORAMA = False
+    HAS_COLORAMA = False
 
 
 def initialize_or_disable():
-  """Enables ANSI processing on Windows or disables it as needed."""
-  if HAS_COLORAMA:
-    wrap = True
-    if sys.stdout.isatty() and platform.release() == '10':
-      # Enables native ANSI sequences in console.
-      # Windows 10, 2016, and 2019 only.
-
-      wrap = False
-      kernel32 = ctypes.windll.kernel32  # pytype: disable=module-attr
-      enable_virtual_terminal_processing = 0x04
-      out_handle = kernel32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)  # pylint: disable=line-too-long,  # pytype: disable=module-attr
-      # GetConsoleMode fails if the terminal isn't native.
-      mode = ctypes.wintypes.DWORD()
-      if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:
+    """Enables ANSI processing on Windows or disables it as needed."""
+    if HAS_COLORAMA:
         wrap = True
-      if not mode.value & enable_virtual_terminal_processing:
-        if kernel32.SetConsoleMode(
-            out_handle, mode.value | enable_virtual_terminal_processing) == 0:
-          # kernel32.SetConsoleMode to enable ANSI sequences failed
-          wrap = True
-    colorama.init(wrap=wrap)
-  else:
-    os.environ['ANSI_COLORS_DISABLED'] = '1'
+        if sys.stdout.isatty() and platform.release() == '10':
+            # Enables native ANSI sequences in console.
+            # Windows 10, 2016, and 2019 only.
+
+            wrap = False
+            kernel32 = ctypes.windll.kernel32  # pytype: disable=module-attr
+            enable_virtual_terminal_processing = 0x04
+            out_handle = kernel32.GetStdHandle(
+                subprocess.STD_OUTPUT_HANDLE)  # pylint: disable=line-too-long,  # pytype: disable=module-attr
+            # GetConsoleMode fails if the terminal isn't native.
+            mode = ctypes.wintypes.DWORD()
+            if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:
+                wrap = True
+            if not mode.value & enable_virtual_terminal_processing:
+                if kernel32.SetConsoleMode(
+                        out_handle, mode.value | enable_virtual_terminal_processing) == 0:
+                    # kernel32.SetConsoleMode to enable ANSI sequences failed
+                    wrap = True
+        colorama.init(wrap=wrap)
+    else:
+        os.environ['ANSI_COLORS_DISABLED'] = '1'
+
 
 if sys.platform.startswith('win'):
-  initialize_or_disable()
+    initialize_or_disable()

@@ -3,17 +3,16 @@
 _Python Fire is a library for automatically generating command line interfaces
 (CLIs) from absolutely any Python object._
 
--   Python Fire is a simple way to create a CLI in Python.
-    [[1]](benefits.md#simple-cli)
--   Python Fire is a helpful tool for developing and debugging Python code.
-    [[2]](benefits.md#debugging)
--   Python Fire helps with exploring existing code or turning other people's
-    code into a CLI. [[3]](benefits.md#exploring)
--   Python Fire makes transitioning between Bash and Python easier.
-    [[4]](benefits.md#bash)
--   Python Fire makes using a Python REPL easier by setting up the REPL with the
-    modules and variables you'll need already imported and created.
-    [[5]](benefits.md#repl)
+- Python Fire is a simple way to create a CLI in Python.
+  [[1]](benefits.md#simple-cli)
+- Python Fire is a helpful tool for developing and debugging Python code.
+  [[2]](benefits.md#debugging)
+- Python Fire helps with exploring existing code or turning other people's code into a CLI. [[3]](benefits.md#exploring)
+- Python Fire makes transitioning between Bash and Python easier.
+  [[4]](benefits.md#bash)
+- Python Fire makes using a Python REPL easier by setting up the REPL with the modules and variables you'll need already
+  imported and created.
+  [[5]](benefits.md#repl)
 
 ## Installation
 
@@ -27,8 +26,7 @@ To install Python Fire from source, first clone the repository and then run:
 ## Basic Usage
 
 You can call `Fire` on any Python object:<br>
-functions, classes, modules, objects, dictionaries, lists, tuples, etc.
-They all work!
+functions, classes, modules, objects, dictionaries, lists, tuples, etc. They all work!
 
 Here's an example of calling Fire on a function.
 
@@ -72,8 +70,8 @@ python calculator.py double 10  # 20
 python calculator.py double --number=15  # 30
 ```
 
-To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn
-about Fire's other features, see the [Using a Fire CLI page](using-cli.md).
+To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn about Fire's other features, see
+the [Using a Fire CLI page](using-cli.md).
 
 For additional examples, see [The Python Fire Guide](guide.md).
 
