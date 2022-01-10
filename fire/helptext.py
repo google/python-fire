@@ -568,7 +568,6 @@ def _ValuesUsageDetailsSection(component, values):
   """Creates a section tuple for the values section of the usage details."""
   value_item_strings = []
   for value_name, value in values.GetItems():
-    del value
     init_info = inspectutils.Info(component.__class__.__init__)
     value_item = None
     if 'docstring_info' in init_info:

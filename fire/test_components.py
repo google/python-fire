@@ -216,7 +216,6 @@ class BoolConverter(object):
 class ReturnsObj(object):
 
   def get_obj(self, *items):
-    del items  # Unused
     return BoolConverter()
 
 
@@ -278,8 +277,7 @@ class EmptyDictOutput(object):
 class CircularReference(object):
 
   def create(self):
-    x = {}
-    x['y'] = x
+    x = {'y': x}
     return x
 
 
@@ -449,12 +447,10 @@ def function_with_varargs(arg1, arg2, arg3=1, *varargs):  # pylint: disable=keyw
   Returns:
     The unlimited positional args.
   """
-  del arg1, arg2, arg3  # Unused.
   return varargs
 
 
 def function_with_keyword_arguments(arg1, arg2=3, **kwargs):
-  del arg2  # Unused.
   return arg1, kwargs
 
 
@@ -549,7 +545,6 @@ def fn_with_kwarg(arg1, arg2, **kwargs):
   :param arg2: Description of arg2.
   :key arg3: Description of arg3.
   """
-  del arg1, arg2
   return kwargs.get('arg3')
 
 
@@ -560,6 +555,5 @@ def fn_with_kwarg_and_defaults(arg1, arg2, opt=True, **kwargs):
   :param arg2: Description of arg2.
   :key arg3: Description of arg3.
   """
-  del arg1, arg2, opt
   return kwargs.get('arg3')
 # pylint: enable=g-doc-args,g-doc-return-or-yield

@@ -447,7 +447,8 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
       saved_args = remaining_args[separator_index + 1:]
       remaining_args = remaining_args[:separator_index]
       used_separator = True
-    assert separator not in remaining_args
+    if separator in remaining_args:
+      raise AssertionError
 
     handled = False
     candidate_errors = []
@@ -908,7 +909,8 @@ def _ParseKeywordArgs(args, fn_spec):
       else:
         # The assert should pass. Otherwise either contains_equals or
         # is_bool_syntax would have been True.
-        assert index + 1 < len(args)
+        if index + 1 >= len(args):
+          raise AssertionError
         value = args[index + 1]
         got_argument = True
 

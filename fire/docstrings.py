@@ -505,7 +505,8 @@ def _consume_line(line_info, state):
     state.raises.lines.append(line_info.remaining.strip())
   elif state.section.title == Sections.TYPE:
     if state.section.format == Formats.RST:
-      assert state.current_arg is not None
+      if state.current_arg is None:
+        raise AssertionError
       state.current_arg.type.lines.append(line_info.remaining.strip())
     else:
       pass
@@ -634,10 +635,7 @@ def _matches_section(title, section):
     True or False, indicating whether title is a match for the specified
     section.
   """
-  for section_title in SECTION_TITLES[section]:
-    if _matches_section_title(title, section_title):
-      return True
-  return False
+  return any(_matches_section_title(title, section_title) for section_title in SECTION_TITLES[section])
 
 
 def _section_from_possible_title(possible_title):

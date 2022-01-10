@@ -100,7 +100,7 @@ def Py2GetArgSpec(fn):
   try:
     return inspect.getargspec(fn)  # pylint: disable=deprecated-method
   except TypeError:
-    if hasattr(fn, '__call__'):
+    if callable(fn):
       return inspect.getargspec(fn.__call__)  # pylint: disable=deprecated-method
     raise
 
@@ -314,10 +314,7 @@ def _InfoBackup(component):
   Returns:
     A dict with information about the component.
   """
-  info = {}
-
-  info['type_name'] = type(component).__name__
-  info['string_form'] = str(component)
+  info = {'type_name': type(component).__name__, 'string_form': str(component)}
 
   filename, lineno = GetFileAndLine(component)
   info['file'] = filename
