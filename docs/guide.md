@@ -2,8 +2,8 @@
 
 ### Introduction
 
-Welcome to the Python Fire guide! Python Fire is a Python library that will turn
-any Python component into a command line interface with just a single call to
+Welcome to the Python Fire guide! Python Fire is a Python library that will turn any Python component into a command
+line interface with just a single call to
 `Fire`.
 
 Let's get started!
@@ -23,8 +23,7 @@ Alternatively, to install Python Fire from source, clone the source and run:
 ##### Version 1: `fire.Fire()`
 
 The easiest way to use Fire is to take any Python program, and then simply call
-`fire.Fire()` at the end of the program. This will expose the full contents of
-the program to the command line.
+`fire.Fire()` at the end of the program. This will expose the full contents of the program to the command line.
 
 ```python
 import fire
@@ -45,8 +44,7 @@ Hello World!
 
 ##### Version 2: `fire.Fire(<fn>)`
 
-Let's modify our program slightly to only expose the `hello` function to the
-command line.
+Let's modify our program slightly to only expose the `hello` function to the command line.
 
 ```python
 import fire
@@ -65,8 +63,7 @@ $ python example.py World
 Hello World!
 ```
 
-Notice we no longer have to specify to run the `hello` function, because we
-called `fire.Fire(hello)`.
+Notice we no longer have to specify to run the `hello` function, because we called `fire.Fire(hello)`.
 
 ##### Version 3: Using a main
 
@@ -86,8 +83,7 @@ if __name__ == '__main__':
 ```
 
 Or if we're using
-[entry points](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#entry-points),
-then simply this:
+[entry points](https://setuptools.readthedocs.io/en/latest/pkg_resources.html#entry-points), then simply this:
 
 ```python
 import fire
@@ -115,8 +111,7 @@ $ python -m fire example hello --name=World
 Hello World!
 ```
 
-You can also specify the filepath of example.py rather than its module path,
-like so:
+You can also specify the filepath of example.py rather than its module path, like so:
 
 ```bash
 $ python -m fire example.py hello --name=World
@@ -125,13 +120,12 @@ Hello World!
 
 ### Exposing Multiple Commands
 
-In the previous example, we exposed a single function to the command line. Now
-we'll look at ways of exposing multiple functions to the command line.
+In the previous example, we exposed a single function to the command line. Now we'll look at ways of exposing multiple
+functions to the command line.
 
 ##### Version 1: `fire.Fire()`
 
-The simplest way to expose multiple commands is to write multiple functions, and
-then call Fire.
+The simplest way to expose multiple commands is to write multiple functions, and then call Fire.
 
 ```python
 import fire
@@ -155,13 +149,13 @@ $ python example.py multiply 10 20
 200
 ```
 
-You'll notice that Fire correctly parsed `10` and `20` as numbers, rather than
-as strings. Read more about [argument parsing here](#argument-parsing).
+You'll notice that Fire correctly parsed `10` and `20` as numbers, rather than as strings. Read more
+about [argument parsing here](#argument-parsing).
 
 ##### Version 2: `fire.Fire(<dict>)`
 
-In version 1 we exposed all the program's functionality to the command line. By
-using a dict, we can selectively expose functions to the command line.
+In version 1 we exposed all the program's functionality to the command line. By using a dict, we can selectively expose
+functions to the command line.
 
 ```python
 import fire
@@ -190,8 +184,7 @@ $ python example.py multiply 10 20
 
 ##### Version 3: `fire.Fire(<object>)`
 
-Fire also works on objects, as in this variant. This is a good way to expose
-multiple commands.
+Fire also works on objects, as in this variant. This is a good way to expose multiple commands.
 
 ```python
 import fire
@@ -218,11 +211,9 @@ $ python example.py multiply 10 20
 200
 ```
 
-
 ##### Version 4: `fire.Fire(<class>)`
 
-Fire also works on classes. This is another good way to expose multiple
-commands.
+Fire also works on classes. This is another good way to expose multiple commands.
 
 ```python
 import fire
@@ -248,8 +239,8 @@ $ python example.py multiply 10 20
 200
 ```
 
-Why might you prefer a class over an object? One reason is that you can pass
-arguments for constructing the class too, as in this broken calculator example.
+Why might you prefer a class over an object? One reason is that you can pass arguments for constructing the class too,
+as in this broken calculator example.
 
 ```python
 import fire
@@ -287,15 +278,13 @@ $ python example.py multiply 10 20 --offset=0
 200
 ```
 
-Unlike calling ordinary functions, which can be done both with positional
-arguments and named arguments (--flag syntax), arguments to \_\_init\_\_
-functions must be passed with the --flag syntax. See the section on
+Unlike calling ordinary functions, which can be done both with positional arguments and named arguments (--flag syntax),
+arguments to \_\_init\_\_ functions must be passed with the --flag syntax. See the section on
 [calling functions](#calling-functions) for more.
 
 ### Grouping Commands
 
-Here's an example of how you might make a command line interface with grouped
-commands.
+Here's an example of how you might make a command line interface with grouped commands.
 
 ```python
 class IngestionStage(object):
@@ -340,15 +329,12 @@ $ python example.py digestion status
 Satiated.
 ```
 
-You can nest your commands in arbitrarily complex ways, if you're feeling grumpy
-or adventurous.
-
+You can nest your commands in arbitrarily complex ways, if you're feeling grumpy or adventurous.
 
 ### Accessing Properties
 
 In the examples we've looked at so far, our invocations of `python example.py`
-have all run some function from the example program. In this example, we simply
-access a property.
+have all run some function from the example program. In this example, we simply access a property.
 
 ```python
 from airports import airports
@@ -382,8 +368,8 @@ By the way, you can find this
 
 ### Chaining Function Calls
 
-When you run a Fire CLI, you can take all the same actions on the _result_ of
-the call to Fire that you can take on the original object passed in.
+When you run a Fire CLI, you can take all the same actions on the _result_ of the call to Fire that you can take on the
+original object passed in.
 
 For example, we can use our Airport CLI from the previous example like this:
 
@@ -394,8 +380,8 @@ ALBANY-SCHENECTADY-TROY
 
 This works since `upper` is a method on all strings.
 
-So, if you want to set up your functions to chain nicely, all you have to do is
-have a class whose methods return self. Here's an example.
+So, if you want to set up your functions to chain nicely, all you have to do is have a class whose methods return self.
+Here's an example.
 
 ```python
 import fire
@@ -455,13 +441,11 @@ It's supposed to be a smiley face.
 
 ### Custom Serialization
 
-You'll notice in the BinaryCanvas example, the canvas with the smiley face was
-printed to the screen. You can determine how a component will be serialized by
-defining its `__str__` method.
+You'll notice in the BinaryCanvas example, the canvas with the smiley face was printed to the screen. You can determine
+how a component will be serialized by defining its `__str__` method.
 
-If a custom `__str__` method is present on the final component, the object is
-serialized and printed. If there's no custom `__str__` method, then the help
-screen for the object is shown instead.
+If a custom `__str__` method is present on the final component, the object is serialized and printed. If there's no
+custom `__str__` method, then the help screen for the object is shown instead.
 
 ### Can we make an even simpler example than Hello World?
 
@@ -511,11 +495,9 @@ if __name__ == '__main__':
 
 We can instantiate it as follows: `python example.py --name="Sherrerd Hall"`
 
-Arguments to other functions may be passed positionally or by name using flag
-syntax.
+Arguments to other functions may be passed positionally or by name using flag syntax.
 
-To instantiate a `Building` and then run the `climb_stairs` function, the
-following commands are all valid:
+To instantiate a `Building` and then run the `climb_stairs` function, the following commands are all valid:
 
 ```bash
 $ python example.py --name="Sherrerd Hall" --stories=3 climb_stairs 10
@@ -524,14 +506,11 @@ $ python example.py --name="Sherrerd Hall" climb_stairs --stairs-per-story 10
 $ python example.py climb-stairs --stairs-per-story 10 --name="Sherrerd Hall"
 ```
 
-You'll notice that hyphens and underscores (`-` and `_`) are interchangeable in
-member names and flag names.
+You'll notice that hyphens and underscores (`-` and `_`) are interchangeable in member names and flag names.
 
-You'll also notice that the constructor's arguments can come after the
-function's arguments or before the function.
+You'll also notice that the constructor's arguments can come after the function's arguments or before the function.
 
-You'll also notice that the equal sign between the flag name and its value is
-optional.
+You'll also notice that the equal sign between the flag name and its value is optional.
 
 ##### Functions with `*varargs` and `**kwargs`
 
@@ -556,10 +535,9 @@ $ python example.py dog cat elephant
 cat dog elephant
 ```
 
-You can use a separator to indicate that you're done providing arguments to a
-function. All arguments after the separator will be used to process the result
-of the function, rather than being passed to the function itself. The default
-separator is the hyphen `-`.
+You can use a separator to indicate that you're done providing arguments to a function. All arguments after the
+separator will be used to process the result of the function, rather than being passed to the function itself. The
+default separator is the hyphen `-`.
 
 Here's an example where we use a separator.
 
@@ -575,30 +553,25 @@ $ python example.py dog cat elephant upper
 cat dog upper elephant
 ```
 
-You can change the separator with the `--separator` flag. Flags are always
-separated from your Fire command by an isolated `--`. Here's an example where we
-change the separator.
+You can change the separator with the `--separator` flag. Flags are always separated from your Fire command by an
+isolated `--`. Here's an example where we change the separator.
 
 ```bash
 $ python example.py dog cat elephant X upper -- --separator=X
 CAT DOG ELEPHANT
 ```
 
-Separators can be useful when a function accepts \*varargs, \*\*kwargs, or
-default values that you don't want to specify. It is also important to remember
-to change the separator if you want to pass `-` as an argument.
-
+Separators can be useful when a function accepts \*varargs, \*\*kwargs, or default values that you don't want to
+specify. It is also important to remember to change the separator if you want to pass `-` as an argument.
 
 ### Argument Parsing
 
-The types of the arguments are determined by their values, rather than by the
-function signature where they're used. You can pass any Python literal from the
-command line: numbers, strings, tuples, lists, dictionaries, (sets are only
-supported in some versions of Python). You can also nest the collections
-arbitrarily as long as they only contain literals.
+The types of the arguments are determined by their values, rather than by the function signature where they're used. You
+can pass any Python literal from the command line: numbers, strings, tuples, lists, dictionaries, (sets are only
+supported in some versions of Python). You can also nest the collections arbitrarily as long as they only contain
+literals.
 
-To demonstrate this, we'll make a small example program that tells us the type
-of any argument we give it:
+To demonstrate this, we'll make a small example program that tells us the type of any argument we give it:
 
 ```python
 import fire
@@ -624,14 +597,11 @@ $ python example.py {name:David}
 dict
 ```
 
-You'll notice in that last example that bare-words are automatically replaced
-with strings.
+You'll notice in that last example that bare-words are automatically replaced with strings.
 
-Be careful with your quotes! If you want to pass the string `"10"`, rather than
-the int `10`, you'll need to either escape or quote your quotes. Otherwise Bash
-will eat your quotes and pass an unquoted `10` to your Python program, where
+Be careful with your quotes! If you want to pass the string `"10"`, rather than the int `10`, you'll need to either
+escape or quote your quotes. Otherwise Bash will eat your quotes and pass an unquoted `10` to your Python program, where
 Fire will interpret it as a number.
-
 
 ```bash
 $ python example.py 10
@@ -646,10 +616,8 @@ $ python example.py \"10\"
 str
 ```
 
-Be careful with your quotes! Remember that Bash processes your arguments first,
-and then Fire parses the result of that.
-If you wanted to pass the dict `{"name": "David Bieber"}` to your program, you
-might try this:
+Be careful with your quotes! Remember that Bash processes your arguments first, and then Fire parses the result of that.
+If you wanted to pass the dict `{"name": "David Bieber"}` to your program, you might try this:
 
 ```bash
 $ python example.py '{"name": "David Bieber"}'  # Good! Do this.
@@ -684,38 +652,30 @@ $ python example.py --noobj
 bool
 ```
 
-Be careful with boolean flags! If a token other than another flag immediately
-follows a flag that's supposed to be a boolean, the flag will take on the value
-of the token rather than the boolean value. You can resolve this: by putting a
-separator after your last flag, by explicitly stating the value of the boolean
-flag (as in `--obj=True`), or by making sure there's another flag after any
-boolean flag argument.
-
+Be careful with boolean flags! If a token other than another flag immediately follows a flag that's supposed to be a
+boolean, the flag will take on the value of the token rather than the boolean value. You can resolve this: by putting a
+separator after your last flag, by explicitly stating the value of the boolean flag (as in `--obj=True`), or by making
+sure there's another flag after any boolean flag argument.
 
 ### Using Fire Flags
 
-Fire CLIs all come with a number of flags. These flags should be separated from
-the Fire command by an isolated `--`. If there is at least one isolated `--`
-argument, then arguments after the final isolated `--` are treated as flags,
-whereas all arguments before the final isolated `--` are considered part of the
-Fire command.
+Fire CLIs all come with a number of flags. These flags should be separated from the Fire command by an isolated `--`. If
+there is at least one isolated `--`
+argument, then arguments after the final isolated `--` are treated as flags, whereas all arguments before the final
+isolated `--` are considered part of the Fire command.
 
-One useful flag is the `--interactive` flag. Use the `--interactive` flag on any
-CLI to enter a Python REPL with all the modules and variables used in the
-context where `Fire` was called already available to you for use. Other useful
-variables, such as the result of the Fire command will also be available. Use
-this feature like this: `python example.py -- --interactive`.
+One useful flag is the `--interactive` flag. Use the `--interactive` flag on any CLI to enter a Python REPL with all the
+modules and variables used in the context where `Fire` was called already available to you for use. Other useful
+variables, such as the result of the Fire command will also be available. Use this feature like
+this: `python example.py -- --interactive`.
 
-You can add the help flag to any command to see help and usage information. Fire
-incorporates your docstrings into the help and usage information that it
-generates. Fire will try to provide help even if you omit the isolated `--`
+You can add the help flag to any command to see help and usage information. Fire incorporates your docstrings into the
+help and usage information that it generates. Fire will try to provide help even if you omit the isolated `--`
 separating the flags from the Fire command, but may not always be able to, since
-`help` is a valid argument name. Use this feature like this: `python
-example.py -- --help` or `python example.py --help` (or even `python example.py
--h`).
+`help` is a valid argument name. Use this feature like this: `python example.py -- --help`
+or `python example.py --help` (or even `python example.py -h`).
 
 The complete set of flags available is shown below, in the reference section.
-
 
 ### Reference
 
@@ -743,7 +703,6 @@ The complete set of flags available is shown below, in the reference section.
 | [Verbose](using-cli.md#verbose-flag) | `command -- --verbose` | Include private members in the output.
 
 _Note that flags are separated from the Fire command by an isolated `--` arg._
-
 
 ### Disclaimer
 

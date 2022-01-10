@@ -14,26 +14,25 @@
 
 """Tests for the collector module."""
 
-from fire import testutils
-
 from examples.widget import collector
 from examples.widget import widget
+from fire import testutils
 
 
 class CollectorTest(testutils.BaseTestCase):
 
-  def testCollectorHasWidget(self):
-    col = collector.Collector()
-    self.assertIsInstance(col.widget, widget.Widget)
+    def testCollectorHasWidget(self):
+        col = collector.Collector()
+        self.assertIsInstance(col.widget, widget.Widget)
 
-  def testCollectorWantsMoreWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(col.desired_widget_count, 10)
+    def testCollectorWantsMoreWidgets(self):
+        col = collector.Collector()
+        self.assertEqual(col.desired_widget_count, 10)
 
-  def testCollectorGetsWantedWidgets(self):
-    col = collector.Collector()
-    self.assertEqual(len(col.collect_widgets()), 10)
+    def testCollectorGetsWantedWidgets(self):
+        col = collector.Collector()
+        self.assertEqual(len(col.collect_widgets()), 10)
 
 
 if __name__ == '__main__':
-  testutils.main()
+    testutils.main()

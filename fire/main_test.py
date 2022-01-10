@@ -22,73 +22,73 @@ from fire import testutils
 
 
 class MainModuleTest(testutils.BaseTestCase):
-  """Tests to verify the behavior of __main__ (python -m fire)."""
+    """Tests to verify the behavior of __main__ (python -m fire)."""
 
-  def testNameSetting(self):
-    # Confirm one of the usage lines has the gettempdir member.
-    with self.assertOutputMatches('gettempdir'):
-      __main__.main(['__main__.py', 'tempfile'])
+    def testNameSetting(self):
+        # Confirm one of the usage lines has the gettempdir member.
+        with self.assertOutputMatches('gettempdir'):
+            __main__.main(['__main__.py', 'tempfile'])
 
-  def testArgPassing(self):
-    expected = os.path.join('part1', 'part2', 'part3')
-    with self.assertOutputMatches('%s\n' % expected):
-      __main__.main(
-          ['__main__.py', 'os.path', 'join', 'part1', 'part2', 'part3'])
-    with self.assertOutputMatches('%s\n' % expected):
-      __main__.main(
-          ['__main__.py', 'os', 'path', '-', 'join', 'part1', 'part2', 'part3'])
+    def testArgPassing(self):
+        expected = os.path.join('part1', 'part2', 'part3')
+        with self.assertOutputMatches('%s\n' % expected):
+            __main__.main(
+                ['__main__.py', 'os.path', 'join', 'part1', 'part2', 'part3'])
+        with self.assertOutputMatches('%s\n' % expected):
+            __main__.main(
+                ['__main__.py', 'os', 'path', '-', 'join', 'part1', 'part2', 'part3'])
 
 
 class MainModuleFileTest(testutils.BaseTestCase):
-  """Tests to verify correct import behavior for file executables."""
+    """Tests to verify correct import behavior for file executables."""
 
-  def setUp(self):
-    super(MainModuleFileTest, self).setUp()
-    self.file = tempfile.NamedTemporaryFile(suffix='.py')
-    self.file.write(b'class Foo:\n  def double(self, n):\n    return 2 * n\n')
-    self.file.flush()
+    def setUp(self):
+        super(MainModuleFileTest, self).setUp()
+        self.file = tempfile.NamedTemporaryFile(suffix='.py')
+        self.file.write(b'class Foo:\n  def double(self, n):\n    return 2 * n\n')
+        self.file.flush()
 
-    self.file2 = tempfile.NamedTemporaryFile()
+        self.file2 = tempfile.NamedTemporaryFile()
 
-  def testFileNameFire(self):
-    # Confirm that the file is correctly imported and doubles the number.
-    with self.assertOutputMatches('4'):
-      __main__.main(
-          ['__main__.py', self.file.name, 'Foo', 'double', '--n', '2'])
+    def testFileNameFire(self):
+        # Confirm that the file is correctly imported and doubles the number.
+        with self.assertOutputMatches('4'):
+            __main__.main(
+                ['__main__.py', self.file.name, 'Foo', 'double', '--n', '2'])
 
-  def testFileNameFailure(self):
-    # Confirm that an existing file without a .py suffix raises a ValueError.
-    with self.assertRaises(ValueError):
-      __main__.main(
-          ['__main__.py', self.file2.name, 'Foo', 'double', '--n', '2'])
+    def testFileNameFailure(self):
+        # Confirm that an existing file without a .py suffix raises a ValueError.
+        with self.assertRaises(ValueError):
+            __main__.main(
+                ['__main__.py', self.file2.name, 'Foo', 'double', '--n', '2'])
 
-  def testFileNameModuleDuplication(self):
-    # Confirm that a file that masks a module still loads the module.
-    with self.assertOutputMatches('gettempdir'):
-      dirname = os.path.dirname(self.file.name)
-      with testutils.ChangeDirectory(dirname):
-        with open('tempfile', 'w'):
-          __main__.main([
-              '__main__.py',
-              'tempfile',
-          ])
+    def testFileNameModuleDuplication(self):
+        # Confirm that a file that masks a module still loads the module.
+        with self.assertOutputMatches('gettempdir'):
+            dirname = os.path.dirname(self.file.name)
+            with testutils.ChangeDirectory(dirname):
+                with open('tempfile', 'w'):
+                    __main__.main([
+                        '__main__.py',
+                        'tempfile',
+                    ])
 
-        os.remove('tempfile')
+                os.remove('tempfile')
 
-  def testFileNameModuleFileFailure(self):
-    # Confirm that an invalid file that masks a non-existent module fails.
-    with self.assertRaisesRegex(ValueError,
-                                r'Fire can only be called on \.py files\.'):  # pylint: disable=line-too-long,  # pytype: disable=attribute-error
-      dirname = os.path.dirname(self.file.name)
-      with testutils.ChangeDirectory(dirname):
-        with open('foobar', 'w'):
-          __main__.main([
-              '__main__.py',
-              'foobar',
-          ])
+    def testFileNameModuleFileFailure(self):
+        # Confirm that an invalid file that masks a non-existent module fails.
+        with self.assertRaisesRegex(ValueError,
+                                    r'Fire can only be called on \.py files\.'):  # pylint: disable=line-too-long,  # pytype: disable=attribute-error
+            dirname = os.path.dirname(self.file.name)
+            with testutils.ChangeDirectory(dirname):
+                with open('foobar', 'w'):
+                    __main__.main([
+                        '__main__.py',
+                        'foobar',
+                    ])
 
-        os.remove('foobar')
+                os.remove('foobar')
 
 
 if __name__ == '__main__':
-  testutils.main()
+    testutils.main()
