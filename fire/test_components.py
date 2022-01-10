@@ -297,7 +297,7 @@ class NamedTuple(object):
     """Functions returning named tuples used for testing."""
 
     def point(self):
-        """Point example straight from Python docs."""
+        """Point example straight from Python original-docs."""
         # pylint: disable=invalid-name
         Point = collections.namedtuple('Point', ['x', 'y'])
         return Point(11, y=22)
