@@ -53,7 +53,8 @@ def IsSimpleGroup(component):
     A boolean indicating if the group should be treated as a value for printing
     purposes.
   """
-  assert isinstance(component, dict)
+  if not isinstance(component, dict):
+    raise AssertionError
   for unused_key, value in component.items():
     if not IsValue(value) and not isinstance(value, (list, dict)):
       return False
