@@ -45,7 +45,7 @@ Then, from the command line, you can run:
 
 ```bash
 python hello.py  # Hello World!
-python hello.py --name=David  # Hello David!!
+python hello.py --name=Quiz  # Hello Quiz!!
 python hello.py --help  # Shows usage information.
 ```
 
