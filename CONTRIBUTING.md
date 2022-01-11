@@ -27,7 +27,7 @@ use GitHub pull requests for this purpose. Consult [GitHub Help] for more inform
 
 ## Code style
 
-In general, Python Fire follows the guidelines in the
+In general, Python Fire follows the guidelines in the:
 [Google Python Style Guide].
 
 In addition, the project follows a convention of:
