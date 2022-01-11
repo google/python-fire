@@ -16,7 +16,7 @@ _Python Fire is a library for automatically generating command line interfaces
 
 ## Installation
 
-To install Python Fire with pip, run: `pip install fire`
+To install Python Fire with pip, run : `pip install fire`
 
 To install Python Fire with conda, run: `conda install fire -c conda-forge`
 
