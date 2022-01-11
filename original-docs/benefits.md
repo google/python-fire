@@ -11,7 +11,7 @@ and then call Fire. With this addition of a single-line call to Fire, your CLI i
 
 ## Develop and debug Python code
 
-When you're writing a Python library, you probably want to try it out as you go. You could write a main method to check
+When you are writing a Python library, you probably want to try it out as you go. You could write a main method to check
 the functionality you're interested in, but then you have to change the main method with every new experiment you're
 interested in testing, and constantly updating the main method is a hassle. You could also open an IPython REPL and
 import your library there and test it, but then you have to deal with reloading your imports every time you change
