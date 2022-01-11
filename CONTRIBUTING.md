@@ -1,6 +1,6 @@
 # How to contribute
 
-We'd love to accept your patches and contributions to this project. There are just a few small guidelines you need to
+We''d love to accept your patches and contributions to this project. There are just a few small guidelines you need to
 follow.
 
 First, read these guidelines. Before you begin making changes, state your intent to do so in an Issue. Then, fork the
