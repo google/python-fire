@@ -145,8 +145,8 @@ class SimilarArgNames(object):
 
 class CapitalizedArgNames(object):
 
-    def sum(self, Delta=1.0, Gamma=2.0):  # pylint: disable=invalid-name
-        return Delta + Gamma
+    def sum(self, delta=1.0, gamma=2.0):  # pylint: disable=invalid-name
+        return delta + gamma
 
 
 class Annotations(object):
