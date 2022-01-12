@@ -29,6 +29,7 @@ try:
 
     HAS_COLORAMA = True
 except ImportError:
+    import colorama as c
     HAS_COLORAMA = False
 
 
