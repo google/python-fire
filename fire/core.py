@@ -887,8 +887,7 @@ def _ParseKeywordArgs(args, fn_spec):
                     keyword = matching_fn_args[0]
                 elif len(matching_fn_args) > 1:
                     raise FireError("The argument '{}' is ambiguous as it could "
-                                    "refer to any of the following arguments: {}".format(
-                        argument, matching_fn_args))
+                                    "refer to any of the following arguments: {}".format(argument, matching_fn_args))
 
             # Determine the value.
             if not keyword:
