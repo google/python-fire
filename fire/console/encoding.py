@@ -100,7 +100,7 @@ def Decode(data, encoding=None):
 
     # Try UTF-8 because the other encodings could be extended ASCII. It would
     # be exceptional if a valid extended ascii encoding with extended chars
-    # were also a valid UITF-8 encoding.
+    # were also a valid UTF-8 encoding.
     try:
         return string.decode('utf8')
     except UnicodeError:
