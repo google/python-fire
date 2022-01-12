@@ -163,7 +163,8 @@ def Fire(component=None, command=None, name=None):
         Display(output, out=sys.stderr)
         raise FireExit(0, component_trace)
 
-    # The command succeeded normally; print the result.
+    # The command succeeded normally.
+    # Print the result.
     _PrintResult(component_trace, verbose=component_trace.verbose)
     result = component_trace.GetResult()
     return result
