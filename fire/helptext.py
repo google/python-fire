@@ -104,34 +104,34 @@ def Checker(spec,component):
       Checker funcition firstly checks type of component and afterthat
       it extract all parent classes.
     Return:
-      case 1: If there is any parent class it will return all_args list.
+      case 1: If there is any parent class it will return all parameters in list.
       case 2: If there is no parent class so it will return only args list.
   """
   if type(component) is not FunctionType and type(component) is not object:
     try:
       Inherit_classes_list=inspect.getmro(component)
       if len(Inherit_classes_list)>2:
-        return ReturnAllArgs(Inherit_classes_list)
+        return ReturnParentParameters(Inherit_classes_list)
     except AttributeError as e:
       pass
 
   return spec.args
 
 
-def ReturnAllArgs(Inherit_classes_list):
+def ReturnParentParameters(Inherit_classes_list):
   """
     Inherit_classes_list: It is a list which have collection of parent classes.
-    Return: list of all arguments which is retrieved from parent classes.
+    Return: list of all parameters which is retrieved from parent classes.
   """
-  all_args = []
+  all_parameters = []
 
   for classes in Inherit_classes_list:
     argspec_tuple=inspect.getargspec(classes)
-    args_list=argspec_tuple[0]
-    for arg in args_list[1:]:
-      all_args.append(arg)
+    args_spec=argspec_tuple[0]
+    for parameter in args_spec[1:]:
+      all_parameters.append(parameter)
 
-  return all_args
+  return all_parameters
 
 
 def _NameSection(component, info, trace=None, verbose=False):
