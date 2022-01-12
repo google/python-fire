@@ -276,7 +276,7 @@ class EmptyDictOutput(object):
 
 class CircularReference(object):
 
-    def create(self):
+    def create(self, x=None):
         x = {'y': x}
         return x
 
