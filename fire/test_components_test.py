@@ -38,4 +38,3 @@ class TestComponentsTest(testutils.BaseTestCase):
 
 if __name__ == '__main__':
     testutils.main()
-
