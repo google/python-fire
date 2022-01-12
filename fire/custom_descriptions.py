@@ -126,8 +126,7 @@ def GetStringTypeDescription(obj, available_space, line_length):
 
     return STRING_DESC_PREFIX + formatting.DoubleQuote(
         formatting.EllipsisTruncate(
-            obj, available_space - len(STRING_DESC_PREFIX) -
-                 len(TWO_DOUBLE_QUOTES), line_length))
+            obj, available_space - len(STRING_DESC_PREFIX) - len(TWO_DOUBLE_QUOTES), line_length))
 
 
 CUSTOM_DESC_SUM_FN_DICT = {
