@@ -24,7 +24,7 @@ import functools
 import six
 
 if six.PY3:
-  pass
+    pass
 
 
 def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=keyword-arg-before-vararg
