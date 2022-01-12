@@ -31,10 +31,11 @@ class TestComponentsTest(testutils.BaseTestCase):
 
     def testNonComparable(self):
         with self.assertRaises(ValueError):
-            tc.NonComparable() != 2  # pylint: disable=expression-not-assigned
+            var = tc.NonComparable() != 2  # pylint: disable=expression-not-assigned
         with self.assertRaises(ValueError):
-            tc.NonComparable() == 2  # pylint: disable=expression-not-assigned
+            var = tc.NonComparable() == 2  # pylint: disable=expression-not-assigned
 
 
 if __name__ == '__main__':
     testutils.main()
+
