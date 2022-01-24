@@ -168,6 +168,7 @@ def Py3GetFullArgSpec(fn):
       if "Optional" in str(annotations[name]) or "Union" in str(annotations[name]):
         tuple_param1 = get_args(annotations[name])[0].__name__
         tuple_param2 = get_args(annotations[name])[1].__name__
+        
         if str(tuple_param2) != "NoneType":
           annotations[name] = tuple_param1 + ", " + tuple_param2
         else:
