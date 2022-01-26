@@ -166,13 +166,7 @@ def Py3GetFullArgSpec(fn):
     if param.annotation is not param.empty:
       annotations[name] = param.annotation
       if "Optional" in str(annotations[name]) or "Union" in str(annotations[name]):
-        tuple_param1 = get_args(annotations[name])[0].__name__
-        tuple_param2 = get_args(annotations[name])[1].__name__
-        
-        if str(tuple_param2) != "NoneType":
-          annotations[name] = tuple_param1 + ", " + tuple_param2
-        else:
-          annotations[name] = tuple_param
+        annotations[name] = ", ".join(x.__name__ for x in get_args(annotations[name]))
     # pylint: enable=protected-access
 
   if not kwdefaults:
