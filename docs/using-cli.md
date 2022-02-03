@@ -137,6 +137,9 @@ will put you in an IPython REPL, with the variable `widget` already defined.
 You can then explore the Python object that `widget` corresponds to
 interactively using Python.
 
+Note: if you want fire to start the IPython REPL instead of the regular Python one,
+the `ipython` package needs to be installed in your environment.
+
 
 ### `--completion`: Generating a completion script <a name="completion-flag"></a>
 
