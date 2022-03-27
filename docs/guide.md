@@ -318,8 +318,8 @@ class Pipeline(object):
     self.digestion = DigestionStage()
 
   def run(self):
-    self.ingestion.run()
-    self.digestion.run()
+    print(self.ingestion.run())
+    print(self.digestion.run())
     return 'Pipeline complete'
 
 if __name__ == '__main__':
