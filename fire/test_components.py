@@ -133,9 +133,6 @@ class MixedDefaults(object):
   def identity(self, alpha, beta='0'):
     return alpha, beta
 
-  def identity2(self, *, alpha, beta='0'):
-    return alpha, beta
-
 
 class SimilarArgNames(object):
 
