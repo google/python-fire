@@ -92,5 +92,5 @@ class WithDefaultsAndTypes(object):
     """
     return 2 * count
 
-  def get_int(self, value: Optional[int] = None):
+  def get_int(self, value: int = None):
     return 0 if value is None else value
