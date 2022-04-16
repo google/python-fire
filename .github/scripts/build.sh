@@ -39,6 +39,6 @@ if [[ ${PYTHON_VERSION} == 2.7 ]]; then
     fire/inspectutils_test.py \
     fire/test_components_py3.py;
 elif [[ ${PYTHON_VERSION} == 3.7 ]]; then
-  pytype;
+  pytype -x fire/test_components_py3.py;
 fi
 

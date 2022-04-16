@@ -32,7 +32,7 @@ enable=indexing-exception,old-raise-syntax
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time.
-disable=design,similarities,no-self-use,attribute-defined-outside-init,locally-disabled,star-args,pointless-except,bad-option-value,global-statement,fixme,suppressed-message,useless-suppression,locally-enabled,file-ignored,wrong-import-order,useless-object-inheritance,no-else-return,super-with-arguments,raise-missing-from
+disable=design,similarities,no-self-use,attribute-defined-outside-init,locally-disabled,star-args,pointless-except,bad-option-value,global-statement,fixme,suppressed-message,useless-suppression,locally-enabled,file-ignored,wrong-import-order,useless-object-inheritance,no-else-return,super-with-arguments,raise-missing-from,consider-using-f-string,unspecified-encoding
 
 
 [REPORTS]

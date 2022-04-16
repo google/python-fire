@@ -80,7 +80,7 @@ def import_from_file_path(path):
     spec.loader.exec_module(module)  # pytype: disable=attribute-error
 
   else:
-    import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel
+    import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel,deprecated-module
     module = imp.load_source(module_name, path)
 
   return module, module_name
