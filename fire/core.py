@@ -252,7 +252,8 @@ def _PrintResult(component_trace, verbose=False, serialize=None):
   # custom formatting.
   if serialize:
     if not callable(serialize):
-      raise FireError('The argument `serialize` must be empty or callable:', serialize)
+      raise FireError(
+          'The argument `serialize` must be empty or callable:', serialize)
     result = serialize(result)
 
   if value_types.HasCustomStr(result):
