@@ -199,7 +199,7 @@ class CoreTest(testutils.BaseTestCase):
       if isinstance(x, list):
         return ', '.join(str(xi) for xi in x)
       if isinstance(x, dict):
-        return ', '.join('{}={!r}'.format(k, v) for k, v in x.items())
+        return ', '.join('{}={!r}'.format(k, v) for k, v in sorted(x.items()))
       if x == 'special':
         return ['SURPRISE!!', "I'm a list!"]
       return x
