@@ -164,7 +164,8 @@ def Fire(component=None, command=None, name=None, serialize=None):
     raise FireExit(0, component_trace)
 
   # The command succeeded normally; print the result.
-  _PrintResult(component_trace, verbose=component_trace.verbose, serialize=serialize)
+  _PrintResult(
+      component_trace, verbose=component_trace.verbose, serialize=serialize)
   result = component_trace.GetResult()
   return result
 
@@ -247,11 +248,12 @@ def _PrintResult(component_trace, verbose=False, serialize=None):
   # and move serialization to its own module.
   result = component_trace.GetResult()
 
-  # Allow users to modify the return value of the component and provide 
+  # Allow users to modify the return value of the component and provide
   # custom formatting.
   if serialize:
     if not callable(serialize):
-      raise FireError("serialize argument {} must be empty or callable.".format(serialize))
+      raise FireError(
+          'The argument `serialize` must be empty or callable:', serialize)
     result = serialize(result)
 
   if value_types.HasCustomStr(result):
