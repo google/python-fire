@@ -497,6 +497,9 @@ class UsageTest(testutils.BaseTestCase):
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
 
+  @testutils.skipIf(
+      six.PY2,
+      'Python 2 does not support required name-only arguments.')
   def testUsageOutputFunctionMixedDefaults(self):
     component = tc.py3.HelpTextComponent().identity
     t = trace.FireTrace(component, name='FunctionMixedDefaults')
