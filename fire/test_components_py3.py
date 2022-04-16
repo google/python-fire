@@ -16,7 +16,7 @@
 
 import asyncio
 import functools
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 # pylint: disable=keyword-arg-before-vararg
@@ -92,5 +92,5 @@ class WithDefaultsAndTypes(object):
     """
     return 2 * count
 
-  def get_int(self, value: int = None):
+  def get_int(self, value: Optional[int] = None):
     return 0 if value is None else value
