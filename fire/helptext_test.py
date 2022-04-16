@@ -145,8 +145,26 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('NOTES', help_screen)
 
   @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
+      sys.version_info[0:2] != (3, 5),
+      'This test is just for Python 3.5.')
+  def testHelpTextFunctionWithTypesAndDefaultNone35(self):
+    component = (
+        tc.py3.WithDefaultsAndTypes().get_int)  # pytype: disable=module-attr
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='get_int'))
+    self.assertIn('NAME\n    get_int', help_screen)
+    self.assertIn('SYNOPSIS\n    get_int <flags>', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn(
+        'FLAGS\n    --value=VALUE\n'
+        '        Type: Optional[typing.Union[[None, int]]\n        Default: None',
+        help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
+  @testutils.skipIf(
+      sys.version_info[0:2] < (3, 6),
+      'Python < 3.5 does not support type hints. Python 3.5 has its own test.')
   def testHelpTextFunctionWithTypesAndDefaultNone(self):
     component = (
         tc.py3.WithDefaultsAndTypes().get_int)  # pytype: disable=module-attr
