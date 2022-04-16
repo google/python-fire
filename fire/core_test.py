@@ -205,15 +205,16 @@ class CoreTest(testutils.BaseTestCase):
       return x
 
     ident = lambda x: x
-    
+
     with self.assertOutputMatches(stdout='a, b', stderr=None):
-      result = core.Fire(ident, command=['[a,b]'], serialize=serialize)
+      _ = core.Fire(ident, command=['[a,b]'], serialize=serialize)
     with self.assertOutputMatches(stdout='a=5, b=6', stderr=None):
-      result = core.Fire(ident, command=['{a:5,b:6}'], serialize=serialize)
+      _ = core.Fire(ident, command=['{a:5,b:6}'], serialize=serialize)
     with self.assertOutputMatches(stdout='asdf', stderr=None):
-      result = core.Fire(ident, command=['asdf'], serialize=serialize)
-    with self.assertOutputMatches(stdout="SURPRISE!!\nI'm a list!\n", stderr=None):
-      result = core.Fire(ident, command=['special'], serialize=serialize)
+      _ = core.Fire(ident, command=['asdf'], serialize=serialize)
+    with self.assertOutputMatches(
+        stdout="SURPRISE!!\nI'm a list!\n", stderr=None):
+      _ = core.Fire(ident, command=['special'], serialize=serialize)
     with self.assertRaises(core.FireError):
       core.Fire(ident, command=['asdf'], serialize=55)
 
