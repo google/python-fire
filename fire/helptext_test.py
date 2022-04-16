@@ -498,7 +498,7 @@ class UsageTest(testutils.BaseTestCase):
         usage_output)
 
   def testUsageOutputFunctionMixedDefaults(self):
-    component = tc.MixedDefaults().identity2
+    component = tc.py3.HelpTextComponent().identity
     t = trace.FireTrace(component, name='FunctionMixedDefaults')
     usage_output = helptext.UsageText(component, trace=t, verbose=False)
     expected_output = """

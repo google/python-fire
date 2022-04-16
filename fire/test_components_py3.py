@@ -25,6 +25,12 @@ def identity(arg1, arg2: int, arg3=10, arg4: int = 20, *arg5,
   return arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10
 
 
+class HelpTextComponent:
+
+  def identity(self, *, alpha, beta='0'):
+    return alpha, beta
+
+
 class KeywordOnly(object):
 
   def double(self, *, count):
