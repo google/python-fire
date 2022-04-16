@@ -78,7 +78,7 @@ if six.PY34:
   import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
-def Fire(component=None, command=None, name=None):
+def Fire(component=None, command=None, name=None, serialize=None):
   """This function, Fire, is the main entrypoint for Python Fire.
 
   Executes a command either from the `command` argument or from sys.argv by
@@ -164,7 +164,7 @@ def Fire(component=None, command=None, name=None):
     raise FireExit(0, component_trace)
 
   # The command succeeded normally; print the result.
-  _PrintResult(component_trace, verbose=component_trace.verbose)
+  _PrintResult(component_trace, verbose=component_trace.verbose, serialize=serialize)
   result = component_trace.GetResult()
   return result
 
@@ -241,11 +241,18 @@ def _IsHelpShortcut(component_trace, remaining_args):
   return show_help
 
 
-def _PrintResult(component_trace, verbose=False):
+def _PrintResult(component_trace, verbose=False, serialize=None):
   """Prints the result of the Fire call to stdout in a human readable way."""
   # TODO(dbieber): Design human readable deserializable serialization method
   # and move serialization to its own module.
   result = component_trace.GetResult()
+
+  # Allow users to modify the return value of the component and provide 
+  # custom formatting.
+  if serialize:
+    if not callable(serialize):
+      raise FireError("serialize argument {} must be empty or callable.".format(serialize))
+    result = serialize(result)
 
   if value_types.HasCustomStr(result):
     # If the object has a custom __str__ method, rather than one inherited from
