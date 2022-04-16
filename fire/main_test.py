@@ -44,11 +44,11 @@ class MainModuleFileTest(testutils.BaseTestCase):
 
   def setUp(self):
     super(MainModuleFileTest, self).setUp()
-    self.file = tempfile.NamedTemporaryFile(suffix='.py')
+    self.file = tempfile.NamedTemporaryFile(suffix='.py')  # pylint: disable=consider-using-with
     self.file.write(b'class Foo:\n  def double(self, n):\n    return 2 * n\n')
     self.file.flush()
 
-    self.file2 = tempfile.NamedTemporaryFile()
+    self.file2 = tempfile.NamedTemporaryFile()  # pylint: disable=consider-using-with
 
   def testFileNameFire(self):
     # Confirm that the file is correctly imported and doubles the number.
