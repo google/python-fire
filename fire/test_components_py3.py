@@ -16,7 +16,7 @@
 
 import asyncio
 import functools
-from typing import Optional, Tuple
+from typing import Tuple
 
 
 # pylint: disable=keyword-arg-before-vararg
