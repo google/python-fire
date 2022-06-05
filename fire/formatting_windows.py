@@ -47,11 +47,10 @@ def initialize_or_disable():
       mode = ctypes.wintypes.DWORD()
       if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:
         wrap = True
-      if not mode.value & enable_virtual_terminal_processing:
-        if kernel32.SetConsoleMode(
-            out_handle, mode.value | enable_virtual_terminal_processing) == 0:
-          # kernel32.SetConsoleMode to enable ANSI sequences failed
-          wrap = True
+      if not mode.value & enable_virtual_terminal_processing and kernel32.SetConsoleMode(
+          out_handle, mode.value | enable_virtual_terminal_processing) == 0:
+        # kernel32.SetConsoleMode to enable ANSI sequences failed
+        wrap = True
     colorama.init(wrap=wrap)
   else:
     os.environ['ANSI_COLORS_DISABLED'] = '1'
