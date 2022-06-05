@@ -46,8 +46,8 @@ class DiffTest(testutils.BaseTestCase):
 
   def testUnifiedDiff(self):
     results = list(self.diff.unified_diff())
-    self.assertTrue(results[0].startswith('--- ' + self.file1.name))
-    self.assertTrue(results[1].startswith('+++ ' + self.file2.name))
+    self.assertTrue(results[0].startswith(f'--- {self.file1.name}'))
+    self.assertTrue(results[1].startswith(f'+++ {self.file2.name}'))
     self.assertEqual(
         results[2:],
         [
