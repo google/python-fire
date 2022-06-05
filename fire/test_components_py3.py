@@ -40,7 +40,7 @@ class KeywordOnly(object):
     return count * 3
 
   def with_default(self, *, x="x"):
-    print("x: " + x)
+    print(f"x: {x}")
 
 
 class LruCacheDecoratedMethod(object):

@@ -338,7 +338,7 @@ class CallableWithKeywordArgument(object):
 
   def __call__(self, **kwargs):
     for key, value in kwargs.items():
-      print('%s: %s' % (key, value))
+      print(f'{key}: {value}')
 
   def print_msg(self, msg):
     print(msg)
@@ -395,8 +395,7 @@ class ClassWithMultilineDocstring(object):
         [0, 1, 2, 3]
 
     """
-    for i in range(n):
-      yield i
+    yield from range(n)
 
 
 def simple_set():
@@ -538,7 +537,7 @@ def simple_decorator(f):
 
 @simple_decorator
 def decorated_method(name='World'):
-  return 'Hello %s' % name
+  return f'Hello {name}'
 
 
 # pylint: disable=g-doc-args,g-doc-return-or-yield

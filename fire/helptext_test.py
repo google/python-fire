@@ -128,7 +128,7 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
 
   @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
+      sys.version_info[:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithDefaultsAndTypes(self):
     component = (
@@ -145,7 +145,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('NOTES', help_screen)
 
   @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
+      sys.version_info[:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypesAndDefaultNone(self):
     component = (
@@ -163,7 +163,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('NOTES', help_screen)
 
   @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
+      sys.version_info[:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypes(self):
     component = tc.py3.WithTypes().double  # pytype: disable=module-attr
@@ -181,7 +181,7 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
 
   @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
+      sys.version_info[:2] < (3, 5),
       'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithLongTypes(self):
     component = tc.py3.WithTypes().long_type  # pytype: disable=module-attr

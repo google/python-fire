@@ -109,10 +109,7 @@ def _NameSection(component, info, trace=None, verbose=False):
     summary = custom_descriptions.GetSummary(component, available_space,
                                              LINE_LENGTH)
 
-  if summary:
-    text = current_command + ' - ' + summary
-  else:
-    text = current_command
+  text = f'{current_command} - {summary}' if summary else current_command
   return ('NAME', text)
 
 
@@ -273,12 +270,12 @@ def _UsageDetailsSections(component, actions_grouped_by_kind):
 
 def _GetSummary(info):
   docstring_info = info['docstring_info']
-  return docstring_info.summary if docstring_info.summary else None
+  return docstring_info.summary or None
 
 
 def _GetDescription(info):
   docstring_info = info['docstring_info']
-  return docstring_info.description if docstring_info.description else None
+  return docstring_info.description or None
 
 
 def _GetArgsAndFlagsString(spec, metadata):
@@ -374,11 +371,7 @@ def _GetActionsGroupedByKind(component, verbose=False):
 
 def _GetCurrentCommand(trace=None, include_separators=True):
   """Returns current command for the purpose of generating help text."""
-  if trace:
-    current_command = trace.GetCommand(include_separators=include_separators)
-  else:
-    current_command = ''
-  return current_command
+  return trace.GetCommand(include_separators=include_separators) if trace else ''
 
 
 def _CreateOutputSection(name, content):
@@ -411,7 +404,7 @@ def _CreateArgItem(arg, docstring_info, spec):
   arg_string = formatting.BoldUnderline(arg.upper())
 
   arg_type = _GetArgType(arg, spec)
-  arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
+  arg_type = f'Type: {arg_type}' if arg_type else ''
   available_space = max_str_length - len(arg_type)
   arg_type = (
       formatting.EllipsisTruncate(arg_type, available_space, max_str_length))
@@ -462,14 +455,14 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
   # We need to handle the case where there is a default of None, but otherwise
   # the argument has another type.
   if arg_default == 'None':
-    arg_type = 'Optional[{}]'.format(arg_type)
+    arg_type = f'Optional[{arg_type}]'
 
-  arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
+  arg_type = f'Type: {arg_type}' if arg_type else ''
   available_space = max_str_length - len(arg_type)
   arg_type = (
       formatting.EllipsisTruncate(arg_type, available_space, max_str_length))
 
-  arg_default = 'Default: {}'.format(arg_default) if arg_default else ''
+  arg_default = f'Default: {arg_default}' if arg_default else ''
   available_space = max_str_length - len(arg_default)
   arg_default = (
       formatting.EllipsisTruncate(arg_default, available_space, max_str_length))
@@ -495,7 +488,7 @@ def _GetArgType(arg, spec):
   if arg in spec.annotations:
     arg_type = spec.annotations[arg]
     try:
-      if sys.version_info[0:2] >= (3, 3):
+      if sys.version_info[:2] >= (3, 3):
         return arg_type.__qualname__
       return arg_type.__name__
     except AttributeError:
@@ -538,7 +531,7 @@ def _CreateItem(name, description, indent=2):
 def _GetArgDescription(name, docstring_info):
   if docstring_info.args:
     for arg_in_docstring in docstring_info.args:
-      if arg_in_docstring.name in (name, '*' + name, '**' + name):
+      if arg_in_docstring.name in (name, f'*{name}', f'**{name}'):
         return arg_in_docstring.description
   return None
 
@@ -708,10 +701,12 @@ def _GetCallableAvailabilityLines(spec):
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
 
   # TODO(dbieber): Handle args_with_no_defaults if not accepts_positional_args.
-  optional_flags = [('--' + flag) for flag in itertools.chain(
-      args_with_defaults, _KeywordOnlyArguments(spec, required=False))]
+  optional_flags = [
+      f'--{flag}' for flag in itertools.chain(
+          args_with_defaults, _KeywordOnlyArguments(spec, required=False))
+  ]
   required_flags = [
-      ('--' + flag) for flag in _KeywordOnlyArguments(spec, required=True)
+      f'--{flag}' for flag in _KeywordOnlyArguments(spec, required=True)
   ]
 
   # Flags section:
