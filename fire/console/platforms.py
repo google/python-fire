@@ -43,8 +43,8 @@ class InvalidEnumValue(Error):  # pylint: disable=g-bad-exception-name
       options: list(str), The valid values for this enum.
     """
     super(InvalidEnumValue, self).__init__(
-        'Could not parse [{0}] into a valid {1}.  Valid values are [{2}]'
-        .format(given, enum_type, ', '.join(options)))
+        f'Could not parse [{given}] into a valid {enum_type}.  Valid values are [{', '.join(options)}]'
+    )
 
 
 class OperatingSystem(object):
