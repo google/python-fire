@@ -104,7 +104,7 @@ def _LiteralEval(value):
             child[index] = _Replacement(subchild)
 
       elif isinstance(child, ast.Name):
-        if isinstance(value, str) and not isinstance(value, int):
+        if isinstance(type(value), str) and not isinstance(type(value), int):
           replacement = ast.Str(value)
           node.__setattr__(field, replacement)
         else:
