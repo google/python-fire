@@ -66,7 +66,6 @@ def DefaultParseValue(value):
   Returns:
     The parsed value, of the type determined most appropriate.
   """
-  # Note: _LiteralEval will treat '#' as the start of a comment.
   try:
     return _LiteralEval(value)
   except (SyntaxError, ValueError):
@@ -105,8 +104,12 @@ def _LiteralEval(value):
             child[index] = _Replacement(subchild)
 
       elif isinstance(child, ast.Name):
-        replacement = _Replacement(child)
-        node.__setattr__(field, replacement)
+        if isinstance(type(value), str) and not isinstance(type(value), int):
+          replacement = ast.Str(value)
+          node.__setattr__(field, replacement)
+        else:
+          replacement = _Replacement(child)
+          node.__setattr__(field, replacement)
 
   # ast.literal_eval supports the following types:
   # strings, bytes, numbers, tuples, lists, dicts, sets, booleans, and None
