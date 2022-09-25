@@ -725,7 +725,18 @@ def _MakeParseFn(fn, metadata):
   required_kwonly = set(fn_spec.kwonlyargs) - set(fn_spec.kwonlydefaults)
 
   def _ParseFn(args):
-    """Parses the list of `args` into (varargs, kwargs), remaining_args."""
+    """Parses the list of `args` into (varargs, kwargs), consumed_args, remaining_args."""
+
+    skip_parse = metadata.get(decorators.SKIP_PARSE, False)
+
+    if skip_parse:
+        kwargs = {}
+        remaining_kwargs = []
+        remaining_args = []
+        varargs = consumed_args = args[:]
+        capacity = False
+        return (varargs, kwargs), consumed_args, remaining_args, capacity
+
     kwargs, remaining_kwargs, remaining_args = _ParseKeywordArgs(args, fn_spec)
 
     # Note: _ParseArgs modifies kwargs.
@@ -757,8 +768,16 @@ def _MakeParseFn(fn, metadata):
     varargs = parsed_args + varargs
     remaining_args += remaining_kwargs
 
-    consumed_args = args[:len(args) - len(remaining_args)]
-    return (varargs, kwargs), consumed_args, remaining_args, capacity
+    sorted_remaining_args = []
+    consumed_args = []
+    for arg in args:
+      if arg in remaining_args:
+        sorted_remaining_args.append(arg)
+        remaining_args.remove(arg)
+      else:
+        consumed_args.append(arg)
+
+    return (varargs, kwargs), consumed_args, sorted_remaining_args, capacity
 
   return _ParseFn
 
