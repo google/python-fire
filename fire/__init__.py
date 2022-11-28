@@ -21,4 +21,4 @@ from __future__ import print_function
 from fire.core import Fire
 
 __all__ = ['Fire']
-__version__ = '0.4.0'
+__version__ = '0.5.0'

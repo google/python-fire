@@ -30,9 +30,7 @@ pip install ipython
 python -m pytest  # Now run the tests with IPython.
 pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py,console
 if [[ ${PYTHON_VERSION} == 3.7 ]]; then
+  # Run type-checking.
   pip install pytype;
-fi
-# Run type-checking.
-if [[ ${PYTHON_VERSION} == 3.7 ]]; then
   pytype -x fire/test_components_py3.py;
 fi
