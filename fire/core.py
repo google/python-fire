@@ -525,7 +525,8 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
         # The target isn't present in the dict as a string key, but maybe it is
         # a key as another type.
         # TODO(dbieber): Consider alternatives for accessing non-string keys.
-        for key, value in component_dict.items():
+        for key, value in (
+            component_dict.items()):  # pytype: disable=attribute-error
           if target == str(key):
             component = value
             handled = True

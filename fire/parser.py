@@ -106,7 +106,7 @@ def _LiteralEval(value):
 
       elif isinstance(child, ast.Name):
         replacement = _Replacement(child)
-        node.__setattr__(field, replacement)
+        setattr(node, field, replacement)
 
   # ast.literal_eval supports the following types:
   # strings, bytes, numbers, tuples, lists, dicts, sets, booleans, and None

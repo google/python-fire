@@ -28,11 +28,11 @@ class FormattingTest(testutils.BaseTestCase):
 
   def test_bold(self):
     text = formatting.Bold('hello')
-    self.assertEqual('\x1b[1mhello\x1b[0m', text)
+    self.assertIn(text, ['hello', '\x1b[1mhello\x1b[0m'])
 
   def test_underline(self):
     text = formatting.Underline('hello')
-    self.assertEqual('\x1b[4mhello\x1b[0m', text)
+    self.assertIn(text, ['hello', '\x1b[4mhello\x1b[0m'])
 
   def test_indent(self):
     text = formatting.Indent('hello', spaces=2)
