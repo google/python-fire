@@ -296,6 +296,18 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    double', output)
     self.assertIn('FLAGS\n    --count=COUNT (required)', output)
 
+  @testutils.skipIf(
+      six.PY2,
+      'Python 2 does not support required name-only arguments.')
+  def testHelpTextFunctionMixedDefaults(self):
+    component = tc.py3.HelpTextComponent().identity
+    t = trace.FireTrace(component, name='FunctionMixedDefaults')
+    output = helptext.HelpText(component, trace=t)
+    self.assertIn('NAME\n    FunctionMixedDefaults', output)
+    self.assertIn('FunctionMixedDefaults <flags>', output)
+    self.assertIn('--alpha=ALPHA (required)', output)
+    self.assertIn('--beta=BETA\n        Default: \'0\'', output)
+
   def testHelpScreen(self):
     component = tc.ClassWithDocstring()
     t = trace.FireTrace(component, name='ClassWithDocstring')
