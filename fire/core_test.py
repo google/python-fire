@@ -218,7 +218,6 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertRaises(core.FireError):
       core.Fire(ident, command=['asdf'], serialize=55)
 
-
   @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
   def testLruCacheDecoratorBoundArg(self):
     self.assertEqual(
