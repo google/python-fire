@@ -318,9 +318,9 @@ class Pipeline(object):
     self.digestion = DigestionStage()
 
   def run(self):
-    print(self.ingestion.run())
-    print(self.digestion.run())
-    return 'Pipeline complete'
+    ingestion_output = self.ingestion.run()
+    digestion_output = self.digestion.run()
+    return [ingestion_output, digestion_output]
 
 if __name__ == '__main__':
   fire.Fire(Pipeline)
