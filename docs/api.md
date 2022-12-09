@@ -10,28 +10,28 @@
 | Call           | `fire.Fire()`          | Turns the current module into a Fire CLI.
 | Call           | `fire.Fire(component)` | Turns `component` into a Fire CLI.
 
-| Using a CLI                                | Command        | Notes          |
-| :----------------------------------------- | :------------- | :------------- |
-| [Help](using-cli.md#help-flag)             | `command       | Show the help  |
-:                                            : --help`        : screen.        :
-| [REPL](using-cli.md#interactive-flag)      | `command --    | Enters         |
-:                                            : --interactive` : interactive    :
-:                                            :                : mode.          :
-| [Separator](using-cli.md#separator-flag)   | `command --    | This sets the  |
-:                                            : --separator=X` : separator to   :
-:                                            :                : `X`. The       :
-:                                            :                : default        :
-:                                            :                : separator is   :
-:                                            :                : `-`.           :
-| [Completion](using-cli.md#completion-flag) | `command --    | Generate a     |
-:                                            : --completion   : completion     :
-:                                            : [shell]`       : script for the :
-:                                            :                : CLI.           :
-| [Trace](using-cli.md#trace-flag)           | `command --    | Gets a Fire    |
-:                                            : --trace`       : trace for the  :
-:                                            :                : command.       :
-| [Verbose](using-cli.md#verbose-flag)       | `command --    |                |
-:                                            : --verbose`     :                :
+| Using a CLI                                | Command                           | Notes          |
+| :----------------------------------------- | :----------------                 | :------------- |
+| [Help](using-cli.md#help-flag)             | `command --help`                  | Show the help  |
+:                                            :                                   : screen.        :
+| [REPL](using-cli.md#interactive-flag)      | `command -- --interactive`        | Enters         |
+:                                            :                                   : interactive    :
+:                                            :                                   : mode.          :
+| [Separator](using-cli.md#separator-flag)   | `command -- --separator=X`        | This sets the  |
+:                                            :                                   : separator to   :
+:                                            :                                   : `X`. The       :
+:                                            :                                   : default        :
+:                                            :                                   : separator is   :
+:                                            :                                   : `-`.           :
+| [Completion](using-cli.md#completion-flag) | `command -- --completion [shell]` | Generate a     |
+:                                            :                                   : completion     :
+:                                            :                                   : script for the :
+:                                            :                                   : CLI.           :
+| [Trace](using-cli.md#trace-flag)           | `command -- --trace`              | Gets a Fire    |
+:                                            :                                   : trace for the  :
+:                                            :                                   : command.       :
+| [Verbose](using-cli.md#verbose-flag)       | `command -- --verbose`            |                |
+:                                            :                                   :                :
 
 _Note that flags are separated from the Fire command by an isolated `--` arg.
 Help is an exception; the isolated `--` is optional for getting help._
@@ -42,8 +42,8 @@ Help is an exception; the isolated `--` is optional for getting help._
 | :-------- | :------------------------ | :----------------------------------- |
 | component | `fire.Fire(component)`    | If omitted, defaults to a dict of    |
 :           :                           : all locals and globals.              :
-| command   | `fire.Fire(command='hello | Either a string or a list of         |
-:           : --name=5')`               : arguments. If a string is provided,  :
+| command   | `fire.Fire(command='hello --name=5')` | Either a string or a list of         |
+:           :                           : arguments. If a string is provided,  :
 :           :                           : it is split to determine the         :
 :           :                           : arguments. If a list or tuple is     :
 :           :                           : provided, they are the arguments. If :
