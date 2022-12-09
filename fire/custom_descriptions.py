@@ -28,7 +28,7 @@ dict(iterable) -> new dictionary initialized as if via:
 dict(**kwargs) -> new dictionary initialized with the name=value pairs
     in the keyword argument list.  For example:  dict(one=1, two=2)
 
-As you can see, this docstring is more pertinant to the function `dict` and
+As you can see, this docstring is more pertinent to the function `dict` and
 would be suitable as the result of `dict.__doc__`, but is wholely unsuitable
 as a description for the dict `{'key': 'value'}`.
 
@@ -137,7 +137,7 @@ CUSTOM_DESC_SUM_FN_DICT = {
 
 def GetSummary(obj, available_space, line_length):
   obj_type_name = type(obj).__name__
-  if obj_type_name in CUSTOM_DESC_SUM_FN_DICT.keys():
+  if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
     return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[0](obj, available_space,
                                                          line_length)
   return None
@@ -145,7 +145,7 @@ def GetSummary(obj, available_space, line_length):
 
 def GetDescription(obj, available_space, line_length):
   obj_type_name = type(obj).__name__
-  if obj_type_name in CUSTOM_DESC_SUM_FN_DICT.keys():
+  if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
     return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[1](obj, available_space,
                                                          line_length)
   return None

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Lint as: python3
 """This module has components that use Python 3 specific syntax."""
 
 import asyncio
@@ -24,6 +23,12 @@ from typing import Tuple
 def identity(arg1, arg2: int, arg3=10, arg4: int = 20, *arg5,
              arg6, arg7: int, arg8=30, arg9: int = 40, **arg10):
   return arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10
+
+
+class HelpTextComponent:
+
+  def identity(self, *, alpha, beta='0'):
+    return alpha, beta
 
 
 class KeywordOnly(object):
@@ -67,7 +72,7 @@ class WithTypes(object):
       count: Input number that you want to double.
 
     Returns:
-      A number that is the double of count.s
+      A number that is the double of count.
     """
     return 2 * count
 
@@ -89,7 +94,7 @@ class WithDefaultsAndTypes(object):
       count: Input number that you want to double.
 
     Returns:
-      A number that is the double of count.s
+      A number that is the double of count.
     """
     return 2 * count
 

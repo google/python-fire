@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Lint as: python2, python3
 # pylint: disable=invalid-name
 """Enables use of Python Fire as a "main" function (i.e. "python -m fire").
 
@@ -81,7 +80,7 @@ def import_from_file_path(path):
     spec.loader.exec_module(module)  # pytype: disable=attribute-error
 
   else:
-    import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel
+    import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel,deprecated-module
     module = imp.load_source(module_name, path)
 
   return module, module_name

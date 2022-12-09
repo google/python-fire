@@ -29,16 +29,8 @@ python -m pytest  # Run the tests without IPython.
 pip install ipython
 python -m pytest  # Now run the tests with IPython.
 pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py,console
-if [[ ${PYTHON_VERSION} == 2.7 || ${PYTHON_VERSION} == 3.7 ]]; then
+if [[ ${PYTHON_VERSION} == 3.7 ]]; then
+  # Run type-checking.
   pip install pytype;
+  pytype -x fire/test_components_py3.py;
 fi
-# Run type-checking, excluding files that define or use py3 features in py2.
-if [[ ${PYTHON_VERSION} == 2.7 ]]; then
-  pytype -x \
-    fire/fire_test.py \
-    fire/inspectutils_test.py \
-    fire/test_components_py3.py;
-elif [[ ${PYTHON_VERSION} == 3.7 ]]; then
-  pytype;
-fi
-

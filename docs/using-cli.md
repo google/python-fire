@@ -57,7 +57,7 @@ If your command corresponds to a list or tuple, you can extend your command by
 adding the index of an element of the component to your command as an argument.
 
 For example, `widget function-that-returns-list 2` will correspond to item 2 of
-the result of function_that_returns_list.
+the result of `function_that_returns_list`.
 
 
 ### Calling a function
@@ -90,7 +90,7 @@ See also the section on [Changing the Separator](#separator-flag).
 ### Instantiating a class
 
 If your command corresponds to a class, you can extend your command by adding
-the arguments of the class's \_\_init\_\_ function. Arguments must be specified
+the arguments of the class's `__init__` function. Arguments must be specified
 by name, using the flags syntax. See the section on
 [calling a function](#calling-a-function) for more details.
 
@@ -105,8 +105,8 @@ after the final standalone `--` argument. (If there is no `--` argument, then no
 arguments are used for flags.)
 
 For example, to set the alsologtostderr flag, you could run the command:
-`widget bang --noise=boom -- --alsologtostderr`. The --noise argument is
-consumed by Fire, but the --alsologtostderr argument is treated as a normal
+`widget bang --noise=boom -- --alsologtostderr`. The `--noise` argument is
+consumed by Fire, but the `--alsologtostderr` argument is treated as a normal
 Flag.
 
 All CLIs built with Python Fire share some flags, as described in the next
@@ -137,13 +137,16 @@ will put you in an IPython REPL, with the variable `widget` already defined.
 You can then explore the Python object that `widget` corresponds to
 interactively using Python.
 
+Note: if you want fire to start the IPython REPL instead of the regular Python one,
+the `ipython` package needs to be installed in your environment.
+
 
 ### `--completion`: Generating a completion script <a name="completion-flag"></a>
 
 Call `widget -- --completion` to generate a completion script for the Fire CLI
 `widget`. To save the completion script to your home directory, you could e.g.
 run `widget -- --completion > ~/.widget-completion`. You should then source this
-file; to get permanent completion, source this file from your .bashrc file.
+file; to get permanent completion, source this file from your `.bashrc` file.
 
 Call `widget -- --completion fish` to generate a completion script for the Fish
 shell. Source this file from your fish.config.
@@ -174,7 +177,7 @@ corresponds to, as well as usage information for how to extend that command.
 ### `--trace`: Getting a Fire trace <a name="trace-flag"></a>
 
 In order to understand what is happening when you call Python Fire, it can be
-useful to request a trace. This is done via the --trace flag, e.g.
+useful to request a trace. This is done via the `--trace` flag, e.g.
 `widget whack 5 -- --trace`.
 
 A trace provides step by step information about how the Fire command was
