@@ -28,7 +28,7 @@ dict(iterable) -> new dictionary initialized as if via:
 dict(**kwargs) -> new dictionary initialized with the name=value pairs
     in the keyword argument list.  For example:  dict(one=1, two=2)
 
-As you can see, this docstring is more pertinant to the function `dict` and
+As you can see, this docstring is more pertinent to the function `dict` and
 would be suitable as the result of `dict.__doc__`, but is wholely unsuitable
 as a description for the dict `{'key': 'value'}`.
 
