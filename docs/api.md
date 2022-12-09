@@ -27,8 +27,9 @@ Help is an exception; the isolated `--` is optional for getting help._
 | Argument  | Usage                     | Notes                                |
 | --------- | ------------------------- | ------------------------------------ |
 | component | `fire.Fire(component)`    | If omitted, defaults to a dict of all locals and globals. |
-| command   | `fire.Fire(command='hello --name=5')` | Either a string or a list of arguments. If a string is provided, it is split to determine the arguments. If a list or tuple is provided, they are the arguments. If `command` is omitted, then `sys.argv[1\:]` (the arguments from the command line) are used by default. |
+| command   | `fire.Fire(command='hello --name=5')` | Either a string or a list of arguments. If a string is provided, it is split to determine the arguments. If a list or tuple is provided, they are the arguments. If `command` is omitted, then `sys.argv[1:]` (the arguments from the command line) are used by default. |
 | name      | `fire.Fire(name='tool')`  | The name of the CLI, ideally the name users will enter to run the CLI. This name will be used in the CLI's help screens. If the argument is omitted, it will be inferred automatically.|
+| serialize | `fire.Fire(serialize=custom_serializer)` | If omitted, simple types are serialized via their builtin str method, and any objects that define a custom `__str__` method are serialized with that. If specified, all objects are serialized to text via the provided method. |
 
 ## Using a Fire CLI without modifying any code
 
