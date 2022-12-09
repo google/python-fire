@@ -2,7 +2,7 @@
 
 | Setup   | Command             | Notes
 | ------- | ------------------- | ----------
-| install | `pip install fire`  |
+| install | `pip install fire`  | Installs fire from pypi
 
 | Creating a CLI | Command                | Notes
 | ---------------| ---------------------- | ----------

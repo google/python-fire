@@ -106,7 +106,8 @@ Please see [The Python Fire Guide](guide.md).
 | [Trace](using-cli.md#trace-flag)           | `command -- --trace`                    | Gets a Fire trace for the command.
 | [Verbose](using-cli.md#verbose-flag)       | `command -- --verbose`                  |
 
-_Note that these flags are separated from the Fire command by an isolated `--`._
+_Note that flags are separated from the Fire command by an isolated `--` arg.
+Help is an exception; the isolated `--` is optional for getting help._
 
 ## License
 
