@@ -141,7 +141,7 @@ interactively using Python.
 ### `--completion`: Generating a completion script <a name="completion-flag"></a>
 
 Call `widget -- --completion` to generate a completion script for the Fire CLI
-`widget`. To save the completion script to your home directory, for e.g. you could 
+`widget`. To save the completion script to your home directory, you could e.g.
 run `widget -- --completion > ~/.widget-completion`. You should then source this
 file; to get permanent completion, source this file from your `.bashrc` file.
 
