@@ -33,9 +33,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
 import itertools
 import sys
-from collections import Counter
 
 from fire import completion
 from fire import custom_descriptions
@@ -180,7 +180,8 @@ def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec, short_arg):
 
 
 def _GetShortFlags(flags):
-  """
+  """Gets a list of single-character flags that uniquely identify a flag.
+
   Args:
     flags: list of strings representing flags
 
@@ -189,7 +190,7 @@ def _GetShortFlags(flags):
     where the character occurred at the start of a flag once.
   """
   short_flags = [f[0] for f in flags]
-  short_flag_counts = Counter(short_flags)
+  short_flag_counts = collections.Counter(short_flags)
   return [v for v in short_flags if short_flag_counts[v] == 1]
 
 
@@ -495,7 +496,7 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
   if required:
     flag_string += ' (required)'
   if short_arg:
-    flag_string = '-{short_arg}, '.format(short_arg=flag[0]) + flag_string
+    flag_string = '-{short_flag}, '.format(short_flag=flag[0]) + flag_string
 
   arg_type = _GetArgType(flag, spec)
   arg_default = _GetArgDefault(flag, spec)
