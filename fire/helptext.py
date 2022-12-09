@@ -33,6 +33,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
 import itertools
 import sys
 
@@ -172,9 +173,25 @@ def _DescriptionSection(component, info):
     return None
 
 
-def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec):
+def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec, short_arg):
   return _CreateFlagItem(
-      flag, docstring_info, spec, required=flag not in spec.kwonlydefaults)
+      flag, docstring_info, spec, required=flag not in spec.kwonlydefaults,
+      short_arg=short_arg)
+
+
+def _GetShortFlags(flags):
+  """Gets a list of single-character flags that uniquely identify a flag.
+
+  Args:
+    flags: list of strings representing flags
+
+  Returns:
+    List of single character short flags,
+    where the character occurred at the start of a flag once.
+  """
+  short_flags = [f[0] for f in flags]
+  short_flag_counts = collections.Counter(short_flags)
+  return [v for v in short_flags if short_flag_counts[v] == 1]
 
 
 def _ArgsAndFlagsSections(info, spec, metadata):
@@ -209,25 +226,47 @@ def _ArgsAndFlagsSections(info, spec, metadata):
           ('NOTES', 'You can also use flags syntax for POSITIONAL ARGUMENTS')
       )
 
+  unique_short_args = _GetShortFlags(args_with_defaults)
   positional_flag_items = [
-      _CreateFlagItem(flag, docstring_info, spec, required=False)
+      _CreateFlagItem(
+          flag, docstring_info, spec, required=False,
+          short_arg=flag[0] in unique_short_args
+      )
       for flag in args_with_defaults
   ]
+
+  unique_short_kwonly_flags = _GetShortFlags(spec.kwonlyargs)
   kwonly_flag_items = [
-      _CreateKeywordOnlyFlagItem(flag, docstring_info, spec)
+      _CreateKeywordOnlyFlagItem(
+          flag, docstring_info, spec,
+          short_arg=flag[0] in unique_short_kwonly_flags
+      )
       for flag in spec.kwonlyargs
   ]
   flag_items = positional_flag_items + kwonly_flag_items
 
   if spec.varkw:
     # Include kwargs documented via :key param:
-    flag_string = '--{name}'
     documented_kwargs = []
-    for flag in docstring_info.args or []:
+    flag_string = '--{name}'
+    short_flag_string = '-{short_name}, --{name}'
+
+    # add short flags if possible
+    flags = docstring_info.args or []
+    flag_names = [f.name for f in flags]
+    unique_short_flags = _GetShortFlags(flag_names)
+    for flag in flags:
       if isinstance(flag, docstrings.KwargInfo):
+        if flag.name[0] in unique_short_flags:
+          flag_string = short_flag_string.format(
+              name=flag.name, short_name=flag.name[0]
+          )
+        else:
+          flag_string = flag_string.format(name=flag.name)
+
         flag_item = _CreateFlagItem(
             flag.name, docstring_info, spec,
-            flag_string=flag_string.format(name=flag.name))
+            flag_string=flag_string)
         documented_kwargs.append(flag_item)
     if documented_kwargs:
       # Separate documented kwargs from other flags using a message
@@ -422,7 +461,7 @@ def _CreateArgItem(arg, docstring_info, spec):
 
 
 def _CreateFlagItem(flag, docstring_info, spec, required=False,
-                    flag_string=None):
+                    flag_string=None, short_arg=False):
   """Returns a string describing a flag using docstring and FullArgSpec info.
 
   Args:
@@ -434,6 +473,7 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
     required: Whether the flag is required.
     flag_string: If provided, use this string for the flag, rather than
       constructing one from the flag name.
+    short_arg: Whether the flag has a short variation or not.
   Returns:
     A string to be used in constructing the help screen for the function.
   """
@@ -455,6 +495,8 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
         flag_name_upper=formatting.Underline(flag.upper()))
   if required:
     flag_string += ' (required)'
+  if short_arg:
+    flag_string = '-{short_flag}, '.format(short_flag=flag[0]) + flag_string
 
   arg_type = _GetArgType(flag, spec)
   arg_default = _GetArgDefault(flag, spec)

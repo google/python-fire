@@ -563,3 +563,13 @@ def fn_with_kwarg_and_defaults(arg1, arg2, opt=True, **kwargs):
   del arg1, arg2, opt
   return kwargs.get('arg3')
 # pylint: enable=g-doc-args,g-doc-return-or-yield
+
+def fn_with_multiple_defaults(first='first', last='last', late='late'):
+  """Function with kwarg and defaults.
+
+  :key first: Description of first.
+  :key last: Description of last.
+  :key late: Description of late.
+  """
+  del last, late
+  return first
