@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - "autobuild"
-
+  workflow_dispatch:  # click the button on Github repo!
+  
 jobs:
   pre-release:
     name: Build pre-release wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
