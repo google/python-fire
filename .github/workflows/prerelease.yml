@@ -1,0 +1,72 @@
+name: Python Fire Prerelease
+
+on:
+  push:
+    branches:
+      - "autobuild"
+
+jobs:
+  pre-release:
+    name: Build pre-release wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # - os: ubuntu-latest
+          #   python: 38
+          #   platform_id: manylinux_x86_64
+          #   manylinux_image: manylinux2014
+          #   python-version: 3.8
+          - os: ubuntu-latest
+            python: 39
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+            python-version: 3.9
+
+    steps:
+     # Checkout the repo.
+     - name: Checkout Python Fire repository
+       uses: actions/checkout@v3
+
+     # Set up Python environment.
+     - name: Set up Python
+       uses: actions/setup-python@v4
+       with:
+         python-version: '3.9'
+
+     - name: Install wheel
+       run: |
+         python -m pip install --upgrade setuptools pip
+         python -m pip install wheel six termcolor
+
+    #  # Build Python Fire using the build.sh script.
+    #  - name: Run build script
+    #    shell: bash
+    #    run: ./.github/scripts/build-prerelease.sh
+    #    env:
+    #      PYTHON_VERSION: ${{ matrix.python-version }}
+
+     - name: Run build wheels
+       run: pip wheel -w wheelhouse/ .
+       env:
+         PYTHON_VERSION: ${{ matrix.python-version }}
+
+    #  - name: Store artifacts
+    #    uses: actions/upload-artifact@v3
+    #    with:
+    #      path: wheelhouse/fire*.whl
+
+     - name: Get current date
+       id: date
+       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+     - uses: "marvinpinto/action-automatic-releases@latest"
+       with:
+         repo_token: "${{ secrets.GITHUB_TOKEN }}"
+         automatic_release_tag: "v${{ env.date }}"
+         prerelease: true
+         title: "Automatic Build ${{ env.date }}"
+         files: |
+           wheelhouse/fire*.whl
+
