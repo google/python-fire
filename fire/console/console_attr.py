@@ -288,7 +288,7 @@ class ConsoleAttr(object):
     elif self._encoding == 'cp437' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_WINDOWS
-      # Windows does not suport the unicode characters used for the spinner.
+      # Windows does not support the unicode characters used for the spinner.
       self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
     else:
       self._box_line_characters = BoxLineCharactersAscii()
@@ -456,7 +456,7 @@ class ConsoleAttr(object):
     return self._get_raw_key[0]()
 
   def GetTermIdentifier(self):
-    """Returns the TERM envrionment variable for the console.
+    """Returns the TERM environment variable for the console.
 
     Returns:
       str: A str that describes the console's text capabilities
