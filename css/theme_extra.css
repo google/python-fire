@@ -21,11 +21,11 @@
  * https://github.com/mkdocs/mkdocs/issues/233
  */
 .rst-content pre code {
-  white-space: pre;
-  word-wrap: normal;
-  display: block;
-  padding: 12px;
-  font-size: 12px;
+    white-space: pre;
+    word-wrap: normal;
+    display: block;
+    padding: 12px;
+    font-size: 12px;
 }
 
 /**
@@ -77,9 +77,9 @@ pre .cs, pre .c {
  * https://github.com/mkdocs/mkdocs/issues/319
  */
 .rst-content .no-highlight {
-  display: block;
-  padding: 0.5em;
-  color: #333;
+    display: block;
+    padding: 0.5em;
+    color: #333;
 }
 
 
@@ -113,16 +113,16 @@ form .search-query {
  * https://github.com/mkdocs/mkdocs/issues/656
  */
  .rst-content .admonition code {
-  color: #404040;
-  border: 1px solid #c7c9cb;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  background: #f8fbfd;
-  background: rgba(255, 255, 255, 0.7);
+    color: #404040;
+    border: 1px solid #c7c9cb;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: #f8fbfd;
+    background: rgba(255, 255, 255, 0.7);
 }
 
 /*
  * Account for wide tables which go off the side.
- * Override borders to avoid wierdness on narrow tables.
+ * Override borders to avoid weirdness on narrow tables.
  *
  * https://github.com/mkdocs/mkdocs/issues/834
  * https://github.com/mkdocs/mkdocs/pull/1034
@@ -135,6 +135,57 @@ form .search-query {
 }
 
 td, th {
-   border: 1px solid #e1e4e5 !important; /* csslint allow: important */
-   border-collapse: collapse;
+    border: 1px solid #e1e4e5 !important; /* csslint allow: important */
+    border-collapse: collapse;
+}
+
+/*
+ * Without the following amendments, the navigation in the theme will be
+ * slightly cut off. This is due to the fact that the .wy-nav-side has a
+ * padding-bottom of 2em, which must not necessarily align with the font-size of
+ * 90 % on the .rst-current-version container, combined with the padding of 12px
+ * above and below. These amendments fix this in two steps: First, make sure the
+ * .rst-current-version container has a fixed height of 40px, achieved using
+ * line-height, and then applying a padding-bottom of 40px to this container. In
+ * a second step, the items within that container are re-aligned using flexbox.
+ *
+ * https://github.com/mkdocs/mkdocs/issues/2012
+ */
+ .wy-nav-side {
+    padding-bottom: 40px;
+}
+
+/*
+ * The second step of above amendment: Here we make sure the items are aligned
+ * correctly within the .rst-current-version container. Using flexbox, we
+ * achieve it in such a way that it will look like the following:
+ *
+ * [No repo_name]
+ *         Next >>                    // On the first page
+ * << Previous     Next >>            // On all subsequent pages
+ *
+ * [With repo_name]
+ *    <repo_name>        Next >>      // On the first page
+ * <repo_name>  << Previous  Next >>  // On all subsequent pages
+ *
+ * https://github.com/mkdocs/mkdocs/issues/2012
+ */
+.rst-versions .rst-current-version {
+    padding: 0 12px;
+    display: flex;
+    font-size: initial;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 40px;
+}
+
+/*
+ * Please note that this amendment also involves removing certain inline-styles
+ * from the file ./mkdocs/themes/readthedocs/versions.html.
+ *
+ * https://github.com/mkdocs/mkdocs/issues/2012
+ */
+.rst-current-version span {
+    flex: 1;
+    text-align: center;
 }

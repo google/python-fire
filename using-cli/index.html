@@ -1,70 +1,63 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  
-  
-  <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Using a CLI - Python Fire</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
-
-  <link rel="stylesheet" href="../css/theme.css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
-  
-  <script>
-    // Current page data
-    var mkdocs_page_name = "Using a CLI";
-    var mkdocs_page_input_path = "using-cli.md";
-    var mkdocs_page_url = null;
-  </script>
-  
-  <script src="../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Using a CLI - Python Fire</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Using a CLI";
+        var mkdocs_page_input_path = "using-cli.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href=".." class="icon icon-home"> Python Fire</a>
-        <div role="search">
+          <a href=".." class="icon icon-home"> Python Fire
+        </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../benefits/">Benefits</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../guide/">The Python Fire Guide</a>
-                    </li>
-                </ul>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Using a CLI</a>
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../benefits/">Benefits</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../guide/">The Python Fire Guide</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Using a CLI</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a>
         <ul>
@@ -99,47 +92,38 @@
         </ul>
     </li>
     </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../api/">Reference</a>
-                    </li>
-                </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">Reference</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="..">Python Fire</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Python Fire</a>
+        
       </nav>
-
-      
       <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="..">Docs</a> &raquo;</li>
-    
-      
-    
-    <li>Using a CLI</li>
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Using a CLI</li>
     <li class="wy-breadcrumbs-aside">
-      
     </li>
   </ul>
-  
   <hr/>
 </div>
-          <div role="main">
-            <div class="section">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
               
                 <h1 id="using-a-fire-cli">Using a Fire CLI</h1>
 <h2 id="basic-usage">Basic usage</h2>
@@ -180,7 +164,7 @@ value of the item with key <code>key</code> in the dict returned by
 <p>If your command corresponds to a list or tuple, you can extend your command by
 adding the index of an element of the component to your command as an argument.</p>
 <p>For example, <code>widget function-that-returns-list 2</code> will correspond to item 2 of
-the result of function_that_returns_list.</p>
+the result of <code>function_that_returns_list</code>.</p>
 <h3 id="calling-a-function">Calling a function</h3>
 <p>If your command corresponds to a function, you can extend your command by adding
 the arguments of this function. Arguments can be specified positionally, or by
@@ -201,7 +185,7 @@ values, or if the function accepts *varargs, or if the function accepts
 <p>See also the section on <a href="#separator-flag">Changing the Separator</a>.</p>
 <h3 id="instantiating-a-class">Instantiating a class</h3>
 <p>If your command corresponds to a class, you can extend your command by adding
-the arguments of the class's __init__ function. Arguments must be specified
+the arguments of the class's <code>__init__</code> function. Arguments must be specified
 by name, using the flags syntax. See the section on
 <a href="#calling-a-function">calling a function</a> for more details.</p>
 <p>Similarly, when passing arguments to a callable object (an object with a custom
@@ -212,8 +196,8 @@ in the <a href="#basic-usage">Basic Usage</a> section. In order to set Flags, pu
 after the final standalone <code>--</code> argument. (If there is no <code>--</code> argument, then no
 arguments are used for flags.)</p>
 <p>For example, to set the alsologtostderr flag, you could run the command:
-<code>widget bang --noise=boom -- --alsologtostderr</code>. The --noise argument is
-consumed by Fire, but the --alsologtostderr argument is treated as a normal
+<code>widget bang --noise=boom -- --alsologtostderr</code>. The <code>--noise</code> argument is
+consumed by Fire, but the <code>--alsologtostderr</code> argument is treated as a normal
 Flag.</p>
 <p>All CLIs built with Python Fire share some flags, as described in the next
 sections.</p>
@@ -235,11 +219,13 @@ as described in the following sections.</p>
 will put you in an IPython REPL, with the variable <code>widget</code> already defined.</p>
 <p>You can then explore the Python object that <code>widget</code> corresponds to
 interactively using Python.</p>
+<p>Note: if you want fire to start the IPython REPL instead of the regular Python one,
+the <code>ipython</code> package needs to be installed in your environment.</p>
 <h3 id="-completion-generating-a-completion-script"><code>--completion</code>: Generating a completion script <a name="completion-flag"></a></h3>
 <p>Call <code>widget -- --completion</code> to generate a completion script for the Fire CLI
 <code>widget</code>. To save the completion script to your home directory, you could e.g.
 run <code>widget -- --completion &gt; ~/.widget-completion</code>. You should then source this
-file; to get permanent completion, source this file from your .bashrc file.</p>
+file; to get permanent completion, source this file from your <code>.bashrc</code> file.</p>
 <p>Call <code>widget -- --completion fish</code> to generate a completion script for the Fish
 shell. Source this file from your fish.config.</p>
 <p>If the commands available in the Fire CLI change, you'll have to regenerate the
@@ -259,7 +245,7 @@ displayed.</p>
 corresponds to, as well as usage information for how to extend that command.</p>
 <h3 id="-trace-getting-a-fire-trace"><code>--trace</code>: Getting a Fire trace <a name="trace-flag"></a></h3>
 <p>In order to understand what is happening when you call Python Fire, it can be
-useful to request a trace. This is done via the --trace flag, e.g.
+useful to request a trace. This is done via the <code>--trace</code> flag, e.g.
 <code>widget whack 5 -- --trace</code>.</p>
 <p>A trace provides step by step information about how the Fire command was
 executed. In includes which actions were taken, starting with the initial
@@ -300,29 +286,21 @@ actually be usable from the command line tool. As such, verbose mode should be
 considered a debugging tool, but not fully supported yet.</p>
               
             </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../guide/" class="btn btn-neutral float-left" title="The Python Fire Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../troubleshooting/" class="btn btn-neutral float-right" title="Troubleshooting">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-        <a href="../guide/" class="btn btn-neutral" title="The Python Fire Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+          
         </div>
       </div>
 
@@ -330,18 +308,19 @@ considered a debugging tool, but not fully supported yet.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-      
-        <span><a href="../guide/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-        <span style="margin-left: 15px"><a href="../troubleshooting/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../guide/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../troubleshooting/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
     <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
     <script src="../js/theme.js" defer></script>
       <script src="../search/main.js" defer></script>
     <script defer>
