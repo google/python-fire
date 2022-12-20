@@ -49,7 +49,7 @@ Python versions < 3.5.
 
 ## Testing
 
-Python Fire uses [Github Actions](https://github.com/google/python-fire/actions) to run tests on each pull request. You can run
+Python Fire uses [GitHub Actions](https://github.com/google/python-fire/actions) to run tests on each pull request. You can run
 these tests yourself as well. To do this, first install the test dependencies
 listed in setup.py (e.g. pytest, mock, termcolor, and hypothesis).
 Then run the tests by running `pytest` in the root directory of the repository.
