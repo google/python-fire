@@ -503,6 +503,18 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.CapitalizedArgNames,
                   command=['sum', '-D', '5', '-G', '10']), 15)
 
+  def testCaseInsensitiveUsage(self):
+    self.assertEqual(
+        fire.Fire(tc.CapitalizedFunctionNames, command=['alpha']), 'alpha')
+    self.assertEqual(
+        fire.Fire(tc.CapitalizedFunctionNames, command=['Alpha']), 'Alpha')
+    self.assertEqual(
+      fire.Fire(tc.CapitalizedFunctionNames,
+                command=['beta']), 'Beta')
+    with self.assertRaisesFireExit(2):
+      # Ambiguous member access
+      fire.Fire(tc.CapitalizedFunctionNames, command=['ALPHA'])
+
   def testBoolParsingWithNo(self):
     # In these examples --nothing always refers to the nothing argument:
     def fn1(thing, nothing):
