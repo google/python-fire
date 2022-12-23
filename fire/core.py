@@ -534,7 +534,7 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
             in lowered_component_dict) and target != target.lower():
         print('NOTE: Consider using the correct capitalization for {}'.format(
             target))
-        error = FireError('Ambiguous member access:', target)
+        error = FireError('Ambiguous component access:', target)
         candidate_errors.append((error, initial_args))
       else:
         # The target isn't present in the dict as a string key, but maybe it is
@@ -671,6 +671,11 @@ def _GetMember(component, args):
       for member in members:
         if arg_name == member.lower():
           return getattr(component, member), [arg], args[1:]
+          # The member exists, but the capitalization is incorrect.
+        elif arg_name.lower() == member.lower():
+          print('NOTE: Consider using the correct capitalization for {}'.format(
+              arg_name))
+          raise FireError('Ambiguous member access:', arg_name)
 
   raise FireError('Could not consume arg:', arg)
 
