@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.7, 3.8, 3.9]
+        python-version: ["2.7", "3.5", "3.7", "3.8", "3.9", "3.10"]
 
     steps:
      # Checkout the repo.
