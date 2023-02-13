@@ -268,7 +268,7 @@ class ConsoleAttr(object):
 
     # ANSI "standard" attributes.
     if self.SupportsAnsi():
-      # Select Graphic Rendition paramaters from
+      # Select Graphic Rendition parameters from
       # http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
       # Italic '3' would be nice here but its not widely supported.
       self._csi = '\x1b['
@@ -394,7 +394,7 @@ class ConsoleAttr(object):
     """Returns the control sequence indicator string.
 
     Returns:
-      The conrol sequence indicator string or None if control sequences are not
+      The control sequence indicator string or None if control sequences are not
       supported.
     """
     return self._csi
@@ -408,7 +408,7 @@ class ConsoleAttr(object):
       buf: The string to check for a control sequence.
 
     Returns:
-      The conrol sequence length at the beginning of buf or 0 if buf does not
+      The control sequence length at the beginning of buf or 0 if buf does not
       start with a control sequence.
     """
     if not self._csi or not buf.startswith(self._csi):
