@@ -94,6 +94,8 @@ def Fire(component=None, command=None, name=None, serialize=None):
         a string or a list of strings; a list of strings is preferred.
     name: Optional. The name of the command as entered at the command line.
         Used in interactive mode and for generating the completion script.
+    serialize: Optional. If supplied, all objects are serialized to text via
+        the provided callable.
   Returns:
     The result of executing the Fire command. Execution begins with the initial
     target component. The component is updated by using the command arguments
