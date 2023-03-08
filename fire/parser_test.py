@@ -117,8 +117,9 @@ class ParserTest(testutils.BaseTestCase):
 
   def testDefaultParseValueNestedContainers(self):
     self.assertEqual(
-        parser.DefaultParseValue('[(A, 2, "3"), 5, {alph: 10.2, beta: "cat"}]'),
-        [('A', 2, '3'), 5, {'alph': 10.2, 'beta': 'cat'}])
+        parser.DefaultParseValue(
+            '[(A, 2, "3"), 5, {alpha: 10.2, beta: "cat"}]'),
+        [('A', 2, '3'), 5, {'alpha': 10.2, 'beta': 'cat'}])
 
   def testDefaultParseValueComments(self):
     self.assertEqual(parser.DefaultParseValue('"0#comments"'), '0#comments')

@@ -19,11 +19,7 @@ set -e
 
 PYTHON_VERSION=${PYTHON_VERSION:-2.7}
 
-pip install --upgrade setuptools pip
-pip install --upgrade pylint pytest pytest-pylint pytest-runner
-pip install termcolor
-pip install hypothesis python-Levenshtein
-pip install mock
+pip install -U -r .github/scripts/requirements.txt
 python setup.py develop
 python -m pytest  # Run the tests without IPython.
 pip install ipython
