@@ -104,7 +104,7 @@ filter_options()
 option_already_entered()
 {{
   local opt
-  for opt in ${{COMP_WORDS[@]:0:COMP_CWORD}}
+  for opt in ${{COMP_WORDS[@]:0:$COMP_CWORD}}
   do
     if [ $1 == $opt ]; then
       return 0
