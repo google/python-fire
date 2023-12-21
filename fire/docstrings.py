@@ -200,7 +200,7 @@ def parse(docstring):
 
   args.extend([KwargInfo(
       name=arg.name, type=_cast_to_known_type(_join_lines(arg.type.lines)),
-      description=_join_lines(arg.description.lines)) for arg in state.kwargs])
+      description=_join_lines(arg.description.lines, 'description')) for arg in state.kwargs])
 
   return DocstringInfo(
       summary=summary,
@@ -239,7 +239,7 @@ def _is_blank(line):
   return not line or line.isspace()
 
 
-def _join_lines(lines):
+def _join_lines(lines, type=None):
   """Joins lines with the appropriate connective whitespace.
 
   This puts a single space between consecutive lines, unless there's a blank
@@ -253,7 +253,7 @@ def _join_lines(lines):
   # TODO(dbieber): Add parameters for variations in whitespace handling.
   if not lines:
     return None
-
+   
   started = False
   group_texts = []  # Full text of each section.
   group_lines = []  # Lines within the current section.
@@ -269,7 +269,12 @@ def _join_lines(lines):
         group_lines = []
 
   if group_lines:  # Process the final group.
-    group_text = ' '.join(group_lines)
+    # group_text = ' '.join(group_lines)
+    if type == 'description':
+        group_text = '\n'.join(group_lines)
+    else:
+        group_text = ' '.join(group_lines)
+
     group_texts.append(group_text)
 
   return '\n\n'.join(group_texts)
