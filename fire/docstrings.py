@@ -200,7 +200,7 @@ def parse(docstring):
 
   args.extend([KwargInfo(
       name=arg.name, type=_cast_to_known_type(_join_lines(arg.type.lines)),
-      description=_join_lines(arg.description.lines, 'description')) for arg in state.kwargs])
+      description=_join_lines(arg.description.lines)) for arg in state.kwargs])
 
   return DocstringInfo(
       summary=summary,
@@ -239,7 +239,7 @@ def _is_blank(line):
   return not line or line.isspace()
 
 
-def _join_lines(lines, type=None):
+def _join_lines(lines):
   """Joins lines with the appropriate connective whitespace.
 
   This puts a single space between consecutive lines, unless there's a blank
