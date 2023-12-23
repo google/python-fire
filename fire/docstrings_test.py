@@ -165,7 +165,7 @@ class DocstringsTest(testutils.BaseTestCase):
                     description='The first parameter.'),
             ArgInfo(name='param2', type='str',
                     description='The second parameter. This has a lot of text, '
-                                'enough to cover two lines.'),
+                                'enough to\ncover two lines.'),
         ],
     )
     self.assertEqual(expected_docstring_info, docstring_info)
@@ -229,7 +229,7 @@ class DocstringsTest(testutils.BaseTestCase):
                     description='The second parameter.'),
         ],
         # TODO(dbieber): Support return type.
-        returns='bool True if successful, False otherwise.',
+        returns='bool\nTrue if successful, False otherwise.',
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 
@@ -257,7 +257,7 @@ class DocstringsTest(testutils.BaseTestCase):
                     description='The first parameter.'),
             ArgInfo(name='param2', type='str',
                     description='The second parameter. This has a lot of text, '
-                                'enough to cover two lines.'),
+                                'enough to cover two\nlines.'),
         ],
     )
     self.assertEqual(expected_docstring_info, docstring_info)

@@ -269,12 +269,7 @@ def _join_lines(lines, type=None):
         group_lines = []
 
   if group_lines:  # Process the final group.
-    # group_text = ' '.join(group_lines)
-    if type == 'description':
-        group_text = '\n'.join(group_lines)
-    else:
-        group_text = ' '.join(group_lines)
-
+    group_text = '\n'.join(group_lines)
     group_texts.append(group_text)
 
   return '\n\n'.join(group_texts)
