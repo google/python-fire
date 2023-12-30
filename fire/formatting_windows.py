@@ -35,7 +35,7 @@ def initialize_or_disable():
   """Enables ANSI processing on Windows or disables it as needed."""
   if HAS_COLORAMA:
     wrap = True
-    if sys.stdout.isatty() and platform.release() == '10':
+    if hasattr(sys.stdout, "isatty") and sys.stdout.isatty() and platform.release() == '10':
       # Enables native ANSI sequences in console.
       # Windows 10, 2016, and 2019 only.
 
