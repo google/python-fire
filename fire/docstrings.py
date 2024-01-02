@@ -442,7 +442,7 @@ def _merge_if_long_arg(state):
   actual_max_line_len = roundup(state.max_line_length)
   arg_length = len(state.current_arg.name)
   percent_105 = 1.05 * actual_max_line_len
-  long_arg_name = roundup(arg_length, 5) >= 0.5 * actual_max_line_len
+  long_arg_name = roundup(arg_length, 5) >= 0.4 * actual_max_line_len
   if long_arg_name:
     if state.line2_first_word_length:
       line1_plus_first_word = state.line1_length + state.line2_first_word_length
