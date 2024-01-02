@@ -57,8 +57,7 @@ def lru_cache_decorated(arg1):
 
 class WithAsyncio(object):
 
-  @asyncio.coroutine
-  def double(self, count=0):
+  async def double(self, count=0):
     return 2 * count
 
 
