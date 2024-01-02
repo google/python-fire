@@ -177,6 +177,12 @@ def parse(docstring):
   state.returns.lines = []
   state.yields.lines = []
   state.raises.lines = []
+  state.line1 = None
+  state.line1_length = None
+  state.line2_first_word_length = None
+  state.line2_length = None
+  state.line3_first_word_length = None
+  state.max_line_length = 0
 
   for index, line in enumerate(lines):
     has_next = index + 1 < lines_len
@@ -184,6 +190,9 @@ def parse(docstring):
     next_line = lines[index + 1] if has_next else None
     line_info = _create_line_info(line, next_line, previous_line)
     _consume_line(line_info, state)
+  
+  if state.line2_length:
+    _merge_if_long_arg(state)
 
   summary = ' '.join(state.summary.lines) if state.summary.lines else None
   state.description.lines = _strip_blank_lines(state.description.lines)
@@ -391,6 +400,9 @@ def _consume_google_args_line(line_info, state):
   """Consume a single line from a Google args section."""
   split_line = line_info.remaining.split(':', 1)
   if len(split_line) > 1:
+    state.line1 = line_info.line
+    state.line1_length = len(line_info.line)
+    state.max_line_length = max(state.max_line_length, state.line1_length)
     first, second = split_line  # first is either the "arg" or "arg (type)"
     if _is_arg_name(first.strip()):
       arg = _get_or_create_arg_by_name(state, first.strip())
@@ -410,6 +422,65 @@ def _consume_google_args_line(line_info, state):
   else:
     if state.current_arg:
       state.current_arg.description.lines.append(split_line[0])
+      state.max_line_length = max(state.max_line_length, len(line_info.line))
+      if line_info.previous.line == state.line1: # check for line2
+        state.line2_first_word_length = len(line_info.line.strip().split(' ')[0])
+        state.line2_length = len(line_info.line)
+        if line_info.next.line: #check for line3
+          state.line3_first_word_length = len(line_info.next.line.strip().split(' ')[0])
+        
+
+def _merge_if_long_arg(state):
+  """Merges first two lines of the description if the arg name is too long.
+
+  Args:
+    state: The state of the docstring parser.
+  """
+  apparent_max_line_length = roundup(state.max_line_length)
+  long_arg_name = roundup(len(state.current_arg.name), 5) >= 0.5 * apparent_max_line_length
+  if long_arg_name and state.line2_first_word_length and state.line3_first_word_length:
+    line1_intentionally_short = (state.line1_length + state.line2_first_word_length) <= apparent_max_line_length
+    line2_intentionally_short = (state.line2_length + state.line3_first_word_length) <= apparent_max_line_length
+    line1_intentionally_long = state.line1_length >= 1.05 * apparent_max_line_length
+    line2_intentionally_long = state.line2_length >= 1.05 * apparent_max_line_length
+    if not line1_intentionally_short and not line1_intentionally_long and not line2_intentionally_short and not line2_intentionally_long:
+      _merge_line1_line2(state.current_arg.description.lines)
+
+
+def _merge_line1_line2(lines):
+  """Merges the first two lines of a list of strings.
+
+  Example:
+    _merge_line1_line2(["oh","no","bro"]) == ["oh no","bro"]
+
+  Args:
+    lines: a list of strings representing each line.
+  Returns:
+    the same list but with the first two lines of the list now merged as one line. 
+  """
+  merged_line = lines[0] + " " + lines[1]
+  lines[0] = merged_line
+  lines.pop(1)
+  return lines
+
+
+def roundup(number, multiple=10):
+  """Rounds a number to the nearst multiple.
+
+  Example:
+    roundup(72) == 80
+
+  Args:
+    number: an interger type variable.
+    multiple: nearst multiple to round up to
+  Returns:
+    An interger value.
+  """
+  remainder = number % multiple
+  if remainder == 0:
+    return number #already rounded
+  else:
+    return number + (multiple - remainder)
 
 
 def _consume_line(line_info, state):
