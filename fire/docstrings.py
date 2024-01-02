@@ -190,9 +190,6 @@ def parse(docstring):
     next_line = lines[index + 1] if has_next else None
     line_info = _create_line_info(line, next_line, previous_line)
     _consume_line(line_info, state)
-  
-  if state.line2_length:
-    _merge_if_long_arg(state)
 
   summary = ' '.join(state.summary.lines) if state.summary.lines else None
   state.description.lines = _strip_blank_lines(state.description.lines)
@@ -262,7 +259,7 @@ def _join_lines(lines):
   # TODO(dbieber): Add parameters for variations in whitespace handling.
   if not lines:
     return None
-   
+
   started = False
   group_texts = []  # Full text of each section.
   group_lines = []  # Lines within the current section.
@@ -424,11 +421,17 @@ def _consume_google_args_line(line_info, state):
       state.current_arg.description.lines.append(split_line[0])
       state.max_line_length = max(state.max_line_length, len(line_info.line))
       if line_info.previous.line == state.line1: # check for line2
-        state.line2_first_word_length = len(line_info.line.strip().split(' ')[0])
+        line2_first_word = line_info.line.strip().split(' ')[0]
+        state.line2_first_word_length = len(line2_first_word)
         state.line2_length = len(line_info.line)
         if line_info.next.line: #check for line3
-          state.line3_first_word_length = len(line_info.next.line.strip().split(' ')[0])
-        
+          line3_first_word = line_info.next.line.strip().split(' ')[0]
+          state.line3_first_word_length = len(line3_first_word)
+        else:
+          state.line3_first_word_length = None
+      else:
+        state.line2_first_word_length = state.line2_length = None
+
 
 def _merge_if_long_arg(state):
   """Merges first two lines of the description if the arg name is too long.
@@ -436,15 +439,25 @@ def _merge_if_long_arg(state):
   Args:
     state: The state of the docstring parser.
   """
-  apparent_max_line_length = roundup(state.max_line_length)
-  long_arg_name = roundup(len(state.current_arg.name), 5) >= 0.5 * apparent_max_line_length
-  if long_arg_name and state.line2_first_word_length and state.line3_first_word_length:
-    line1_intentionally_short = (state.line1_length + state.line2_first_word_length) <= apparent_max_line_length
-    line2_intentionally_short = (state.line2_length + state.line3_first_word_length) <= apparent_max_line_length
-    line1_intentionally_long = state.line1_length >= 1.05 * apparent_max_line_length
-    line2_intentionally_long = state.line2_length >= 1.05 * apparent_max_line_length
-    if not line1_intentionally_short and not line1_intentionally_long and not line2_intentionally_short and not line2_intentionally_long:
-      _merge_line1_line2(state.current_arg.description.lines)
+  actual_max_line_len = roundup(state.max_line_length)
+  arg_length = len(state.current_arg.name)
+  percent_105 = 1.05 * actual_max_line_len
+  long_arg_name = roundup(arg_length, 5) >= 0.5 * actual_max_line_len
+  if long_arg_name:
+    if state.line2_first_word_length:
+      line1_plus_first_word = state.line1_length + state.line2_first_word_length
+      line1_intentionally_short = line1_plus_first_word <= actual_max_line_len
+      line1_intentionally_long = state.line1_length >= percent_105
+      line2_intentionally_long = state.line2_length >= percent_105
+      if state.line3_first_word_length:
+        line2_plus_first_word = state.line2_length + state.line3_first_word_length
+        line2_intentionally_short = line2_plus_first_word <= actual_max_line_len
+        if not line1_intentionally_short and not line1_intentionally_long:
+          if not line2_intentionally_short and not line2_intentionally_long:
+            _merge_line1_line2(state.current_arg.description.lines)
+      elif not line1_intentionally_short and not line1_intentionally_long:
+        if not line2_intentionally_long:
+          _merge_line1_line2(state.current_arg.description.lines)
 
 
 def _merge_line1_line2(lines):
@@ -456,7 +469,7 @@ def _merge_line1_line2(lines):
   Args:
     lines: a list of strings representing each line.
   Returns:
-    the same list but with the first two lines of the list now merged as one line. 
+    same list but with the first two lines of the list now merged as a line. 
   """
   merged_line = lines[0] + " " + lines[1]
   lines[0] = merged_line
@@ -536,6 +549,8 @@ def _consume_line(line_info, state):
   if state.section.title == Sections.ARGS:
     if state.section.format == Formats.GOOGLE:
       _consume_google_args_line(line_info, state)
+      if state.current_arg and line_info.previous.line == state.line1:
+        _merge_if_long_arg(state)
     elif state.section.format == Formats.RST:
       state.current_arg.description.lines.append(line_info.remaining.strip())
     elif state.section.format == Formats.NUMPY:
