@@ -170,6 +170,127 @@ class DocstringsTest(testutils.BaseTestCase):
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 
+  def test_google_format_long_arg_long_description(self):
+    docstring = """This is a Google-style docstring with long args.
+
+    Args:
+    function_maker_handler_event_factory: The function-maker-handler event factory
+      responsible for making the function-maker-handler event. Use this whenever
+      you need a function-maker-handler event made for you programmatically. 
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with long args.',
+        args=[
+            ArgInfo(name='function_maker_handler_event_factory',
+                    description='The function-maker-handler event factory '
+        'responsible for making the function-maker-handler event. '
+        'Use this whenever\nyou need a function-maker-handler event'
+         ' made for you programmatically.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_google_format_multiple_long_args(self):
+    docstring = """This is a Google-style docstring with multiple long args.
+
+    Args:
+    function_maker_handler_event_factory: The function-maker-handler event factory
+      responsible for making the function-maker-handler event. Use this whenever
+      you need a function-maker-handler event made for you programmatically. 
+    function_maker_handler_event_factory2: The function-maker-handler event factory
+      responsible for making the function-maker-handler event. Use this whenever
+      you need a function-maker-handler event made for you programmatically. 
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with multiple long args.',
+        args=[
+            ArgInfo(name='function_maker_handler_event_factory',
+                    description='The function-maker-handler event factory '
+        'responsible for making the function-maker-handler event. '
+        'Use this whenever\nyou need a function-maker-handler event'
+         ' made for you programmatically.'),
+            ArgInfo(name='function_maker_handler_event_factory2',
+                    description='The function-maker-handler event factory '
+        'responsible for making the function-maker-handler event. '
+        'Use this whenever\nyou need a function-maker-handler event'
+         ' made for you programmatically.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_google_format_long_args_short_description(self):
+    docstring = """This is a Google-style docstring with long args.
+
+    Args:
+    param1_that_is_very_longer_than_usual: The first parameter. This has a lot of text,
+      enough to cover two lines.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with long args.',
+        args=[
+            ArgInfo(name='param1_that_is_very_longer_than_usual',
+                    description='The first parameter. This has a lot of text,'
+         ' enough to cover two lines.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_google_format_multiple_long_args_short_description(self):
+    docstring = """This is a Google-style docstring with multiple long args.
+
+    Args:
+    param1_that_is_very_longer_than_usual: The first parameter. This has a lot of text,
+      enough to cover two lines.
+    param2_that_is_very_longer_than_usual: The second parameter. This has a lot of text,
+      enough to cover two lines.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with multiple long args.',
+        args=[
+            ArgInfo(name='param1_that_is_very_longer_than_usual',
+                    description='The first parameter. This has a lot of text,'
+         ' enough to cover two lines.'),
+            ArgInfo(name='param2_that_is_very_longer_than_usual',
+                    description='The second parameter. This has a lot of text,'
+         ' enough to cover two lines.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_google_format_multiple_long_args_mixed_description(self):
+    docstring = """This is a Google-style docstring with multiple long args.
+
+    Args:
+    param1_that_is_very_longer_than_usual: The first parameter. This has a lot of text,
+      enough to cover two lines.
+    param2_that_is_very_longer_than_usual: The second parameter. This has a lot of text,
+      enough to cover more than two lines. Maybe it can even go a lot more than
+      second line.
+    param3_that_is_very_longer_than_usual: The third parameter. This has a lot of text,
+      enough to cover two lines.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with multiple long args.',
+        args=[
+            ArgInfo(name='param1_that_is_very_longer_than_usual',
+                    description='The first parameter. This has a lot of text,'
+         ' enough to cover two lines.'),
+            ArgInfo(name='param2_that_is_very_longer_than_usual',
+                    description='The second parameter. This has a lot of text,'
+         ' enough to cover more than two lines. Maybe it can even go a lot more'
+      ' than\nsecond line.'),
+            ArgInfo(name='param3_that_is_very_longer_than_usual',
+                    description='The third parameter. This has a lot of text,'
+         ' enough to cover two lines.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
   def test_rst_format_typed_args_and_returns(self):
     docstring = """Docstring summary.
 

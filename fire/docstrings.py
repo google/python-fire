@@ -423,10 +423,12 @@ def _consume_google_args_line(line_info, state):
       if line_info.previous.line == state.line1: # check for line2
         line2_first_word = line_info.line.strip().split(' ')[0]
         state.line2_first_word_length = len(line2_first_word)
-        state.line2_length = len(line_info.line)
+        state.line2_length = len(line_info.line) 
         if line_info.next.line: #check for line3
-          line3_first_word = line_info.next.line.strip().split(' ')[0]
-          state.line3_first_word_length = len(line3_first_word)
+          line3_arg = len(line_info.next.line.split(':', 1)) > 1
+          if not line3_arg: #line3 should not be an arg
+            line3_first_word = line_info.next.line.strip().split(' ')[0]
+            state.line3_first_word_length = len(line3_first_word)
         else:
           state.line3_first_word_length = None
       else:
@@ -446,12 +448,12 @@ def _merge_if_long_arg(state):
   if long_arg_name:
     if state.line2_first_word_length:
       line1_plus_first_word = state.line1_length + state.line2_first_word_length
-      line1_intentionally_short = line1_plus_first_word <= actual_max_line_len
+      line1_intentionally_short = roundup(line1_plus_first_word) < actual_max_line_len
       line1_intentionally_long = state.line1_length >= percent_105
       line2_intentionally_long = state.line2_length >= percent_105
       if state.line3_first_word_length:
         line2_plus_first_word = state.line2_length + state.line3_first_word_length
-        line2_intentionally_short = line2_plus_first_word <= actual_max_line_len
+        line2_intentionally_short = roundup(line2_plus_first_word) < actual_max_line_len
         if not line1_intentionally_short and not line1_intentionally_long:
           if not line2_intentionally_short and not line2_intentionally_long:
             _merge_line1_line2(state.current_arg.description.lines)
