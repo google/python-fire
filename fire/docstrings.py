@@ -179,7 +179,6 @@ def parse(docstring):
   state.raises.lines = []
   state.max_line_length = max(len(line) for line in lines)
 
-
   for index, line in enumerate(lines):
     has_next = index + 1 < lines_len
     previous_line = lines[index - 1] if index > 0 else None
@@ -343,9 +342,10 @@ def _as_arg_name_and_type(text):
     None otherwise.
   """
   tokens = text.split()
+  is_type = any(c in "[](){}" for c in text)
   if len(tokens) < 2:
     return None
-  if _is_arg_name(tokens[0]):
+  if is_type and _is_arg_name(tokens[0]):
     type_token = ' '.join(tokens[1:])
     type_token = type_token.lstrip('{([').rstrip('])}')
     return tokens[0], type_token
@@ -398,10 +398,8 @@ def _consume_google_args_line(line_info, state):
   """Consume a single line from a Google args section."""
   split_line = line_info.remaining.split(':', 1)
   if len(split_line) > 1:
-
-
     first, second = split_line  # first is either the "arg" or "arg (type)"
-    if _is_arg_name(first.strip()):
+    if _is_arg_name(first):
       arg = _get_or_create_arg_by_name(state, first.strip())
       arg.description.lines.append(second.strip())
       arg.line1 = line_info.line
@@ -419,26 +417,41 @@ def _consume_google_args_line(line_info, state):
         state.current_arg = arg
       else:
         if state.current_arg:
-          state.current_arg.description.lines.append(split_line[0])
+          state.current_arg.description.lines.append(':'.join(split_line))
+          _check_line2_line3(line_info, state)
           
   else:
     if state.current_arg:
       state.current_arg.description.lines.append(split_line[0])
+      _check_line2_line3(line_info, state)
 
-      if line_info.previous.line == state.current_arg.line1: # check for line2
-        line2_first_word = line_info.line.strip().split(' ')[0]
-        state.current_arg.line2_first_word_length = len(line2_first_word)
-        state.current_arg.line2_length = len(line_info.line) 
-        if line_info.next.line: #check for line3
-          line3_arg = len(line_info.next.line.split(':', 1)) > 1
-          if not line3_arg: #line3 should not be an arg
-            line3_first_word = line_info.next.line.strip().split(' ')[0]
-            state.current_arg.line3_first_word_length = len(line3_first_word)
-        else:
-          state.current_arg.line3_first_word_length = None
+
+def _check_line2_line3(line_info, state):
+  """Checks for line2 and line3, updating the arg states
+
+  Args:
+    line_info: information about the current line.
+    state: The state of the docstring parser.
+  """
+  if line_info.previous.line == state.current_arg.line1: # check for line2
+    line2_first_word = line_info.line.strip().split(' ')[0]
+    state.current_arg.line2_first_word_length = len(line2_first_word)
+    state.current_arg.line2_length = len(line_info.line) 
+    if line_info.next.line: #check for line3
+      line3_split = line_info.next.line.split(':', 1)
+      if len(line3_split) > 1:
+        line3_not_arg = not _is_arg_name(line3_split[0])
+        line3_not_type_arg = not _as_arg_name_and_type(line3_split[0])
       else:
-        state.current_arg.line2_first_word_length = None
-        state.current_arg.line2_length = None
+        line3_not_arg = line3_not_type_arg = None
+      if line3_not_arg and line3_not_type_arg: #not an arg
+        line3_first_word = line_info.next.line.strip().split(' ')[0]
+        state.current_arg.line3_first_word_length = len(line3_first_word)
+    else:
+      state.current_arg.line3_first_word_length = None
+  else:
+    state.current_arg.line2_first_word_length = None
+    state.current_arg.line2_length = None
 
 
 def _merge_if_long_arg(state):

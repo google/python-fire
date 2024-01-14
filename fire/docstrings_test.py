@@ -291,6 +291,86 @@ class DocstringsTest(testutils.BaseTestCase):
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 
+  def test_google_format_multiple_long_args_colon_description(self):
+    docstring = """This is a Google-style docstring with multiple long args.
+
+    Args:
+    param1_that_is_very_longer_than_usual: The first parameter. This has a lot of text,
+      enough to cover two lines.
+    param2_that_is_very_longer_than_usual: The second parameter. This has a lot of text,
+      enough to cover more than two lines: Maybe it can even go a lot more than
+      second line.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with multiple long args.',
+        args=[
+            ArgInfo(name='param1_that_is_very_longer_than_usual',
+                    description='The first parameter. This has a lot of text,'
+         ' enough to cover two lines.'),
+            ArgInfo(name='param2_that_is_very_longer_than_usual',
+                    description='The second parameter. This has a lot of text,'
+         ' enough to cover more than two lines: Maybe it can even go a lot more'
+      ' than\nsecond line.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_google_format_multiple_long_args_colons_description(self):
+    docstring = """This is a Google-style docstring with multiple long args.
+
+    Args:
+    param1_that_is_very_longer_than_usual: The first parameter. This has a lot of text,
+      enough to cover two lines.
+    param2_that_is_very_longer_than_usual: The second parameter. This has a lot of text,
+      enough to cover more than two lines: Maybe it can even go a lot more than
+      second line: Sometime the second line can be third too.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with multiple long args.',
+        args=[
+            ArgInfo(name='param1_that_is_very_longer_than_usual',
+                    description='The first parameter. This has a lot of text,'
+         ' enough to cover two lines.'),
+            ArgInfo(name='param2_that_is_very_longer_than_usual',
+                    description='The second parameter. This has a lot of text,'
+         ' enough to cover more than two lines: Maybe it can even go a lot more'
+      ' than\nsecond line: Sometime the second line can be third too.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
+  def test_google_format_multiple_long_args_colons_overload(self):
+    docstring = """This is a Google-style docstring with multiple long args.
+
+    Args:
+    param1_that_is_very_longer_than_usual: The first parameter. This has a lot of text,
+      enough to cover: two lines.
+    param2_that_is_very_longer_than_usual: The second parameter. This has a lot of text,
+      enough to cover more than two lines: Maybe it can even go a lot more than
+      second line: Sometime the second line can be third too.
+    param3_that_is_very_longer_than_usual: The third parameter. This has a lot of text,
+      enough to: cover two lines.
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='This is a Google-style docstring with multiple long args.',
+        args=[
+            ArgInfo(name='param1_that_is_very_longer_than_usual',
+                    description='The first parameter. This has a lot of text,'
+         ' enough to cover: two lines.'),
+            ArgInfo(name='param2_that_is_very_longer_than_usual',
+                    description='The second parameter. This has a lot of text,'
+         ' enough to cover more than two lines: Maybe it can even go a lot more'
+      ' than\nsecond line: Sometime the second line can be third too.'),
+            ArgInfo(name='param3_that_is_very_longer_than_usual',
+                    description='The third parameter. This has a lot of text,'
+         ' enough to: cover two lines.'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
   def test_rst_format_typed_args_and_returns(self):
     docstring = """Docstring summary.
 
