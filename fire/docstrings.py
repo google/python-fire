@@ -183,7 +183,7 @@ def parse(docstring):
     has_next = index + 1 < lines_len
     previous_line = lines[index - 1] if index > 0 else None
     next_line = lines[index + 1] if has_next else None
-    line_info = _create_line_info(line, next_line, previous_line)
+    line_info = _create_line_info(line, next_line, previous_line, index)
     _consume_line(line_info, state)
 
   summary = ' '.join(state.summary.lines) if state.summary.lines else None
@@ -297,7 +297,7 @@ def _get_or_create_arg_by_name(state, name, is_kwarg=False):
   arg.name = name
   arg.type.lines = []
   arg.description.lines = []
-  arg.line1 = None
+  arg.line1_index = None
   arg.line1_length = None
   arg.line2_first_word_length = None
   arg.line2_length = None
@@ -402,7 +402,7 @@ def _consume_google_args_line(line_info, state):
     if _is_arg_name(first):
       arg = _get_or_create_arg_by_name(state, first.strip())
       arg.description.lines.append(second.strip())
-      arg.line1 = line_info.line
+      arg.line1_index = line_info.index
       arg.line1_length = len(line_info.line)
       state.current_arg = arg
     else:
@@ -412,14 +412,13 @@ def _consume_google_args_line(line_info, state):
         arg = _get_or_create_arg_by_name(state, arg_name)
         arg.type.lines.append(type_str)
         arg.description.lines.append(second.strip())
-        arg.line1 = line_info.line
+        arg.line1_index = line_info.index
         arg.line1_length = len(line_info.line)
         state.current_arg = arg
       else:
         if state.current_arg:
           state.current_arg.description.lines.append(':'.join(split_line))
           _check_line2_line3(line_info, state)
-          
   else:
     if state.current_arg:
       state.current_arg.description.lines.append(split_line[0])
@@ -433,10 +432,10 @@ def _check_line2_line3(line_info, state):
     line_info: information about the current line.
     state: The state of the docstring parser.
   """
-  if line_info.previous.line == state.current_arg.line1: # check for line2
+  if line_info.previous.index == state.current_arg.line1_index: # line2 check
     line2_first_word = line_info.line.strip().split(' ')[0]
     state.current_arg.line2_first_word_length = len(line2_first_word)
-    state.current_arg.line2_length = len(line_info.line) 
+    state.current_arg.line2_length = len(line_info.line)
     if line_info.next.line: #check for line3
       line3_split = line_info.next.line.split(':', 1)
       if len(line3_split) > 1:
@@ -468,12 +467,14 @@ def _merge_if_long_arg(state):
   if long_arg_name:
     if arg.line2_first_word_length:
       line1_plus_first_word = arg.line1_length + arg.line2_first_word_length
-      line1_intentionally_short = roundup(line1_plus_first_word) < actual_max_line_len
+      line1_plus_first_word = roundup(line1_plus_first_word)
+      line1_intentionally_short = line1_plus_first_word < actual_max_line_len
       line1_intentionally_long = arg.line1_length >= percent_105
       line2_intentionally_long = arg.line2_length >= percent_105
       if arg.line3_first_word_length:
         line2_plus_first_word = arg.line2_length + arg.line3_first_word_length
-        line2_intentionally_short = roundup(line2_plus_first_word) < actual_max_line_len
+        line2_plus_first_word = roundup(line2_plus_first_word)
+        line2_intentionally_short = line2_plus_first_word < actual_max_line_len
         if not line1_intentionally_short and not line1_intentionally_long:
           if not line2_intentionally_short and not line2_intentionally_long:
             _merge_line1_line2(arg.description.lines)
@@ -571,8 +572,9 @@ def _consume_line(line_info, state):
   if state.section.title == Sections.ARGS:
     if state.section.format == Formats.GOOGLE:
       _consume_google_args_line(line_info, state)
-      if state.current_arg and line_info.previous.line == state.current_arg.line1:
-        _merge_if_long_arg(state)
+      if state.current_arg:
+        if line_info.previous.index == state.current_arg.line1_index:
+          _merge_if_long_arg(state)
     elif state.section.format == Formats.RST:
       state.current_arg.description.lines.append(line_info.remaining.strip())
     elif state.section.format == Formats.NUMPY:
@@ -619,9 +621,10 @@ def _consume_line(line_info, state):
       pass
 
 
-def _create_line_info(line, next_line, previous_line):
+def _create_line_info(line, next_line, previous_line, index):
   """Returns information about the current line and surrounding lines."""
   line_info = Namespace()  # TODO(dbieber): Switch to an explicit class.
+  line_info.index = index
   line_info.line = line
   line_info.stripped = line.strip()
   line_info.remaining_raw = line_info.line
@@ -631,10 +634,12 @@ def _create_line_info(line, next_line, previous_line):
   line_info.next.line = next_line
   next_line_exists = next_line is not None
   line_info.next.stripped = next_line.strip() if next_line_exists else None
+  line_info.next.index = index + 1 if next_line_exists else None
   line_info.next.indentation = (
       len(next_line) - len(next_line.lstrip()) if next_line_exists else None)
   line_info.previous.line = previous_line
   previous_line_exists = previous_line is not None
+  line_info.previous.index = index - 1 if previous_line_exists else None
   line_info.previous.indentation = (
       len(previous_line) -
       len(previous_line.lstrip()) if previous_line_exists else None)
