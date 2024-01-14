@@ -448,12 +448,10 @@ def _merge_if_long_arg(state):
     state: The state of the docstring parser.
   """
   actual_max_line_len = roundup(state.max_line_length)
-  print(state.max_line_length, actual_max_line_len)
   arg = state.current_arg
   arg_length = len(arg.name)
   percent_105 = 1.05 * actual_max_line_len
   long_arg_name = roundup(arg_length) >= 0.4 * actual_max_line_len
-  print(arg_length, long_arg_name)
   if long_arg_name:
     if arg.line2_first_word_length:
       line1_plus_first_word = arg.line1_length + arg.line2_first_word_length
