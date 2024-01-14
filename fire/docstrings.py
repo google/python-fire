@@ -177,12 +177,8 @@ def parse(docstring):
   state.returns.lines = []
   state.yields.lines = []
   state.raises.lines = []
-  state.line1 = None
-  state.line1_length = None
-  state.line2_first_word_length = None
-  state.line2_length = None
-  state.line3_first_word_length = None
-  state.max_line_length = 0
+  state.max_line_length = max(len(line) for line in lines)
+
 
   for index, line in enumerate(lines):
     has_next = index + 1 < lines_len
@@ -302,6 +298,11 @@ def _get_or_create_arg_by_name(state, name, is_kwarg=False):
   arg.name = name
   arg.type.lines = []
   arg.description.lines = []
+  arg.line1 = None
+  arg.line1_length = None
+  arg.line2_first_word_length = None
+  arg.line2_length = None
+  arg.line3_first_word_length = None
   if is_kwarg:
     state.kwargs.append(arg)
   else:
@@ -397,13 +398,14 @@ def _consume_google_args_line(line_info, state):
   """Consume a single line from a Google args section."""
   split_line = line_info.remaining.split(':', 1)
   if len(split_line) > 1:
-    state.line1 = line_info.line
-    state.line1_length = len(line_info.line)
-    state.max_line_length = max(state.max_line_length, state.line1_length)
+
+
     first, second = split_line  # first is either the "arg" or "arg (type)"
     if _is_arg_name(first.strip()):
       arg = _get_or_create_arg_by_name(state, first.strip())
       arg.description.lines.append(second.strip())
+      arg.line1 = line_info.line
+      arg.line1_length = len(line_info.line)
       state.current_arg = arg
     else:
       arg_name_and_type = _as_arg_name_and_type(first)
@@ -412,27 +414,31 @@ def _consume_google_args_line(line_info, state):
         arg = _get_or_create_arg_by_name(state, arg_name)
         arg.type.lines.append(type_str)
         arg.description.lines.append(second.strip())
+        arg.line1 = line_info.line
+        arg.line1_length = len(line_info.line)
         state.current_arg = arg
       else:
         if state.current_arg:
           state.current_arg.description.lines.append(split_line[0])
+          
   else:
     if state.current_arg:
       state.current_arg.description.lines.append(split_line[0])
-      state.max_line_length = max(state.max_line_length, len(line_info.line))
-      if line_info.previous.line == state.line1: # check for line2
+
+      if line_info.previous.line == state.current_arg.line1: # check for line2
         line2_first_word = line_info.line.strip().split(' ')[0]
-        state.line2_first_word_length = len(line2_first_word)
-        state.line2_length = len(line_info.line) 
+        state.current_arg.line2_first_word_length = len(line2_first_word)
+        state.current_arg.line2_length = len(line_info.line) 
         if line_info.next.line: #check for line3
           line3_arg = len(line_info.next.line.split(':', 1)) > 1
           if not line3_arg: #line3 should not be an arg
             line3_first_word = line_info.next.line.strip().split(' ')[0]
-            state.line3_first_word_length = len(line3_first_word)
+            state.current_arg.line3_first_word_length = len(line3_first_word)
         else:
-          state.line3_first_word_length = None
+          state.current_arg.line3_first_word_length = None
       else:
-        state.line2_first_word_length = state.line2_length = None
+        state.current_arg.line2_first_word_length = None
+        state.current_arg.line2_length = None
 
 
 def _merge_if_long_arg(state):
@@ -442,24 +448,27 @@ def _merge_if_long_arg(state):
     state: The state of the docstring parser.
   """
   actual_max_line_len = roundup(state.max_line_length)
-  arg_length = len(state.current_arg.name)
+  print(state.max_line_length, actual_max_line_len)
+  arg = state.current_arg
+  arg_length = len(arg.name)
   percent_105 = 1.05 * actual_max_line_len
-  long_arg_name = roundup(arg_length, 5) >= 0.4 * actual_max_line_len
+  long_arg_name = roundup(arg_length) >= 0.4 * actual_max_line_len
+  print(arg_length, long_arg_name)
   if long_arg_name:
-    if state.line2_first_word_length:
-      line1_plus_first_word = state.line1_length + state.line2_first_word_length
+    if arg.line2_first_word_length:
+      line1_plus_first_word = arg.line1_length + arg.line2_first_word_length
       line1_intentionally_short = roundup(line1_plus_first_word) < actual_max_line_len
-      line1_intentionally_long = state.line1_length >= percent_105
-      line2_intentionally_long = state.line2_length >= percent_105
-      if state.line3_first_word_length:
-        line2_plus_first_word = state.line2_length + state.line3_first_word_length
+      line1_intentionally_long = arg.line1_length >= percent_105
+      line2_intentionally_long = arg.line2_length >= percent_105
+      if arg.line3_first_word_length:
+        line2_plus_first_word = arg.line2_length + arg.line3_first_word_length
         line2_intentionally_short = roundup(line2_plus_first_word) < actual_max_line_len
         if not line1_intentionally_short and not line1_intentionally_long:
           if not line2_intentionally_short and not line2_intentionally_long:
-            _merge_line1_line2(state.current_arg.description.lines)
+            _merge_line1_line2(arg.description.lines)
       elif not line1_intentionally_short and not line1_intentionally_long:
         if not line2_intentionally_long:
-          _merge_line1_line2(state.current_arg.description.lines)
+          _merge_line1_line2(arg.description.lines)
 
 
 def _merge_line1_line2(lines):
@@ -551,7 +560,7 @@ def _consume_line(line_info, state):
   if state.section.title == Sections.ARGS:
     if state.section.format == Formats.GOOGLE:
       _consume_google_args_line(line_info, state)
-      if state.current_arg and line_info.previous.line == state.line1:
+      if state.current_arg and line_info.previous.line == state.current_arg.line1:
         _merge_if_long_arg(state)
     elif state.section.format == Formats.RST:
       state.current_arg.description.lines.append(line_info.remaining.strip())
