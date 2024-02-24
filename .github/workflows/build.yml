@@ -19,8 +19,6 @@ jobs:
           - python-version: "3.11"
           - python-version: "3.12"
 
-    container: ${{ matrix.container }}
-
     steps:
      # Checkout the repo.
      - name: Checkout Python Fire repository
@@ -31,6 +29,7 @@ jobs:
        uses: actions/setup-python@v4
        with:
          python-version: ${{ matrix.python-version }}
+         container: ${{ matrix.container }}
 
      # Build Python Fire using the build.sh script.
      - name: Run build script
