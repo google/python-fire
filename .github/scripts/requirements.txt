@@ -1,4 +1,5 @@
-setuptools <65.7.0
+setuptools <65.7.0 ; python_version == '2.7'
+setuptools <=69.1.1 ; python_version >= '3.8'
 pip <23.0
 pylint <2.15.10
 pytest <=7.2.1
