@@ -7,7 +7,18 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ["3.5", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        include:
+          - python-version: "3.5"
+          - python-version: "3.7"
+          - python-version: "3.8"
+          - python-version: "3.9"
+          - python-version: "3.10"
+          - python-version: "3.11"
+          - python-version: "3.12"
+          - python-version: "2.7"
+            container: python:2.7.18-buster
+
+    container: ${{ matrix.container }}
 
     steps:
      # Checkout the repo.
