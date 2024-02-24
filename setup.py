@@ -40,7 +40,7 @@ TEST_DEPENDENCIES = [
     'python-Levenshtein',
 ]
 
-VERSION = '0.5.0'
+VERSION = '0.6.0'
 URL = 'https://github.com/google/python-fire'
 
 setup(
@@ -72,6 +72,8 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
 
         'Operating System :: OS Independent',
         'Operating System :: POSIX',

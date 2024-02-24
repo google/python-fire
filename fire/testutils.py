@@ -74,7 +74,7 @@ class BaseTestCase(unittest.TestCase):
 
   def assertRaisesRegex(self, *args, **kwargs):  # pylint: disable=arguments-differ
     if sys.version_info.major == 2:
-      return super(BaseTestCase, self).assertRaisesRegexp(*args, **kwargs)  # pylint: disable=deprecated-method
+      return super(BaseTestCase, self).assertRaisesRegexp(*args, **kwargs)  # pylint: disable=deprecated-method,no-member
     else:
       return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member
 
