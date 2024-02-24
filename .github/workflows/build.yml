@@ -7,17 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        include:
-          - python-version: "2.7"
-            container:
-              image: python:2.7.18-buster
-          - python-version: "3.5"
-          - python-version: "3.7"
-          - python-version: "3.8"
-          - python-version: "3.9"
-          - python-version: "3.10"
-          - python-version: "3.11"
-          - python-version: "3.12"
+        python-version: ["3.5", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
      # Checkout the repo.
@@ -29,7 +19,6 @@ jobs:
        uses: actions/setup-python@v4
        with:
          python-version: ${{ matrix.python-version }}
-         container: ${{ matrix.container }}
 
      # Build Python Fire using the build.sh script.
      - name: Run build script
