@@ -363,3 +363,10 @@ def GetClassAttrsDict(component):
       class_attr.name: class_attr
       for class_attr in class_attrs_list
   }
+
+
+def IsCoroutineFunction(fn):
+  try:
+    return six.PY34 and asyncio.iscoroutinefunction(fn)
+  except:  # pylint: disable=bare-except
+    return False

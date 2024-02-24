@@ -721,10 +721,9 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(0):
       fire.Fire(tc.decorated_method, command=['--help'])
 
-  @testutils.skip("Temporarily disabling this test.")
-  @testutils.skipIf(six.PY2, 'async not available in Python 2.')
+  @testutils.skipIf(six.PY2, 'Asyncio not available in Python 2.')
   def testFireAsync(self):
-    self.assertEqual(fire.Fire(tc.py3.WithAsync,
+    self.assertEqual(fire.Fire(tc.py3.WithAsyncio,
                                command=['double', '--count', '10']), 20)
 
 
