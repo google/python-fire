@@ -686,11 +686,7 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
 
   # Call the function.
-  if inspectutils.IsCoroutineFunction(fn):
-    loop = asyncio.get_event_loop()
-    component = loop.run_until_complete(fn(*varargs, **kwargs))
-  else:
-    component = fn(*varargs, **kwargs)
+  component = fn(*varargs, **kwargs)
 
   if treatment == 'class':
     action = trace.INSTANTIATED_CLASS
