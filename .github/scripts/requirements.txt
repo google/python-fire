@@ -10,4 +10,4 @@ termcolor <2.5.0
 hypothesis <6.100.0
 python-Levenshtein <0.20.9 ; python_version == '2.7'
 levenshtein <=0.25.0 ; python_version >= '3.5'
-mock <5.0.0
+mock <6.0.0
