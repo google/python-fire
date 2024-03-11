@@ -29,7 +29,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import pipes
+import shlex
 
 from fire import inspectutils
 
@@ -166,8 +166,8 @@ class FireTrace(object):
   def _Quote(self, arg):
     if arg.startswith('--') and '=' in arg:
       prefix, value = arg.split('=', 1)
-      return pipes.quote(prefix) + '=' + pipes.quote(value)
-    return pipes.quote(arg)
+      return shlex.quote(prefix) + '=' + shlex.quote(value)
+    return shlex.quote(arg)
 
   def GetCommand(self, include_separators=True):
     """Returns the command representing the trace up to this point.

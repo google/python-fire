@@ -56,7 +56,6 @@ from __future__ import print_function
 import inspect
 import json
 import os
-import pipes
 import re
 import shlex
 import sys
@@ -240,7 +239,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
     component_trace.show_help = True
     command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
     print('INFO: Showing help with the command {cmd}.\n'.format(
-        cmd=pipes.quote(command)), file=sys.stderr)
+        cmd=shlex.quote(command)), file=sys.stderr)
   return show_help
 
 
@@ -296,7 +295,7 @@ def _DisplayError(component_trace):
   if show_help:
     command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
     print('INFO: Showing help with the command {cmd}.\n'.format(
-        cmd=pipes.quote(command)), file=sys.stderr)
+        cmd=shlex.quote(command)), file=sys.stderr)
     help_text = helptext.HelpText(result, trace=component_trace,
                                   verbose=component_trace.verbose)
     output.append(help_text)
