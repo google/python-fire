@@ -27,6 +27,10 @@ updates:
     # Check for updates once a week
     schedule:
       interval: "monthly"
+    groups:
+      pip:
+        patterns:
+          - "*"  # Check all dependencies
     # Labels on pull requests for version updates only
     labels:
       - "ci"
