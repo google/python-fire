@@ -5,7 +5,7 @@ pip ; python_version >= '3.5'
 pylint <2.15.10
 pytest <=8.1.1
 pytest-pylint <=1.1.2
-pytest-runner <6.0.0
+pytest-runner <7.0.0
 termcolor <2.5.0
 hypothesis <6.100.0
 python-Levenshtein <0.20.9 ; python_version == '2.7'
