@@ -14,10 +14,6 @@
 
 r"""A command line tool for diffing files.
 
-The Python 2.7 documentation demonstrates how to make a command line interface
-for the difflib library using optparse:
-https://docs.python.org/2/library/difflib.html#a-command-line-interface-to-difflib
-
 This file demonstrates how to create a command line interface providing the same
 functionality using Python Fire.
 

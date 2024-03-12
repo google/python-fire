@@ -712,8 +712,6 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.InvalidProperty, command=['double', '10']), 20
     )
 
-  @testutils.skipIf(sys.version_info[0:2] <= (3, 4),
-                    'Cannot inspect wrapped signatures in Python 2 or 3.4.')
   def testHelpKwargsDecorator(self):
     # Issue #190, follow the wrapped method instead of crashing.
     with self.assertRaisesFireExit(0):

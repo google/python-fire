@@ -186,16 +186,8 @@ def GetFullArgSpec(fn):
   fn, skip_arg = _GetArgSpecInfo(fn)
 
   try:
-    if sys.version_info[0:2] >= (3, 5):
-      (args, varargs, varkw, defaults,
+    (args, varargs, varkw, defaults,
        kwonlyargs, kwonlydefaults, annotations) = Py3GetFullArgSpec(fn)
-    elif six.PY3:  # Specifically Python 3.4.
-      (args, varargs, varkw, defaults,
-       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)  # pylint: disable=deprecated-method,no-member
-    else:  # six.PY2
-      args, varargs, varkw, defaults = Py2GetArgSpec(fn)
-      kwonlyargs = kwonlydefaults = None
-      annotations = getattr(fn, '__annotations__', None)
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
@@ -225,8 +217,7 @@ def GetFullArgSpec(fn):
     return FullArgSpec()
 
   # In Python 3.5+ Py3GetFullArgSpec uses skip_bound_arg=True already.
-  skip_arg_required = six.PY2 or sys.version_info[0:2] == (3, 4)
-  if skip_arg_required and skip_arg and args:
+  if skip_arg and args:
     args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.
   return FullArgSpec(args, varargs, varkw, defaults,
                      kwonlyargs, kwonlydefaults, annotations)

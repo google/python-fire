@@ -31,7 +31,6 @@ A library for automatically generating command line interfaces.""".strip()
 DEPENDENCIES = [
     'six',
     'termcolor',
-    'enum34; python_version < "3.4"'
 ]
 
 TEST_DEPENDENCIES = [
@@ -49,6 +48,7 @@ setup(
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     url=URL,
+    python_requires='>=3.5',
 
     author='David Bieber',
     author_email='dbieber@google.com',
@@ -63,8 +63,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
 
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
