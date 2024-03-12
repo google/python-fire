@@ -216,7 +216,6 @@ def GetFullArgSpec(fn):
     # Case 3: Other known slot wrappers do not accept args.
     return FullArgSpec()
 
-  # In Python 3.5+ Py3GetFullArgSpec uses skip_bound_arg=True already.
   if skip_arg and args:
     args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.
   return FullArgSpec(args, varargs, varkw, defaults,
