@@ -20,7 +20,7 @@ updates:
     schedule:
       interval: "monthly"
     groups:
-      pip:
+      gh-actions:
         patterns:
           - "*"  # Check all dependencies
     labels: ["ci"]
