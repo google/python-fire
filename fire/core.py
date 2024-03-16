@@ -435,6 +435,7 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
 
   instance = None
   remaining_args = args
+  ExceptionRaisedByUser = None
   while True:
     last_component = component
     initial_args = remaining_args
@@ -557,6 +558,11 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
         component_trace.AddAccessedProperty(
             component, target, consumed_args, filename, lineno)
 
+        if candidate_errors:
+          error, initial_args = candidate_errors[0]
+          component_trace.AddError(error, initial_args)
+          ExceptionRaisedByUser = component_trace
+
       except FireError as error:
         # Couldn't access member.
         candidate_errors.append((error, initial_args))
@@ -574,6 +580,8 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
         candidate_errors.append((error, initial_args))
 
     if not handled and candidate_errors:
+      if ExceptionRaisedByUser:
+        return ExceptionRaisedByUser
       error, initial_args = candidate_errors[0]
       component_trace.AddError(error, initial_args)
       return component_trace
