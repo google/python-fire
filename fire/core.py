@@ -361,7 +361,7 @@ def _OneLineResult(result):
 
   try:
     # Don't force conversion to ascii.
-    return json.dumps(result, ensure_ascii=False)
+    return json.dumps(result, ensure_ascii=False, indent=4, sort_keys=True, default=str).encode('utf8')
   except (TypeError, ValueError):
     return str(result).replace('\n', ' ')
 
