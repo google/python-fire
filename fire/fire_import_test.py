@@ -18,7 +18,10 @@ import sys
 
 import fire
 from fire import testutils
-import mock
+try:
+  import mock  # python 2.x
+except ModuleNotFoundError:
+  from unittest import mock  # python 3.x
 
 
 class FireImportTest(testutils.BaseTestCase):

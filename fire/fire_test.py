@@ -25,7 +25,10 @@ import fire
 from fire import test_components as tc
 from fire import testutils
 
-import mock
+try:
+  import mock  # python 2.x
+except ModuleNotFoundError:
+  from unittest import mock  # python 3.x
 import six
 
 
