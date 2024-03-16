@@ -408,7 +408,13 @@ def Completions(component, verbose=False):
   Returns:
     A list of completions for a command that would so far return the component.
   """
-  if inspect.isroutine(component) or inspect.isclass(component):
+  if inspect.isroutine(component):
+    spec = inspectutils.GetFullArgSpec(component)
+    if len(component.__qualname__.split('.')) > 1 and 'self' in spec.args:
+      spec.args.remove('self')
+    return _CompletionsFromArgs(spec.args + spec.kwonlyargs)
+
+  if inspect.isclass(component):
     spec = inspectutils.GetFullArgSpec(component)
     return _CompletionsFromArgs(spec.args + spec.kwonlyargs)
 
