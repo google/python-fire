@@ -330,7 +330,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
       # Methods and properties should only be accessible on instantiated
       # objects, not on uninstantiated classes.
       if class_attr.kind in ('method', 'property'):
-        return False
+        return True
       # Backward compatibility notes: Before Python 3.8, namedtuple attributes
       # were properties. In Python 3.8, they have type tuplegetter.
       tuplegetter = getattr(collections, '_tuplegetter', type(None))
