@@ -148,6 +148,13 @@ class CapitalizedArgNames(object):
   def sum(self, Delta=1.0, Gamma=2.0):  # pylint: disable=invalid-name
     return Delta + Gamma
 
+class CapitalizedFunctionNames(object):
+  def alpha(self):
+    return 'alpha'
+  def Alpha(self):
+    return 'Alpha'
+  def Beta(self):
+    return 'Beta'
 
 class Annotations(object):
 
