@@ -110,7 +110,8 @@ def Fire(component=None, command=None, name=None, serialize=None):
         code 2. When used with the help or trace flags, Fire will raise a
         FireExit with code 0 if successful.
   """
-  name = name or os.path.basename(sys.argv[0])
+
+  name = _GetProgName(name)
 
   # Get args as a list.
   if isinstance(command, six.string_types):
@@ -280,6 +281,45 @@ def _PrintResult(component_trace, verbose=False, serialize=None):
         result, trace=component_trace, verbose=verbose)
     output = [help_text]
     Display(output, out=sys.stdout)
+
+
+def _GetProgName(name, main=None):
+  """Determines the program name.
+
+  This function returns the program name that should be
+  displayed.
+
+  If ``python -m`` was used to execute a module, ``python -m name`` will be
+  returned, instead of ``__main__.py``.
+
+  Args:
+    name: Optional. The name of the command as entered at the command line.
+    main: Optional. This should only be passed during testing.
+  Returns:
+    The program name determined by this function.
+  """
+  if name:
+    return name
+
+  name_from_arg = os.path.basename(sys.argv[0])
+
+  if main:
+    py_module = main
+  else:
+    py_module = sys.modules['__main__'].__package__ # pylint: disable=no-member
+
+  if py_module is not None:
+    if name_from_arg == '__main__.py':
+      return '{executable} -m {module}'.format(
+        executable=sys.executable, module=py_module)
+    else:
+        # For example: python -m sample.cli
+      name = os.path.splitext(name_from_arg)[0]
+      py_module = '{module}.{name}'.format(module=py_module, name=name)
+      return '{executable} -m {module}'.format(
+          executable=sys.executable, module=py_module.lstrip('.'))
+  else:
+    return name_from_arg
 
 
 def _DisplayError(component_trace):
