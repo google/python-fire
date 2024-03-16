@@ -90,6 +90,13 @@ class WithVarArgs(object):
     return arg1, arg2, varargs, kwargs
 
 
+class SkipParseArgs(object):
+
+  @decorators.SkipParse
+  def example8(self, *args):
+    return args
+
+
 class FireDecoratorsTest(testutils.BaseTestCase):
 
   def testSetParseFnsNamedArgs(self):
@@ -168,6 +175,11 @@ class FireDecoratorsTest(testutils.BaseTestCase):
         core.Fire(WithVarArgs,
                   command=['example7', '1', '--arg2=2', '3', '4', '--kwarg=5']),
         ('1', '2', ('3', '4'), {'kwarg': '5'}))
+
+  def testSkipParse(self):
+    command = ['example8', 'test', '1', '--arg2=2', '3', '4', '--kwarg=5', '--flag']
+    self.assertEqual(
+        core.Fire(SkipParseArgs, command=command), tuple(command[1:]))
 
 
 if __name__ == '__main__':
