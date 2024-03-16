@@ -83,3 +83,21 @@ def HasCustomStr(component):
     if str_attr and str_attr.defining_class is not object:
       return True
   return False
+
+def HasCustomRepr(component):
+  """Reproduces above HasCustomStr function to determine if component has a 
+  custom __repr__ method.
+  
+  ...
+  
+  Args:
+    component: The object to check for a custom __repr__ method.
+  Returns:
+    Whether `component` has a custom __repr__ method.
+  """
+  if hasattr(component, '__repr__'):
+    class_attrs = inspectutils.GetClassAttrsDict(type(component)) or {}
+    repr_attr = class_attrs.get('__repr__')
+    if repr_attr and repr_attr.defining_class is not object:
+      return True
+  return False

@@ -263,6 +263,13 @@ def _PrintResult(component_trace, verbose=False, serialize=None):
     print(str(result))
     return
 
+  elif value_types.HasCustomRepr(result):
+    # Same as above, but for __repr__.
+    # For pandas.DataFrame, __str__ is inherited from object, but __repr__ has
+    # a custom implementation (see pandas.core.frame.DataFrame.__repr__)
+    print(str(result))
+    return
+
   if isinstance(result, (list, set, frozenset, types.GeneratorType)):
     for i in result:
       print(_OneLineResult(i))
