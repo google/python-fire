@@ -36,6 +36,8 @@ from __future__ import print_function
 import collections
 import itertools
 import sys
+import inspect
+from types import FunctionType
 
 from fire import completion
 from fire import custom_descriptions
@@ -66,6 +68,7 @@ def HelpText(component, trace=None, verbose=False):
   info = inspectutils.Info(component)
   actions_grouped_by_kind = _GetActionsGroupedByKind(component, verbose=verbose)
   spec = inspectutils.GetFullArgSpec(component)
+  spec.args = Checker(spec,component)
   metadata = decorators.GetMetadata(component)
 
   # Sections:
@@ -94,6 +97,42 @@ def HelpText(component, trace=None, verbose=False):
       _CreateOutputSection(*section)
       for section in sections if section is not None
   )
+
+
+def Checker(spec,component):
+  """
+    desc:
+      Checker funcition firstly checks type of component and afterthat
+      it extract all parent classes.
+    Return:
+      case 1: If there is any parent class it will return all parameters in list.
+      case 2: If there is no parent class so it will return only args list.
+  """
+  if type(component) is not FunctionType and type(component) is not object:
+    try:
+      Inherit_classes_list=inspect.getmro(component)
+      if len(Inherit_classes_list)>2:
+        return ReturnParentParameters(Inherit_classes_list)
+    except AttributeError as e:
+      pass
+
+  return spec.args
+
+
+def ReturnParentParameters(Inherit_classes_list):
+  """
+    Inherit_classes_list: It is a list which have collection of parent classes.
+    Return: list of all parameters which is retrieved from parent classes.
+  """
+  all_parameters = []
+
+  for classes in Inherit_classes_list:
+    argspec_tuple=inspect.getargspec(classes)
+    args_spec=argspec_tuple[0]
+    for parameter in args_spec[1:]:
+      all_parameters.append(parameter)
+
+  return all_parameters
 
 
 def _NameSection(component, info, trace=None, verbose=False):
