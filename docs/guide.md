@@ -692,6 +692,56 @@ flag (as in `--obj=True`), or by making sure there's another flag after any
 boolean flag argument.
 
 
+#### Type hints
+
+Fire can be configured to use type hints information by decorating functions with `UseTypeHints()` decorator.
+Only `int`, `float` and `str` type hints are respected by default, everything else is ignored (parsed as usual).
+Quite common usecase is to instruct fire not to convert strings to integer/floats by supplying `str` 
+type annotation.
+
+See minimal example below:
+
+```python
+import fire
+
+from fire.decorators import UseTypeHints
+
+
+@UseTypeHints()  # () are mandatory here
+def main(a: str, b: float):
+  print(type(a), type(b))
+
+
+if __name__ == "__main__":
+  fire.Fire(main)
+```
+
+When invoked with `python command.py 1 2` this code will print `str float`.
+
+You can set custom parsers for type hints via decorator argument, following example shows how to parse string to `pathlib.Path` object:
+
+```python
+import fire
+
+from pathlib import Path
+from fire.decorators import UseTypeHints
+
+
+@UseTypeHints({Path: Path})
+def main(a: Path, b: str):
+  print(a)
+
+
+if __name__ == "__main__":
+  fire.Fire(main)
+```
+
+This code will convert argument `a` to `pathlib.Path`.
+
+To override default behavior for `int`, `str`, and `float` type hints you need to add them into dictionary supplied to 
+`UseTypeHints` decorator. 
+
+
 ### Using Fire Flags
 
 Fire CLIs all come with a number of flags. These flags should be separated from
