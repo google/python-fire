@@ -322,6 +322,21 @@ def _is_arg_name(name):
   re.match(arg_pattern, name)
   return re.match(arg_pattern, name) is not None
 
+def _is_arg_type(type_):
+  """Returns whether type_ is a valid arg type.
+
+  Example:
+    _is_arg_type("(int)") == True
+
+  Args:
+    type_: The type of potential arg.
+  Returns:
+    True if type_ looks like an arg type, False otherwise.
+  """
+  type_ = type_.strip()
+  return (re.match(r'^[(]\w*[)]$', type_) or
+          re.match(r'^[{]\w*[}]$', type_) or
+          re.match(r'^[\[]\w*[\]]$', type_))
 
 def _as_arg_name_and_type(text):
   """Returns text as a name and type, if text looks like an arg name and type.
@@ -338,7 +353,7 @@ def _as_arg_name_and_type(text):
   tokens = text.split()
   if len(tokens) < 2:
     return None
-  if _is_arg_name(tokens[0]):
+  if _is_arg_name(tokens[0]) and _is_arg_type(tokens[1]):
     type_token = ' '.join(tokens[1:])
     type_token = type_token.lstrip('{([').rstrip('])}')
     return tokens[0], type_token
@@ -391,14 +406,21 @@ def _consume_google_args_line(line_info, state):
   """Consume a single line from a Google args section."""
   split_line = line_info.remaining.split(':', 1)
   if len(split_line) > 1:
-    first, second = split_line  # first is either the "arg" or "arg (type)"
-    if _is_arg_name(first.strip()):
+    # first is any of the three: "arg", "arg (type)", or
+    #   text before a colon in a continued line of an arg description
+    first, second = split_line
+    # indent_check determines if line is a new arg or
+    #   a continuation of current arg description
+    indent_check = line_info.indentation <= state.section.line1_indentation
+    if _is_arg_name(first.strip()) and (
+        state.current_arg is None or indent_check):
       arg = _get_or_create_arg_by_name(state, first.strip())
       arg.description.lines.append(second.strip())
       state.current_arg = arg
     else:
       arg_name_and_type = _as_arg_name_and_type(first)
-      if arg_name_and_type:
+      if arg_name_and_type and (
+          state.current_arg is None or indent_check):
         arg_name, type_str = arg_name_and_type
         arg = _get_or_create_arg_by_name(state, arg_name)
         arg.type.lines.append(type_str)
@@ -406,7 +428,7 @@ def _consume_google_args_line(line_info, state):
         state.current_arg = arg
       else:
         if state.current_arg:
-          state.current_arg.description.lines.append(split_line[0])
+          state.current_arg.description.lines.append(first + ':' + second)
   else:
     if state.current_arg:
       state.current_arg.description.lines.append(split_line[0])
