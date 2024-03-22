@@ -111,7 +111,7 @@ def _NameSection(component, info, trace=None, verbose=False):
                                              LINE_LENGTH)
 
   if summary:
-    text = current_command + ' - ' + summary
+    text = f'{current_command} - {summary}'
   else:
     text = current_command
   return ('NAME', text)
@@ -582,7 +582,7 @@ def _CreateItem(name, description, indent=2):
 def _GetArgDescription(name, docstring_info):
   if docstring_info.args:
     for arg_in_docstring in docstring_info.args:
-      if arg_in_docstring.name in (name, '*' + name, '**' + name):
+      if arg_in_docstring.name in (f'{name}', f'*{name}', f'**{name}'):
         return arg_in_docstring.description
   return None
 
@@ -752,10 +752,10 @@ def _GetCallableAvailabilityLines(spec):
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
 
   # TODO(dbieber): Handle args_with_no_defaults if not accepts_positional_args.
-  optional_flags = [('--' + flag) for flag in itertools.chain(
+  optional_flags = [f'--{flag}' for flag in itertools.chain(
       args_with_defaults, _KeywordOnlyArguments(spec, required=False))]
   required_flags = [
-      ('--' + flag) for flag in _KeywordOnlyArguments(spec, required=True)
+      f'--{flag}' for flag in _KeywordOnlyArguments(spec, required=True)
   ]
 
   # Flags section:
