@@ -30,7 +30,7 @@ ACCEPTS_POSITIONAL_ARGS = 'ACCEPTS_POSITIONAL_ARGS'
 SKIP_PARSE = 'SKIP_PARSE'
 
 
-def SkipParse(fn):
+def PassThrough(fn):
   """Set a flag to tell Fire to pass original args to decorated fn.
   """
   _SetMetadata(fn, SKIP_PARSE, True)
