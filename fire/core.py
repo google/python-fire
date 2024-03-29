@@ -727,7 +727,7 @@ def _MakeParseFn(fn, metadata):
   def _ParseFn(args):
     """Parses the list of `args` into (varargs, kwargs), consumed_args, remaining_args."""
 
-    skip_parse = metadata.get(decorators.SKIP_PARSE, False)
+    skip_parse = metadata.get(decorators.PASS_THROUGH, False)
 
     if skip_parse:
         kwargs = {}
