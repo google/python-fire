@@ -2,7 +2,7 @@ setuptools <65.7.0 ; python_version == '2.7'
 setuptools <=69.2.0 ; python_version >= '3.8'
 pip <23.0 ; python_version == '2.7'
 pip ; python_version >= '3.5'
-pylint <2.15.10
+pylint <3.1.1
 pytest <=8.1.1
 pytest-pylint <=1.1.2
 pytest-runner <7.0.0
