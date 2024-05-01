@@ -1,5 +1,5 @@
 setuptools <65.7.0 ; python_version == '2.7'
-setuptools <=69.2.0 ; python_version >= '3.8'
+setuptools <=69.5.1 ; python_version >= '3.8'
 pip <23.0 ; python_version == '2.7'
 pip ; python_version >= '3.5'
 pylint <2.15.10
