@@ -35,7 +35,9 @@ from __future__ import print_function
 
 import collections
 import itertools
+import re
 import sys
+import typing
 
 from fire import completion
 from fire import custom_descriptions
@@ -538,12 +540,12 @@ def _GetArgType(arg, spec):
     arg_type = spec.annotations[arg]
     try:
       if sys.version_info[0:2] >= (3, 3):
+        if isinstance(arg_type, typing._GenericAlias):
+          arg_type = re.search(r'\[(.*?)\]', repr(arg_type)).group(1)
+          return arg_type
         return arg_type.__qualname__
       return arg_type.__name__
     except AttributeError:
-      # Some typing objects, such as typing.Union do not have either a __name__
-      # or __qualname__ attribute.
-      # repr(typing.Union[int, str]) will return ': typing.Union[int, str]'
       return repr(arg_type)
   return ''
 
