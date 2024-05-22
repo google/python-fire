@@ -196,7 +196,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('DESCRIPTION', help_screen)
     self.assertIn(
         'FLAGS\n    -v, --value=VALUE\n'
-        '        Type: Optional[int, str]\n        Default: None',
+        '        Type: Optional[Union[int, str]]\n        Default: None',
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
