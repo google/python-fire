@@ -176,9 +176,9 @@ def Display(lines, out):
   console_io.More(text, out=out)
 
 
-def CompletionScript(name, component, shell):
+def CompletionScript(name, component, *args):
   """Returns the text of the completion script for a Fire CLI."""
-  return completion.Script(name, component, shell=shell)
+  return completion.Script(name, component, *args)
 
 
 class FireError(Exception):
@@ -605,7 +605,7 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
   if show_completion is not None:
     if name is None:
       raise ValueError('Cannot make completion script without command name')
-    script = CompletionScript(name, initial_component, shell=show_completion)
+    script = CompletionScript(name, initial_component, *show_completion)
     component_trace.AddCompletionScript(script)
 
   if interactive:
