@@ -9,5 +9,5 @@ pytest-runner <7.0.0
 termcolor <2.5.0
 hypothesis <6.101.0
 python-Levenshtein <0.20.9 ; python_version == '2.7'
-levenshtein <=0.25.0 ; python_version >= '3.5'
+levenshtein <=0.25.1 ; python_version >= '3.5'
 mock <6.0.0
