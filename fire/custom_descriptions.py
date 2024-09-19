@@ -36,10 +36,6 @@ This modules aims to resolve that problem, providing custom summaries and
 descriptions for primitive typed values.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from fire import formatting
 import six
 

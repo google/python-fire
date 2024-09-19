@@ -49,10 +49,6 @@ TODO(dbieber): Support these features.
 - "True | False" indicates bool type.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import enum
 import re
