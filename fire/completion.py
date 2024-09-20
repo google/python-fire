@@ -277,10 +277,7 @@ end
       )
 
   return fish_source.format(
-      global_options=' '.join(
-          '"{option}"'.format(option=option)
-          for option in global_options
-      )
+      global_options=' '.join(f'"{option}"' for option in global_options)
   )
 
 
@@ -385,7 +382,7 @@ def _CompletionsFromArgs(fn_args):
   completions = []
   for arg in fn_args:
     arg = arg.replace('_', '-')
-    completions.append('--{arg}'.format(arg=arg))
+    completions.append(f'--{arg}')
   return completions
 
 

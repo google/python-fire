@@ -30,7 +30,7 @@ the program to the command line.
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 if __name__ == '__main__':
   fire.Fire()
@@ -52,7 +52,7 @@ command line.
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 if __name__ == '__main__':
   fire.Fire(hello)
@@ -76,7 +76,7 @@ We can alternatively write this program like this:
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 def main():
   fire.Fire(hello)
@@ -93,7 +93,7 @@ then simply this:
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 def main():
   fire.Fire(hello)
@@ -105,7 +105,7 @@ If you have a file `example.py` that doesn't even import fire:
 
 ```python
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 ```
 
 Then you can use it with Fire like this:
