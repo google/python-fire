@@ -872,6 +872,7 @@ def _ParseKeywordArgs(args, fn_spec):
         key, value = stripped_argument.split('=', 1)
       else:
         key = stripped_argument
+        value = None  # value will be set later on.
 
       key = key.replace('-', '_')
       is_bool_syntax = (not contains_equals and
