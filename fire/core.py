@@ -49,6 +49,7 @@ The available flags for all Fire CLIs are:
   --trace: Get the Fire Trace for the command.
 """
 
+import asyncio
 import inspect
 import json
 import os
@@ -67,8 +68,6 @@ from fire import parser
 from fire import trace
 from fire import value_types
 from fire.console import console_io
-
-import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 def Fire(component=None, command=None, name=None, serialize=None):

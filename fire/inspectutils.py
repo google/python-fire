@@ -14,13 +14,12 @@
 
 """Inspection utility functions for Python Fire."""
 
+import asyncio
 import inspect
 import sys
 import types
 
 from fire import docstrings
-
-import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 class FullArgSpec(object):
