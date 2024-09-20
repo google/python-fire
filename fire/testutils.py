@@ -20,11 +20,10 @@ import os
 import re
 import sys
 import unittest
+from unittest import mock
 
 from fire import core
 from fire import trace
-
-import mock
 
 
 class BaseTestCase(unittest.TestCase):

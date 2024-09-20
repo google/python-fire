@@ -7,4 +7,3 @@ pytest-runner <7.0.0
 termcolor <2.5.0
 hypothesis <6.113.0
 levenshtein <=0.25.1
-mock <6.0.0

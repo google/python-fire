@@ -14,11 +14,12 @@
 
 """Tests for the core module."""
 
+from unittest import mock
+
 from fire import core
 from fire import test_components as tc
 from fire import testutils
 from fire import trace
-import mock
 
 
 class CoreTest(testutils.BaseTestCase):
