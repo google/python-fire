@@ -15,7 +15,6 @@
 """Tests for the inspectutils module."""
 
 import os
-import unittest
 
 from fire import inspectutils
 from fire import test_components as tc
