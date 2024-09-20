@@ -29,7 +29,6 @@ SHORT_DESCRIPTION = """
 A library for automatically generating command line interfaces.""".strip()
 
 DEPENDENCIES = [
-    'six',
     'termcolor',
 ]
 

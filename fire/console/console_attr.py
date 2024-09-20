@@ -100,8 +100,6 @@ from fire.console import console_attr_os
 from fire.console import encoding as encoding_util
 from fire.console import text
 
-import six
-
 
 # TODO: Unify this logic with console.style.mappings
 class BoxLineCharacters(object):
@@ -355,9 +353,9 @@ class ConsoleAttr(object):
     Returns:
       The console output string buf converted to unicode.
     """
-    if isinstance(buf, six.text_type):
+    if isinstance(buf, str):
       buf = buf.encode(self._encoding)
-    return six.text_type(buf, self._encoding, 'replace')
+    return str(buf, self._encoding, 'replace')
 
   def GetBoxLineCharacters(self):
     """Returns the box/line drawing characters object.
@@ -480,7 +478,7 @@ class ConsoleAttr(object):
     Returns:
       The display width of buf, handling unicode and ANSI controls.
     """
-    if not isinstance(buf, six.string_types):
+    if not isinstance(buf, str):
       # Handle non-string objects like Colorizer().
       return len(buf)
 
@@ -595,16 +593,16 @@ class Colorizer(object):
     self._justify = justify
 
   def __eq__(self, other):
-    return self._string == six.text_type(other)
+    return self._string == str(other)
 
   def __ne__(self, other):
     return not self == other
 
   def __gt__(self, other):
-    return self._string > six.text_type(other)
+    return self._string > str(other)
 
   def __lt__(self, other):
-    return self._string < six.text_type(other)
+    return self._string < str(other)
 
   def __ge__(self, other):
     return not self < other
@@ -692,7 +690,7 @@ def GetCharacterDisplayWidth(char):
   Returns:
     The monospaced terminal display width of char: either 0, 1, or 2.
   """
-  if not isinstance(char, six.text_type):
+  if not isinstance(char, str):
     # Non-unicode chars have width 1. Don't use this function on control chars.
     return 1
 
@@ -779,7 +777,7 @@ def EncodeToBytes(data):
     return data
 
   # Coerce to text that will be converted to bytes.
-  s = six.text_type(data)
+  s = str(data)
 
   try:
     # Assume the text can be directly converted to bytes (8-bit ascii).
