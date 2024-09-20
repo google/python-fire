@@ -35,7 +35,6 @@ DEPENDENCIES = [
 
 TEST_DEPENDENCIES = [
     'hypothesis',
-    'mock',
     'levenshtein',
 ]
 
