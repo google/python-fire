@@ -14,20 +14,12 @@
 
 """Inspection utility functions for Python Fire."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
+import asyncio
 import inspect
 import sys
 import types
 
 from fire import docstrings
-
-import six
-
-if six.PY34:
-  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 class FullArgSpec(object):
@@ -78,8 +70,6 @@ def _GetArgSpecInfo(fn):
   if inspect.isclass(fn):
     # If the function is a class, we try to use its init method.
     skip_arg = True
-    if six.PY2 and hasattr(fn, '__init__'):
-      fn = fn.__init__
   elif inspect.ismethod(fn):
     # If the function is a bound method, we skip the `self` argument.
     skip_arg = fn.__self__ is not None
@@ -93,16 +83,6 @@ def _GetArgSpecInfo(fn):
     # The purpose of this else clause is to set skip_arg for callable objects.
     skip_arg = True
   return fn, skip_arg
-
-
-def Py2GetArgSpec(fn):
-  """A wrapper around getargspec that tries both fn and fn.__call__."""
-  try:
-    return inspect.getargspec(fn)  # pylint: disable=deprecated-method,no-member
-  except TypeError:
-    if hasattr(fn, '__call__'):
-      return inspect.getargspec(fn.__call__)  # pylint: disable=deprecated-method,no-member
-    raise
 
 
 def Py3GetFullArgSpec(fn):
@@ -357,6 +337,6 @@ def GetClassAttrsDict(component):
 
 def IsCoroutineFunction(fn):
   try:
-    return six.PY34 and asyncio.iscoroutinefunction(fn)
+    return asyncio.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except
     return False

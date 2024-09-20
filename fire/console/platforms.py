@@ -153,6 +153,8 @@ class OperatingSystem(object):
       return OperatingSystem.MACOSX
     elif 'cygwin' in sys.platform:
       return OperatingSystem.CYGWIN
+    elif 'msys' in sys.platform:
+      return OperatingSystem.MSYS
     return None
 
   @staticmethod

@@ -14,10 +14,6 @@
 
 """This module is used for enabling formatting on Windows."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import ctypes
 import os
 import platform

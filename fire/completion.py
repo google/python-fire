@@ -23,7 +23,6 @@ import copy
 import inspect
 
 from fire import inspectutils
-import six
 
 
 def Script(name, component, default_options=None, shell='bash'):
@@ -278,10 +277,7 @@ end
       )
 
   return fish_source.format(
-      global_options=' '.join(
-          '"{option}"'.format(option=option)
-          for option in global_options
-      )
+      global_options=' '.join(f'"{option}"' for option in global_options)
   )
 
 
@@ -308,7 +304,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
   Returns
     A boolean value indicating whether the member should be included.
   """
-  if isinstance(name, six.string_types) and name.startswith('__'):
+  if isinstance(name, str) and name.startswith('__'):
     return False
   if verbose:
     return True
@@ -316,10 +312,11 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
       or member is division
       or member is print_function):
     return False
-  if isinstance(member, type(absolute_import)) and six.PY34:
+  if isinstance(member, type(absolute_import)):
     return False
-  if inspect.ismodule(member) and member is six:
-    # TODO(dbieber): Determine more generally which modules to hide.
+  # TODO(dbieber): Determine more generally which modules to hide.
+  modules_to_hide = []
+  if inspect.ismodule(member) and member in modules_to_hide:
     return False
   if inspect.isclass(component):
     # If class_attrs has not been provided, compute it.
@@ -336,14 +333,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
       tuplegetter = getattr(collections, '_tuplegetter', type(None))
       if isinstance(class_attr.object, tuplegetter):
         return False
-  if (six.PY2 and inspect.isfunction(component)
-      and name in ('func_closure', 'func_code', 'func_defaults',
-                   'func_dict', 'func_doc', 'func_globals', 'func_name')):
-    return False
-  if (six.PY2 and inspect.ismethod(component)
-      and name in ('im_class', 'im_func', 'im_self')):
-    return False
-  if isinstance(name, six.string_types):
+  if isinstance(name, str):
     return not name.startswith('_')
   return True  # Default to including the member
 
@@ -392,7 +382,7 @@ def _CompletionsFromArgs(fn_args):
   completions = []
   for arg in fn_args:
     arg = arg.replace('_', '-')
-    completions.append('--{arg}'.format(arg=arg))
+    completions.append(f'--{arg}')
   return completions
 
 
@@ -438,7 +428,7 @@ def _FormatForCommand(token):
   Returns:
     The transformed token.
   """
-  if not isinstance(token, six.string_types):
+  if not isinstance(token, str):
     token = str(token)
 
   if token.startswith('_'):

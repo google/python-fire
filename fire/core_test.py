@@ -14,17 +14,12 @@
 
 """Tests for the core module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from unittest import mock
 
 from fire import core
 from fire import test_components as tc
 from fire import testutils
 from fire import trace
-import mock
-
-import six
 
 
 class CoreTest(testutils.BaseTestCase):
@@ -218,13 +213,11 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertRaises(core.FireError):
       core.Fire(ident, command=['asdf'], serialize=55)
 
-  @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
   def testLruCacheDecoratorBoundArg(self):
     self.assertEqual(
         core.Fire(tc.py3.LruCacheDecoratedMethod,  # pytype: disable=module-attr
                   command=['lru_cache_in_class', 'foo']), 'foo')
 
-  @testutils.skipIf(six.PY2, 'lru_cache is Python 3 only.')
   def testLruCacheDecorator(self):
     self.assertEqual(
         core.Fire(tc.py3.lru_cache_decorated,  # pytype: disable=module-attr

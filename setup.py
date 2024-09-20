@@ -29,17 +29,15 @@ SHORT_DESCRIPTION = """
 A library for automatically generating command line interfaces.""".strip()
 
 DEPENDENCIES = [
-    'six',
     'termcolor',
 ]
 
 TEST_DEPENDENCIES = [
     'hypothesis',
-    'mock',
-    'python-Levenshtein',
+    'levenshtein',
 ]
 
-VERSION = '0.6.0'
+VERSION = '0.7.0'
 URL = 'https://github.com/google/python-fire'
 
 setup(
