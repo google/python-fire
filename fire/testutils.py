@@ -15,6 +15,7 @@
 """Utilities for Python Fire's tests."""
 
 import contextlib
+import io
 import os
 import re
 import sys
@@ -24,7 +25,6 @@ from fire import core
 from fire import trace
 
 import mock
-import six
 
 
 class BaseTestCase(unittest.TestCase):
@@ -45,8 +45,8 @@ class BaseTestCase(unittest.TestCase):
     Yields:
       Yields to the wrapped context.
     """
-    stdout_fp = six.StringIO()
-    stderr_fp = six.StringIO()
+    stdout_fp = io.StringIO()
+    stderr_fp = io.StringIO()
     try:
       with mock.patch.object(sys, 'stdout', stdout_fp):
         with mock.patch.object(sys, 'stderr', stderr_fp):
@@ -69,10 +69,7 @@ class BaseTestCase(unittest.TestCase):
                                (name, value, regexp))
 
   def assertRaisesRegex(self, *args, **kwargs):  # pylint: disable=arguments-differ
-    if sys.version_info.major == 2:
-      return super(BaseTestCase, self).assertRaisesRegexp(*args, **kwargs)  # pylint: disable=deprecated-method,no-member
-    else:
-      return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member
+    return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member
 
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp='.*'):

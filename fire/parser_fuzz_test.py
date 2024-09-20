@@ -21,7 +21,6 @@ from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies as st
 import Levenshtein
-import six
 
 
 class ParserFuzzTest(testutils.BaseTestCase):
@@ -64,8 +63,8 @@ class ParserFuzzTest(testutils.BaseTestCase):
       raise
 
     try:
-      uvalue = six.text_type(value)
-      uresult = six.text_type(result)
+      uvalue = str(value)
+      uresult = str(result)
     except UnicodeDecodeError:
       # This is not what we're testing.
       return
