@@ -76,6 +76,7 @@ setup(
 
     keywords='command line interface cli python fire interactive bash tool',
 
+    requires_python='>=3.7',
     packages=['fire', 'fire.console'],
 
     install_requires=DEPENDENCIES,
