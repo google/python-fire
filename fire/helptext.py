@@ -31,7 +31,6 @@ information.
 
 import collections
 import itertools
-import sys
 
 from fire import completion
 from fire import custom_descriptions
@@ -533,9 +532,7 @@ def _GetArgType(arg, spec):
   if arg in spec.annotations:
     arg_type = spec.annotations[arg]
     try:
-      if sys.version_info[0:2] >= (3, 3):
-        return arg_type.__qualname__
-      return arg_type.__name__
+      return arg_type.__qualname__
     except AttributeError:
       # Some typing objects, such as typing.Union do not have either a __name__
       # or __qualname__ attribute.
