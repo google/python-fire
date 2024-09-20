@@ -14,10 +14,10 @@
 
 """Tests for the interact module."""
 
+from unittest import mock
+
 from fire import interact
 from fire import testutils
-
-import mock
 
 
 try:

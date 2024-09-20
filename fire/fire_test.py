@@ -16,12 +16,11 @@
 
 import os
 import sys
+from unittest import mock
 
 import fire
 from fire import test_components as tc
 from fire import testutils
-
-import mock
 
 
 class FireTest(testutils.BaseTestCase):
