@@ -65,16 +65,17 @@ def _AvailableString(variables, verbose=False):
   lists = [
       ('Modules', modules),
       ('Objects', other)]
-  liststrs = []
+  list_strs = []
   for name, varlist in lists:
     if varlist:
-      liststrs.append(
-          '{name}: {items}'.format(name=name, items=', '.join(sorted(varlist))))
+      items_str = ', '.join(sorted(varlist))
+      list_strs.append(f'{name}: {items_str}')
 
+  lists_str = '\n'.join(list_strs)
   return (
       'Fire is starting a Python REPL with the following objects:\n'
-      '{liststrs}\n'
-  ).format(liststrs='\n'.join(liststrs))
+      f'{lists_str}\n'
+  )
 
 
 def _EmbedIPython(variables, argv=None):
