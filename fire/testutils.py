@@ -67,9 +67,6 @@ class BaseTestCase(unittest.TestCase):
           raise AssertionError('%s: Expected %r to match %r' %
                                (name, value, regexp))
 
-  def assertRaisesRegex(self, *args, **kwargs):  # pylint: disable=arguments-differ
-    return super(BaseTestCase, self).assertRaisesRegex(*args, **kwargs)  # pylint: disable=no-member
-
   @contextlib.contextmanager
   def assertRaisesFireExit(self, code, regexp='.*'):
     """Asserts that a FireExit error is raised in the context.
