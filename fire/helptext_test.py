@@ -23,7 +23,6 @@ from fire import helptext
 from fire import test_components as tc
 from fire import testutils
 from fire import trace
-import six
 
 
 class HelpTest(testutils.BaseTestCase):
@@ -276,8 +275,6 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    OldStyleEmpty', help_screen)
     self.assertIn('SYNOPSIS\n    OldStyleEmpty', help_screen)
 
-  @testutils.skipIf(
-      six.PY2, 'Python 2 does not support keyword-only arguments.')
   def testHelpTextKeywordOnlyArgumentsWithDefault(self):
     component = tc.py3.KeywordOnly.with_default  # pytype: disable=module-attr
     output = helptext.HelpText(
@@ -285,8 +282,6 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    with_default', output)
     self.assertIn('FLAGS\n    -x, --x=X', output)
 
-  @testutils.skipIf(
-      six.PY2, 'Python 2 does not support keyword-only arguments.')
   def testHelpTextKeywordOnlyArgumentsWithoutDefault(self):
     component = tc.py3.KeywordOnly.double  # pytype: disable=module-attr
     output = helptext.HelpText(
@@ -294,9 +289,6 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    double', output)
     self.assertIn('FLAGS\n    -c, --count=COUNT (required)', output)
 
-  @testutils.skipIf(
-      six.PY2,
-      'Python 2 does not support required name-only arguments.')
   def testHelpTextFunctionMixedDefaults(self):
     component = tc.py3.HelpTextComponent().identity
     t = trace.FireTrace(component, name='FunctionMixedDefaults')
@@ -523,9 +515,6 @@ class UsageTest(testutils.BaseTestCase):
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
 
-  @testutils.skipIf(
-      six.PY2,
-      'Python 2 does not support required name-only arguments.')
   def testUsageOutputFunctionMixedDefaults(self):
     component = tc.py3.HelpTextComponent().identity
     t = trace.FireTrace(component, name='FunctionMixedDefaults')

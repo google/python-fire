@@ -21,7 +21,6 @@ from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies as st
 import Levenshtein
-import six
 
 
 class ParserFuzzTest(testutils.BaseTestCase):
@@ -64,8 +63,8 @@ class ParserFuzzTest(testutils.BaseTestCase):
       raise
 
     try:
-      uvalue = six.text_type(value)
-      uresult = six.text_type(result)
+      uvalue = str(value)
+      uresult = str(result)
     except UnicodeDecodeError:
       # This is not what we're testing.
       return
@@ -82,7 +81,7 @@ class ParserFuzzTest(testutils.BaseTestCase):
     if '#' in value:
       max_distance += len(value) - value.index('#')
 
-    if not isinstance(result, six.string_types):
+    if not isinstance(result, str):
       max_distance += value.count('0')  # Leading 0s are stripped.
 
     # Note: We don't check distance for dicts since item order can be changed.

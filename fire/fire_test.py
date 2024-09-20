@@ -22,7 +22,6 @@ from fire import test_components as tc
 from fire import testutils
 
 import mock
-import six
 
 
 class FireTest(testutils.BaseTestCase):
@@ -180,7 +179,6 @@ class FireTest(testutils.BaseTestCase):
     self.assertEqual(fire.Fire(tc.Annotations, command=['double', '5']), 10)
     self.assertEqual(fire.Fire(tc.Annotations, command=['triple', '5']), 15)
 
-  @testutils.skipIf(six.PY2, 'Keyword-only arguments not in Python 2.')
   def testFireKeywordOnlyArgs(self):
     with self.assertRaisesFireExit(2):
       # Keyword arguments must be passed with flag syntax.
@@ -717,7 +715,6 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(0):
       fire.Fire(tc.decorated_method, command=['--help'])
 
-  @testutils.skipIf(six.PY2, 'Asyncio not available in Python 2.')
   def testFireAsyncio(self):
     self.assertEqual(fire.Fire(tc.py3.WithAsyncio,
                                command=['double', '--count', '10']), 20)

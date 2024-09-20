@@ -17,10 +17,9 @@
 import inspect
 
 from fire import inspectutils
-import six
 
 
-VALUE_TYPES = (bool, six.string_types, six.integer_types, float, complex,
+VALUE_TYPES = (bool, str, bytes, int, float, complex,
                type(Ellipsis), type(None), type(NotImplemented))
 
 

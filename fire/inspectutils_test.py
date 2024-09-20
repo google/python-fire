@@ -15,13 +15,10 @@
 """Tests for the inspectutils module."""
 
 import os
-import unittest
 
 from fire import inspectutils
 from fire import test_components as tc
 from fire import testutils
-
-import six
 
 
 class InspectUtilsTest(testutils.BaseTestCase):
@@ -36,7 +33,6 @@ class InspectUtilsTest(testutils.BaseTestCase):
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {'arg2': int, 'arg4': int})
 
-  @unittest.skipIf(six.PY2, 'No keyword arguments in python 2')
   def testGetFullArgSpecPy3(self):
     spec = inspectutils.GetFullArgSpec(tc.py3.identity)
     self.assertEqual(spec.args, ['arg1', 'arg2', 'arg3', 'arg4'])
@@ -121,10 +117,7 @@ class InspectUtilsTest(testutils.BaseTestCase):
 
   def testInfoClassNoInit(self):
     info = inspectutils.Info(tc.OldStyleEmpty)
-    if six.PY2:
-      self.assertEqual(info.get('type_name'), 'classobj')
-    else:
-      self.assertEqual(info.get('type_name'), 'type')
+    self.assertEqual(info.get('type_name'), 'type')
     self.assertIn(os.path.join('fire', 'test_components.py'), info.get('file'))
     self.assertGreater(info.get('line'), 0)
 

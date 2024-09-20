@@ -18,10 +18,7 @@ import collections
 import enum
 import functools
 
-import six
-
-if six.PY3:
-  from fire import test_components_py3 as py3  # pylint: disable=unused-import,no-name-in-module,g-import-not-at-top
+from fire import test_components_py3 as py3  # pylint: disable=unused-import,no-name-in-module,g-import-not-at-top
 
 
 def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=keyword-arg-before-vararg
