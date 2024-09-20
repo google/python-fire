@@ -31,13 +31,12 @@ A library for automatically generating command line interfaces.""".strip()
 DEPENDENCIES = [
     'six',
     'termcolor',
-    'enum34; python_version < "3.4"'
 ]
 
 TEST_DEPENDENCIES = [
     'hypothesis',
     'mock',
-    'python-Levenshtein',
+    'levenshtein',
 ]
 
 VERSION = '0.7.0'
