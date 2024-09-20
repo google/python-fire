@@ -67,10 +67,8 @@ from fire import parser
 from fire import trace
 from fire import value_types
 from fire.console import console_io
-import six
 
-if six.PY34:
-  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
+import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 def Fire(component=None, command=None, name=None, serialize=None):
@@ -109,7 +107,7 @@ def Fire(component=None, command=None, name=None, serialize=None):
   name = name or os.path.basename(sys.argv[0])
 
   # Get args as a list.
-  if isinstance(command, six.string_types):
+  if isinstance(command, str):
     args = shlex.split(command)
   elif isinstance(command, (list, tuple)):
     args = command
@@ -344,7 +342,7 @@ def _DictAsString(result, verbose=False):
 def _OneLineResult(result):
   """Returns result serialized to a single line string."""
   # TODO(dbieber): Ensure line is fewer than eg 120 characters.
-  if isinstance(result, six.string_types):
+  if isinstance(result, str):
     return str(result).replace('\n', ' ')
 
   # TODO(dbieber): Show a small amount of usage information about the function

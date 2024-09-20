@@ -20,10 +20,7 @@ import types
 
 from fire import docstrings
 
-import six
-
-if six.PY34:
-  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
+import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 class FullArgSpec(object):
@@ -74,8 +71,6 @@ def _GetArgSpecInfo(fn):
   if inspect.isclass(fn):
     # If the function is a class, we try to use its init method.
     skip_arg = True
-    if six.PY2 and hasattr(fn, '__init__'):
-      fn = fn.__init__
   elif inspect.ismethod(fn):
     # If the function is a bound method, we skip the `self` argument.
     skip_arg = fn.__self__ is not None
@@ -89,16 +84,6 @@ def _GetArgSpecInfo(fn):
     # The purpose of this else clause is to set skip_arg for callable objects.
     skip_arg = True
   return fn, skip_arg
-
-
-def Py2GetArgSpec(fn):
-  """A wrapper around getargspec that tries both fn and fn.__call__."""
-  try:
-    return inspect.getargspec(fn)  # pylint: disable=deprecated-method,no-member
-  except TypeError:
-    if hasattr(fn, '__call__'):
-      return inspect.getargspec(fn.__call__)  # pylint: disable=deprecated-method,no-member
-    raise
 
 
 def Py3GetFullArgSpec(fn):
@@ -185,13 +170,9 @@ def GetFullArgSpec(fn):
     if sys.version_info[0:2] >= (3, 5):
       (args, varargs, varkw, defaults,
        kwonlyargs, kwonlydefaults, annotations) = Py3GetFullArgSpec(fn)
-    elif six.PY3:  # Specifically Python 3.4.
+    else:  # Specifically Python 3.4.
       (args, varargs, varkw, defaults,
        kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)  # pylint: disable=deprecated-method,no-member
-    else:  # six.PY2
-      args, varargs, varkw, defaults = Py2GetArgSpec(fn)
-      kwonlyargs = kwonlydefaults = None
-      annotations = getattr(fn, '__annotations__', None)
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
@@ -221,7 +202,7 @@ def GetFullArgSpec(fn):
     return FullArgSpec()
 
   # In Python 3.5+ Py3GetFullArgSpec uses skip_bound_arg=True already.
-  skip_arg_required = six.PY2 or sys.version_info[0:2] == (3, 4)
+  skip_arg_required = sys.version_info[0:2] == (3, 4)
   if skip_arg_required and skip_arg and args:
     args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.
   return FullArgSpec(args, varargs, varkw, defaults,
@@ -363,6 +344,6 @@ def GetClassAttrsDict(component):
 
 def IsCoroutineFunction(fn):
   try:
-    return six.PY34 and asyncio.iscoroutinefunction(fn)
+    return asyncio.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except
     return False

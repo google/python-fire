@@ -82,7 +82,7 @@ class ParserFuzzTest(testutils.BaseTestCase):
     if '#' in value:
       max_distance += len(value) - value.index('#')
 
-    if not isinstance(result, six.string_types):
+    if not isinstance(result, str):
       max_distance += value.count('0')  # Leading 0s are stripped.
 
     # Note: We don't check distance for dicts since item order can be changed.
