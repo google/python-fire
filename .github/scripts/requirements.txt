@@ -6,4 +6,4 @@ pytest-pylint <=1.1.2
 pytest-runner <7.0.0
 termcolor <2.5.0
 hypothesis <6.113.0
-levenshtein <=0.25.1
+levenshtein <=0.26.0
