@@ -132,11 +132,7 @@ def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata,
       continuations.append(trace.separator)
   continuation = ' | '.join(continuations)
 
-  synopsis_template = '{current_command} {continuation}'
-  text = synopsis_template.format(
-      current_command=current_command,
-      continuation=continuation)
-
+  text = f'{current_command} {continuation}'
   return ('SYNOPSIS', text)
 
 
@@ -243,8 +239,6 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   if spec.varkw:
     # Include kwargs documented via :key param:
     documented_kwargs = []
-    flag_string = '--{name}'
-    short_flag_string = '-{short_name}, --{name}'
 
     # add short flags if possible
     flags = docstring_info.args or []
@@ -253,11 +247,10 @@ def _ArgsAndFlagsSections(info, spec, metadata):
     for flag in flags:
       if isinstance(flag, docstrings.KwargInfo):
         if flag.name[0] in unique_short_flags:
-          flag_string = short_flag_string.format(
-              name=flag.name, short_name=flag.name[0]
-          )
+          short_name = flag.name[0]
+          flag_string = f'-{short_name}, --{flag.name}'
         else:
-          flag_string = flag_string.format(name=flag.name)
+          flag_string = f'--{flag.name}'
 
         flag_item = _CreateFlagItem(
             flag.name, docstring_info, spec,
@@ -484,14 +477,13 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
   description = _GetArgDescription(flag, docstring_info)
 
   if not flag_string:
-    flag_string_template = '--{flag_name}={flag_name_upper}'
-    flag_string = flag_string_template.format(
-        flag_name=flag,
-        flag_name_upper=formatting.Underline(flag.upper()))
+    flag_name_upper=formatting.Underline(flag.upper())
+    flag_string = f'--{flag}={flag_name_upper}'
   if required:
     flag_string += ' (required)'
   if short_arg:
-    flag_string = '-{short_flag}, '.format(short_flag=flag[0]) + flag_string
+    short_flag = flag[0]
+    flag_string = f'-{short_flag}, ' + flag_string
 
   arg_type = _GetArgType(flag, spec)
   arg_default = _GetArgDefault(flag, spec)
@@ -499,14 +491,14 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
   # We need to handle the case where there is a default of None, but otherwise
   # the argument has another type.
   if arg_default == 'None':
-    arg_type = 'Optional[{}]'.format(arg_type)
+    arg_type = f'Optional[{arg_type}]'
 
-  arg_type = 'Type: {}'.format(arg_type) if arg_type else ''
+  arg_type = f'Type: {arg_type}' if arg_type else ''
   available_space = max_str_length - len(arg_type)
   arg_type = (
       formatting.EllipsisTruncate(arg_type, available_space, max_str_length))
 
-  arg_default = 'Default: {}'.format(arg_default) if arg_default else ''
+  arg_default = f'Default: {arg_default}' if arg_default else ''
   available_space = max_str_length - len(arg_default)
   arg_default = (
       formatting.EllipsisTruncate(arg_default, available_space, max_str_length))
