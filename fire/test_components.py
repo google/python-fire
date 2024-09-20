@@ -388,8 +388,7 @@ class ClassWithMultilineDocstring(object):
         [0, 1, 2, 3]
 
     """
-    for i in range(n):
-      yield i
+    yield from range(n)
 
 
 def simple_set():
