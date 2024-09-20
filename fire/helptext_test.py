@@ -15,7 +15,6 @@
 """Tests for the helptext module."""
 
 import os
-import sys
 import textwrap
 
 from fire import formatting
@@ -124,9 +123,6 @@ class HelpTest(testutils.BaseTestCase):
         'Additional undocumented flags may also be accepted.',
         help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithDefaultsAndTypes(self):
     component = (
         tc.py3.WithDefaultsAndTypes().double)  # pytype: disable=module-attr
@@ -141,9 +137,6 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypesAndDefaultNone(self):
     component = (
         tc.py3.WithDefaultsAndTypes().get_int)  # pytype: disable=module-attr
@@ -159,9 +152,6 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypes(self):
     component = tc.py3.WithTypes().double  # pytype: disable=module-attr
     help_screen = helptext.HelpText(
@@ -177,9 +167,6 @@ class HelpTest(testutils.BaseTestCase):
         'NOTES\n    You can also use flags syntax for POSITIONAL ARGUMENTS',
         help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithLongTypes(self):
     component = tc.py3.WithTypes().long_type  # pytype: disable=module-attr
     help_screen = helptext.HelpText(

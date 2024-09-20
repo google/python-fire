@@ -23,6 +23,7 @@ if sys.version_info[0:2] < (3, 8):
 else:
   _StrNode = ast.Constant
 
+
 def CreateParser():
   parser = argparse.ArgumentParser(add_help=False)
   parser.add_argument('--verbose', '-v', action='store_true')
