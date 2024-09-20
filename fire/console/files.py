@@ -24,8 +24,6 @@ import os
 from fire.console import encoding as encoding_util
 from fire.console import platforms
 
-import six
-
 
 def _GetSystemPath():
   """Returns properly encoded system PATH variable string."""
@@ -48,7 +46,7 @@ def _FindExecutableOnPath(executable, path, pathext):
     ValueError: invalid input.
   """
 
-  if isinstance(pathext, six.string_types):
+  if isinstance(pathext, str):
     raise ValueError('_FindExecutableOnPath(..., pathext=\'{0}\') failed '
                      'because pathext must be an iterable of strings, but got '
                      'a string.'.format(pathext))
