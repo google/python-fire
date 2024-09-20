@@ -15,10 +15,10 @@
 """Tests importing the fire module."""
 
 import sys
+from unittest import mock
 
 import fire
 from fire import testutils
-import mock
 
 
 class FireImportTest(testutils.BaseTestCase):

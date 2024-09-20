@@ -14,18 +14,11 @@
 
 """This module has components that are used for testing Python Fire."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import enum
 import functools
 
-import six
-
-if six.PY3:
-  from fire import test_components_py3 as py3  # pylint: disable=unused-import,no-name-in-module,g-import-not-at-top
+from fire import test_components_py3 as py3  # pylint: disable=unused-import,no-name-in-module,g-import-not-at-top
 
 
 def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=keyword-arg-before-vararg
@@ -395,8 +388,7 @@ class ClassWithMultilineDocstring(object):
         [0, 1, 2, 3]
 
     """
-    for i in range(n):
-      yield i
+    yield from range(n)
 
 
 def simple_set():

@@ -25,7 +25,7 @@ class Widget(object):
 
   def bang(self, noise='bang'):
     """Makes a loud noise."""
-    return '{noise} bang!'.format(noise=noise)
+    return f'{noise} bang!'
 
 
 def main():

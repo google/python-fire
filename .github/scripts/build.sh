@@ -17,7 +17,7 @@
 # Exit when any command fails.
 set -e
 
-PYTHON_VERSION=${PYTHON_VERSION:-2.7}
+PYTHON_VERSION=${PYTHON_VERSION:-3.7}
 
 pip install -U -r .github/scripts/requirements.txt
 python setup.py develop

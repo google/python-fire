@@ -1,13 +1,9 @@
-setuptools <65.7.0 ; python_version == '2.7'
-setuptools <=69.1.1 ; python_version >= '3.8'
-pip <23.0 ; python_version == '2.7'
-pip ; python_version >= '3.5'
-pylint <2.15.10
-pytest <=7.2.1
+setuptools <=75.1.0
+pip
+pylint <3.2.8
+pytest <=8.3.3
 pytest-pylint <=1.1.2
-pytest-runner <6.0.0
-termcolor <2.2.0
-hypothesis <6.62.0
-python-Levenshtein <0.20.9 ; python_version == '2.7'
-levenshtein <=0.25.0 ; python_version >= '3.5'
-mock <5.0.0
+pytest-runner <7.0.0
+termcolor <2.5.0
+hypothesis <6.113.0
+levenshtein <=0.26.0

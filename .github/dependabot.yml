@@ -1,0 +1,31 @@
+# Basic dependabot.yml file with minimum configuration for two package managers
+
+version: 2
+updates:
+  # Enable version updates for python
+  - package-ecosystem: "pip"
+    directory: ".github/scripts/"
+    schedule:
+      interval: "monthly"
+    labels: ["dependabot"]
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "dbieber"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      gh-actions:
+        patterns:
+          - "*"  # Check all dependencies
+    labels: ["dependabot"]
+    pull-request-branch-name:
+      separator: "-"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "dbieber"
