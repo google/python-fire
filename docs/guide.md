@@ -589,6 +589,25 @@ default values that you don't want to specify. It is also important to remember
 to change the separator if you want to pass `-` as an argument.
 
 
+##### Async Functions
+
+Fire supports calling async functions too. Here's a simple example.
+
+```python
+import asyncio
+
+async def count_to_ten():
+  for i in range(1, 11):
+    await asyncio.sleep(1)
+    print(i)
+
+if __name__ == '__main__':
+  fire.Fire(count_to_ten)
+```
+
+Whenever fire encounters a coroutine function, it runs it, blocking until it completes.
+
+
 ### Argument Parsing
 
 The types of the arguments are determined by their values, rather than by the
