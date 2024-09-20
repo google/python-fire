@@ -18,10 +18,6 @@ SetParseFn and SetParseFns allow you to set the functions Fire uses for parsing
 command line arguments to client code.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import inspect
 
 FIRE_METADATA = 'FIRE_METADATA'

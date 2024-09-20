@@ -14,10 +14,6 @@
 
 """Tests for the completion module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from fire import completion
 from fire import test_components as tc
 from fire import testutils
@@ -37,9 +33,8 @@ class TabCompletionTest(testutils.BaseTestCase):
     self.assertIn('command', script)
     self.assertIn('halt', script)
 
-    assert_template = '{command})'
     for last_command in ['command', 'halt']:
-      self.assertIn(assert_template.format(command=last_command), script)
+      self.assertIn(f'{last_command})', script)
 
   def testCompletionFishScript(self):
     # A sanity check test to make sure the fish completion script satisfies

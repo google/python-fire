@@ -7,9 +7,6 @@
 # pygtk.require().
 #init-hook=
 
-# Profiled execution.
-profile=no
-
 # Add <file or directory> to the black list. It should be a base name, not a
 # path. You may set this option multiple times.
 ignore=
@@ -41,14 +38,6 @@ disable=design,similarities,no-self-use,attribute-defined-outside-init,locally-d
 # (visual studio) and html
 output-format=text
 
-# Include message's id in output
-include-ids=no
-
-# Put messages in a separate file for each module / package specified on the
-# command line instead of printing them on stdout. Reports (if any) will be
-# written in a file name "pylint_global.[txt|html]".
-files-output=no
-
 # Tells whether to display a full report or only the messages
 reports=yes
 
@@ -58,10 +47,6 @@ reports=yes
 # number of statements analyzed. This is used by the global evaluation report
 # (R0004).
 evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
-
-# Add a comment according to your evaluation note. This is used by the global
-# evaluation report (R0004).
-comment=no
 
 
 [VARIABLES]
@@ -78,9 +63,6 @@ additional-builtins=
 
 
 [BASIC]
-
-# List of builtins function names that should not be used, separated by a comma
-bad-functions=map,filter,apply,input,reduce
 
 # Regular expression which should only match correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
@@ -114,7 +96,7 @@ inlinevar-rgx=^[a-z][a-z0-9_]*$
 good-names=i,j,k,ex,main,Run,_
 
 # Bad variable names which should always be refused, separated by a comma
-bad-names=foo,bar,baz,toto,tutu,tata
+bad-names=map,filter,apply,input,reduce,foo,bar,baz,toto,tutu,tata
 
 # Regular expression which should only match functions or classes name which do
 # not require a docstring
@@ -186,7 +168,7 @@ max-locals=15
 max-returns=6
 
 # Maximum number of branch for function / method body
-max-branchs=12
+max-branches=12
 
 # Maximum number of statements in function / method body
 max-statements=50

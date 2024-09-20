@@ -1,6 +1,10 @@
 name: Python Fire
 
-on: [push]
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
 
 defaults:
   run:
@@ -16,17 +20,16 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         include:
           # adding some specific/older versions to the matrix
-          - {os: "ubuntu-20.04", python-version: "3.5"}
           - {os: "ubuntu-20.04", python-version: "3.7"}
 
     steps:
      # Checkout the repo.
      - name: Checkout Python Fire repository
-       uses: actions/checkout@v3
+       uses: actions/checkout@v4
 
      # Set up Python environment.
      - name: Set up Python ${{ matrix.python-version }}
-       uses: actions/setup-python@v4
+       uses: actions/setup-python@v5
        with:
          python-version: ${{ matrix.python-version }}
 

@@ -29,18 +29,15 @@ SHORT_DESCRIPTION = """
 A library for automatically generating command line interfaces.""".strip()
 
 DEPENDENCIES = [
-    'six',
     'termcolor',
-    'enum34; python_version < "3.4"'
 ]
 
 TEST_DEPENDENCIES = [
     'hypothesis',
-    'mock',
-    'python-Levenshtein',
+    'levenshtein',
 ]
 
-VERSION = '0.6.0'
+VERSION = '0.7.0'
 URL = 'https://github.com/google/python-fire'
 
 setup(
@@ -63,11 +60,7 @@ setup(
         'License :: OSI Approved :: Apache Software License',
 
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',

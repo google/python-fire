@@ -30,7 +30,7 @@ the program to the command line.
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 if __name__ == '__main__':
   fire.Fire()
@@ -52,7 +52,7 @@ command line.
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 if __name__ == '__main__':
   fire.Fire(hello)
@@ -76,7 +76,7 @@ We can alternatively write this program like this:
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 def main():
   fire.Fire(hello)
@@ -93,7 +93,7 @@ then simply this:
 import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 def main():
   fire.Fire(hello)
@@ -105,7 +105,7 @@ If you have a file `example.py` that doesn't even import fire:
 
 ```python
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 ```
 
 Then you can use it with Fire like this:
@@ -587,6 +587,25 @@ CAT DOG ELEPHANT
 Separators can be useful when a function accepts \*varargs, \*\*kwargs, or
 default values that you don't want to specify. It is also important to remember
 to change the separator if you want to pass `-` as an argument.
+
+
+##### Async Functions
+
+Fire supports calling async functions too. Here's a simple example.
+
+```python
+import asyncio
+
+async def count_to_ten():
+  for i in range(1, 11):
+    await asyncio.sleep(1)
+    print(i)
+
+if __name__ == '__main__':
+  fire.Fire(count_to_ten)
+```
+
+Whenever fire encounters a coroutine function, it runs it, blocking until it completes.
 
 
 ### Argument Parsing
