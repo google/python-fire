@@ -64,9 +64,6 @@ additional-builtins=
 
 [BASIC]
 
-# List of builtins function names that should not be used, separated by a comma
-bad-names=map,filter,apply,input,reduce
-
 # Regular expression which should only match correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 
@@ -99,7 +96,7 @@ inlinevar-rgx=^[a-z][a-z0-9_]*$
 good-names=i,j,k,ex,main,Run,_
 
 # Bad variable names which should always be refused, separated by a comma
-bad-names=foo,bar,baz,toto,tutu,tata
+bad-names=map,filter,apply,input,reduce,foo,bar,baz,toto,tutu,tata
 
 # Regular expression which should only match functions or classes name which do
 # not require a docstring
