@@ -7,7 +7,7 @@ updates:
     directory: ".github/scripts/"
     schedule:
       interval: "monthly"
-    labels: ["ci"]
+    labels: ["dependabot"]
     pull-request-branch-name:
       separator: "-"
     open-pull-requests-limit: 5
@@ -23,7 +23,7 @@ updates:
       gh-actions:
         patterns:
           - "*"  # Check all dependencies
-    labels: ["ci"]
+    labels: ["dependabot"]
     pull-request-branch-name:
       separator: "-"
     open-pull-requests-limit: 5
