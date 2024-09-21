@@ -28,5 +28,5 @@ pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py,console
 if [[ ${PYTHON_VERSION} == 3.7 ]]; then
   # Run type-checking.
   pip install pytype;
-  pytype -x fire/test_components_py3.py;
+  find . -name '*.py' | xargs -n 1 -P 8 pytype
 fi
