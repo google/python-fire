@@ -77,7 +77,7 @@ class FireTrace:
     for element in reversed(self.elements):
       if not element.HasError():
         return element
-    return None
+    return self.elements[0]  # The initial element is always healthy.
 
   def HasError(self):
     """Returns whether the Fire execution encountered a Fire usage error."""

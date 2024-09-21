@@ -475,7 +475,7 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
   description = _GetArgDescription(flag, docstring_info)
 
   if not flag_string:
-    flag_name_upper=formatting.Underline(flag.upper())
+    flag_name_upper = formatting.Underline(flag.upper())
     flag_string = f'--{flag}={flag_name_upper}'
   if required:
     flag_string += ' (required)'
