@@ -107,5 +107,5 @@ def GetMetadata(fn):
 def GetParseFns(fn):
   # type: (...) -> dict
   metadata = GetMetadata(fn)
-  default = {"default": None, "positional": [], "named": {}}
+  default = {'default': None, 'positional': [], 'named': {}}
   return metadata.get(FIRE_PARSE_FNS, default)

@@ -428,7 +428,6 @@ VALUES
     self.assertIn('\n    --late', help_screen)
 
 
-
 class UsageTest(testutils.BaseTestCase):
 
   def testUsageOutput(self):

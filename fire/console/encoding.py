@@ -33,6 +33,7 @@ def Encode(string, encoding=None):
   Returns:
     str, The binary string.
   """
+  del encoding  # Unused.
   return string
 
 
