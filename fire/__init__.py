@@ -14,11 +14,7 @@
 
 """The Python Fire module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from fire.core import Fire
 
 __all__ = ['Fire']
-__version__ = '0.6.0'
+__version__ = '0.7.0'

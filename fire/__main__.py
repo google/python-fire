@@ -18,11 +18,8 @@
 This allows using Fire with third-party libraries without modifying their code.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import importlib
+from importlib import util
 import os
 import sys
 
@@ -57,31 +54,17 @@ def import_from_file_path(path):
   """
 
   if not os.path.exists(path):
-    raise IOError('Given file path does not exist.')
+    raise OSError('Given file path does not exist.')
 
   module_name = os.path.basename(path)
 
-  if sys.version_info.major == 3 and sys.version_info.minor < 5:
-    loader = importlib.machinery.SourceFileLoader(  # pylint: disable=no-member
-        fullname=module_name,
-        path=path,
-    )
+  spec = util.spec_from_file_location(module_name, path)
 
-    module = loader.load_module(module_name)  # pylint: disable=deprecated-method
+  if spec is None:
+    raise OSError('Unable to load module from specified path.')
 
-  elif sys.version_info.major == 3:
-    from importlib import util  # pylint: disable=g-import-not-at-top,import-outside-toplevel,no-name-in-module
-    spec = util.spec_from_file_location(module_name, path)
-
-    if spec is None:
-      raise IOError('Unable to load module from specified path.')
-
-    module = util.module_from_spec(spec)  # pylint: disable=no-member
-    spec.loader.exec_module(module)  # pytype: disable=attribute-error
-
-  else:
-    import imp  # pylint: disable=g-import-not-at-top,import-outside-toplevel,deprecated-module,import-error
-    module = imp.load_source(module_name, path)
+  module = util.module_from_spec(spec)  # pylint: disable=no-member
+  spec.loader.exec_module(module)  # pytype: disable=attribute-error
 
   return module, module_name
 
@@ -121,7 +104,7 @@ def import_module(module_or_filename):
     return import_from_file_path(module_or_filename)
 
   if os.path.sep in module_or_filename:  # Use / to detect if it was a filename.
-    raise IOError('Fire was passed a filename which could not be found.')
+    raise OSError('Fire was passed a filename which could not be found.')
 
   return import_from_module_name(module_or_filename)  # Assume it's a module.
 

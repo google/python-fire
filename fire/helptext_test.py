@@ -14,12 +14,7 @@
 
 """Tests for the helptext module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
-import sys
 import textwrap
 
 from fire import formatting
@@ -27,13 +22,12 @@ from fire import helptext
 from fire import test_components as tc
 from fire import testutils
 from fire import trace
-import six
 
 
 class HelpTest(testutils.BaseTestCase):
 
   def setUp(self):
-    super(HelpTest, self).setUp()
+    super().setUp()
     os.environ['ANSI_COLORS_DISABLED'] = '1'
 
   def testHelpTextNoDefaults(self):
@@ -129,9 +123,6 @@ class HelpTest(testutils.BaseTestCase):
         'Additional undocumented flags may also be accepted.',
         help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithDefaultsAndTypes(self):
     component = (
         tc.py3.WithDefaultsAndTypes().double)  # pytype: disable=module-attr
@@ -146,9 +137,6 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypesAndDefaultNone(self):
     component = (
         tc.py3.WithDefaultsAndTypes().get_int)  # pytype: disable=module-attr
@@ -164,9 +152,6 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypesAndDefaultNoneFromTypingOptional(self):
     component = (
         tc.py3.WithDefaultsAndTypes().typing_optional_get_int)  # pytype: disable=module-attr
@@ -182,9 +167,6 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypesAndDefaultNoneFromTypingUnion(self):
     component = (
         tc.py3.WithDefaultsAndTypes().typing_union_get_int)  # pytype: disable=module-attr
@@ -200,9 +182,6 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithTypes(self):
     component = tc.py3.WithTypes().double  # pytype: disable=module-attr
     help_screen = helptext.HelpText(
@@ -218,9 +197,6 @@ class HelpTest(testutils.BaseTestCase):
         'NOTES\n    You can also use flags syntax for POSITIONAL ARGUMENTS',
         help_screen)
 
-  @testutils.skipIf(
-      sys.version_info[0:2] < (3, 5),
-      'Python < 3.5 does not support type hints.')
   def testHelpTextFunctionWithLongTypes(self):
     component = tc.py3.WithTypes().long_type  # pytype: disable=module-attr
     help_screen = helptext.HelpText(
@@ -316,8 +292,6 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    OldStyleEmpty', help_screen)
     self.assertIn('SYNOPSIS\n    OldStyleEmpty', help_screen)
 
-  @testutils.skipIf(
-      six.PY2, 'Python 2 does not support keyword-only arguments.')
   def testHelpTextKeywordOnlyArgumentsWithDefault(self):
     component = tc.py3.KeywordOnly.with_default  # pytype: disable=module-attr
     output = helptext.HelpText(
@@ -325,8 +299,6 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    with_default', output)
     self.assertIn('FLAGS\n    -x, --x=X', output)
 
-  @testutils.skipIf(
-      six.PY2, 'Python 2 does not support keyword-only arguments.')
   def testHelpTextKeywordOnlyArgumentsWithoutDefault(self):
     component = tc.py3.KeywordOnly.double  # pytype: disable=module-attr
     output = helptext.HelpText(
@@ -334,9 +306,6 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('NAME\n    double', output)
     self.assertIn('FLAGS\n    -c, --count=COUNT (required)', output)
 
-  @testutils.skipIf(
-      six.PY2,
-      'Python 2 does not support required name-only arguments.')
   def testHelpTextFunctionMixedDefaults(self):
     component = tc.py3.HelpTextComponent().identity
     t = trace.FireTrace(component, name='FunctionMixedDefaults')
@@ -489,7 +458,6 @@ VALUES
     self.assertIn('\n    --late', help_screen)
 
 
-
 class UsageTest(testutils.BaseTestCase):
 
   def testUsageOutput(self):
@@ -563,9 +531,6 @@ class UsageTest(testutils.BaseTestCase):
         textwrap.dedent(expected_output).lstrip('\n'),
         usage_output)
 
-  @testutils.skipIf(
-      six.PY2,
-      'Python 2 does not support required name-only arguments.')
   def testUsageOutputFunctionMixedDefaults(self):
     component = tc.py3.HelpTextComponent().identity
     t = trace.FireTrace(component, name='FunctionMixedDefaults')

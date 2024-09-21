@@ -43,7 +43,7 @@ class MainModuleFileTest(testutils.BaseTestCase):
   """Tests to verify correct import behavior for file executables."""
 
   def setUp(self):
-    super(MainModuleFileTest, self).setUp()
+    super().setUp()
     self.file = tempfile.NamedTemporaryFile(suffix='.py')  # pylint: disable=consider-using-with
     self.file.write(b'class Foo:\n  def double(self, n):\n    return 2 * n\n')
     self.file.flush()

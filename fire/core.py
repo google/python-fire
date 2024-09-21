@@ -49,10 +49,7 @@ The available flags for all Fire CLIs are:
   --trace: Get the Fire Trace for the command.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
+import asyncio
 import inspect
 import json
 import os
@@ -71,10 +68,6 @@ from fire import parser
 from fire import trace
 from fire import value_types
 from fire.console import console_io
-import six
-
-if six.PY34:
-  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
 
 
 def Fire(component=None, command=None, name=None, serialize=None):
@@ -113,7 +106,7 @@ def Fire(component=None, command=None, name=None, serialize=None):
   name = name or os.path.basename(sys.argv[0])
 
   # Get args as a list.
-  if isinstance(command, six.string_types):
+  if isinstance(command, str):
     args = shlex.split(command)
   elif isinstance(command, (list, tuple)):
     args = command
@@ -145,7 +138,7 @@ def Fire(component=None, command=None, name=None, serialize=None):
     _DisplayError(component_trace)
     raise FireExit(2, component_trace)
   if component_trace.show_trace and component_trace.show_help:
-    output = ['Fire trace:\n{trace}\n'.format(trace=component_trace)]
+    output = [f'Fire trace:\n{component_trace}\n']
     result = component_trace.GetResult()
     help_text = helptext.HelpText(
         result, trace=component_trace, verbose=component_trace.verbose)
@@ -153,7 +146,7 @@ def Fire(component=None, command=None, name=None, serialize=None):
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
   if component_trace.show_trace:
-    output = ['Fire trace:\n{trace}'.format(trace=component_trace)]
+    output = [f'Fire trace:\n{component_trace}']
     Display(output, out=sys.stderr)
     raise FireExit(0, component_trace)
   if component_trace.show_help:
@@ -206,7 +199,7 @@ class FireExit(SystemExit):  # pylint: disable=g-bad-exception-name
       code: (int) Exit code for the Fire CLI.
       component_trace: (FireTrace) The trace for the Fire command.
     """
-    super(FireExit, self).__init__(code)
+    super().__init__(code)
     self.trace = component_trace
 
 
@@ -237,9 +230,9 @@ def _IsHelpShortcut(component_trace, remaining_args):
 
   if show_help:
     component_trace.show_help = True
-    command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
-    print('INFO: Showing help with the command {cmd}.\n'.format(
-        cmd=shlex.quote(command)), file=sys.stderr)
+    command = f'{component_trace.GetCommand()} -- --help'
+    print(f'INFO: Showing help with the command {shlex.quote(command)}.\n',
+          file=sys.stderr)
   return show_help
 
 
@@ -293,9 +286,9 @@ def _DisplayError(component_trace):
       show_help = True
 
   if show_help:
-    command = '{cmd} -- --help'.format(cmd=component_trace.GetCommand())
-    print('INFO: Showing help with the command {cmd}.\n'.format(
-        cmd=shlex.quote(command)), file=sys.stderr)
+    command = f'{component_trace.GetCommand()} -- --help'
+    print(f'INFO: Showing help with the command {shlex.quote(command)}.\n',
+          file=sys.stderr)
     help_text = helptext.HelpText(result, trace=component_trace,
                                   verbose=component_trace.verbose)
     output.append(help_text)
@@ -333,14 +326,13 @@ def _DictAsString(result, verbose=False):
     return '{}'
 
   longest_key = max(len(str(key)) for key in result_visible.keys())
-  format_string = '{{key:{padding}s}} {{value}}'.format(padding=longest_key + 1)
+  format_string = f'{{key:{longest_key + 1}s}} {{value}}'
 
   lines = []
   for key, value in result.items():
     if completion.MemberVisible(result, key, value, class_attrs=class_attrs,
                                 verbose=verbose):
-      line = format_string.format(key=str(key) + ':',
-                                  value=_OneLineResult(value))
+      line = format_string.format(key=f'{key}:', value=_OneLineResult(value))
       lines.append(line)
   return '\n'.join(lines)
 
@@ -348,16 +340,16 @@ def _DictAsString(result, verbose=False):
 def _OneLineResult(result):
   """Returns result serialized to a single line string."""
   # TODO(dbieber): Ensure line is fewer than eg 120 characters.
-  if isinstance(result, six.string_types):
+  if isinstance(result, str):
     return str(result).replace('\n', ' ')
 
   # TODO(dbieber): Show a small amount of usage information about the function
   # or module if it fits cleanly on the line.
   if inspect.isfunction(result):
-    return '<function {name}>'.format(name=result.__name__)
+    return f'<function {result.__name__}>'
 
   if inspect.ismodule(result):
-    return '<module {name}>'.format(name=result.__name__)
+    return f'<module {result.__name__}>'
 
   try:
     # Don't force conversion to ascii.
@@ -878,6 +870,7 @@ def _ParseKeywordArgs(args, fn_spec):
         key, value = stripped_argument.split('=', 1)
       else:
         key = stripped_argument
+        value = None  # value will be set later on.
 
       key = key.replace('-', '_')
       is_bool_syntax = (not contains_equals and
@@ -895,9 +888,10 @@ def _ParseKeywordArgs(args, fn_spec):
         if len(matching_fn_args) == 1:
           keyword = matching_fn_args[0]
         elif len(matching_fn_args) > 1:
-          raise FireError("The argument '{}' is ambiguous as it could "
-                          "refer to any of the following arguments: {}".format(
-                              argument, matching_fn_args))
+          raise FireError(
+              f"The argument '{argument}' is ambiguous as it could "
+              f"refer to any of the following arguments: {matching_fn_args}"
+          )
 
       # Determine the value.
       if not keyword:

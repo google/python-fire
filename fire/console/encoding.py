@@ -22,8 +22,6 @@ from __future__ import unicode_literals
 
 import sys
 
-import six
-
 
 def Encode(string, encoding=None):
   """Encode the text string to a byte string.
@@ -35,18 +33,8 @@ def Encode(string, encoding=None):
   Returns:
     str, The binary string.
   """
-  if string is None:
-    return None
-  if not six.PY2:
-    # In Python 3, the environment sets and gets accept and return text strings
-    # only, and it handles the encoding itself so this is not necessary.
-    return string
-  if isinstance(string, six.binary_type):
-    # Already an encoded byte string, we are done
-    return string
-
-  encoding = encoding or _GetEncoding()
-  return string.encode(encoding)
+  del encoding  # Unused.
+  return string
 
 
 def Decode(data, encoding=None):
@@ -67,20 +55,13 @@ def Decode(data, encoding=None):
     return None
 
   # First we are going to get the data object to be a text string.
-  # Don't use six.string_types here because on Python 3 bytes is not considered
-  # a string type and we want to include that.
-  if isinstance(data, six.text_type) or isinstance(data, six.binary_type):
+  if isinstance(data, str) or isinstance(data, bytes):
     string = data
   else:
     # Some non-string type of object.
-    try:
-      string = six.text_type(data)
-    except (TypeError, UnicodeError):
-      # The string cannot be converted to unicode -- default to str() which will
-      # catch objects with special __str__ methods.
-      string = str(data)
+    string = str(data)
 
-  if isinstance(string, six.text_type):
+  if isinstance(string, str):
     # Our work is done here.
     return string
 
@@ -199,7 +180,8 @@ def EncodeEnv(env, encoding=None):
   encoding = encoding or _GetEncoding()
   return {
       Encode(k, encoding=encoding): Encode(v, encoding=encoding)
-      for k, v in six.iteritems(env)}
+      for k, v in env.items()
+  }
 
 
 def _GetEncoding():

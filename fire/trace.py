@@ -25,10 +25,6 @@ a function, then that error will be captured in the trace and the final
 component will be None.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import shlex
 
 from fire import inspectutils
@@ -42,7 +38,7 @@ COMPLETION_SCRIPT = 'Generated completion script'
 INTERACTIVE_MODE = 'Entered interactive mode'
 
 
-class FireTrace(object):
+class FireTrace:
   """A FireTrace represents the steps taken during a single Fire execution.
 
   A FireTrace consists of a sequence of FireTraceElement objects. Each element
@@ -81,7 +77,7 @@ class FireTrace(object):
     for element in reversed(self.elements):
       if not element.HasError():
         return element
-    return None
+    return self.elements[0]  # The initial element is always healthy.
 
   def HasError(self):
     """Returns whether the Fire execution encountered a Fire usage error."""
@@ -216,10 +212,7 @@ class FireTrace(object):
   def __str__(self):
     lines = []
     for index, element in enumerate(self.elements):
-      line = '{index}. {trace_string}'.format(
-          index=index + 1,
-          trace_string=element,
-      )
+      line = f'{index + 1}. {element}'
       lines.append(line)
     return '\n'.join(lines)
 
@@ -245,7 +238,7 @@ class FireTrace(object):
             or flag in spec.kwonlyargs)
 
 
-class FireTraceElement(object):
+class FireTraceElement:
   """A FireTraceElement represents a single step taken by a Fire execution.
 
   Examples of a FireTraceElement are the instantiation of a class or the
@@ -265,7 +258,7 @@ class FireTraceElement(object):
 
     Args:
       component: The result of this element of the trace.
-      action: The type of action (eg instantiating a class) taking place.
+      action: The type of action (e.g. instantiating a class) taking place.
       target: (string) The name of the component being acted upon.
       args: The args consumed by the represented action.
       filename: The file in which the action is defined, or None if N/A.
@@ -305,11 +298,11 @@ class FireTraceElement(object):
       # Format is: {action} "{target}" ({filename}:{lineno})
       string = self._action
       if self._target is not None:
-        string += ' "{target}"'.format(target=self._target)
+        string += f' "{self._target}"'
       if self._filename is not None:
         path = self._filename
         if self._lineno is not None:
-          path += ':{lineno}'.format(lineno=self._lineno)
+          path += f':{self._lineno}'
 
-        string += ' ({path})'.format(path=path)
+        string += f' ({path})'
       return string

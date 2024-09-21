@@ -14,10 +14,6 @@
 
 """This module is used for enabling formatting on Windows."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import ctypes
 import os
 import platform
@@ -35,7 +31,7 @@ def initialize_or_disable():
   """Enables ANSI processing on Windows or disables it as needed."""
   if HAS_COLORAMA:
     wrap = True
-    if (hasattr(sys.stdout, "isatty")
+    if (hasattr(sys.stdout, 'isatty')
         and sys.stdout.isatty()
         and platform.release() == '10'):
       # Enables native ANSI sequences in console.
