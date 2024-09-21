@@ -54,14 +54,14 @@ def import_from_file_path(path):
   """
 
   if not os.path.exists(path):
-    raise IOError('Given file path does not exist.')
+    raise OSError('Given file path does not exist.')
 
   module_name = os.path.basename(path)
 
   spec = util.spec_from_file_location(module_name, path)
 
   if spec is None:
-    raise IOError('Unable to load module from specified path.')
+    raise OSError('Unable to load module from specified path.')
 
   module = util.module_from_spec(spec)  # pylint: disable=no-member
   spec.loader.exec_module(module)  # pytype: disable=attribute-error
@@ -104,7 +104,7 @@ def import_module(module_or_filename):
     return import_from_file_path(module_or_filename)
 
   if os.path.sep in module_or_filename:  # Use / to detect if it was a filename.
-    raise IOError('Fire was passed a filename which could not be found.')
+    raise OSError('Fire was passed a filename which could not be found.')
 
   return import_from_module_name(module_or_filename)  # Assume it's a module.
 

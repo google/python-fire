@@ -53,7 +53,7 @@ class ParserFuzzTest(testutils.BaseTestCase):
       result = parser.DefaultParseValue(value)
     except TypeError:
       # It's OK to get a TypeError if the string has the null character.
-      if u'\x00' in value:
+      if '\x00' in value:
         return
       raise
     except MemoryError:
