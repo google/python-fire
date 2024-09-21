@@ -17,4 +17,4 @@
 from fire.core import Fire
 
 __all__ = ['Fire']
-__version__ = '0.6.0'
+__version__ = '0.7.0'
