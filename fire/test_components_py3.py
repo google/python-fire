@@ -31,7 +31,7 @@ class HelpTextComponent:
     return alpha, beta
 
 
-class KeywordOnly(object):
+class KeywordOnly:
 
   def double(self, *, count):
     return count * 2
@@ -43,7 +43,7 @@ class KeywordOnly(object):
     print("x: " + x)
 
 
-class LruCacheDecoratedMethod(object):
+class LruCacheDecoratedMethod:
 
   @functools.lru_cache()
   def lru_cache_in_class(self, arg1):
@@ -55,13 +55,13 @@ def lru_cache_decorated(arg1):
   return arg1
 
 
-class WithAsyncio(object):
+class WithAsyncio:
 
   async def double(self, count=0):
     return 2 * count
 
 
-class WithTypes(object):
+class WithTypes:
   """Class with functions that have default arguments and types."""
 
   def double(self, count: float) -> float:
@@ -83,7 +83,7 @@ class WithTypes(object):
     return long_obj
 
 
-class WithDefaultsAndTypes(object):
+class WithDefaultsAndTypes:
   """Class with functions that have default arguments and types."""
 
   def double(self, count: float = 0) -> float:

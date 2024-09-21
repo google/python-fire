@@ -17,9 +17,8 @@ jobs:
       matrix:
         fail-fast: false
         os: ["windows-latest", "macos-latest", "ubuntu-latest"]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13.0-rc.2"]
         include:
-          # adding some specific/older versions to the matrix
           - {os: "ubuntu-20.04", python-version: "3.7"}
 
     steps:

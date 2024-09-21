@@ -67,6 +67,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
 
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
@@ -76,6 +77,7 @@ setup(
 
     keywords='command line interface cli python fire interactive bash tool',
 
+    requires_python='>=3.7',
     packages=['fire', 'fire.console'],
 
     install_requires=DEPENDENCIES,
