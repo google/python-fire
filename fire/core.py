@@ -199,7 +199,7 @@ class FireExit(SystemExit):  # pylint: disable=g-bad-exception-name
       code: (int) Exit code for the Fire CLI.
       component_trace: (FireTrace) The trace for the Fire command.
     """
-    super(FireExit, self).__init__(code)
+    super().__init__(code)
     self.trace = component_trace
 
 

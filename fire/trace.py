@@ -38,7 +38,7 @@ COMPLETION_SCRIPT = 'Generated completion script'
 INTERACTIVE_MODE = 'Entered interactive mode'
 
 
-class FireTrace(object):
+class FireTrace:
   """A FireTrace represents the steps taken during a single Fire execution.
 
   A FireTrace consists of a sequence of FireTraceElement objects. Each element
@@ -238,7 +238,7 @@ class FireTrace(object):
             or flag in spec.kwonlyargs)
 
 
-class FireTraceElement(object):
+class FireTraceElement:
   """A FireTraceElement represents a single step taken by a Fire execution.
 
   Examples of a FireTraceElement are the instantiation of a class or the
