@@ -27,7 +27,7 @@ from fire import trace
 class HelpTest(testutils.BaseTestCase):
 
   def setUp(self):
-    super(HelpTest, self).setUp()
+    super().setUp()
     os.environ['ANSI_COLORS_DISABLED'] = '1'
 
   def testHelpTextNoDefaults(self):
@@ -426,7 +426,6 @@ VALUES
         help_screen)
     self.assertIn('\n    --last', help_screen)
     self.assertIn('\n    --late', help_screen)
-
 
 
 class UsageTest(testutils.BaseTestCase):
