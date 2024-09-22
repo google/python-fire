@@ -2,18 +2,23 @@ name: Python Fire
 
 on:
   push:
-    branches:
-      - master
+    branches: ["master"]
   pull_request:
-    branches:
-      - master
+    branches: ["master"]
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13.0-rc.2"]
+        os: ["macos-latest", "ubuntu-latest"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13.0-rc.2"]
+        include:
+          - {os: "ubuntu-20.04", python-version: "3.7"}
 
     steps:
      # Checkout the repo.
@@ -28,7 +33,6 @@ jobs:
 
      # Build Python Fire using the build.sh script.
      - name: Run build script
-       shell: bash
        run: ./.github/scripts/build.sh
        env:
          PYTHON_VERSION: ${{ matrix.python-version }}
