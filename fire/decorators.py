@@ -18,6 +18,7 @@ SetParseFn and SetParseFns allow you to set the functions Fire uses for parsing
 command line arguments to client code.
 """
 
+from typing import Any, Dict
 import inspect
 
 FIRE_METADATA = 'FIRE_METADATA'
@@ -80,8 +81,7 @@ def _SetMetadata(fn, attribute, value):
   setattr(fn, FIRE_METADATA, metadata)
 
 
-def GetMetadata(fn):
-  # type: (...) -> dict
+def GetMetadata(fn) -> Dict[str, Any]:
   """Gets metadata attached to the function `fn` as an attribute.
 
   Args:
@@ -104,8 +104,7 @@ def GetMetadata(fn):
     return default
 
 
-def GetParseFns(fn):
-  # type: (...) -> dict
+def GetParseFns(fn) -> Dict[str, Any]:
   metadata = GetMetadata(fn)
   default = {'default': None, 'positional': [], 'named': {}}
   return metadata.get(FIRE_PARSE_FNS, default)
