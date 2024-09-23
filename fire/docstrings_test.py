@@ -46,7 +46,9 @@ class DocstringsTest(testutils.BaseTestCase):
 
   def test_one_line_too_long(self):
     # pylint: disable=line-too-long
-    docstring = """A one line docstring that is both a little too verbose and a little too long so it keeps going well beyond a reasonable length for a one-liner.
+    docstring = """A one line docstring that is both a little too verbose
+    and a little too long so it keeps going well beyond a reasonable length
+    for a one-liner.
     """
     # pylint: enable=line-too-long
     docstring_info = docstrings.parse(docstring)
@@ -59,8 +61,8 @@ class DocstringsTest(testutils.BaseTestCase):
 
   def test_one_line_runs_over(self):
     # pylint: disable=line-too-long
-    docstring = """A one line docstring that is both a little too verbose and a little too long
-    so it runs onto a second line.
+    docstring = """A one line docstring that is both a little too verbose
+    and a little too long so it runs onto a second line.
     """
     # pylint: enable=line-too-long
     docstring_info = docstrings.parse(docstring)
@@ -72,8 +74,8 @@ class DocstringsTest(testutils.BaseTestCase):
 
   def test_one_line_runs_over_whitespace(self):
     docstring = """
-      A one line docstring that is both a little too verbose and a little too long
-      so it runs onto a second line.
+      A one line docstring that is both a little too verbose
+      and a little too long so it runs onto a second line.
     """
     docstring_info = docstrings.parse(docstring)
     expected_docstring_info = DocstringInfo(

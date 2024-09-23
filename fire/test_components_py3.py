@@ -14,7 +14,6 @@
 
 """This module has components that use Python 3 specific syntax."""
 
-import asyncio
 import functools
 from typing import Tuple
 

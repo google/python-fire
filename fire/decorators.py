@@ -100,7 +100,7 @@ def GetMetadata(fn) -> Dict[str, Any]:
       return metadata
     else:
       return default
-  except:  # pylint: disable=bare-except
+  except:  # noqa: E722
     return default
 
 

@@ -21,7 +21,7 @@ from fire import testutils
 
 
 try:
-  import IPython  # pylint: disable=unused-import, g-import-not-at-top
+  import IPython  # noqa: F401
   INTERACT_METHOD = 'IPython.start_ipython'
 except ImportError:
   INTERACT_METHOD = 'code.InteractiveConsole'

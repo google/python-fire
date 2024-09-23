@@ -47,7 +47,7 @@ def GetTermSize():
       xy = get_terminal_size()
       if xy:
         break
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       pass
   return xy or (80, 24)
 
@@ -75,7 +75,7 @@ def _GetTermSizePosix():
       # binary shorts to a (rows, columns) int tuple.
       rc = struct.unpack(b'hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, 'junk'))
       return (rc[1], rc[0]) if rc else None
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       return None
 
   xy = _GetXY(0) or _GetXY(1) or _GetXY(2)
@@ -84,7 +84,7 @@ def _GetTermSizePosix():
     try:
       fd = os.open(os.ctermid(), os.O_RDONLY)
       xy = _GetXY(fd)
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       xy = None
     finally:
       if fd is not None:
@@ -153,7 +153,7 @@ def GetRawKeyFunction():
                                _GetRawKeyFunctionWindows):
     try:
       return get_raw_key_function()
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       pass
   return lambda: None
 
@@ -212,7 +212,7 @@ def _GetRawKeyFunctionPosix():
             c = prev_c
             break
         return ansi_to_key.get(c, '')
-    except:  # pylint:disable=bare-except
+    except:  # noqa: E722
       c = None
     finally:
       termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)

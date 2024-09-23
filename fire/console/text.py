@@ -100,4 +100,3 @@ class TextTypes(_TextTypes):
   OUTPUT = 7
   PT_SUCCESS = 8
   PT_FAILURE = 9
-

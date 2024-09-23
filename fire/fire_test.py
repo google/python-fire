@@ -323,10 +323,10 @@ class FireTest(testutils.BaseTestCase):
   def testFireNoComponent(self):
     self.assertEqual(fire.Fire(command=['tc', 'WithDefaults', 'double', '10']),
                      20)
-    last_char = lambda text: text[-1]  # pylint: disable=unused-variable
+    # last_char = lambda text: text[-1]
     self.assertEqual(fire.Fire(command=['last_char', '"Hello"']), 'o')
     self.assertEqual(fire.Fire(command=['last-char', '"World"']), 'd')
-    rset = lambda count=0: set(range(count))  # pylint: disable=unused-variable
+    # rset = lambda count=0: set(range(count))
     self.assertEqual(fire.Fire(command=['rset', '5']), {0, 1, 2, 3, 4})
 
   def testFireUnderscores(self):
