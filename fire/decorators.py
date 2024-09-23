@@ -98,8 +98,7 @@ def GetMetadata(fn) -> Dict[str, Any]:
     metadata = getattr(fn, FIRE_METADATA, default)
     if ACCEPTS_POSITIONAL_ARGS in metadata:
       return metadata
-    else:
-      return default
+    return default
   except:  # noqa: E722
     return default
 

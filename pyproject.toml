@@ -16,7 +16,13 @@ output = ".pytype"
 line-length = 80
 
 # Enable specific rule categories
-lint.select = ["E", "F", "W", "RUF100"]
+lint.select = [
+    "E",  # Errors
+    "W",  # Warnings
+    "C",  # Conventions
+    "R",  # Refactors
+    "RUF100", # Remove unused noqas
+]
 
 # Exclude specific files and directories
 lint.exclude = ["build", "dist", ".venv"]

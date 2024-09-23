@@ -338,8 +338,7 @@ def _as_arg_name_and_type(text):
     type_token = ' '.join(tokens[1:])
     type_token = type_token.lstrip('{([').rstrip('])}')
     return tokens[0], type_token
-  else:
-    return None
+  return None
 
 
 def _as_arg_names(names_str):
@@ -408,7 +407,7 @@ def _consume_google_args_line(line_info, state):
       state.current_arg.description.lines.append(split_line[0])
 
 
-def _consume_line(line_info, state):
+def _consume_line(line_info, state):  # noqa: C901
   """Consumes one line of text, updating the state accordingly.
 
   When _consume_line is called, part of the line may already have been processed
@@ -689,8 +688,7 @@ def _get_directive(line_info):
   """
   if line_info.stripped.startswith(':'):
     return line_info.stripped.split(':', 2)[1]
-  else:
-    return None
+  return None
 
 
 def _get_after_directive(line_info):
@@ -698,8 +696,7 @@ def _get_after_directive(line_info):
   sections = line_info.stripped.split(':', 2)
   if len(sections) > 2:
     return sections[-1]
-  else:
-    return ''
+  return ''
 
 
 def _rst_section(line_info):
@@ -717,8 +714,7 @@ def _rst_section(line_info):
   if directive:
     possible_title = directive.split()[0]
     return _section_from_possible_title(possible_title)
-  else:
-    return None
+  return None
 
 
 def _line_is_hyphens(line):
@@ -744,8 +740,7 @@ def _numpy_section(line_info):
   if next_line_is_hyphens:
     possible_title = line_info.remaining
     return _section_from_possible_title(possible_title)
-  else:
-    return None
+  return None
 
 
 def _line_is_numpy_parameter_type(line_info):
@@ -769,6 +764,5 @@ def _line_is_numpy_parameter_type(line_info):
     if ':' in line_info.previous.line and current_indent > previous_indent:
       # The parameter type was the previous line; this is the description.
       return False
-    else:
-      return True
+    return True
   return False

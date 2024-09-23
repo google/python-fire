@@ -66,8 +66,7 @@ def _FindExecutableOnPath(executable, path, pathext):
 def _PlatformExecutableExtensions(platform):
   if platform == platforms.OperatingSystem.WINDOWS:
     return ('.exe', '.cmd', '.bat', '.com', '.ps1')
-  else:
-    return ('', '.sh')
+  return ('', '.sh')
 
 
 def FindExecutableOnPath(executable, path=None, pathext=None,

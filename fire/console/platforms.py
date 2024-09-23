@@ -147,13 +147,13 @@ class OperatingSystem(object):
     """
     if os.name == 'nt':
       return OperatingSystem.WINDOWS
-    elif 'linux' in sys.platform:
+    if 'linux' in sys.platform:
       return OperatingSystem.LINUX
-    elif 'darwin' in sys.platform:
+    if 'darwin' in sys.platform:
       return OperatingSystem.MACOSX
-    elif 'cygwin' in sys.platform:
+    if 'cygwin' in sys.platform:
       return OperatingSystem.CYGWIN
-    elif 'msys' in sys.platform:
+    if 'msys' in sys.platform:
       return OperatingSystem.MSYS
     return None
 
@@ -323,12 +323,12 @@ class Platform(object):
       # '#1 SMP Tue May 21 02:35:06 PDT 2013', 'x86_64', 'x86_64')
       return '({name} {version})'.format(
           name=self.operating_system.name, version=platform.release())
-    elif self.operating_system == OperatingSystem.WINDOWS:
+    if self.operating_system == OperatingSystem.WINDOWS:
       # ('Windows', '<hostname goes here>', '7', '6.1.7601', 'AMD64',
       # 'Intel64 Family 6 Model 45 Stepping 7, GenuineIntel')
       return '({name} NT {version})'.format(
           name=self.operating_system.name, version=platform.version())
-    elif self.operating_system == OperatingSystem.MACOSX:
+    if self.operating_system == OperatingSystem.MACOSX:
       # ('Darwin', '<hostname goes here>', '12.4.0',
       # 'Darwin Kernel Version 12.4.0: Wed May  1 17:57:12 PDT 2013;
       # root:xnu-2050.24.15~1/RELEASE_X86_64', 'x86_64', 'i386')
@@ -337,8 +337,7 @@ class Platform(object):
                      if self.architecture == Architecture.ppc else 'Intel')
       return format_string.format(
           name=arch_string, version=platform.release())
-    else:
-      return '()'
+    return '()'
 
   def AsyncPopenArgs(self):
     """Returns the args for spawning an async process using Popen on this OS.
@@ -413,10 +412,9 @@ the CLOUDSDK_PYTHON environment variable to point to it.
           PythonVersion.MIN_SUPPORTED_PY2_VERSION[1],
           PythonVersion.MIN_SUPPORTED_PY3_VERSION[0],
           PythonVersion.MIN_SUPPORTED_PY3_VERSION[1])
-    else:
-      return 'Please use Python version {0}.{1}.x.'.format(
-          PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
-          PythonVersion.MIN_SUPPORTED_PY2_VERSION[1])
+    return 'Please use Python version {0}.{1}.x.'.format(
+        PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
+        PythonVersion.MIN_SUPPORTED_PY2_VERSION[1])
 
   def IsCompatible(self, allow_py3=False, raise_exception=False):
     """Ensure that the Python version we are using is compatible.

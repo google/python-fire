@@ -160,8 +160,7 @@ def _DescriptionSection(component, info):
   text = description or summary or None
   if text:
     return ('DESCRIPTION', text)
-  else:
-    return None
+  return None
 
 
 def _CreateKeywordOnlyFlagItem(flag, docstring_info, spec, short_arg):
@@ -185,7 +184,7 @@ def _GetShortFlags(flags):
   return [v for v in short_flags if short_flag_counts[v] == 1]
 
 
-def _ArgsAndFlagsSections(info, spec, metadata):
+def _ArgsAndFlagsSections(info, spec, metadata):  # noqa: C901
   """The "Args and Flags" sections of the help string."""
   args_with_no_defaults = spec.args[:len(spec.args) - len(spec.defaults)]
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]

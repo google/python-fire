@@ -85,7 +85,7 @@ def _GetArgSpecInfo(fn):
   return fn, skip_arg
 
 
-def Py3GetFullArgSpec(fn):
+def Py3GetFullArgSpec(fn):  # noqa: C901
   """A alternative to the builtin getfullargspec.
 
   The builtin inspect.getfullargspec uses:
@@ -326,8 +326,7 @@ def IsNamedTuple(component):
   if not isinstance(component, tuple):
     return False
 
-  has_fields = bool(getattr(component, '_fields', None))
-  return has_fields
+  return bool(getattr(component, '_fields', None))  # whether it has files
 
 
 def GetClassAttrsDict(component):

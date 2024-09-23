@@ -294,15 +294,14 @@ class FireTraceElement:
   def __str__(self):
     if self.HasError():
       return self.ErrorAsStr()
-    else:
-      # Format is: {action} "{target}" ({filename}:{lineno})
-      string = self._action
-      if self._target is not None:
-        string += f' "{self._target}"'
-      if self._filename is not None:
-        path = self._filename
-        if self._lineno is not None:
-          path += f':{self._lineno}'
+    # Format is: {action} "{target}" ({filename}:{lineno})
+    string = self._action
+    if self._target is not None:
+      string += f' "{self._target}"'
+    if self._filename is not None:
+      path = self._filename
+      if self._lineno is not None:
+        path += f':{self._lineno}'
 
-        string += f' ({path})'
-      return string
+      string += f' ({path})'
+    return string

@@ -24,7 +24,7 @@ python setup.py develop
 python -m pytest  # Run the tests without IPython.
 pip install ipython
 python -m pytest  # Now run the tests with IPython.
-pre-commit run --all-files
+pre-commit run --all-files --show-diff-on-failure --
 if [[ ${PYTHON_VERSION} == 3.7 ]]; then
   # Run type-checking.
   pip install pytype;

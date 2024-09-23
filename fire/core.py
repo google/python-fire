@@ -160,8 +160,7 @@ def Fire(component=None, command=None, name=None, serialize=None):
   # The command succeeded normally; print the result.
   _PrintResult(
       component_trace, verbose=component_trace.verbose, serialize=serialize)
-  result = component_trace.GetResult()
-  return result
+  return component_trace.GetResult()
 
 
 def Display(lines, out):
@@ -236,7 +235,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
   return show_help
 
 
-def _PrintResult(component_trace, verbose=False, serialize=None):
+def _PrintResult(component_trace, verbose=False, serialize=None):  # noqa: C901
   """Prints the result of the Fire call to stdout in a human readable way."""
   # TODO(dbieber): Design human readable deserializable serialization method
   # and move serialization to its own module.
@@ -358,7 +357,7 @@ def _OneLineResult(result):
     return str(result).replace('\n', ' ')
 
 
-def _Fire(component, args, parsed_flag_args, context, name=None):
+def _Fire(component, args, parsed_flag_args, context, name=None):  # noqa: C901
   """Execute a Fire command on a target component using the args supplied.
 
   Arguments that come after a final isolated '--' are treated as Flags, eg for
@@ -813,7 +812,7 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
   return parsed_args, kwargs, remaining_args, capacity
 
 
-def _ParseKeywordArgs(args, fn_spec):
+def _ParseKeywordArgs(args, fn_spec):  # noqa: C901
   """Parses the supplied arguments for keyword arguments.
 
   Given a list of arguments, finds occurrences of --name value, and uses 'name'

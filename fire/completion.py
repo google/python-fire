@@ -151,8 +151,7 @@ complete -F _complete-{identifier} {command}
   def _GetOptsAssignmentTemplate(command):
     if command == name:
       return opts_assignment_main_command_template
-    else:
-      return opts_assignment_subcommand_template
+    return opts_assignment_subcommand_template
 
   lines = []
   commands_set = set()
@@ -281,7 +280,7 @@ end
   )
 
 
-def MemberVisible(component, name, member, class_attrs=None, verbose=False):
+def MemberVisible(component, name, member, class_attrs=None, verbose=False):  # noqa: C901
   """Returns whether a member should be included in auto-completion or help.
 
   Determines whether a member of an object with the specified name should be
