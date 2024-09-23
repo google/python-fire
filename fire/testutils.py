@@ -105,8 +105,7 @@ def ChangeDirectory(directory):
     os.chdir(cwdir)
 
 
-# pylint: disable=invalid-name
+
 main = unittest.main
 skip = unittest.skip
 skipIf = unittest.skipIf
-# pylint: enable=invalid-name

@@ -29,7 +29,7 @@ class TabCompletionTest(testutils.BaseTestCase):
         ['halt'],
         ['halt', '--now'],
     ]
-    script = completion._BashScript(name='command', commands=commands)  # pylint: disable=protected-access
+    script = completion._BashScript(name='command', commands=commands)
     self.assertIn('command', script)
     self.assertIn('halt', script)
 
@@ -44,7 +44,7 @@ class TabCompletionTest(testutils.BaseTestCase):
         ['halt'],
         ['halt', '--now'],
     ]
-    script = completion._FishScript(name='command', commands=commands)  # pylint: disable=protected-access
+    script = completion._FishScript(name='command', commands=commands)
     self.assertIn('command', script)
     self.assertIn('halt', script)
     self.assertIn('-l now', script)

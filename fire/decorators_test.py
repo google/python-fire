@@ -82,7 +82,7 @@ class WithKwargs:
 class WithVarArgs:
 
   @decorators.SetParseFn(str)
-  def example7(self, arg1, arg2=None, *varargs, **kwargs):  # pylint: disable=keyword-arg-before-vararg
+  def example7(self, arg1, arg2=None, *varargs, **kwargs):
     return arg1, arg2, varargs, kwargs
 
 

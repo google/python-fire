@@ -91,14 +91,14 @@ def Decode(data, encoding=None):
 
   # Try the filesystem encoding.
   try:
-    return string.decode(sys.getfilesystemencoding())  # pytype: disable=attribute-error
+    return string.decode(sys.getfilesystemencoding())  # pytype: disable=attribute-error,  # noqa: E501
   except UnicodeError:
     # string is not encoded for filesystem paths.
     pass
 
   # Try the system default encoding.
   try:
-    return string.decode(sys.getdefaultencoding())  # pytype: disable=attribute-error
+    return string.decode(sys.getdefaultencoding())  # pytype: disable=attribute-error,  # noqa: E501
   except UnicodeError:
     # string is not encoded using the default encoding.
     pass

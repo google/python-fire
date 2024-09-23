@@ -47,18 +47,18 @@ def GetTermSize():
       xy = get_terminal_size()
       if xy:
         break
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       pass
   return xy or (80, 24)
 
 
 def _GetTermSizePosix():
   """Returns the Posix terminal x and y dimensions."""
-  # pylint: disable=g-import-not-at-top
+
   import fcntl
-  # pylint: disable=g-import-not-at-top
+
   import struct
-  # pylint: disable=g-import-not-at-top
+
   import termios
 
   def _GetXY(fd):
@@ -75,7 +75,7 @@ def _GetTermSizePosix():
       # binary shorts to a (rows, columns) int tuple.
       rc = struct.unpack(b'hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, 'junk'))
       return (rc[1], rc[0]) if rc else None
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       return None
 
   xy = _GetXY(0) or _GetXY(1) or _GetXY(2)
@@ -84,7 +84,7 @@ def _GetTermSizePosix():
     try:
       fd = os.open(os.ctermid(), os.O_RDONLY)
       xy = _GetXY(fd)
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       xy = None
     finally:
       if fd is not None:
@@ -96,7 +96,7 @@ def _GetTermSizeWindows():
   """Returns the Windows terminal x and y dimensions."""
   # pylint:disable=g-import-not-at-top
   import struct
-  # pylint: disable=g-import-not-at-top
+
   from ctypes import create_string_buffer
   # pylint:disable=g-import-not-at-top
   from ctypes import windll
@@ -124,7 +124,7 @@ def _GetTermSizeEnvironment():
 
 def _GetTermSizeTput():
   """Returns the terminal x and y dimensions from tput(1)."""
-  import subprocess  # pylint: disable=g-import-not-at-top
+  import subprocess
   output = encoding.Decode(subprocess.check_output(['tput', 'cols'],
                                                    stderr=subprocess.STDOUT))
   cols = int(output)
@@ -153,16 +153,16 @@ def GetRawKeyFunction():
                                _GetRawKeyFunctionWindows):
     try:
       return get_raw_key_function()
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       pass
   return lambda: None
 
 
 def _GetRawKeyFunctionPosix():
   """_GetRawKeyFunction helper using Posix APIs."""
-  # pylint: disable=g-import-not-at-top
+
   import tty
-  # pylint: disable=g-import-not-at-top
+
   import termios
 
   def _GetRawKeyPosix():
@@ -212,7 +212,7 @@ def _GetRawKeyFunctionPosix():
             c = prev_c
             break
         return ansi_to_key.get(c, '')
-    except:  # pylint:disable=bare-except
+    except:  # noqa: E722
       c = None
     finally:
       termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
@@ -223,7 +223,7 @@ def _GetRawKeyFunctionPosix():
 
 def _GetRawKeyFunctionWindows():
   """_GetRawKeyFunction helper using Windows APIs."""
-  # pylint: disable=g-import-not-at-top
+
   import msvcrt
 
   def _GetRawKeyWindows():

@@ -314,7 +314,7 @@ class ConsoleAttr(object):
     console_encoding = console_encoding.lower()
     if 'utf-8' in console_encoding:
       return 'utf8'
-    elif 'cp437' in console_encoding:
+    if 'cp437' in console_encoding:
       return 'cp437'
     return None
 
@@ -649,7 +649,7 @@ def GetConsoleAttr(encoding=None, reset=False):
   Returns:
     The global ConsoleAttr state object.
   """
-  attr = ConsoleAttr._CONSOLE_ATTR_STATE  # pylint: disable=protected-access
+  attr = ConsoleAttr._CONSOLE_ATTR_STATE
   if not reset:
     if not attr:
       reset = True
@@ -657,7 +657,7 @@ def GetConsoleAttr(encoding=None, reset=False):
       reset = True
   if reset:
     attr = ConsoleAttr(encoding=encoding)
-    ConsoleAttr._CONSOLE_ATTR_STATE = attr  # pylint: disable=protected-access
+    ConsoleAttr._CONSOLE_ATTR_STATE = attr
   return attr
 
 
@@ -700,15 +700,14 @@ def GetCharacterDisplayWidth(char):
   if unicodedata.combining(char) != 0:
     # Modifies the previous character and does not move the cursor.
     return 0
-  elif unicodedata.category(char) == 'Cf':
+  if unicodedata.category(char) == 'Cf':
     # Unprintable formatting char.
     return 0
-  elif unicodedata.east_asian_width(char) in 'FW':
+  if unicodedata.east_asian_width(char) in 'FW':
     # Fullwidth or Wide chars take 2 character positions.
     return 2
-  else:
-    # Don't use this function on control chars.
-    return 1
+  # Don't use this function on control chars.
+  return 1
 
 
 def SafeText(data, encoding=None, escape=True):

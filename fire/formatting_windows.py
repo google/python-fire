@@ -21,7 +21,7 @@ import subprocess
 import sys
 
 try:
-  import colorama  # pylint: disable=g-import-not-at-top,  # pytype: disable=import-error
+  import colorama  # pytype: disable=import-error
   HAS_COLORAMA = True
 except ImportError:
   HAS_COLORAMA = False
@@ -40,7 +40,8 @@ def initialize_or_disable():
       wrap = False
       kernel32 = ctypes.windll.kernel32  # pytype: disable=module-attr
       enable_virtual_terminal_processing = 0x04
-      out_handle = kernel32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)  # pylint: disable=line-too-long,  # pytype: disable=module-attr
+      out_handle = kernel32.GetStdHandle(  # pytype: disable=module-attr
+        subprocess.STD_OUTPUT_HANDLE)
       # GetConsoleMode fails if the terminal isn't native.
       mode = ctypes.wintypes.DWORD()
       if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:

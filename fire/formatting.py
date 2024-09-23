@@ -14,7 +14,6 @@
 
 """Formatting utilities for use in creating help text."""
 
-from fire import formatting_windows  # pylint: disable=unused-import
 import termcolor
 
 

@@ -166,7 +166,7 @@ class Pager(object):
     self._attr.GetRawKey()
     self._Write('\n')
 
-  def Run(self):
+  def Run(self):  # noqa: C901
     """Run the pager."""
     # No paging if the contents are small enough.
     if len(self._lines) <= self._height:
@@ -215,7 +215,7 @@ class Pager(object):
                 ):
           # Quit.
           return
-        elif c in ('/', '?'):
+        if c in ('/', '?'):
           c = self._GetSearchCommand(c)
         elif c.isdigit():
           # Collect digits for operation count.

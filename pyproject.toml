@@ -1,0 +1,39 @@
+[tool.aliases]
+test = "pytest"
+
+[tool.pytest]
+addopts = [
+    "--ignore=fire/test_components_py3.py",
+    "--ignore=fire/parser_fuzz_test.py"
+]
+
+[tool.pytype]
+inputs = "."
+output = ".pytype"
+
+[tool.ruff]
+# Set the maximum line length
+line-length = 80
+
+# Enable specific rule categories
+lint.select = [
+    "E",  # Errors
+    "W",  # Warnings
+    "C",  # Conventions
+    "R",  # Refactors
+    "RUF100", # Remove unused noqas
+]
+
+# Exclude specific files and directories
+lint.exclude = ["build", "dist", ".venv"]
+
+# Enable autofix for certain rules
+lint.fixable = ["E", "F", "W"]
+
+# exlude some rules globally
+lint.ignore = ["E731"]
+
+# Specify additional settings for specific rules
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501", "E722"]
+"fire/helptext_test.py" = ["E501"]

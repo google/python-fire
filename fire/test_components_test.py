@@ -27,9 +27,9 @@ class TestComponentsTest(testutils.BaseTestCase):
 
   def testNonComparable(self):
     with self.assertRaises(ValueError):
-      tc.NonComparable() != 2  # pylint: disable=expression-not-assigned
+      tc.NonComparable() != 2
     with self.assertRaises(ValueError):
-      tc.NonComparable() == 2  # pylint: disable=expression-not-assigned
+      tc.NonComparable() == 2
 
 
 if __name__ == '__main__':
