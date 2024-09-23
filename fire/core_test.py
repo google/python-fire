@@ -25,14 +25,14 @@ from fire import trace
 class CoreTest(testutils.BaseTestCase):
 
   def testOneLineResult(self):
-    self.assertEqual(core._OneLineResult(1), '1')  # pylint: disable=protected-access
-    self.assertEqual(core._OneLineResult('hello'), 'hello')  # pylint: disable=protected-access
-    self.assertEqual(core._OneLineResult({}), '{}')  # pylint: disable=protected-access
-    self.assertEqual(core._OneLineResult({'x': 'y'}), '{"x": "y"}')  # pylint: disable=protected-access
+    self.assertEqual(core._OneLineResult(1), '1')
+    self.assertEqual(core._OneLineResult('hello'), 'hello')
+    self.assertEqual(core._OneLineResult({}), '{}')
+    self.assertEqual(core._OneLineResult({'x': 'y'}), '{"x": "y"}')
 
   def testOneLineResultCircularRef(self):
     circular_reference = tc.CircularReference()
-    self.assertEqual(core._OneLineResult(circular_reference.create()),  # pylint: disable=protected-access
+    self.assertEqual(core._OneLineResult(circular_reference.create()),
                      "{'y': {...}}")
 
   @mock.patch('fire.interact.Embed')

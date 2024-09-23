@@ -86,11 +86,11 @@ def _EmbedIPython(variables, argv=None):
         Values are variable values.
     argv: The argv to use for starting ipython. Defaults to an empty list.
   """
-  import IPython  # pylint: disable=import-outside-toplevel,g-import-not-at-top
+  import IPython
   argv = argv or []
   IPython.start_ipython(argv=argv, user_ns=variables)
 
 
 def _EmbedCode(variables):
-  import code  # pylint: disable=import-outside-toplevel,g-import-not-at-top
+  import code
   code.InteractiveConsole(variables).interact()

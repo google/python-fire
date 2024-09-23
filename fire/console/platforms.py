@@ -30,7 +30,7 @@ class Error(Exception):
   pass
 
 
-class InvalidEnumValue(Error):  # pylint: disable=g-bad-exception-name
+class InvalidEnumValue(Error):
   """Exception for when a string could not be parsed to a valid enum value."""
 
   def __init__(self, given, enum_type, options):
@@ -53,7 +53,7 @@ class OperatingSystem(object):
   class _OS(object):
     """A single operating system."""
 
-    # pylint: disable=redefined-builtin
+
     def __init__(self, id, name, file_name):
       self.id = id
       self.name = name
@@ -169,7 +169,7 @@ class Architecture(object):
   class _ARCH(object):
     """A single architecture."""
 
-    # pylint: disable=redefined-builtin
+
     def __init__(self, id, name, file_name):
       self.id = id
       self.name = name

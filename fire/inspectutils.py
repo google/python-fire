@@ -99,10 +99,10 @@ def Py3GetFullArgSpec(fn):
   Returns:
     An inspect.FullArgSpec namedtuple with the full arg spec of the function.
   """
-  # pylint: disable=no-member
+
   # pytype: disable=module-attr
   try:
-    sig = inspect._signature_from_callable(  # pylint: disable=protected-access
+    sig = inspect._signature_from_callable(
         fn,
         skip_bound_arg=True,
         follow_wrapper_chains=True,
@@ -128,7 +128,7 @@ def Py3GetFullArgSpec(fn):
     kind = param.kind
     name = param.name
 
-    # pylint: disable=protected-access
+
     if kind is inspect._POSITIONAL_ONLY:
       args.append(name)
     elif kind is  inspect._POSITIONAL_OR_KEYWORD:
@@ -145,7 +145,7 @@ def Py3GetFullArgSpec(fn):
       varkw = name
     if param.annotation is not param.empty:
       annotations[name] = param.annotation
-    # pylint: enable=protected-access
+
 
   if not kwdefaults:
     # compatibility with 'func.__kwdefaults__'
@@ -156,7 +156,7 @@ def Py3GetFullArgSpec(fn):
     defaults = None
   return inspect.FullArgSpec(args, varargs, varkw, defaults,
                              kwonlyargs, kwdefaults, annotations)
-  # pylint: enable=no-member
+
   # pytype: enable=module-attr
 
 
@@ -171,7 +171,7 @@ def GetFullArgSpec(fn):
        kwonlyargs, kwonlydefaults, annotations) = Py3GetFullArgSpec(fn)
     else:  # Specifically Python 3.4.
       (args, varargs, varkw, defaults,
-       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)  # pylint: disable=deprecated-method,no-member
+       kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
@@ -255,7 +255,7 @@ def Info(component):
     A dict with information about the component.
   """
   try:
-    from IPython.core import oinspect  # pylint: disable=import-outside-toplevel,g-import-not-at-top
+    from IPython.core import oinspect
     inspector = oinspect.Inspector()
     info = inspector.info(component)
 

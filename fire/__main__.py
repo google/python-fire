@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=invalid-name
+
 """Enables use of Python Fire as a "main" function (i.e. "python -m fire").
 
 This allows using Fire with third-party libraries without modifying their code.
@@ -63,7 +63,7 @@ def import_from_file_path(path):
   if spec is None:
     raise OSError('Unable to load module from specified path.')
 
-  module = util.module_from_spec(spec)  # pylint: disable=no-member
+  module = util.module_from_spec(spec)
   spec.loader.exec_module(module)
 
   return module, module_name

@@ -17,11 +17,11 @@
 from fire import docstrings
 from fire import testutils
 
-# pylint: disable=invalid-name
+
 DocstringInfo = docstrings.DocstringInfo
 ArgInfo = docstrings.ArgInfo
 KwargInfo = docstrings.KwargInfo
-# pylint: enable=invalid-name
+
 
 
 class DocstringsTest(testutils.BaseTestCase):
@@ -45,12 +45,12 @@ class DocstringsTest(testutils.BaseTestCase):
     self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_one_line_too_long(self):
-    # pylint: disable=line-too-long
+
     docstring = """A one line docstring that is both a little too verbose
     and a little too long so it keeps going well beyond a reasonable length
     for a one-liner.
     """
-    # pylint: enable=line-too-long
+
     docstring_info = docstrings.parse(docstring)
     expected_docstring_info = DocstringInfo(
         summary='A one line docstring that is both a little too verbose and '
@@ -60,11 +60,11 @@ class DocstringsTest(testutils.BaseTestCase):
     self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_one_line_runs_over(self):
-    # pylint: disable=line-too-long
+
     docstring = """A one line docstring that is both a little too verbose
     and a little too long so it runs onto a second line.
     """
-    # pylint: enable=line-too-long
+
     docstring_info = docstrings.parse(docstring)
     expected_docstring_info = DocstringInfo(
         summary='A one line docstring that is both a little too verbose and '
@@ -306,7 +306,7 @@ class DocstringsTest(testutils.BaseTestCase):
     lines = ['   ', '  foo  ', '   ']
     expected_output = ['  foo  ']
 
-    self.assertEqual(expected_output, docstrings._strip_blank_lines(lines))  # pylint: disable=protected-access
+    self.assertEqual(expected_output, docstrings._strip_blank_lines(lines))
 
   def test_numpy_colon_in_description(self):
     docstring = """

@@ -20,7 +20,7 @@ import functools
 
 
 
-def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):  # pylint: disable=keyword-arg-before-vararg
+def identity(arg1, arg2, arg3=10, arg4=20, *arg5, **arg6):
   return arg1, arg2, arg3, arg4, arg5, arg6
 
 identity.__annotations__ = {'arg2': int, 'arg4': int}
@@ -38,7 +38,7 @@ def multiplier_with_docstring(num, rate=2):
   return num * rate
 
 
-def function_with_help(help=True):  # pylint: disable=redefined-builtin
+def function_with_help(help=True):
   return help
 
 
@@ -46,7 +46,7 @@ class Empty:
   pass
 
 
-class OldStyleEmpty:  # pylint: disable=old-style-class,no-init
+class OldStyleEmpty:
   pass
 
 
@@ -66,7 +66,7 @@ class ErrorInConstructor:
 class WithHelpArg:
   """Test class for testing when class has a help= arg."""
 
-  def __init__(self, help=True):  # pylint: disable=redefined-builtin
+  def __init__(self, help=True):
     self.has_help = help
     self.dictionary = {'__help': 'help in a dict'}
 
@@ -105,7 +105,7 @@ class WithDefaults:
     return string
 
 
-class OldStyleWithDefaults:  # pylint: disable=old-style-class,no-init
+class OldStyleWithDefaults:
 
   def double(self, count=0):
     return 2 * count
@@ -137,7 +137,7 @@ class SimilarArgNames:
 
 class CapitalizedArgNames:
 
-  def sum(self, Delta=1.0, Gamma=2.0):  # pylint: disable=invalid-name
+  def sum(self, Delta=1.0, Gamma=2.0):
     return Delta + Gamma
 
 
@@ -186,7 +186,7 @@ class VarArgs:
       sums.append(total)
     return sums
 
-  def varchars(self, alpha=0, beta=0, *chars):  # pylint: disable=keyword-arg-before-vararg
+  def varchars(self, alpha=0, beta=0, *chars):
     return alpha, beta, ''.join(chars)
 
 
@@ -292,13 +292,13 @@ class NamedTuple:
 
   def point(self):
     """Point example straight from Python docs."""
-    # pylint: disable=invalid-name
+
     Point = collections.namedtuple('Point', ['x', 'y'])
     return Point(11, y=22)
 
   def matching_names(self):
     """Field name equals value."""
-    # pylint: disable=invalid-name
+
     Point = collections.namedtuple('Point', ['x', 'y'])
     return Point(x='x', y='y')
 
@@ -429,7 +429,7 @@ class HasStaticAndClassMethods:
     return args + cls.CLASS_STATE
 
 
-def function_with_varargs(arg1, arg2, arg3=1, *varargs):  # pylint: disable=keyword-arg-before-vararg
+def function_with_varargs(arg1, arg2, arg3=1, *varargs):
   """Function with varargs.
 
   Args:
@@ -532,7 +532,7 @@ def decorated_method(name='World'):
   return 'Hello %s' % name
 
 
-# pylint: disable=g-doc-args,g-doc-return-or-yield
+
 def fn_with_kwarg(arg1, arg2, **kwargs):
   """Function with kwarg.
 
@@ -564,4 +564,3 @@ def fn_with_multiple_defaults(first='first', last='last', late='late'):
   """
   del last, late
   return first
-# pylint: enable=g-doc-args,g-doc-return-or-yield

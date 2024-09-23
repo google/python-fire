@@ -463,7 +463,7 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
   Returns:
     A string to be used in constructing the help screen for the function.
   """
-  # pylint: disable=g-bad-todo
+
   # TODO(MichaelCG8): Get type and default information from docstrings if it is
   # not available in FullArgSpec. This will require updating
   # fire.docstrings.parser().

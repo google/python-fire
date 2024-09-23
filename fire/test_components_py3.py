@@ -18,7 +18,7 @@ import functools
 from typing import Tuple
 
 
-# pylint: disable=keyword-arg-before-vararg
+
 def identity(arg1, arg2: int, arg3=10, arg4: int = 20, *arg5,
              arg6, arg7: int, arg8=30, arg9: int = 40, **arg10):
   return arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10

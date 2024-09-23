@@ -54,11 +54,11 @@ def GetTermSize():
 
 def _GetTermSizePosix():
   """Returns the Posix terminal x and y dimensions."""
-  # pylint: disable=g-import-not-at-top
+
   import fcntl
-  # pylint: disable=g-import-not-at-top
+
   import struct
-  # pylint: disable=g-import-not-at-top
+
   import termios
 
   def _GetXY(fd):
@@ -96,7 +96,7 @@ def _GetTermSizeWindows():
   """Returns the Windows terminal x and y dimensions."""
   # pylint:disable=g-import-not-at-top
   import struct
-  # pylint: disable=g-import-not-at-top
+
   from ctypes import create_string_buffer
   # pylint:disable=g-import-not-at-top
   from ctypes import windll
@@ -124,7 +124,7 @@ def _GetTermSizeEnvironment():
 
 def _GetTermSizeTput():
   """Returns the terminal x and y dimensions from tput(1)."""
-  import subprocess  # pylint: disable=g-import-not-at-top
+  import subprocess
   output = encoding.Decode(subprocess.check_output(['tput', 'cols'],
                                                    stderr=subprocess.STDOUT))
   cols = int(output)
@@ -160,9 +160,9 @@ def GetRawKeyFunction():
 
 def _GetRawKeyFunctionPosix():
   """_GetRawKeyFunction helper using Posix APIs."""
-  # pylint: disable=g-import-not-at-top
+
   import tty
-  # pylint: disable=g-import-not-at-top
+
   import termios
 
   def _GetRawKeyPosix():
@@ -223,7 +223,7 @@ def _GetRawKeyFunctionPosix():
 
 def _GetRawKeyFunctionWindows():
   """_GetRawKeyFunction helper using Windows APIs."""
-  # pylint: disable=g-import-not-at-top
+
   import msvcrt
 
   def _GetRawKeyWindows():

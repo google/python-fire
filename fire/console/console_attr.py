@@ -649,7 +649,7 @@ def GetConsoleAttr(encoding=None, reset=False):
   Returns:
     The global ConsoleAttr state object.
   """
-  attr = ConsoleAttr._CONSOLE_ATTR_STATE  # pylint: disable=protected-access
+  attr = ConsoleAttr._CONSOLE_ATTR_STATE
   if not reset:
     if not attr:
       reset = True
@@ -657,7 +657,7 @@ def GetConsoleAttr(encoding=None, reset=False):
       reset = True
   if reset:
     attr = ConsoleAttr(encoding=encoding)
-    ConsoleAttr._CONSOLE_ATTR_STATE = attr  # pylint: disable=protected-access
+    ConsoleAttr._CONSOLE_ATTR_STATE = attr
   return attr
 
 
