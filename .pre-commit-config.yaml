@@ -1,0 +1,27 @@
+default_language_version:
+  python: python3
+
+#ci:
+#  autofix_prs: true
+#  autoupdate_commit_msg: "[pre-commit.ci] pre-commit suggestions"
+#  autoupdate_schedule: quarterly
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-json
+      - id: check-yaml
+      - id: check-toml
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.5
+    hooks:
+      # try to fix what is possible
+      - id: ruff
+        args: ["--fix"]
+      # perform formatting updates
+      #- id: ruff-format

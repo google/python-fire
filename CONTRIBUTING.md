@@ -54,6 +54,6 @@ Then run the tests by running `pytest` in the root directory of the repository.
 ## Linting
 
 Please run lint on your pull requests to make accepting the requests easier.
-To do this, run `pylint fire` in the root directory of the repository.
+To do this, run `pre-commit run --all-files` in the root directory of the repository.
 Note that even if lint is passing, additional style changes to your submission
 may be made during merging.
