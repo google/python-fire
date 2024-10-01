@@ -8,7 +8,7 @@
     <title>The Python Fire Guide - Python Fire</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
@@ -17,12 +17,11 @@
         var mkdocs_page_url = null;
       </script>
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -34,7 +33,7 @@
           <a href=".." class="icon icon-home"> Python Fire
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -53,7 +52,7 @@
                 </li>
               </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">The Python Fire Guide</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">The Python Fire Guide</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a>
     </li>
@@ -96,6 +95,8 @@
     <li class="toctree-l2"><a class="reference internal" href="#calling-functions">Calling Functions</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#functions-with-varargs-and-kwargs">Functions with *varargs and **kwargs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#async-functions">Async Functions</a>
     </li>
         </ul>
     </li>
@@ -147,8 +148,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>The Python Fire Guide</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">The Python Fire Guide</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -176,7 +177,7 @@ the program to the command line.</p>
 <pre><code class="language-python">import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 if __name__ == '__main__':
   fire.Fire()
@@ -191,7 +192,7 @@ command line.</p>
 <pre><code class="language-python">import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 if __name__ == '__main__':
   fire.Fire(hello)
@@ -207,7 +208,7 @@ called <code>fire.Fire(hello)</code>.</p>
 <pre><code class="language-python">import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 def main():
   fire.Fire(hello)
@@ -221,7 +222,7 @@ then simply this:</p>
 <pre><code class="language-python">import fire
 
 def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 
 def main():
   fire.Fire(hello)
@@ -229,7 +230,7 @@ def main():
 <h5 id="version-4-fire-without-code-changes">Version 4: Fire Without Code Changes</h5>
 <p>If you have a file <code>example.py</code> that doesn't even import fire:</p>
 <pre><code class="language-python">def hello(name):
-  return 'Hello {name}!'.format(name=name)
+  return f'Hello {name}!'
 </code></pre>
 <p>Then you can use it with Fire like this:</p>
 <pre><code class="language-bash">$ python -m fire example hello --name=World
@@ -592,6 +593,19 @@ CAT DOG ELEPHANT
 <p>Separators can be useful when a function accepts *varargs, **kwargs, or
 default values that you don't want to specify. It is also important to remember
 to change the separator if you want to pass <code>-</code> as an argument.</p>
+<h5 id="async-functions">Async Functions</h5>
+<p>Fire supports calling async functions too. Here's a simple example.</p>
+<pre><code class="language-python">import asyncio
+
+async def count_to_ten():
+  for i in range(1, 11):
+    await asyncio.sleep(1)
+    print(i)
+
+if __name__ == '__main__':
+  fire.Fire(count_to_ten)
+</code></pre>
+<p>Whenever fire encounters a coroutine function, it runs it, blocking until it completes.</p>
 <h3 id="argument-parsing">Argument Parsing</h3>
 <p>The types of the arguments are determined by their values, rather than by the
 function signature where they're used. You can pass any Python literal from the
@@ -694,16 +708,16 @@ example.py -- --help</code> or <code>python example.py --help</code> (or even <c
 <table>
 <thead>
 <tr>
-<th align="left">Setup</th>
-<th align="left">Command</th>
-<th align="left">Notes</th>
+<th style="text-align: left;">Setup</th>
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">install</td>
-<td align="left"><code>pip install fire</code></td>
-<td align="left"></td>
+<td style="text-align: left;">install</td>
+<td style="text-align: left;"><code>pip install fire</code></td>
+<td style="text-align: left;"></td>
 </tr>
 </tbody>
 </table>
@@ -711,26 +725,26 @@ example.py -- --help</code> or <code>python example.py --help</code> (or even <c
 <table>
 <thead>
 <tr>
-<th align="left">Creating a CLI</th>
-<th align="left">Command</th>
-<th align="left">Notes</th>
+<th style="text-align: left;">Creating a CLI</th>
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">import</td>
-<td align="left"><code>import fire</code></td>
-<td align="left"></td>
+<td style="text-align: left;">import</td>
+<td style="text-align: left;"><code>import fire</code></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr>
-<td align="left">Call</td>
-<td align="left"><code>fire.Fire()</code></td>
-<td align="left">Turns the current module into a Fire CLI.</td>
+<td style="text-align: left;">Call</td>
+<td style="text-align: left;"><code>fire.Fire()</code></td>
+<td style="text-align: left;">Turns the current module into a Fire CLI.</td>
 </tr>
 <tr>
-<td align="left">Call</td>
-<td align="left"><code>fire.Fire(component)</code></td>
-<td align="left">Turns <code>component</code> into a Fire CLI.</td>
+<td style="text-align: left;">Call</td>
+<td style="text-align: left;"><code>fire.Fire(component)</code></td>
+<td style="text-align: left;">Turns <code>component</code> into a Fire CLI.</td>
 </tr>
 </tbody>
 </table>
@@ -738,41 +752,41 @@ example.py -- --help</code> or <code>python example.py --help</code> (or even <c
 <table>
 <thead>
 <tr>
-<th align="left">Using a CLI</th>
-<th align="left">Command</th>
-<th align="left">Notes</th>
+<th style="text-align: left;">Using a CLI</th>
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left"><a href="../using-cli/#help-flag">Help</a></td>
-<td align="left"><code>command -- --help</code></td>
-<td align="left">Show help and usage information for the command.</td>
+<td style="text-align: left;"><a href="../using-cli/#help-flag">Help</a></td>
+<td style="text-align: left;"><code>command -- --help</code></td>
+<td style="text-align: left;">Show help and usage information for the command.</td>
 </tr>
 <tr>
-<td align="left"><a href="../using-cli/#interactive-flag">REPL</a></td>
-<td align="left"><code>command -- --interactive</code></td>
-<td align="left">Enter interactive mode.</td>
+<td style="text-align: left;"><a href="../using-cli/#interactive-flag">REPL</a></td>
+<td style="text-align: left;"><code>command -- --interactive</code></td>
+<td style="text-align: left;">Enter interactive mode.</td>
 </tr>
 <tr>
-<td align="left"><a href="../using-cli/#separator-flag">Separator</a></td>
-<td align="left"><code>command -- --separator=X</code></td>
-<td align="left">This sets the separator to <code>X</code>. The default separator is <code>-</code>.</td>
+<td style="text-align: left;"><a href="../using-cli/#separator-flag">Separator</a></td>
+<td style="text-align: left;"><code>command -- --separator=X</code></td>
+<td style="text-align: left;">This sets the separator to <code>X</code>. The default separator is <code>-</code>.</td>
 </tr>
 <tr>
-<td align="left"><a href="../using-cli/#completion-flag">Completion</a></td>
-<td align="left"><code>command -- --completion [shell]</code></td>
-<td align="left">Generate a completion script for the CLI.</td>
+<td style="text-align: left;"><a href="../using-cli/#completion-flag">Completion</a></td>
+<td style="text-align: left;"><code>command -- --completion [shell]</code></td>
+<td style="text-align: left;">Generate a completion script for the CLI.</td>
 </tr>
 <tr>
-<td align="left"><a href="../using-cli/#trace-flag">Trace</a></td>
-<td align="left"><code>command -- --trace</code></td>
-<td align="left">Gets a Fire trace for the command.</td>
+<td style="text-align: left;"><a href="../using-cli/#trace-flag">Trace</a></td>
+<td style="text-align: left;"><code>command -- --trace</code></td>
+<td style="text-align: left;">Gets a Fire trace for the command.</td>
 </tr>
 <tr>
-<td align="left"><a href="../using-cli/#verbose-flag">Verbose</a></td>
-<td align="left"><code>command -- --verbose</code></td>
-<td align="left">Include private members in the output.</td>
+<td style="text-align: left;"><a href="../using-cli/#verbose-flag">Verbose</a></td>
+<td style="text-align: left;"><code>command -- --verbose</code></td>
+<td style="text-align: left;">Include private members in the output.</td>
 </tr>
 </tbody>
 </table>
@@ -847,14 +861,15 @@ Help is an exception; the isolated <code>--</code> is optional for getting help.
     
   </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>

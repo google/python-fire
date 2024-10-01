@@ -103,7 +103,7 @@ pre .cs, pre .c {
 form .search-query {
     width: 100%;
     border-radius: 50px;
-    padding: 6px 12px;  /* csslint allow: box-model */
+    padding: 6px 12px;
     border-color: #D1D4D5;
 }
 
@@ -135,7 +135,7 @@ form .search-query {
 }
 
 td, th {
-    border: 1px solid #e1e4e5 !important; /* csslint allow: important */
+    border: 1px solid #e1e4e5 !important;
     border-collapse: collapse;
 }
 
@@ -153,6 +153,12 @@ td, th {
  */
  .wy-nav-side {
     padding-bottom: 40px;
+}
+
+/* For section-index only */
+.wy-menu-vertical .current-section p {
+    background-color: #e3e3e3;
+    color: #404040;
 }
 
 /*
