@@ -1,4 +1,4 @@
-setuptools <=75.1.0
+setuptools <=75.3.0
 pip
 pylint <3.3.2
 pytest <=8.3.3
