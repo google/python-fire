@@ -256,7 +256,7 @@ def Info(component):
   """
   try:
     from IPython.core import oinspect  # pylint: disable=import-outside-toplevel,g-import-not-at-top
-    inspector = oinspect.Inspector()
+    inspector = oinspect.Inspector(theme_name="Neutral")
     info = inspector.info(component)
 
     # IPython's oinspect.Inspector.info may return '<no docstring>'
