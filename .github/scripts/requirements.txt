@@ -1,6 +1,6 @@
 setuptools <=75.6.0
 pip
-pylint <3.3.2
+pylint <3.3.5
 pytest <=8.3.3
 pytest-pylint <=1.1.2
 pytest-runner <7.0.0
