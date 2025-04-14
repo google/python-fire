@@ -257,7 +257,7 @@ def Info(component):
   try:
     from IPython.core import oinspect  # pylint: disable=import-outside-toplevel,g-import-not-at-top
     try:
-      inspector = oinspect.Inspector(theme_name="Neutral")
+      inspector = oinspect.Inspector(theme_name="neutral")
     except TypeError:  # Only recent versions of IPython support theme_name.
       inspector = oinspect.Inspector()
     info = inspector.info(component)
