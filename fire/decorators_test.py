@@ -86,6 +86,13 @@ class WithVarArgs:
     return arg1, arg2, varargs, kwargs
 
 
+class PassThroughArgs(object):
+
+  @decorators.PassThrough
+  def example8(self, *args):
+    return args
+
+
 class FireDecoratorsTest(testutils.BaseTestCase):
 
   def testSetParseFnsNamedArgs(self):
@@ -164,6 +171,11 @@ class FireDecoratorsTest(testutils.BaseTestCase):
         core.Fire(WithVarArgs,
                   command=['example7', '1', '--arg2=2', '3', '4', '--kwarg=5']),
         ('1', '2', ('3', '4'), {'kwarg': '5'}))
+
+  def testPassThrough(self):
+    command = ['example8', 'test', '1', '--arg2=2', '3', '4', '--kwarg=5', '--flag']
+    self.assertEqual(
+        core.Fire(PassThroughArgs, command=command), tuple(command[1:]))
 
 
 if __name__ == '__main__':
