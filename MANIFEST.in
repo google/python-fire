@@ -1,1 +1,2 @@
 include LICENSE
+include fire/py.typed
