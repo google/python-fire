@@ -31,6 +31,7 @@ information.
 
 import collections
 import itertools
+import functools
 
 from fire import completion
 from fire import custom_descriptions
@@ -281,17 +282,61 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   return args_and_flags_sections, notes_sections
 
 
+def _GetActionGroupByName(actions_grouped_by_kind, name):
+  for group in actions_grouped_by_kind:
+    if group.name == name:
+      return group
+  return None
+
+
+def _GetActionGroupBetweenNames(actions_grouped_by_kind, first_name, next_name):
+    group_list = []
+    in_between = False
+    for group in actions_grouped_by_kind:
+      if group.name == first_name:
+        in_between = True
+      if group.name == next_name:
+        in_between = False
+      if in_between:
+        group_list.append(group)
+    return group_list
+
+
+def CommandCategory(category):
+  def decorator(command):
+    # Preserve the original function's signature and metadata
+    @functools.wraps(command)
+    def wrapper(*args, **kwargs):
+      return command(*args, **kwargs)
+    wrapper.__fire_category__ = category
+    
+    # If the command is a classmethod, preserve that functionality
+    if isinstance(command, classmethod):
+      return classmethod(wrapper)
+    return wrapper
+  return decorator
+
+
 def _UsageDetailsSections(component, actions_grouped_by_kind):
   """The usage details sections of the help string."""
-  groups, commands, values, indexes = actions_grouped_by_kind
+
+  group_list = _GetActionGroupBetweenNames(actions_grouped_by_kind, "group", "command")
+  command_list = _GetActionGroupBetweenNames(actions_grouped_by_kind, "command", "value")
+  values = _GetActionGroupByName(actions_grouped_by_kind, "value")
+  indexes = _GetActionGroupByName(actions_grouped_by_kind, "index")
 
   sections = []
-  if groups.members:
-    sections.append(_MakeUsageDetailsSection(groups))
-  if commands.members:
-    sections.append(_MakeUsageDetailsSection(commands))
+  for group in group_list:
+    if group.members:
+      sections.append(_MakeUsageDetailsSection(group))
+
+  for command in command_list:
+    if command.members:
+      sections.append(_MakeUsageDetailsSection(command))
+
   if values.members:
     sections.append(_ValuesUsageDetailsSection(component, values))
+
   if indexes.members:
     sections.append(('INDEXES', _NewChoicesSection('INDEX', indexes.names)))
 
@@ -379,13 +424,29 @@ def _GetActionsGroupedByKind(component, verbose=False):
   values = ActionGroup(name='value', plural='values')
   indexes = ActionGroup(name='index', plural='indexes')
 
+  # Groups and commands are grouped by category, other action groups are not
+  # A category is a dynamic action group that is created on the fly
+  # At the end we merge dynamic action groups with the default action groups
+  groups_by_category = {}
+  commands_by_category = {}
+
   members = completion.VisibleMembers(component, verbose=verbose)
   for member_name, member in members:
     member_name = str(member_name)
     if value_types.IsGroup(member):
-      groups.Add(name=member_name, member=member)
+      if hasattr(member, '__fire_category__'):
+        if member.__fire_category__ not in groups_by_category:
+          groups_by_category[member.__fire_category__] = ActionGroup(name=member.__fire_category__, plural=member.__fire_category__)
+        groups_by_category[member.__fire_category__].Add(name=member_name, member=member)
+      else:
+        groups.Add(name=member_name, member=member)
     if value_types.IsCommand(member):
-      commands.Add(name=member_name, member=member)
+      if hasattr(member, '__fire_category__'):
+        if member.__fire_category__ not in commands_by_category:
+          commands_by_category[member.__fire_category__] = ActionGroup(name=member.__fire_category__, plural=member.__fire_category__)
+        commands_by_category[member.__fire_category__].Add(name=member_name, member=member)
+      else:
+        commands.Add(name=member_name, member=member)
     if value_types.IsValue(member):
       values.Add(name=member_name, member=member)
 
@@ -396,7 +457,9 @@ def _GetActionsGroupedByKind(component, verbose=False):
     else:
       indexes.Add(name=f'0..{component_len-1}')
 
-  return [groups, commands, values, indexes]
+
+
+  return [groups] + list(groups_by_category.values()) + [commands] + list(commands_by_category.values()) + [values, indexes]
 
 
 def _GetCurrentCommand(trace=None, include_separators=True):
