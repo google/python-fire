@@ -321,7 +321,7 @@ def MemberVisible(component, name, member, class_attrs=None, verbose=False):
   if inspect.isclass(component):
     # If class_attrs has not been provided, compute it.
     if class_attrs is None:
-      class_attrs = inspectutils.GetClassAttrsDict(class_attrs) or {}
+      class_attrs = inspectutils.GetClassAttrsDict(component) or {}
     class_attr = class_attrs.get(name)
     if class_attr:
       # Methods and properties should only be accessible on instantiated
