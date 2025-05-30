@@ -438,8 +438,23 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
       break
 
     if _IsHelpShortcut(component_trace, remaining_args):
+      # Check to see if the class requires values in it's init function
       remaining_args = []
-      break
+
+      # If the object has an __init__ method, that takes no arguments besides
+      # self, dont break yet
+      if not hasattr(component, '__dict__'):
+        break
+
+      if '__init__' not in component.__dict__:
+        break
+
+      parameter_count = component.__dict__['__init__'].__code__.co_argcount  - 1
+      print(parameter_count)
+
+      # If the __init__ method does takes arguments break
+      if parameter_count != 0:
+        break
 
     saved_args = []
     used_separator = False

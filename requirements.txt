@@ -1,1 +1,12 @@
-.
+attrs
+exceptiongroup
+hypothesis
+iniconfig
+mock
+packaging
+pluggy
+pytest
+six
+sortedcontainers
+termcolor
+tomli
