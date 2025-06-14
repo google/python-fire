@@ -1,0 +1,22 @@
+{
+  "name": "Python 3.10 with pytest",
+  "build": {
+      "context": "..",
+      "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+        "settings": {
+            "terminal.integrated.shell.linux": "/bin/bash"
+        },
+        "extensions": [
+            "ms-python.python"
+        ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "forwardPorts": [],
+  "postCreateCommand": ""
+}
