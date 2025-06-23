@@ -25,10 +25,10 @@ import inspect
 from fire import inspectutils
 
 
-def Script(name, component, default_options=None, shell='bash'):
+def Script(name, component, shell='bash', depth=3, default_options=None):
   if shell == 'fish':
-    return _FishScript(name, _Commands(component), default_options)
-  return _BashScript(name, _Commands(component), default_options)
+    return _FishScript(name, _Commands(component, int(depth)), default_options)
+  return _BashScript(name, _Commands(component, int(depth)), default_options)
 
 
 def _BashScript(name, commands, default_options=None):
