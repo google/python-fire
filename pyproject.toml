@@ -43,7 +43,7 @@ Repository = "https://github.com/google/python-fire"
 test = [
     "setuptools<=80.9.0",
     "pip",
-    "pylint<3.3.7",
+    "pylint<3.3.8",
     "pytest<=8.4.1",
     "pytest-pylint<=1.1.2",
     "pytest-runner<7.0.0",
