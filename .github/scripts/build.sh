@@ -19,8 +19,7 @@ set -e
 
 PYTHON_VERSION=${PYTHON_VERSION:-3.7}
 
-pip install -U -r .github/scripts/requirements.txt
-python setup.py develop
+pip install -e .[test]
 python -m pytest  # Run the tests without IPython.
 pip install ipython
 python -m pytest  # Now run the tests with IPython.
