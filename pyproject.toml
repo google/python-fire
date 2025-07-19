@@ -64,6 +64,5 @@ addopts = [
     "--ignore=fire/parser_fuzz_test.py"
 ]
 
-[tool.pytype]
-inputs = "."
-output = ".pytype"
+[tool.ty]
+# ty configuration - using defaults for now
