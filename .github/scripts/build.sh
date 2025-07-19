@@ -24,7 +24,7 @@ python -m pytest  # Run the tests without IPython.
 pip install ipython
 python -m pytest  # Now run the tests with IPython.
 pylint fire --ignore=test_components_py3.py,parser_fuzz_test.py,console
-if [[ ${PYTHON_VERSION} == 3.7 ]]; then
+if [[ ${PYTHON_VERSION} == 3.12 ]]; then
   # Run type-checking
   pip install uv
   uvx ty check --exclude fire/test_components_py3.py
