@@ -4,7 +4,7 @@ version: 2
 updates:
   # Enable version updates for python
   - package-ecosystem: "pip"
-    directory: ".github/scripts/"
+    directory: "/"
     schedule:
       interval: "monthly"
     labels: ["dependabot"]
