@@ -78,7 +78,7 @@ class MainModuleFileTest(testutils.BaseTestCase):
   def testFileNameModuleFileFailure(self):
     # Confirm that an invalid file that masks a non-existent module fails.
     with self.assertRaisesRegex(ValueError,
-                                r'Fire can only be called on \.py files\.'):  # pylint: disable=line-too-long,  # pytype: disable=attribute-error
+                                r'Fire can only be called on \.py files\.'):  # pylint: disable=line-too-long,
       dirname = os.path.dirname(self.file.name)
       with testutils.ChangeDirectory(dirname):
         with open('foobar', 'w'):

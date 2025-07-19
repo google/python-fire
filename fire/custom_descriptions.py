@@ -131,14 +131,14 @@ CUSTOM_DESC_SUM_FN_DICT = {
 def GetSummary(obj, available_space, line_length):
   obj_type_name = type(obj).__name__
   if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
-    return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[0](obj, available_space,
-                                                         line_length)
+    return CUSTOM_DESC_SUM_FN_DICT[obj_type_name][0](obj, available_space,
+                                                     line_length)
   return None
 
 
 def GetDescription(obj, available_space, line_length):
   obj_type_name = type(obj).__name__
   if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
-    return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[1](obj, available_space,
-                                                         line_length)
+    return CUSTOM_DESC_SUM_FN_DICT[obj_type_name][1](obj, available_space,
+                                                     line_length)
   return None

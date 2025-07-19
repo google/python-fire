@@ -100,9 +100,9 @@ def Py3GetFullArgSpec(fn):
     An inspect.FullArgSpec namedtuple with the full arg spec of the function.
   """
   # pylint: disable=no-member
-  # pytype: disable=module-attr
+
   try:
-    sig = inspect._signature_from_callable(  # pylint: disable=protected-access
+    sig = inspect._signature_from_callable(  # pylint: disable=protected-access  # type: ignore
         fn,
         skip_bound_arg=True,
         follow_wrapper_chains=True,
@@ -129,19 +129,19 @@ def Py3GetFullArgSpec(fn):
     name = param.name
 
     # pylint: disable=protected-access
-    if kind is inspect._POSITIONAL_ONLY:
+    if kind is inspect._POSITIONAL_ONLY:  # type: ignore
       args.append(name)
-    elif kind is  inspect._POSITIONAL_OR_KEYWORD:
+    elif kind is inspect._POSITIONAL_OR_KEYWORD:  # type: ignore
       args.append(name)
       if param.default is not param.empty:
         defaults += (param.default,)
-    elif kind is  inspect._VAR_POSITIONAL:
+    elif kind is inspect._VAR_POSITIONAL:  # type: ignore
       varargs = name
-    elif kind is  inspect._KEYWORD_ONLY:
+    elif kind is inspect._KEYWORD_ONLY:  # type: ignore
       kwonlyargs.append(name)
       if param.default is not param.empty:
         kwdefaults[name] = param.default
-    elif kind is  inspect._VAR_KEYWORD:
+    elif kind is inspect._VAR_KEYWORD:  # type: ignore
       varkw = name
     if param.annotation is not param.empty:
       annotations[name] = param.annotation
@@ -157,7 +157,6 @@ def Py3GetFullArgSpec(fn):
   return inspect.FullArgSpec(args, varargs, varkw, defaults,
                              kwonlyargs, kwdefaults, annotations)
   # pylint: enable=no-member
-  # pytype: enable=module-attr
 
 
 def GetFullArgSpec(fn):
@@ -259,7 +258,7 @@ def Info(component):
     try:
       inspector = oinspect.Inspector(theme_name="neutral")
     except TypeError:  # Only recent versions of IPython support theme_name.
-      inspector = oinspect.Inspector()
+      inspector = oinspect.Inspector()  # type: ignore
     info = inspector.info(component)
 
     # IPython's oinspect.Inspector.info may return '<no docstring>'

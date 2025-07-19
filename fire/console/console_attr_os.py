@@ -14,9 +14,6 @@
 # limitations under the License.
 
 """OS specific console_attr helper functions."""
-# This file contains platform specific code which is not currently handled
-# by pytype.
-# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division
@@ -73,7 +70,7 @@ def _GetTermSizePosix():
     try:
       # This magic incantation converts a struct from ioctl(2) containing two
       # binary shorts to a (rows, columns) int tuple.
-      rc = struct.unpack(b'hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, 'junk'))
+      rc = struct.unpack(b'hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, b'junk'))
       return (rc[1], rc[0]) if rc else None
     except:  # pylint: disable=bare-except
       return None

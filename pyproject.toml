@@ -63,7 +63,3 @@ addopts = [
     "--ignore=fire/test_components_py3.py",
     "--ignore=fire/parser_fuzz_test.py"
 ]
-
-[tool.pytype]
-inputs = "."
-output = ".pytype"

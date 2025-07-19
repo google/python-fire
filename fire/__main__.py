@@ -60,11 +60,11 @@ def import_from_file_path(path):
 
   spec = util.spec_from_file_location(module_name, path)
 
-  if spec is None:
+  if spec is None or spec.loader is None:
     raise OSError('Unable to load module from specified path.')
 
   module = util.module_from_spec(spec)  # pylint: disable=no-member
-  spec.loader.exec_module(module)  # pytype: disable=attribute-error
+  spec.loader.exec_module(module)
 
   return module, module_name
 

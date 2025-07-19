@@ -29,6 +29,8 @@ Help screens are shown in a less-style console view, and contain detailed help
 information.
 """
 
+from __future__ import annotations
+
 import collections
 import itertools
 
@@ -85,13 +87,14 @@ def HelpText(component, trace=None, verbose=False):
       + usage_details_sections
       + notes_sections
   )
+  valid_sections = [section for section in sections if section is not None]
   return '\n\n'.join(
-      _CreateOutputSection(*section)
-      for section in sections if section is not None
+      _CreateOutputSection(name, content)
+      for name, content in valid_sections
   )
 
 
-def _NameSection(component, info, trace=None, verbose=False):
+def _NameSection(component, info, trace=None, verbose=False) -> tuple[str, str]:
   """The "Name" section of the help string."""
 
   # Only include separators in the name in verbose mode.
@@ -113,7 +116,7 @@ def _NameSection(component, info, trace=None, verbose=False):
 
 
 def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata,
-                     trace=None):
+                     trace=None) -> tuple[str, str]:
   """The "Synopsis" section of the help string."""
   current_command = _GetCurrentCommand(trace=trace, include_separators=True)
 
@@ -136,7 +139,7 @@ def _SynopsisSection(component, actions_grouped_by_kind, spec, metadata,
   return ('SYNOPSIS', text)
 
 
-def _DescriptionSection(component, info):
+def _DescriptionSection(component, info) -> tuple[str, str] | None:
   """The "Description" sections of the help string.
 
   Args:
@@ -408,7 +411,7 @@ def _GetCurrentCommand(trace=None, include_separators=True):
   return current_command
 
 
-def _CreateOutputSection(name, content):
+def _CreateOutputSection(name: str, content: str) -> str:
   return f"""{formatting.Bold(name)}
 {formatting.Indent(content, SECTION_INDENTATION)}"""
 

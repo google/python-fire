@@ -436,7 +436,7 @@ def _consume_line(line_info, state):
   if state.section.new and state.section.format == Formats.RST:
     # The current line starts with an RST directive, e.g. ":param arg:".
     directive = _get_directive(line_info)
-    directive_tokens = directive.split()  # pytype: disable=attribute-error
+    directive_tokens = directive.split()
     if state.section.title == Sections.ARGS:
       name = directive_tokens[-1]
       arg = _get_or_create_arg_by_name(

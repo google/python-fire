@@ -215,12 +215,12 @@ class CoreTest(testutils.BaseTestCase):
 
   def testLruCacheDecoratorBoundArg(self):
     self.assertEqual(
-        core.Fire(tc.py3.LruCacheDecoratedMethod,  # pytype: disable=module-attr
+        core.Fire(tc.py3.LruCacheDecoratedMethod,
                   command=['lru_cache_in_class', 'foo']), 'foo')
 
   def testLruCacheDecorator(self):
     self.assertEqual(
-        core.Fire(tc.py3.lru_cache_decorated,  # pytype: disable=module-attr
+        core.Fire(tc.py3.lru_cache_decorated,
                   command=['foo']), 'foo')
 
 

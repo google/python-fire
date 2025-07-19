@@ -125,7 +125,7 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextFunctionWithDefaultsAndTypes(self):
     component = (
-        tc.py3.WithDefaultsAndTypes().double)  # pytype: disable=module-attr
+        tc.py3.WithDefaultsAndTypes().double)
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='double'))
@@ -139,7 +139,7 @@ class HelpTest(testutils.BaseTestCase):
 
   def testHelpTextFunctionWithTypesAndDefaultNone(self):
     component = (
-        tc.py3.WithDefaultsAndTypes().get_int)  # pytype: disable=module-attr
+        tc.py3.WithDefaultsAndTypes().get_int)
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='get_int'))
@@ -153,7 +153,7 @@ class HelpTest(testutils.BaseTestCase):
     self.assertNotIn('NOTES', help_screen)
 
   def testHelpTextFunctionWithTypes(self):
-    component = tc.py3.WithTypes().double  # pytype: disable=module-attr
+    component = tc.py3.WithTypes().double
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='double'))
@@ -168,7 +168,7 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
 
   def testHelpTextFunctionWithLongTypes(self):
-    component = tc.py3.WithTypes().long_type  # pytype: disable=module-attr
+    component = tc.py3.WithTypes().long_type
     help_screen = helptext.HelpText(
         component=component,
         trace=trace.FireTrace(component, name='long_type'))
@@ -263,14 +263,14 @@ class HelpTest(testutils.BaseTestCase):
     self.assertIn('SYNOPSIS\n    OldStyleEmpty', help_screen)
 
   def testHelpTextKeywordOnlyArgumentsWithDefault(self):
-    component = tc.py3.KeywordOnly.with_default  # pytype: disable=module-attr
+    component = tc.py3.KeywordOnly.with_default
     output = helptext.HelpText(
         component=component, trace=trace.FireTrace(component, 'with_default'))
     self.assertIn('NAME\n    with_default', output)
     self.assertIn('FLAGS\n    -x, --x=X', output)
 
   def testHelpTextKeywordOnlyArgumentsWithoutDefault(self):
-    component = tc.py3.KeywordOnly.double  # pytype: disable=module-attr
+    component = tc.py3.KeywordOnly.double
     output = helptext.HelpText(
         component=component, trace=trace.FireTrace(component, 'double'))
     self.assertIn('NAME\n    double', output)
