@@ -1,0 +1,6 @@
+import numpy as np # mathematical calculation
+import pandas as pd  # data preprocessing 
+import matplotlib.pyplot as plt # data visualization
+import seaborn as sns  # data visualization
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
