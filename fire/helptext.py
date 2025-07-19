@@ -187,7 +187,7 @@ def _GetShortFlags(flags):
   return [v for v in short_flags if short_flag_counts[v] == 1]
 
 
-def _ArgsAndFlagsSections(info, spec, metadata) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
+def _ArgsAndFlagsSections(info, spec, metadata):
   """The "Args and Flags" sections of the help string."""
   args_with_no_defaults = spec.args[:len(spec.args) - len(spec.defaults)]
   args_with_defaults = spec.args[len(spec.args) - len(spec.defaults):]
