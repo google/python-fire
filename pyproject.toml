@@ -44,7 +44,7 @@ test = [
     "setuptools<=80.9.0",
     "pip",
     "pylint<3.3.7",
-    "pytest<=8.3.5",
+    "pytest<=8.4.1",
     "pytest-pylint<=1.1.2",
     "pytest-runner<7.0.0",
     "termcolor<3.2.0",
