@@ -41,10 +41,6 @@ Repository = "https://github.com/google/python-fire"
 
 [project.optional-dependencies]
 test = [
-    "hypothesis",
-    "levenshtein",
-]
-ci = [
     "setuptools<=80.9.0",
     "pip",
     "pylint<3.3.7",
