@@ -100,7 +100,7 @@ def Py3GetFullArgSpec(fn):
     An inspect.FullArgSpec namedtuple with the full arg spec of the function.
   """
   # pylint: disable=no-member
-  # pytype: disable=module-attr
+
   try:
     sig = inspect._signature_from_callable(  # pylint: disable=protected-access  # type: ignore
         fn,
@@ -157,7 +157,6 @@ def Py3GetFullArgSpec(fn):
   return inspect.FullArgSpec(args, varargs, varkw, defaults,
                              kwonlyargs, kwdefaults, annotations)
   # pylint: enable=no-member
-  # pytype: enable=module-attr
 
 
 def GetFullArgSpec(fn):
