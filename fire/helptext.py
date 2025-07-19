@@ -87,9 +87,10 @@ def HelpText(component, trace=None, verbose=False):
       + usage_details_sections
       + notes_sections
   )
+  valid_sections = [section for section in sections if section is not None]
   return '\n\n'.join(
-      _CreateOutputSection(*section)
-      for section in sections if section is not None
+      _CreateOutputSection(name, content)
+      for name, content in valid_sections
   )
 
 
@@ -283,7 +284,7 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   return args_and_flags_sections, notes_sections
 
 
-def _UsageDetailsSections(component, actions_grouped_by_kind):
+def _UsageDetailsSections(component, actions_grouped_by_kind) -> list[tuple[str, str]]:
   """The usage details sections of the help string."""
   groups, commands, values, indexes = actions_grouped_by_kind
 
