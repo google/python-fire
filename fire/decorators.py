@@ -68,7 +68,7 @@ def SetParseFns(*positional, **named):
   def _Decorator(fn):
     parse_fns = GetParseFns(fn)
     parse_fns['positional'] = positional
-    parse_fns['named'].update(named)  # pytype: disable=attribute-error
+    parse_fns['named'].update(named)
     _SetMetadata(fn, FIRE_PARSE_FNS, parse_fns)
     return fn
 

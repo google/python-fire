@@ -64,7 +64,7 @@ def import_from_file_path(path):
     raise OSError('Unable to load module from specified path.')
 
   module = util.module_from_spec(spec)  # pylint: disable=no-member
-  spec.loader.exec_module(module)  # pytype: disable=attribute-error
+  spec.loader.exec_module(module)
 
   return module, module_name
 

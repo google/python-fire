@@ -504,7 +504,7 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
 
       # Treat namedtuples as dicts when handling them as a map.
       if inspectutils.IsNamedTuple(component):
-        component_dict = component._asdict()  # pytype: disable=attribute-error
+        component_dict = component._asdict()
       else:
         component_dict = component
 
@@ -519,7 +519,7 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
         # a key as another type.
         # TODO(dbieber): Consider alternatives for accessing non-string keys.
         for key, value in (
-            component_dict.items()):  # pytype: disable=attribute-error
+            component_dict.items()):
           if target == str(key):
             component = value
             handled = True

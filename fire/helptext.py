@@ -284,7 +284,7 @@ def _ArgsAndFlagsSections(info, spec, metadata):
   return args_and_flags_sections, notes_sections
 
 
-def _UsageDetailsSections(component, actions_grouped_by_kind) -> list[tuple[str, str]]:
+def _UsageDetailsSections(component, actions_grouped_by_kind):
   """The usage details sections of the help string."""
   groups, commands, values, indexes = actions_grouped_by_kind
 
