@@ -14,7 +14,6 @@
 
 """Inspection utility functions for Python Fire."""
 
-import asyncio
 import inspect
 import sys
 import types
