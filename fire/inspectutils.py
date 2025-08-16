@@ -269,12 +269,12 @@ def Info(component):
 
   try:
     unused_code, lineindex = inspect.findsource(component)
-    info['line'] = lineindex + 1
+    info['line'] = lineindex + 1  # type: ignore
   except (TypeError, OSError):
-    info['line'] = None
+    info['line'] = None  # type: ignore
 
   if 'docstring' in info:
-    info['docstring_info'] = docstrings.parse(info['docstring'])
+    info['docstring_info'] = docstrings.parse(info['docstring'])  # type: ignore
 
   return info
 
