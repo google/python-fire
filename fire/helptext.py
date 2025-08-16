@@ -33,6 +33,8 @@ from __future__ import annotations
 
 import collections
 import itertools
+import sys
+import typing
 
 from fire import completion
 from fire import custom_descriptions
@@ -491,7 +493,7 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
 
   # We need to handle the case where there is a default of None, but otherwise
   # the argument has another type.
-  if arg_default == 'None':
+  if arg_default == 'None' and not arg_type.startswith('Optional'):
     arg_type = f'Optional[{arg_type}]'
 
   arg_type = f'Type: {arg_type}' if arg_type else ''
@@ -525,11 +527,11 @@ def _GetArgType(arg, spec):
   if arg in spec.annotations:
     arg_type = spec.annotations[arg]
     try:
+      if isinstance(arg_type, typing._GenericAlias):
+        arg_type = repr(arg_type).replace('typing.', '')
+        return arg_type
       return arg_type.__qualname__
     except AttributeError:
-      # Some typing objects, such as typing.Union do not have either a __name__
-      # or __qualname__ attribute.
-      # repr(typing.Union[int, str]) will return ': typing.Union[int, str]'
       return repr(arg_type)
   return ''
 
