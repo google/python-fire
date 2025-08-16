@@ -345,6 +345,6 @@ def GetClassAttrsDict(component):
 
 def IsCoroutineFunction(fn):
   try:
-    return asyncio.iscoroutinefunction(fn)
+    return inspect.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except
     return False

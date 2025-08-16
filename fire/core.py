@@ -678,8 +678,14 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
 
   # Call the function.
   if inspectutils.IsCoroutineFunction(fn):
-    loop = asyncio.get_event_loop()
-    component = loop.run_until_complete(fn(*varargs, **kwargs))
+    try:
+      loop = asyncio.get_running_loop()
+    except RuntimeError:
+      # No event loop running, create a new one
+      component = asyncio.run(fn(*varargs, **kwargs))
+    else:
+      # Event loop is already running
+      component = loop.run_until_complete(fn(*varargs, **kwargs))
   else:
     component = fn(*varargs, **kwargs)
 
