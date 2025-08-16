@@ -14,7 +14,6 @@
 
 """Inspection utility functions for Python Fire."""
 
-import asyncio
 import inspect
 import sys
 import types
@@ -345,6 +344,6 @@ def GetClassAttrsDict(component):
 
 def IsCoroutineFunction(fn):
   try:
-    return asyncio.iscoroutinefunction(fn)
+    return inspect.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except
     return False
