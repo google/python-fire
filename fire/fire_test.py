@@ -21,6 +21,7 @@ from unittest import mock
 import fire
 from fire import test_components as tc
 from fire import testutils
+from fire.core import _GetProgName
 
 
 class FireTest(testutils.BaseTestCase):
@@ -56,6 +57,17 @@ class FireTest(testutils.BaseTestCase):
       with self.assertOutputMatches(stdout='SYNOPSIS.*base_filename.py',
                                     stderr=None):
         fire.Fire(tc.Empty)
+
+  def testFireProgName(self):
+    # ``sample/__main__.py` would be argv[0] when ``python -m sample`` was
+    # executed.
+    with mock.patch.object(sys, 'argv', ['sample/__main__.py']):
+      self.assertEqual(_GetProgName('', main='sample'),
+      '{executable} -m sample'.format(executable=sys.executable))
+
+    with mock.patch.object(sys, 'argv', ['sample/cli.py']):
+      self.assertEqual(_GetProgName('', main='sample'),
+      '{executable} -m sample.cli'.format(executable=sys.executable))
 
   def testFireNoArgs(self):
     self.assertEqual(fire.Fire(tc.MixedDefaults, command=['ten']), 10)
