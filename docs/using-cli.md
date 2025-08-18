@@ -173,6 +173,10 @@ displayed.
 The displayed help shows information about which Python component your command
 corresponds to, as well as usage information for how to extend that command.
 
+The environment variable, `FIRE_PAGER`, sets the default pager for help text
+to the preferred program. For example, set `FIRE_PAGER=-` to print help text
+on standard out.
+
 
 ### `--trace`: Getting a Fire trace <a name="trace-flag"></a>
 
