@@ -17,6 +17,8 @@ _Python Fire is a library for automatically generating command line interfaces
 
 ## Installation
 
+Create 'Virtual Environment' first. Visit the [Python official documentation](https://docs.python.org/3/tutorial/venv.html). After creating the virtual environment, you can proceed with the installation of Python Fire within that environment.
+
 To install Python Fire with pip, run: `pip install fire`
 
 To install Python Fire with conda, run: `conda install fire -c conda-forge`
