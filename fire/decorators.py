@@ -24,6 +24,14 @@ import inspect
 FIRE_METADATA = 'FIRE_METADATA'
 FIRE_PARSE_FNS = 'FIRE_PARSE_FNS'
 ACCEPTS_POSITIONAL_ARGS = 'ACCEPTS_POSITIONAL_ARGS'
+PASS_THROUGH = 'PASS_THROUGH'
+
+
+def PassThrough(fn):
+  """Set a flag to tell Fire to pass original args to decorated fn.
+  """
+  _SetMetadata(fn, PASS_THROUGH, True)
+  return fn
 
 
 def SetParseFn(fn, *arguments):
