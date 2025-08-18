@@ -152,6 +152,36 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
+  def testHelpTextFunctionWithTypesAndDefaultNoneFromTypingOptional(self):
+    component = (
+        tc.py3.WithDefaultsAndTypes().typing_optional_get_int)  # pytype: disable=module-attr
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='get_int'))
+    self.assertIn('NAME\n    get_int', help_screen)
+    self.assertIn('SYNOPSIS\n    get_int <flags>', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn(
+        'FLAGS\n    -v, --value=VALUE\n'
+        '        Type: Optional[int]\n        Default: None',
+        help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
+  def testHelpTextFunctionWithTypesAndDefaultNoneFromTypingUnion(self):
+    component = (
+        tc.py3.WithDefaultsAndTypes().typing_union_get_int)  # pytype: disable=module-attr
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='get_int'))
+    self.assertIn('NAME\n    get_int', help_screen)
+    self.assertIn('SYNOPSIS\n    get_int <flags>', help_screen)
+    self.assertNotIn('DESCRIPTION', help_screen)
+    self.assertIn(
+        'FLAGS\n    -v, --value=VALUE\n'
+        '        Type: Optional[Union[int, str]]\n        Default: None',
+        help_screen)
+    self.assertNotIn('NOTES', help_screen)
+
   def testHelpTextFunctionWithTypes(self):
     component = tc.py3.WithTypes().double
     help_screen = helptext.HelpText(
