@@ -14,12 +14,14 @@
 
 """Provides parsing functionality used by Python Fire."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import argparse
 import ast
+import sys
+
+if sys.version_info[0:2] < (3, 8):
+  _StrNode = ast.Str  # type: ignore  # pylint: disable=no-member  # deprecated but needed for Python < 3.8
+else:
+  _StrNode = ast.Constant
 
 
 def CreateParser():
@@ -94,7 +96,7 @@ def _LiteralEval(value):
     SyntaxError: If the value string has a syntax error.
   """
   root = ast.parse(value, mode='eval')
-  if isinstance(root.body, ast.BinOp):  # pytype: disable=attribute-error
+  if isinstance(root.body, ast.BinOp):
     raise ValueError(value)
 
   for node in ast.walk(root):
@@ -127,4 +129,4 @@ def _Replacement(node):
   # These are the only builtin constants supported by literal_eval.
   if value in ('True', 'False', 'None'):
     return node
-  return ast.Str(value)
+  return _StrNode(value)

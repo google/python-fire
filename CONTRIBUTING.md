@@ -40,16 +40,13 @@ In addition, the project follows a convention of:
 - Maximum line length: 80 characters
 - Indentation: 2 spaces (4 for line continuation)
 - PascalCase for function and method names.
-- No type hints, as described in [PEP 484], to maintain compatibility with
-Python versions < 3.5.
 - Single quotes around strings, three double quotes around docstrings.
 
 [Google Python Style Guide]: http://google.github.io/styleguide/pyguide.html
-[PEP 484]: https://www.python.org/dev/peps/pep-0484
 
 ## Testing
 
-Python Fire uses [Github Actions](https://github.com/google/python-fire/actions) to run tests on each pull request. You can run
+Python Fire uses [GitHub Actions](https://github.com/google/python-fire/actions) to run tests on each pull request. You can run
 these tests yourself as well. To do this, first install the test dependencies
 listed in setup.py (e.g. pytest, mock, termcolor, and hypothesis).
 Then run the tests by running `pytest` in the root directory of the repository.

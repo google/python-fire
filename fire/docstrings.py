@@ -49,10 +49,6 @@ TODO(dbieber): Support these features.
 - "True | False" indicates bool type.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import enum
 import re
@@ -440,7 +436,7 @@ def _consume_line(line_info, state):
   if state.section.new and state.section.format == Formats.RST:
     # The current line starts with an RST directive, e.g. ":param arg:".
     directive = _get_directive(line_info)
-    directive_tokens = directive.split()  # pytype: disable=attribute-error
+    directive_tokens = directive.split()
     if state.section.title == Sections.ARGS:
       name = directive_tokens[-1]
       arg = _get_or_create_arg_by_name(

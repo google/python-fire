@@ -43,7 +43,7 @@ class MainModuleFileTest(testutils.BaseTestCase):
   """Tests to verify correct import behavior for file executables."""
 
   def setUp(self):
-    super(MainModuleFileTest, self).setUp()
+    super().setUp()
     self.file = tempfile.NamedTemporaryFile(suffix='.py')  # pylint: disable=consider-using-with
     self.file.write(b'class Foo:\n  def double(self, n):\n    return 2 * n\n')
     self.file.flush()
@@ -78,7 +78,7 @@ class MainModuleFileTest(testutils.BaseTestCase):
   def testFileNameModuleFileFailure(self):
     # Confirm that an invalid file that masks a non-existent module fails.
     with self.assertRaisesRegex(ValueError,
-                                r'Fire can only be called on \.py files\.'):  # pylint: disable=line-too-long,  # pytype: disable=attribute-error
+                                r'Fire can only be called on \.py files\.'):  # pylint: disable=line-too-long,
       dirname = os.path.dirname(self.file.name)
       with testutils.ChangeDirectory(dirname):
         with open('foobar', 'w'):

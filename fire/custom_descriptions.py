@@ -36,12 +36,7 @@ This modules aims to resolve that problem, providing custom summaries and
 descriptions for primitive typed values.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from fire import formatting
-import six
 
 TWO_DOUBLE_QUOTES = '""'
 STRING_DESC_PREFIX = 'The string '
@@ -64,13 +59,11 @@ def NeedsCustomDescription(component):
     Whether the component should use a custom description and summary.
   """
   type_ = type(component)
-  if (type_ in six.string_types
-      or type_ in six.integer_types
-      or type_ is six.text_type
-      or type_ is six.binary_type
+  if (
+      type_ in (str, int, bytes)
       or type_ in (float, complex, bool)
       or type_ in (dict, tuple, list, set, frozenset)
-     ):
+  ):
     return True
   return False
 
@@ -138,14 +131,14 @@ CUSTOM_DESC_SUM_FN_DICT = {
 def GetSummary(obj, available_space, line_length):
   obj_type_name = type(obj).__name__
   if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
-    return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[0](obj, available_space,
-                                                         line_length)
+    return CUSTOM_DESC_SUM_FN_DICT[obj_type_name][0](obj, available_space,
+                                                     line_length)
   return None
 
 
 def GetDescription(obj, available_space, line_length):
   obj_type_name = type(obj).__name__
   if obj_type_name in CUSTOM_DESC_SUM_FN_DICT:
-    return CUSTOM_DESC_SUM_FN_DICT.get(obj_type_name)[1](obj, available_space,
-                                                         line_length)
+    return CUSTOM_DESC_SUM_FN_DICT[obj_type_name][1](obj, available_space,
+                                                     line_length)
   return None

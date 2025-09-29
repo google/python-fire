@@ -14,10 +14,6 @@
 
 """This module is used for enabling formatting on Windows."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import ctypes
 import os
 import platform
@@ -25,7 +21,7 @@ import subprocess
 import sys
 
 try:
-  import colorama  # pylint: disable=g-import-not-at-top,  # pytype: disable=import-error
+  import colorama  # pylint: disable=g-import-not-at-top
   HAS_COLORAMA = True
 except ImportError:
   HAS_COLORAMA = False
@@ -35,14 +31,16 @@ def initialize_or_disable():
   """Enables ANSI processing on Windows or disables it as needed."""
   if HAS_COLORAMA:
     wrap = True
-    if sys.stdout.isatty() and platform.release() == '10':
+    if (hasattr(sys.stdout, 'isatty')
+        and sys.stdout.isatty()
+        and platform.release() == '10'):
       # Enables native ANSI sequences in console.
       # Windows 10, 2016, and 2019 only.
 
       wrap = False
-      kernel32 = ctypes.windll.kernel32  # pytype: disable=module-attr
+      kernel32 = ctypes.windll.kernel32
       enable_virtual_terminal_processing = 0x04
-      out_handle = kernel32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)  # pylint: disable=line-too-long,  # pytype: disable=module-attr
+      out_handle = kernel32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)  # pylint: disable=line-too-long,
       # GetConsoleMode fails if the terminal isn't native.
       mode = ctypes.wintypes.DWORD()
       if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:

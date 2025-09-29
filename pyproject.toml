@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fire"
+version = "0.7.1"
+description = "A library for automatically generating command line interfaces."
+readme = "README.md"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "David Bieber", email = "david810+fire@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS",
+    "Operating System :: Unix",
+]
+keywords = ["command", "line", "interface", "cli", "python", "fire", "interactive", "bash", "tool"]
+requires-python = ">=3.7"
+dependencies = [
+    "termcolor",
+]
+
+[project.urls]
+Homepage = "https://github.com/google/python-fire"
+Repository = "https://github.com/google/python-fire"
+
+[project.optional-dependencies]
+test = [
+    "setuptools<=80.9.0",
+    "pip",
+    "pylint<3.3.8",
+    "pytest<=8.4.1",
+    "pytest-pylint<=1.1.2",
+    "pytest-runner<7.0.0",
+    "termcolor<3.2.0",
+    "hypothesis<6.137.0",
+    "levenshtein<=0.27.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["fire*"]
+
+[tool.setuptools.package-data]
+fire = ["console/*"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--ignore=fire/test_components_py3.py",
+    "--ignore=fire/parser_fuzz_test.py"
+]

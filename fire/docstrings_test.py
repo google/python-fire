@@ -14,10 +14,6 @@
 
 """Tests for fire docstrings module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from fire import docstrings
 from fire import testutils
 
@@ -50,12 +46,12 @@ class DocstringsTest(testutils.BaseTestCase):
 
   def test_one_line_too_long(self):
     # pylint: disable=line-too-long
-    docstring = """A one line docstring thats both a little too verbose and a little too long so it keeps going well beyond a reasonable length for a one-liner.
+    docstring = """A one line docstring that is both a little too verbose and a little too long so it keeps going well beyond a reasonable length for a one-liner.
     """
     # pylint: enable=line-too-long
     docstring_info = docstrings.parse(docstring)
     expected_docstring_info = DocstringInfo(
-        summary='A one line docstring thats both a little too verbose and '
+        summary='A one line docstring that is both a little too verbose and '
         'a little too long so it keeps going well beyond a reasonable length '
         'for a one-liner.',
     )
@@ -63,25 +59,25 @@ class DocstringsTest(testutils.BaseTestCase):
 
   def test_one_line_runs_over(self):
     # pylint: disable=line-too-long
-    docstring = """A one line docstring thats both a little too verbose and a little too long
+    docstring = """A one line docstring that is both a little too verbose and a little too long
     so it runs onto a second line.
     """
     # pylint: enable=line-too-long
     docstring_info = docstrings.parse(docstring)
     expected_docstring_info = DocstringInfo(
-        summary='A one line docstring thats both a little too verbose and '
+        summary='A one line docstring that is both a little too verbose and '
         'a little too long so it runs onto a second line.',
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 
   def test_one_line_runs_over_whitespace(self):
     docstring = """
-      A one line docstring thats both a little too verbose and a little too long
+      A one line docstring that is both a little too verbose and a little too long
       so it runs onto a second line.
     """
     docstring_info = docstrings.parse(docstring)
     expected_docstring_info = DocstringInfo(
-        summary='A one line docstring thats both a little too verbose and '
+        summary='A one line docstring that is both a little too verbose and '
         'a little too long so it runs onto a second line.',
     )
     self.assertEqual(expected_docstring_info, docstring_info)

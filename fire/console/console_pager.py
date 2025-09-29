@@ -94,7 +94,7 @@ class Pager(object):
     Args:
       contents: The entire contents of the text lines to page.
       out: The output stream, log.out (effectively) if None.
-      prompt: The page break prompt, a defalt prompt is used if None..
+      prompt: The page break prompt, a default prompt is used if None..
     """
     self._contents = contents
     self._out = out or sys.stdout

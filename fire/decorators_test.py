@@ -14,16 +14,12 @@
 
 """Tests for the decorators module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from fire import core
 from fire import decorators
 from fire import testutils
 
 
-class NoDefaults(object):
+class NoDefaults:
   """A class for testing decorated functions without default values."""
 
   @decorators.SetParseFns(count=int)
@@ -44,7 +40,7 @@ def double(count):
   return 2 * count
 
 
-class WithDefaults(object):
+class WithDefaults:
 
   @decorators.SetParseFns(float)
   def example1(self, arg1=10):
@@ -55,14 +51,14 @@ class WithDefaults(object):
     return arg1, type(arg1)
 
 
-class MixedArguments(object):
+class MixedArguments:
 
   @decorators.SetParseFns(float, arg2=str)
   def example3(self, arg1, arg2):
     return arg1, arg2
 
 
-class PartialParseFn(object):
+class PartialParseFn:
 
   @decorators.SetParseFns(arg1=str)
   def example4(self, arg1, arg2):
@@ -73,7 +69,7 @@ class PartialParseFn(object):
     return arg1, arg2
 
 
-class WithKwargs(object):
+class WithKwargs:
 
   @decorators.SetParseFns(mode=str, count=int)
   def example6(self, **kwargs):
@@ -83,7 +79,7 @@ class WithKwargs(object):
     )
 
 
-class WithVarArgs(object):
+class WithVarArgs:
 
   @decorators.SetParseFn(str)
   def example7(self, arg1, arg2=None, *varargs, **kwargs):  # pylint: disable=keyword-arg-before-vararg

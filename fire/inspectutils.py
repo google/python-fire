@@ -14,23 +14,14 @@
 
 """Inspection utility functions for Python Fire."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import inspect
 import sys
 import types
 
 from fire import docstrings
 
-import six
 
-if six.PY34:
-  import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
-
-
-class FullArgSpec(object):
+class FullArgSpec:
   """The arguments of a function, as in Python 3's inspect.FullArgSpec."""
 
   def __init__(self, args=None, varargs=None, varkw=None, defaults=None,
@@ -78,8 +69,6 @@ def _GetArgSpecInfo(fn):
   if inspect.isclass(fn):
     # If the function is a class, we try to use its init method.
     skip_arg = True
-    if six.PY2 and hasattr(fn, '__init__'):
-      fn = fn.__init__
   elif inspect.ismethod(fn):
     # If the function is a bound method, we skip the `self` argument.
     skip_arg = fn.__self__ is not None
@@ -93,16 +82,6 @@ def _GetArgSpecInfo(fn):
     # The purpose of this else clause is to set skip_arg for callable objects.
     skip_arg = True
   return fn, skip_arg
-
-
-def Py2GetArgSpec(fn):
-  """A wrapper around getargspec that tries both fn and fn.__call__."""
-  try:
-    return inspect.getargspec(fn)  # pylint: disable=deprecated-method
-  except TypeError:
-    if hasattr(fn, '__call__'):
-      return inspect.getargspec(fn.__call__)  # pylint: disable=deprecated-method
-    raise
 
 
 def Py3GetFullArgSpec(fn):
@@ -120,9 +99,9 @@ def Py3GetFullArgSpec(fn):
     An inspect.FullArgSpec namedtuple with the full arg spec of the function.
   """
   # pylint: disable=no-member
-  # pytype: disable=module-attr
+
   try:
-    sig = inspect._signature_from_callable(  # pylint: disable=protected-access
+    sig = inspect._signature_from_callable(  # pylint: disable=protected-access  # type: ignore
         fn,
         skip_bound_arg=True,
         follow_wrapper_chains=True,
@@ -149,19 +128,19 @@ def Py3GetFullArgSpec(fn):
     name = param.name
 
     # pylint: disable=protected-access
-    if kind is inspect._POSITIONAL_ONLY:
+    if kind is inspect._POSITIONAL_ONLY:  # type: ignore
       args.append(name)
-    elif kind is  inspect._POSITIONAL_OR_KEYWORD:
+    elif kind is inspect._POSITIONAL_OR_KEYWORD:  # type: ignore
       args.append(name)
       if param.default is not param.empty:
         defaults += (param.default,)
-    elif kind is  inspect._VAR_POSITIONAL:
+    elif kind is inspect._VAR_POSITIONAL:  # type: ignore
       varargs = name
-    elif kind is  inspect._KEYWORD_ONLY:
+    elif kind is inspect._KEYWORD_ONLY:  # type: ignore
       kwonlyargs.append(name)
       if param.default is not param.empty:
         kwdefaults[name] = param.default
-    elif kind is  inspect._VAR_KEYWORD:
+    elif kind is inspect._VAR_KEYWORD:  # type: ignore
       varkw = name
     if param.annotation is not param.empty:
       annotations[name] = param.annotation
@@ -177,7 +156,6 @@ def Py3GetFullArgSpec(fn):
   return inspect.FullArgSpec(args, varargs, varkw, defaults,
                              kwonlyargs, kwdefaults, annotations)
   # pylint: enable=no-member
-  # pytype: enable=module-attr
 
 
 def GetFullArgSpec(fn):
@@ -189,13 +167,9 @@ def GetFullArgSpec(fn):
     if sys.version_info[0:2] >= (3, 5):
       (args, varargs, varkw, defaults,
        kwonlyargs, kwonlydefaults, annotations) = Py3GetFullArgSpec(fn)
-    elif six.PY3:  # Specifically Python 3.4.
+    else:  # Specifically Python 3.4.
       (args, varargs, varkw, defaults,
        kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(fn)  # pylint: disable=deprecated-method,no-member
-    else:  # six.PY2
-      args, varargs, varkw, defaults = Py2GetArgSpec(fn)
-      kwonlyargs = kwonlydefaults = None
-      annotations = getattr(fn, '__annotations__', None)
 
   except TypeError:
     # If we can't get the argspec, how do we know if the fn should take args?
@@ -225,7 +199,7 @@ def GetFullArgSpec(fn):
     return FullArgSpec()
 
   # In Python 3.5+ Py3GetFullArgSpec uses skip_bound_arg=True already.
-  skip_arg_required = six.PY2 or sys.version_info[0:2] == (3, 4)
+  skip_arg_required = sys.version_info[0:2] == (3, 4)
   if skip_arg_required and skip_arg and args:
     args.pop(0)  # Remove 'self' or 'cls' from the list of arguments.
   return FullArgSpec(args, varargs, varkw, defaults,
@@ -253,7 +227,7 @@ def GetFileAndLine(component):
   try:
     unused_code, lineindex = inspect.findsource(component)
     lineno = lineindex + 1
-  except (IOError, IndexError):
+  except (OSError, IndexError):
     lineno = None
 
   return filename, lineno
@@ -280,7 +254,10 @@ def Info(component):
   """
   try:
     from IPython.core import oinspect  # pylint: disable=import-outside-toplevel,g-import-not-at-top
-    inspector = oinspect.Inspector()
+    try:
+      inspector = oinspect.Inspector(theme_name="neutral")
+    except TypeError:  # Only recent versions of IPython support theme_name.
+      inspector = oinspect.Inspector()  # type: ignore
     info = inspector.info(component)
 
     # IPython's oinspect.Inspector.info may return '<no docstring>'
@@ -291,12 +268,12 @@ def Info(component):
 
   try:
     unused_code, lineindex = inspect.findsource(component)
-    info['line'] = lineindex + 1
-  except (TypeError, IOError):
-    info['line'] = None
+    info['line'] = lineindex + 1  # type: ignore
+  except (TypeError, OSError):
+    info['line'] = None  # type: ignore
 
   if 'docstring' in info:
-    info['docstring_info'] = docstrings.parse(info['docstring'])
+    info['docstring_info'] = docstrings.parse(info['docstring'])  # type: ignore
 
   return info
 
@@ -367,6 +344,6 @@ def GetClassAttrsDict(component):
 
 def IsCoroutineFunction(fn):
   try:
-    return six.PY34 and asyncio.iscoroutinefunction(fn)
+    return inspect.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except
     return False
