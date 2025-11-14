@@ -72,6 +72,29 @@ python calculator.py double 10  # 20
 python calculator.py double --number=15  # 30
 ```
 
+### Handling Missing Arguments
+
+When required arguments are missing, Python Fire will raise an error. To improve user experience, consider providing default values and clear docstrings:
+
+```python
+import fire
+
+def greet(name, greeting="Hello"):
+  """
+  Greet someone with a custom message.
+
+  Args:
+    name: The name of the person to greet (required)
+    greeting: The greeting message (default: Hello)
+  """
+  return f"{greeting}, {name}!"
+
+if __name__ == '__main__':
+  fire.Fire(greet)
+```
+
+This provides helpful information when users run `--help` and makes missing argument errors clearer.
+
 To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn
 about Fire's other features, see the [Using a Fire CLI page](docs/using-cli.md).
 
