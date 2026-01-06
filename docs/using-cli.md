@@ -230,3 +230,39 @@ Adding the `-v` or `--verbose` flag turns on verbose mode. This will eg
 reveal private members in the usage string. Often these members will not
 actually be usable from the command line tool. As such, verbose mode should be
 considered a debugging tool, but not fully supported yet.
+
+
+## Documenting your CLI
+
+Python Fire automatically generates help text from your function and class
+docstrings. Fire supports three common docstring formats:
+
+- **Google-style** docstrings
+- **NumPy-style** docstrings
+- **reStructuredText (Sphinx)** style docstrings
+
+The docstring support is **best-effort**, and notably many features of rst
+docstrings are not currently handled. Additional limitations are listed at the
+top of
+[fire/docstrings.py](https://github.com/google/python-fire/blob/v0.3.0/fire/docstrings.py).
+
+### Behavior differences between formats
+
+When testing the different docstring styles (e.g., with
+`python your_script.py your_function -- --help`), you may notice some
+differences in how type information is displayed:
+
+- **Google-style** shows `Type:` for arguments when type annotations are
+  present (e.g., `Type: str`, `Type: int`).
+- **NumPy-style** and **rst-style** may not show `Type:` lines in the same way
+  (though they still show `Default:` values and descriptions). Fire's docstring
+  parser for NumPy/rst is more conservative in attaching type information.
+
+### Common behavior across all formats
+
+Regardless of which docstring format you choose, Fire will:
+
+- Use the first-line summary as the command's NAME/DESCRIPTION in the help text
+- Populate POSITIONAL ARGUMENTS and FLAGS from parameter descriptions
+- Automatically convert optional arguments to flags (e.g., `--arg` or `-a` for
+  short flags)
