@@ -687,7 +687,18 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
       # Event loop is already running
       component = loop.run_until_complete(fn(*varargs, **kwargs))
   else:
-    component = fn(*varargs, **kwargs)
+      try:
+          component = fn(*varargs, **kwargs)
+      except TypeError as e:
+        message = str(e)
+
+        if 'missing' in message and 'required positional argument' in message:
+            raise TypeError(
+                f"Error: {message}\n\n"
+                f"Hint: Run the command with --help to see usage."
+            ) from None
+
+        raise
 
   if treatment == 'class':
     action = trace.INSTANTIATED_CLASS
