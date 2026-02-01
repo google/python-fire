@@ -42,7 +42,7 @@ Repository = "https://github.com/google/python-fire"
 
 [project.optional-dependencies]
 test = [
-    "setuptools<=80.9.0",
+    "setuptools<=80.10.2",
     "pip",
     "pylint<3.3.8",
     "pytest<=8.4.1",
