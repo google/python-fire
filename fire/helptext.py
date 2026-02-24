@@ -491,7 +491,8 @@ def _CreateFlagItem(flag, docstring_info, spec, required=False,
 
   # We need to handle the case where there is a default of None, but otherwise
   # the argument has another type.
-  if arg_default == 'None':
+  # Don't wrap in Optional if the type already indicates it's optional.
+  if arg_default == 'None' and arg_type and 'None' not in arg_type:
     arg_type = f'Optional[{arg_type}]'
 
   arg_type = f'Type: {arg_type}' if arg_type else ''
@@ -524,6 +525,11 @@ def _GetArgType(arg, spec):
   """
   if arg in spec.annotations:
     arg_type = spec.annotations[arg]
+    # For generic types (e.g., Optional[str], List[int], Union[int, str]),
+    # __qualname__ only returns the base name without type arguments.
+    # Use repr() instead to get the full type string.
+    if hasattr(arg_type, '__args__'):
+      return repr(arg_type)
     try:
       return arg_type.__qualname__
     except AttributeError:
