@@ -152,6 +152,37 @@ class HelpTest(testutils.BaseTestCase):
         help_screen)
     self.assertNotIn('NOTES', help_screen)
 
+  def testHelpTextOptionalTypeWithDefault(self):
+    # Regression test for https://github.com/google/python-fire/issues/508
+    # Optional[str] with a non-None default should show the full type
+    # including the inner type, not just "Optional" or "Union".
+    component = tc.py3.WithDefaultsAndTypes().get_optional_str
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='get_optional_str'))
+    self.assertIn('Type:', help_screen)
+    # The type annotation must include 'str' to indicate the actual type.
+    # Without the fix, __qualname__ returns just 'Optional' or 'Union'
+    # which loses the inner type information.
+    self.assertRegex(help_screen, r'Type:.*str')
+    # Must not show bare 'Optional' or 'Union' without type arguments
+    self.assertNotRegex(help_screen, r'Type: Optional\n')
+    self.assertNotRegex(help_screen, r'Type: Union\n')
+
+  def testHelpTextOptionalTypeWithNoneDefault(self):
+    # Regression test for https://github.com/google/python-fire/issues/508
+    # Optional[str] with default=None should NOT show "Optional[Optional]"
+    # or "Optional[Union]".
+    component = tc.py3.WithDefaultsAndTypes().get_optional_str_none
+    help_screen = helptext.HelpText(
+        component=component,
+        trace=trace.FireTrace(component, name='get_optional_str_none'))
+    self.assertIn('Type:', help_screen)
+    self.assertNotIn('Optional[Optional]', help_screen)
+    self.assertNotIn('Optional[Union]', help_screen)
+    # Should show the inner type (str) in the type annotation
+    self.assertRegex(help_screen, r'Type:.*str')
+
   def testHelpTextFunctionWithTypes(self):
     component = tc.py3.WithTypes().double
     help_screen = helptext.HelpText(

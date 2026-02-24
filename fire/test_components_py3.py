@@ -16,6 +16,7 @@
 
 import asyncio
 import functools
+import typing
 from typing import Tuple
 
 
@@ -99,3 +100,9 @@ class WithDefaultsAndTypes:
 
   def get_int(self, value: int = None):
     return 0 if value is None else value
+
+  def get_optional_str(self, value: typing.Optional[str] = 'something'):
+    return value
+
+  def get_optional_str_none(self, value: typing.Optional[str] = None):
+    return value
