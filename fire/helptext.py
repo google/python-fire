@@ -524,13 +524,9 @@ def _GetArgType(arg, spec):
   """
   if arg in spec.annotations:
     arg_type = spec.annotations[arg]
-    try:
-      return arg_type.__qualname__
-    except AttributeError:
-      # Some typing objects, such as typing.Union do not have either a __name__
-      # or __qualname__ attribute.
-      # repr(typing.Union[int, str]) will return ': typing.Union[int, str]'
-      return repr(arg_type)
+    # Use repr() to get full type representation including generic args (e.g., Optional[str])
+    # This fixes the bug where __qualname__ returns just "Optional" instead of "Optional[str]"
+    return repr(arg_type)
   return ''
 
 
