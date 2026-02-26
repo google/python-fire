@@ -72,6 +72,11 @@ python calculator.py double 10  # 20
 python calculator.py double --number=15  # 30
 ```
 
+When `Fire` is called on a class, it automatically creates an instance of that
+class. The class's methods then become available as subcommands on the CLI.
+For example, running `python calculator.py double 10` calls the `double`
+method on a new `Calculator` instance.
+
 To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn
 about Fire's other features, see the [Using a Fire CLI page](docs/using-cli.md).
 
