@@ -379,6 +379,14 @@ def _CompletionsFromArgs(fn_args):
   Returns:
     A list of possible completion strings for that function.
   """
+  # Completion should not suggest implicit bound args.
+  #
+  # When generating completions, Fire may inspect unbound methods (functions
+  # retrieved from a class). These will include "self" or "cls" in the argspec,
+  # even though users can never pass those via the CLI.
+  if fn_args and fn_args[0] in ('self', 'cls'):
+    fn_args = fn_args[1:]
+
   completions = []
   for arg in fn_args:
     arg = arg.replace('_', '-')
