@@ -52,6 +52,7 @@ The available flags for all Fire CLIs are:
 import asyncio
 import inspect
 import json
+import logging
 import os
 import re
 import shlex
@@ -68,6 +69,51 @@ from fire import parser
 from fire import trace
 from fire import value_types
 from fire.console import console_io
+
+
+class _LazyStderrStreamHandler(logging.StreamHandler):
+  """A StreamHandler that resolves sys.stderr dynamically at emit time.
+
+  The standard StreamHandler captures a reference to the stream object at
+  construction time. This subclass overrides that behaviour so that it always
+  writes to whatever sys.stderr currently refers to. This is important for
+  test code that replaces sys.stderr with an in-memory buffer via
+  unittest.mock.patch.object(sys, 'stderr', ...).
+  """
+
+  @property
+  def stream(self):
+    return sys.stderr
+
+  @stream.setter
+  def stream(self, value):
+    pass  # Always use sys.stderr; ignore any value stored at construction time.
+
+
+# Fire's internal logger.  By default it writes INFO-level messages to stderr,
+# preserving the behaviour that existed before this logging integration was
+# added.  Callers that want to suppress or redirect these messages can
+# configure the 'fire' or 'fire.core' logger, e.g.:
+#
+#   import logging
+#   logging.getLogger('fire').setLevel(logging.WARNING)  # suppress INFO msgs
+#
+_logger = logging.getLogger(__name__)
+if not _logger.handlers:
+  _handler = _LazyStderrStreamHandler()
+  _handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+  _logger.addHandler(_handler)
+  _logger.propagate = False
+
+# Set INFO on the parent 'fire' logger (not on fire.core itself) so that
+# the effective level for fire.core is inherited from the hierarchy.  This
+# lets users suppress all fire messages by adjusting the 'fire' logger:
+#   logging.getLogger('fire').setLevel(logging.WARNING)
+# or target just this module with:
+#   logging.getLogger('fire.core').setLevel(logging.WARNING)
+_fire_parent_logger = logging.getLogger('fire')
+if _fire_parent_logger.level == logging.NOTSET:
+  _fire_parent_logger.setLevel(logging.INFO)
 
 
 def Fire(component=None, command=None, name=None, serialize=None):
@@ -231,8 +277,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
   if show_help:
     component_trace.show_help = True
     command = f'{component_trace.GetCommand()} -- --help'
-    print(f'INFO: Showing help with the command {shlex.quote(command)}.\n',
-          file=sys.stderr)
+    _logger.info('Showing help with the command %s.\n', shlex.quote(command))
   return show_help
 
 
@@ -287,8 +332,7 @@ def _DisplayError(component_trace):
 
   if show_help:
     command = f'{component_trace.GetCommand()} -- --help'
-    print(f'INFO: Showing help with the command {shlex.quote(command)}.\n',
-          file=sys.stderr)
+    _logger.info('Showing help with the command %s.\n', shlex.quote(command))
     help_text = helptext.HelpText(result, trace=component_trace,
                                   verbose=component_trace.verbose)
     output.append(help_text)

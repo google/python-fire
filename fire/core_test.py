@@ -14,6 +14,9 @@
 
 """Tests for the core module."""
 
+import io
+import logging
+import sys
 from unittest import mock
 
 from fire import core
@@ -222,6 +225,71 @@ class CoreTest(testutils.BaseTestCase):
     self.assertEqual(
         core.Fire(tc.py3.lru_cache_decorated,
                   command=['foo']), 'foo')
+
+
+class LoggingTest(testutils.BaseTestCase):
+  """Tests that INFO messages use the Python logging framework (issue #353)."""
+
+  def testInfoMessageAppearsOnStderrByDefault(self):
+    """The 'Showing help' INFO line must appear in stderr without any logging config."""
+    with self.assertRaisesFireExit(0, r'INFO:.*Showing help'):
+      core.Fire(tc.InstanceVars, command=['--help'])
+
+  def testInfoMessageUsesFireLogger(self):
+    """core._logger must be a Logger named 'fire.core'."""
+    self.assertIsInstance(core._logger, logging.Logger)  # pylint: disable=protected-access
+    self.assertEqual(core._logger.name, 'fire.core')  # pylint: disable=protected-access
+
+  def testInfoCanBeSuppressedViaLogging(self):
+    """Users can suppress the INFO line by raising the fire.core logger level."""
+    fire_logger = logging.getLogger('fire.core')
+    original_level = fire_logger.level
+    try:
+      fire_logger.setLevel(logging.WARNING)
+      stderr_fp = io.StringIO()
+      with mock.patch.object(sys, 'stderr', stderr_fp):
+        with self.assertRaises(core.FireExit):
+          core.Fire(tc.InstanceVars, command=['--help'])
+      self.assertNotIn('INFO:', stderr_fp.getvalue())
+    finally:
+      fire_logger.setLevel(original_level)
+
+  def testInfoCanBeSuppressedViaParentLogger(self):
+    """Users can suppress the INFO line by raising the parent 'fire' logger level."""
+    fire_logger = logging.getLogger('fire')
+    original_level = fire_logger.level
+    try:
+      fire_logger.setLevel(logging.WARNING)
+      stderr_fp = io.StringIO()
+      with mock.patch.object(sys, 'stderr', stderr_fp):
+        with self.assertRaises(core.FireExit):
+          core.Fire(tc.InstanceVars, command=['--help'])
+      self.assertNotIn('INFO:', stderr_fp.getvalue())
+    finally:
+      fire_logger.setLevel(original_level)
+
+  def testInfoCanBeRedirectedViaCustomHandler(self):
+    """Users can capture fire's log output by adding their own handler."""
+    fire_logger = logging.getLogger('fire.core')
+    custom_stream = io.StringIO()
+    custom_handler = logging.StreamHandler(custom_stream)
+    custom_handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+
+    # Remove the default handler, add a custom one to redirect to custom_stream.
+    original_handlers = fire_logger.handlers[:]
+    original_propagate = fire_logger.propagate
+    fire_logger.handlers = [custom_handler]
+    try:
+      stderr_fp = io.StringIO()
+      with mock.patch.object(sys, 'stderr', stderr_fp):
+        with self.assertRaises(core.FireExit):
+          core.Fire(tc.InstanceVars, command=['--help'])
+      # INFO message should appear in our custom stream, not stderr.
+      self.assertIn('INFO:', custom_stream.getvalue())
+      self.assertNotIn('INFO:', stderr_fp.getvalue())
+    finally:
+      fire_logger.handlers = original_handlers
+      fire_logger.propagate = original_propagate
 
 
 if __name__ == '__main__':
