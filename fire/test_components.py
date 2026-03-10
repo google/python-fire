@@ -566,3 +566,25 @@ def fn_with_multiple_defaults(first='first', last='last', late='late'):
   del last, late
   return first
 # pylint: enable=g-doc-args,g-doc-return-or-yield
+
+
+class ClassWithCustomRepr:
+  """Class that overrides __repr__ but not __str__."""
+
+  def __repr__(self):
+    return 'ClassWithCustomRepr()'
+
+
+class ClassWithCustomStr:
+  """Class that overrides __str__ but not __repr__."""
+
+  def __str__(self):
+    return 'custom str'
+
+
+def fn_returning_custom_repr():
+  return ClassWithCustomRepr()
+
+
+def fn_returning_custom_str():
+  return ClassWithCustomStr()

@@ -161,6 +161,19 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertOutputMatches(stdout='11', stderr=None):
       core.Fire(tc.NamedTuple, command=['point', '-2'])
 
+  def testPrintObjectWithCustomStr(self):
+    # An object that overrides __str__ should be printed as a value, not shown
+    # as a help screen (regression test for github.com/google/python-fire#595).
+    with self.assertOutputMatches(stdout='custom str', stderr=None):
+      core.Fire(tc.fn_returning_custom_str, command=[])
+
+  def testPrintObjectWithCustomRepr(self):
+    # An object that overrides only __repr__ should also be printed as a value
+    # because Python's object.__str__ delegates to __repr__.
+    # Regression test for github.com/google/python-fire#595.
+    with self.assertOutputMatches(stdout='ClassWithCustomRepr()', stderr=None):
+      core.Fire(tc.fn_returning_custom_repr, command=[])
+
   def testCallable(self):
     with self.assertOutputMatches(stdout=r'foo:\s+foo\s+', stderr=None):
       core.Fire(tc.CallableWithKeywordArgument(), command=['--foo=foo'])

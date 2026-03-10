@@ -15,8 +15,17 @@
 """Types of values."""
 
 import inspect
+import sys
 
 from fire import inspectutils
+
+# Names of all Python standard-library modules, used to distinguish user-
+# defined types from stdlib types in HasCustomStr.  sys.stdlib_module_names
+# was added in Python 3.10; fall back to a minimal sentinel set for older
+# interpreters so the guard still works for the most common cases.
+_STDLIB_MODULE_NAMES = frozenset(
+    getattr(sys, 'stdlib_module_names', {'builtins', 'collections', 'abc'})
+)
 
 
 VALUE_TYPES = (bool, str, bytes, int, float, complex,
@@ -56,25 +65,42 @@ def IsSimpleGroup(component):
 
 
 def HasCustomStr(component):
-  """Determines if a component has a custom __str__ method.
+  """Determines if a component has a meaningful custom string representation.
 
   Uses inspect.classify_class_attrs to determine the origin of the object's
-  __str__ method, if one is present. If it defined by `object` itself, then
+  __str__ and __repr__ methods.  If __str__ is defined by `object` itself, then
   it is not considered custom. Otherwise it is. This means that the __str__
   methods of primitives like ints and floats are considered custom.
 
-  Objects with custom __str__ methods are treated as values and can be
+  Python's default object.__str__ delegates to __repr__, so a class that
+  overrides __repr__ but not __str__ also produces a meaningful custom string
+  via str(). Such objects are likewise treated as having a custom str.
+
+  Objects with a meaningful str representation are treated as values and can be
   serialized in places where more complex objects would have their help screen
   shown instead.
 
   Args:
     component: The object to check for a custom __str__ method.
   Returns:
-    Whether `component` has a custom __str__ method.
+    Whether `component` has a custom string representation.
   """
   if hasattr(component, '__str__'):
     class_attrs = inspectutils.GetClassAttrsDict(type(component)) or {}
     str_attr = class_attrs.get('__str__')
     if str_attr and str_attr.defining_class is not object:
       return True
+    # If __str__ is inherited from object but __repr__ is overridden by a
+    # *user-defined* (non-stdlib) class, str(component) will use that custom
+    # __repr__ (because object.__str__ delegates to __repr__).  Treat this as
+    # a meaningful custom string too.
+    # Exclude stdlib types (dict, list, OrderedDict, …) whose __repr__ is
+    # defined in the standard library — Fire still treats those as navigable
+    # groups, not values.
+    repr_attr = class_attrs.get('__repr__')
+    if repr_attr and repr_attr.defining_class is not object:
+      defining_module = repr_attr.defining_class.__module__ or ''
+      top_level_module = defining_module.split('.')[0]
+      if top_level_module not in _STDLIB_MODULE_NAMES:
+        return True
   return False
