@@ -884,12 +884,13 @@ def _ParseKeywordArgs(args, fn_spec):
 
       # Determine the keyword.
       keyword = ''  # Indicates no valid keyword has been found yet.
-      if (key in fn_args
-          or (is_bool_syntax and key.startswith('no') and key[2:] in fn_args)
-          or fn_keywords):
+      if key in fn_args or (
+          is_bool_syntax and key.startswith('no') and key[2:] in fn_args):
         keyword = key
       elif len(key) == 1:
-        # This may be a shortcut flag.
+        # This may be a shortcut flag. Check fn_args before falling back to
+        # fn_keywords so that short flags like -f expand to the matching
+        # fn_arg (e.g. 'first_arg') even when **kwargs is present.
         matching_fn_args = [arg for arg in fn_args if arg[0] == key]
         if len(matching_fn_args) == 1:
           keyword = matching_fn_args[0]
@@ -898,6 +899,10 @@ def _ParseKeywordArgs(args, fn_spec):
               f"The argument '{argument}' is ambiguous as it could "
               f"refer to any of the following arguments: {matching_fn_args}"
           )
+        elif fn_keywords:
+          keyword = key
+      elif fn_keywords:
+        keyword = key
 
       # Determine the value.
       if not keyword:

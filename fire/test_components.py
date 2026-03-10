@@ -556,6 +556,11 @@ def fn_with_kwarg_and_defaults(arg1, arg2, opt=True, **kwargs):
   return kwargs.get('arg3')
 
 
+def fn_with_defaults_and_kwargs(first_arg='left', second_arg='right', **kwargs):
+  """Function with named defaults plus **kwargs, used to test short flags."""
+  return (first_arg, second_arg, kwargs)
+
+
 def fn_with_multiple_defaults(first='first', last='last', late='late'):
   """Function with kwarg and defaults.
 

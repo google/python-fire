@@ -491,6 +491,23 @@ class FireTest(testutils.BaseTestCase):
         fire.Fire(tc.SimilarArgNames,
                   command=['identity2', '-a', '-alpha']), (True, True))
 
+  def testSingleCharFlagParsingWithKwargs(self):
+    # Short flags should map to their matching fn_arg even when **kwargs is
+    # present (regression test for github.com/google/python-fire/issues/454).
+    self.assertEqual(
+        fire.Fire(tc.fn_with_defaults_and_kwargs,
+                  command=['-f=hello', '-s=world']),
+        ('hello', 'world', {}))
+    self.assertEqual(
+        fire.Fire(tc.fn_with_defaults_and_kwargs,
+                  command=['-f', 'hello', '-s', 'world']),
+        ('hello', 'world', {}))
+    # Unrecognised single-char flags should still be forwarded to **kwargs.
+    self.assertEqual(
+        fire.Fire(tc.fn_with_defaults_and_kwargs,
+                  command=['--unknown_key=42']),
+        ('left', 'right', {'unknown_key': 42}))
+
   def testSingleCharFlagParsingCapitalLetter(self):
     self.assertEqual(
         fire.Fire(tc.CapitalizedArgNames,
