@@ -677,17 +677,22 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
 
   # Call the function.
-  if inspectutils.IsCoroutineFunction(fn):
-    try:
-      loop = asyncio.get_running_loop()
-    except RuntimeError:
-      # No event loop running, create a new one
-      component = asyncio.run(fn(*varargs, **kwargs))
+  try:
+    if inspectutils.IsCoroutineFunction(fn):
+      try:
+        loop = asyncio.get_running_loop()
+      except RuntimeError:
+        # No event loop running, create a new one
+        component = asyncio.run(fn(*varargs, **kwargs))
+      else:
+        # Event loop is already running
+        component = loop.run_until_complete(fn(*varargs, **kwargs))
     else:
-      # Event loop is already running
-      component = loop.run_until_complete(fn(*varargs, **kwargs))
-  else:
-    component = fn(*varargs, **kwargs)
+      component = fn(*varargs, **kwargs)
+  except TypeError as e:
+    if 'required' in str(e) or 'missing' in str(e) or 'argument' in str(e):
+      raise FireError(str(e)) from None
+    raise
 
   if treatment == 'class':
     action = trace.INSTANTIATED_CLASS
