@@ -108,6 +108,31 @@ Please see [The Python Fire Guide](docs/guide.md).
 
 _Note that these flags are separated from the Fire command by an isolated `--`._
 
+## Xonsh shell support
+
+```xsh
+xpip install fire
+xontrib load fire
+
+obj = {'var': 'val'}
+fire obj var
+# val
+
+type(@.env)
+# xonsh.environ.Env
+fire @.env get USER - upper
+# PC
+
+type(@.imp)
+# xonsh.built_ins.InlineImporter
+fire @.imp.json dumps --help
+# @.imp.json dumps OBJ <flags>
+fire @.imp.json dumps '{"a":1}' --indent 4
+# {
+#    "a": 1
+# }
+```
+
 ## License
 
 Licensed under the
