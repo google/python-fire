@@ -725,6 +725,21 @@ def _MakeParseFn(fn, metadata):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
     kwargs, remaining_kwargs, remaining_args = _ParseKeywordArgs(args, fn_spec)
 
+    # Read configuration values from environment variables for kwonlyargs.
+    for arg_name in fn_spec.kwonlyargs:
+      if arg_name not in kwargs:
+        env_var = 'FIRE_{name}'.format(name=arg_name.upper())
+        if env_var in os.environ:
+          kwargs[arg_name] = os.environ[env_var]
+
+    # If varkw is present, also read other FIRE_ environment variables.
+    if fn_spec.varkw:
+      for env_name, env_val in os.environ.items():
+        if env_name.startswith('FIRE_'):
+          param_name = env_name[5:].lower()
+          if param_name not in kwargs and param_name not in fn_spec.args:
+            kwargs[param_name] = env_val
+
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
         fn_spec.args, fn_spec.defaults, num_required_args, kwargs,
@@ -804,14 +819,26 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
         value = _ParseValue(value, index, arg, metadata)
         parsed_args.append(value)
       elif index < num_required_args:
-        raise FireError(
-            'The function received no value for the required argument:', arg)
+        env_var = 'FIRE_{name}'.format(name=arg.upper())
+        if env_var in os.environ:
+          value = os.environ[env_var]
+          value = _ParseValue(value, index, arg, metadata)
+          parsed_args.append(value)
+        else:
+          raise FireError(
+              'The function received no value for the required argument:', arg)
       else:
         # We're past the args for which there's no default value.
         # There's a default value for this arg.
-        capacity = True
-        default_index = index - num_required_args  # index into the defaults.
-        parsed_args.append(fn_defaults[default_index])
+        env_var = 'FIRE_{name}'.format(name=arg.upper())
+        if env_var in os.environ:
+          value = os.environ[env_var]
+          value = _ParseValue(value, index, arg, metadata)
+          parsed_args.append(value)
+        else:
+          capacity = True
+          default_index = index - num_required_args  # index into the defaults.
+          parsed_args.append(fn_defaults[default_index])
 
   for key, value in kwargs.items():
     kwargs[key] = _ParseValue(value, None, key, metadata)

@@ -97,6 +97,23 @@ by name, using the flags syntax. See the section on
 Similarly, when passing arguments to a callable object (an object with a custom
 `__call__` function), those arguments must be passed using flags syntax.
 
+
+### Environment Variable Configuration
+
+Python Fire supports reading configuration values from environment variables.
+Any parameter can be specified using the `FIRE_<PARAM_NAME>` naming convention,
+where `<PARAM_NAME>` is the uppercase name of the parameter.
+
+For example, if a function has a parameter named `name`, its value can be set
+using the `FIRE_NAME` environment variable.
+
+Values provided via the command line (either positionally or as flags) take
+precedence over values provided via environment variables.
+
+Values in environment variables are parsed as Python literals, just like command
+line arguments.
+
+
 ## Using Flags with Fire CLIs <a name="using-flags"></a>
 
 Command line arguments to a Fire CLI are normally consumed by Fire, as described

@@ -736,6 +736,42 @@ example.py -- --help` or `python example.py --help` (or even `python example.py
 The complete set of flags available is shown below, in the reference section.
 
 
+### Environment Variable Configuration
+
+Python Fire supports reading configuration values from environment variables.
+You can specify a value for any parameter using the `FIRE_<PARAM_NAME>`
+naming convention, where `<PARAM_NAME>` is the uppercase name of the parameter.
+For example, if you have a parameter named `name`, you can set its value using
+the `FIRE_NAME` environment variable.
+
+Environment variables can be used for positional arguments, named arguments, and
+even arguments that are captured by `**kwargs`.
+
+Values provided via the command line (either positionally or as flags) take
+precedence over values provided via environment variables.
+
+Example:
+```bash
+$ export FIRE_NAME=World
+$ python example.py hello
+Hello World!
+$ python example.py hello --name=Fire
+Hello Fire!
+```
+
+Values in environment variables are parsed as Python literals, just like command
+line arguments.
+```bash
+$ export FIRE_COUNT=5
+$ python example.py repeat "Hello"
+Hello
+Hello
+Hello
+Hello
+Hello
+```
+
+
 ### Reference
 
 | Setup   | Command             | Notes
