@@ -107,6 +107,13 @@ class CoreTest(testutils.BaseTestCase):
     with self.assertOutputMatches(stdout='False', stderr=None):
       core.Fire(tc.function_with_help, command=['False'])
 
+  def testHelpFlagNotConsumedAsShortcutForHArg(self):
+    # -h must show help, not be silently expanded to --headless=True.
+    # Before the fix, running with '-h' would set headless=True instead of
+    # showing help because 'headless' starts with 'h'.
+    with self.assertRaisesFireExit(0, 'INFO:.*SYNOPSIS.*headless'):
+      core.Fire(tc.function_with_headless, command=['-h'])
+
   def testInvalidParameterRaisesFireExit(self):
     with self.assertRaisesFireExit(2, 'runmisspelled'):
       core.Fire(tc.Kwargs, command=['props', '--a=1', '--b=2', 'runmisspelled'])

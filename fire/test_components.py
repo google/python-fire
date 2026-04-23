@@ -43,6 +43,11 @@ def function_with_help(help=True):  # pylint: disable=redefined-builtin
   return help
 
 
+def function_with_headless(headless=False):
+  """A function whose argument starts with 'h', used to test -h collision."""
+  return headless
+
+
 class Empty:
   pass
 
