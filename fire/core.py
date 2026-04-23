@@ -69,6 +69,11 @@ from fire import trace
 from fire import value_types
 from fire.console import console_io
 
+# Single-character aliases for Fire's own flags (defined in parser.CreateParser).
+# Shortcut expansion must not map these characters to user-defined arguments,
+# because doing so would silently shadow Fire's built-in options.
+_FIRE_RESERVED_SINGLE_CHAR_FLAGS = frozenset({'h', 'i', 'v', 't'})
+
 
 def Fire(component=None, command=None, name=None, serialize=None):
   """This function, Fire, is the main entrypoint for Python Fire.
@@ -890,14 +895,20 @@ def _ParseKeywordArgs(args, fn_spec):
         keyword = key
       elif len(key) == 1:
         # This may be a shortcut flag.
-        matching_fn_args = [arg for arg in fn_args if arg[0] == key]
-        if len(matching_fn_args) == 1:
-          keyword = matching_fn_args[0]
-        elif len(matching_fn_args) > 1:
-          raise FireError(
-              f"The argument '{argument}' is ambiguous as it could "
-              f"refer to any of the following arguments: {matching_fn_args}"
-          )
+        # Do not expand single-character flags that collide with Fire's own
+        # reserved flags (-h/--help, -i/--interactive, -v/--verbose,
+        # -t/--trace).  Those should only be consumed via the '-- --flag'
+        # separator syntax so that they are not silently hijacked by a user
+        # function argument whose name starts with the same letter.
+        if key not in _FIRE_RESERVED_SINGLE_CHAR_FLAGS:
+          matching_fn_args = [arg for arg in fn_args if arg[0] == key]
+          if len(matching_fn_args) == 1:
+            keyword = matching_fn_args[0]
+          elif len(matching_fn_args) > 1:
+            raise FireError(
+                f"The argument '{argument}' is ambiguous as it could "
+                f"refer to any of the following arguments: {matching_fn_args}"
+            )
 
       # Determine the value.
       if not keyword:
