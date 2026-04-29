@@ -853,6 +853,10 @@ def _ParseKeywordArgs(args, fn_spec):
     return kwargs, remaining_kwargs, remaining_args
 
   skip_argument = False
+  positional_capacity = (
+      None if fn_spec.varargs is not None else len(fn_spec.args))
+  explicit_positional_kwargs = set()
+  seen_bare_args = 0
 
   for index, argument in enumerate(args):
     if skip_argument:
@@ -881,6 +885,14 @@ def _ParseKeywordArgs(args, fn_spec):
       key = key.replace('-', '_')
       is_bool_syntax = (not contains_equals and
                         (index + 1 == len(args) or _IsFlag(args[index + 1])))
+
+      if (positional_capacity is not None
+          and seen_bare_args > positional_capacity):
+        remaining_kwargs.append(argument)
+        if not contains_equals and not is_bool_syntax:
+          remaining_kwargs.append(args[index + 1])
+          skip_argument = True
+        continue
 
       # Determine the keyword.
       keyword = ''  # Indicates no valid keyword has been found yet.
@@ -929,11 +941,17 @@ def _ParseKeywordArgs(args, fn_spec):
       skip_argument = not contains_equals and not is_bool_syntax
       if got_argument:
         kwargs[keyword] = value
+        if (keyword in fn_spec.args
+            and keyword not in explicit_positional_kwargs):
+          explicit_positional_kwargs.add(keyword)
+          if positional_capacity is not None:
+            positional_capacity = max(positional_capacity - 1, 0)
       else:
         remaining_kwargs.append(argument)
         if skip_argument:
           remaining_kwargs.append(args[index + 1])
     else:  # not _IsFlag(argument)
+      seen_bare_args += 1
       remaining_args.append(argument)
 
   return kwargs, remaining_kwargs, remaining_args

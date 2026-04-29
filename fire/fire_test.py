@@ -14,6 +14,7 @@
 
 """Tests for the fire module."""
 
+from dataclasses import dataclass
 import os
 import sys
 from unittest import mock
@@ -249,6 +250,25 @@ class FireTest(testutils.BaseTestCase):
             tc.Kwargs,
             command=['upper', '--alpha', 'A', '--beta', 'B', '-', 'lower']),
         'alpha beta')
+
+  def testFireKeywordArgsChainedCall(self):
+    @dataclass
+    class MyClass:
+      x: int
+
+      def transform(self, **kwargs):
+        return MyClass(self.x * kwargs.get('multiplier', 2))
+
+      def do_something(self, msg):
+        return f'{msg}: {self.x}'
+
+    my_obj = MyClass(3)
+    self.assertEqual(
+        fire.Fire(
+            my_obj,
+            command=['transform', '--multiplier=3', 'do_something',
+                     '--msg=test']),
+        'test: 9')
 
   def testFireKeywordArgsWithMissingPositionalArgs(self):
     self.assertEqual(
