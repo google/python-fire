@@ -16,6 +16,7 @@
 """General console printing utilities used by the Cloud SDK."""
 
 import os
+import shlex  # Added for safe command splitting
 import signal
 import subprocess
 import sys
@@ -48,16 +49,6 @@ def IsInteractive(output=False, error=False, heuristic=False):
     return False
 
   if heuristic:
-    # Check the home path. Most startup scripts for example are executed by
-    # users that don't have a home path set. Home is OS dependent though, so
-    # check everything.
-    # *NIX OS usually sets the HOME env variable. It is usually '/home/user',
-    # but can also be '/root'. If it's just '/' we are most likely in an init
-    # script.
-    # Windows usually sets HOMEDRIVE and HOMEPATH. If they don't exist we are
-    # probably being run from a task scheduler context. HOMEPATH can be '\'
-    # when a user has a network mapped home directory.
-    # Cygwin has it all! Both Windows and Linux. Checking both is perfect.
     home = os.getenv('HOME')
     homepath = os.getenv('HOMEPATH')
     if not homepath and (not home or home == '/'):
@@ -94,17 +85,33 @@ def More(contents, out, prompt=None, check_pager=True):
       less_orig = encoding.GetEncodedValue(os.environ, 'LESS', None)
       less = '-R' + (less_orig or '')
       encoding.SetEncodedValue(os.environ, 'LESS', less)
+      
       # Ignore SIGINT while the pager is running.
       # We don't want to terminate the parent while the child is still alive.
       signal.signal(signal.SIGINT, signal.SIG_IGN)
-      p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
-      enc = console_attr.GetConsoleAttr().GetEncoding()
-      p.communicate(input=contents.encode(enc))
-      p.wait()
-      # Start using default signal handling for SIGINT again.
-      signal.signal(signal.SIGINT, signal.SIG_DFL)
+      
+      try:
+        # FIX: Use shlex.split to parse the pager command into a list.
+        # This allows us to disable the shell, preventing command injection.
+        pager_cmd = shlex.split(pager)
+        
+        # FIX: Changed shell=True to shell=False.
+        p = subprocess.Popen(pager_cmd, stdin=subprocess.PIPE, shell=False)
+        
+        enc = console_attr.GetConsoleAttr().GetEncoding()
+        p.communicate(input=contents.encode(enc))
+        p.wait()
+      except (OSError, ValueError):
+        # If the pager command is invalid or the executable isn't found, 
+        # fall back to the internal pager instead of crashing.
+        console_pager.Pager(contents, out, prompt).Run()
+      finally:
+        # Start using default signal handling for SIGINT again.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        
       if less_orig is None:
         encoding.SetEncodedValue(os.environ, 'LESS', None)
       return
+      
   # Fall back to the internal pager.
   console_pager.Pager(contents, out, prompt).Run()
