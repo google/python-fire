@@ -725,6 +725,15 @@ def _MakeParseFn(fn, metadata):
     """Parses the list of `args` into (varargs, kwargs), remaining_args."""
     kwargs, remaining_kwargs, remaining_args = _ParseKeywordArgs(args, fn_spec)
 
+    # Add environment variable values for args not provided on command line.
+    all_arg_names = set(fn_spec.args + fn_spec.kwonlyargs)
+    for arg_name in all_arg_names:
+        if arg_name not in kwargs:
+            env_var_name = f"FIRE_{arg_name.upper()}"
+            env_value = os.environ.get(env_var_name)
+            if env_value is not None:
+                kwargs[arg_name] = env_value
+
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
         fn_spec.args, fn_spec.defaults, num_required_args, kwargs,
