@@ -818,6 +818,24 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
 
   return parsed_args, kwargs, remaining_args, capacity
 
+def _GetEnvVarValue(arg, fn_spec):
+  """Gets the value of an argument from environment variables if available.
+
+  Looks for environment variables with the naming convention FIRE_<ARG_NAME>
+  where ARG_NAME is the uppercase version of the argument name.
+
+  Args:
+    arg: The argument name to look up.
+    fn_spec: The inspectutils.FullArgSpec describing the callable.
+  Returns:
+    The value from the environment variable if found, None otherwise.
+  """
+  # Check if the argument is one of the function's parameters
+  all_args = fn_spec.args + fn_spec.kwonlyargs
+  if arg not in all_args:
+    return None
+  env_var_name = f"FIRE_{arg.upper()}"
+  return os.environ.get(env_var_name)
 
 def _ParseKeywordArgs(args, fn_spec):
   """Parses the supplied arguments for keyword arguments.
@@ -848,6 +866,14 @@ def _ParseKeywordArgs(args, fn_spec):
   remaining_args = []
   fn_keywords = fn_spec.varkw
   fn_args = fn_spec.args + fn_spec.kwonlyargs
+
+  # Check for environment variables for any function parameters
+  all_fn_args = fn_spec.args + fn_spec.kwonlyargs
+  for fn_arg in all_fn_args:
+    if fn_arg not in kwargs and fn_arg not in remaining_kwargs:
+      env_value = _GetEnvVarValue(fn_arg, fn_spec)
+      if env_value is not None:
+        kwargs[fn_arg] = env_value
 
   if not args:
     return kwargs, remaining_kwargs, remaining_args
@@ -935,7 +961,6 @@ def _ParseKeywordArgs(args, fn_spec):
           remaining_kwargs.append(args[index + 1])
     else:  # not _IsFlag(argument)
       remaining_args.append(argument)
-
   return kwargs, remaining_kwargs, remaining_args
 
 
