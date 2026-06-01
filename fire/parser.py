@@ -105,10 +105,14 @@ def _LiteralEval(value):
         for index, subchild in enumerate(child):
           if isinstance(subchild, ast.Name):
             child[index] = _Replacement(subchild)
+          elif _IsBareWordBinOp(subchild):
+            child[index] = _SourceReplacement(value, subchild)
 
       elif isinstance(child, ast.Name):
         replacement = _Replacement(child)
         setattr(node, field, replacement)
+      elif _IsBareWordBinOp(child):
+        setattr(node, field, _SourceReplacement(value, child))
 
   # ast.literal_eval supports the following types:
   # strings, bytes, numbers, tuples, lists, dicts, sets, booleans, and None
@@ -130,3 +134,42 @@ def _Replacement(node):
   if value in ('True', 'False', 'None'):
     return node
   return _StrNode(value)
+
+
+def _IsBareWordBinOp(node):
+  """Returns whether node is a BinOp made only of bare words and operators.
+
+  A bare word like foo-bar parses as a BinOp (Name - Name). Inside a container
+  Fire should treat it as the string 'foo-bar' rather than failing to evaluate.
+  BinOps that contain numbers (e.g. 1+1) are left alone so their existing
+  behavior is preserved.
+
+  Args:
+    node: An AST node.
+  Returns:
+    True if node is a BinOp whose leaves are all bare words.
+  """
+  if not isinstance(node, ast.BinOp):
+    return False
+  has_name = False
+  for child in ast.walk(node):
+    if isinstance(child, ast.Name):
+      has_name = True
+    elif isinstance(child, (ast.BinOp, ast.operator, ast.expr_context)):
+      continue
+    else:
+      return False
+  return has_name
+
+
+def _SourceReplacement(source, node):
+  """Returns a String node holding the original source text of node.
+
+  Args:
+    source: The full string being parsed.
+    node: An AST node with position info, taken from source.
+  Returns:
+    A String node whose value is the slice of source spanning node.
+  """
+  segment = ast.get_source_segment(source, node)
+  return _StrNode(segment)
