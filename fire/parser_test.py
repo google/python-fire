@@ -111,6 +111,16 @@ class ParserTest(testutils.BaseTestCase):
     self.assertEqual(parser.DefaultParseValue('(one, 2, "3")'), ('one', 2, '3'))
     self.assertEqual(parser.DefaultParseValue('one, "2", 3'), ('one', '2', 3))
 
+  def testDefaultParseValueBareWordsWithHyphens(self):
+    self.assertEqual(
+        parser.DefaultParseValue('(foo-bar, baz)'), ('foo-bar', 'baz'))
+    self.assertEqual(
+        parser.DefaultParseValue('[foo-bar, baz]'), ['foo-bar', 'baz'])
+    self.assertEqual(
+        parser.DefaultParseValue('[a-b-c, d]'), ['a-b-c', 'd'])
+    self.assertEqual(
+        parser.DefaultParseValue('{a: foo-bar}'), {'a': 'foo-bar'})
+
   def testDefaultParseValueNestedContainers(self):
     self.assertEqual(
         parser.DefaultParseValue(
