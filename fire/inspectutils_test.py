@@ -125,6 +125,43 @@ class InspectUtilsTest(testutils.BaseTestCase):
     info = inspectutils.Info(tc.NoDefaults)
     self.assertEqual(info['docstring'], None, 'Docstring should be None')
 
+  def testGetSafeMembersRaisingProperty(self):
+    class ComponentWithRaisingProperty:
+      @property
+      def status(self):
+        raise RuntimeError('backend unavailable')
+
+    component = ComponentWithRaisingProperty()
+    members = dict(inspectutils.GetSafeMembers(component))
+    self.assertIn('status', members)
+    self.assertIsNone(members['status'])
+
+  def testGetSafeMembersWorkingProperty(self):
+    class ComponentWithWorkingProperty:
+      @property
+      def status(self):
+        return 'all good'
+
+    component = ComponentWithWorkingProperty()
+    members = dict(inspectutils.GetSafeMembers(component))
+    self.assertIn('status', members)
+    self.assertEqual(members['status'], 'all good')
+
+  def testGetSafeMembersMixedProperties(self):
+    class ComponentWithMixedProperties:
+      @property
+      def good(self):
+        return 'ok'
+      @property
+      def bad(self):
+        raise ValueError('unavailable')
+
+    component = ComponentWithMixedProperties()
+    members = dict(inspectutils.GetSafeMembers(component))
+    self.assertIn('good', members)
+    self.assertEqual(members['good'], 'ok')
+    self.assertIn('bad', members)
+    self.assertIsNone(members['bad'])
 
 if __name__ == '__main__':
   testutils.main()

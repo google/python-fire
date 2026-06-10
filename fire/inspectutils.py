@@ -347,3 +347,33 @@ def IsCoroutineFunction(fn):
     return inspect.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except
     return False
+
+def GetSafeMembers(component, predicate=None):
+  """Returns members of a component, skipping attributes that raise on access.
+
+  Like inspect.getmembers, but catches all exceptions raised by property
+  getters or other dynamic attributes during member enumeration. Members
+  that raise are included with a value of None, preserving the member name
+  in the result so that callers can detect its presence without crashing.
+
+  This behaviour differs from inspect.getmembers in Python 3.13+, which
+  only suppresses AttributeError and lets all other exceptions propagate.
+
+  Args:
+    component: The object whose members to retrieve.
+    predicate: An optional predicate to filter members by value.
+  Returns:
+    A list of (name, value) pairs sorted by name. Members whose getters
+    raised are included as (name, None).
+  """
+  results = []
+  for key in dir(component):
+    try:
+      value = getattr(component, key)
+    except Exception:  # pylint: disable=broad-except
+      value = None
+    if predicate and not predicate(value):
+      continue
+    results.append((key, value))
+  results.sort(key=lambda pair: pair[0])
+  return results
