@@ -225,7 +225,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
         _, remaining_kwargs, _ = _ParseKeywordArgs(remaining_args, fn_spec)
         show_help = target in remaining_kwargs
       else:
-        members = dict(inspect.getmembers(component))
+        members = dict(inspectutils.GetSafeMembers(component))
         show_help = target not in members
 
   if show_help:

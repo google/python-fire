@@ -359,7 +359,7 @@ def VisibleMembers(component, class_attrs=None, verbose=False):
   if isinstance(component, dict):
     members = component.items()
   else:
-    members = inspect.getmembers(component)
+    members = inspectutils.GetSafeMembers(component)
 
   # If class_attrs has not been provided, compute it.
   if class_attrs is None:
