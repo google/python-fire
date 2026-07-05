@@ -105,15 +105,45 @@ def _LiteralEval(value):
         for index, subchild in enumerate(child):
           if isinstance(subchild, ast.Name):
             child[index] = _Replacement(subchild)
+          elif isinstance(subchild, ast.BinOp):
+            str_val = _BinOpSubToStr(subchild)
+            if str_val is not None:
+              child[index] = _StrNode(str_val)
 
       elif isinstance(child, ast.Name):
         replacement = _Replacement(child)
         setattr(node, field, replacement)
+      elif isinstance(child, ast.BinOp):
+        str_val = _BinOpSubToStr(child)
+        if str_val is not None:
+          setattr(node, field, _StrNode(str_val))
 
   # ast.literal_eval supports the following types:
   # strings, bytes, numbers, tuples, lists, dicts, sets, booleans, and None
   # (bytes and set literals only starting with Python 3.2)
   return ast.literal_eval(root)
+
+
+def _BinOpSubToStr(node):
+  """Converts a BinOp subtraction chain of Name nodes to a hyphenated string.
+
+  Handles patterns like Name-Name and Name-Name-Name that appear when a
+  hyphenated string (e.g. 'foo-bar') is used inside a container literal
+  such as a tuple, list, set, or dict.
+
+  Args:
+    node: An AST node.
+  Returns:
+    The hyphenated string if node is a Sub chain of Names, else None.
+  """
+  if isinstance(node, ast.Name):
+    return node.id
+  if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Sub):
+    left = _BinOpSubToStr(node.left)
+    right = _BinOpSubToStr(node.right)
+    if left is not None and right is not None:
+      return '{left}-{right}'.format(left=left, right=right)
+  return None
 
 
 def _Replacement(node):
