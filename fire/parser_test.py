@@ -136,5 +136,26 @@ class ParserTest(testutils.BaseTestCase):
     self.assertEqual(parser.DefaultParseValue('2017-10-10'), '2017-10-10')
     self.assertEqual(parser.DefaultParseValue('1+1'), '1+1')
 
+  def testDefaultParseValueHyphenatedStringsInTuple(self):
+    self.assertEqual(
+        parser.DefaultParseValue('(foo-bar,baz)'), ('foo-bar', 'baz'))
+    self.assertEqual(
+        parser.DefaultParseValue('(a-b-c,d)'), ('a-b-c', 'd'))
+    self.assertEqual(
+        parser.DefaultParseValue('(foo-bar,hello-world)'),
+        ('foo-bar', 'hello-world'))
+
+  def testDefaultParseValueHyphenatedStringsInList(self):
+    self.assertEqual(
+        parser.DefaultParseValue('[foo-bar,baz]'), ['foo-bar', 'baz'])
+    self.assertEqual(
+        parser.DefaultParseValue('[a-b-c,d]'), ['a-b-c', 'd'])
+
+  def testDefaultParseValueHyphenatedStringsInDict(self):
+    self.assertEqual(
+        parser.DefaultParseValue('{foo-bar:baz}'), {'foo-bar': 'baz'})
+    self.assertEqual(
+        parser.DefaultParseValue('{key:foo-bar}'), {'key': 'foo-bar'})
+
 if __name__ == '__main__':
   testutils.main()
