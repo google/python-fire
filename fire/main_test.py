@@ -15,6 +15,7 @@
 """Test using Fire via `python -m fire`."""
 
 import os
+import re
 import tempfile
 
 from fire import __main__
@@ -30,7 +31,9 @@ class MainModuleTest(testutils.BaseTestCase):
       __main__.main(['__main__.py', 'tempfile'])
 
   def testArgPassing(self):
-    expected = os.path.join('part1', 'part2', 'part3')
+    expected = re.escape(
+        os.path.join('part1', 'part2', 'part3')
+    )
     with self.assertOutputMatches('%s\n' % expected):
       __main__.main(
           ['__main__.py', 'os.path', 'join', 'part1', 'part2', 'part3'])
