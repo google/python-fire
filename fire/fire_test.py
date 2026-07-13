@@ -21,6 +21,7 @@ from unittest import mock
 import fire
 from fire import test_components as tc
 from fire import testutils
+from fire.core import _InferCommandName
 
 
 class FireTest(testutils.BaseTestCase):
@@ -56,6 +57,15 @@ class FireTest(testutils.BaseTestCase):
       with self.assertOutputMatches(stdout='SYNOPSIS.*base_filename.py',
                                     stderr=None):
         fire.Fire(tc.Empty)
+
+  def testInferCommandNameForMainModule(self):
+    with mock.patch.object(sys, 'argv', ['sample/__main__.py']):
+      with mock.patch.object(sys.modules['__main__'], '__package__', 'sample'):
+        self.assertEqual(_InferCommandName(), 'sample')
+
+  def testInferCommandNameForScript(self):
+    with mock.patch.object(sys, 'argv', ['sample/cli.py']):
+      self.assertEqual(_InferCommandName(), 'cli.py')
 
   def testFireNoArgs(self):
     self.assertEqual(fire.Fire(tc.MixedDefaults, command=['ten']), 10)

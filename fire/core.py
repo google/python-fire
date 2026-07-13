@@ -103,7 +103,7 @@ def Fire(component=None, command=None, name=None, serialize=None):
         code 2. When used with the help or trace flags, Fire will raise a
         FireExit with code 0 if successful.
   """
-  name = name or os.path.basename(sys.argv[0])
+  name = name or _InferCommandName()
 
   # Get args as a list.
   if isinstance(command, str):
@@ -273,6 +273,18 @@ def _PrintResult(component_trace, verbose=False, serialize=None):
         result, trace=component_trace, verbose=verbose)
     output = [help_text]
     Display(output, out=sys.stdout)
+
+
+def _InferCommandName():
+  """Return a sensible CLI name when Fire is invoked via python -m package."""
+  argv0 = sys.argv[0]
+  base = os.path.basename(argv0)
+  if base == '__main__.py':
+    package = sys.modules['__main__'].__package__  # pylint: disable=no-member
+    if package:
+      return package
+    return os.path.basename(os.path.dirname(os.path.abspath(argv0)))
+  return base
 
 
 def _DisplayError(component_trace):
