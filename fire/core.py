@@ -351,6 +351,9 @@ def _OneLineResult(result):
   if inspect.ismodule(result):
     return f'<module {result.__name__}>'
 
+  if inspectutils.IsNamedTuple(result):
+    return json.dumps(result._asdict(), ensure_ascii=False)
+
   try:
     # Don't force conversion to ascii.
     return json.dumps(result, ensure_ascii=False)
