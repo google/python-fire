@@ -14,6 +14,7 @@
 
 """Tests for the core module."""
 
+import collections
 from unittest import mock
 
 from fire import core
@@ -136,6 +137,12 @@ class CoreTest(testutils.BaseTestCase):
       core.Fire(tc.OrderedDictionary, command=['non_empty'])
     with self.assertOutputMatches(stdout='{}'):
       core.Fire(tc.OrderedDictionary, command=['empty'])
+
+  def testPrintDictOfNamedTuples(self):
+    point = collections.namedtuple('Point', ['x', 'y'])
+    data = {'a': point(1, 2), 'b': point(3, 4)}
+    with self.assertOutputMatches(stdout=r'a:\s+\{"x": 1, "y": 2\}', stderr=None):
+      core.Fire(data, command=[])
 
   def testPrintNamedTupleField(self):
     with self.assertOutputMatches(stdout='11', stderr=None):
