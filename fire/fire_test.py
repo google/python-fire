@@ -712,6 +712,13 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(0):
       fire.Fire(tc.decorated_method, command=['--help'])
 
+  def testFireCaseInsensitiveMember(self):
+    class CaseExample(object):
+      def Alpha(self):
+        return 'path 1'
+
+    self.assertEqual(fire.Fire(CaseExample, command=['alpha']), 'path 1')
+
   def testFireAsyncio(self):
     self.assertEqual(fire.Fire(tc.py3.WithAsyncio,
                                command=['double', '--count', '10']), 20)

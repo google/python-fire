@@ -642,6 +642,13 @@ def _GetMember(component, args):
       arg.replace('-', '_'),  # treat '-' as '_'.
   ]
 
+  # Case-insensitive member access (issue #43).
+  public_members = [m for m in members if not m.startswith('__')]
+  lower_to_member = {m.lower(): m for m in public_members}
+  if arg.lower() in lower_to_member:
+    member_name = lower_to_member[arg.lower()]
+    return getattr(component, member_name), [arg], args[1:]
+
   for arg_name in arg_names:
     if arg_name in members:
       return getattr(component, arg_name), [arg], args[1:]
