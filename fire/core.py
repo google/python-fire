@@ -52,6 +52,7 @@ The available flags for all Fire CLIs are:
 import asyncio
 import inspect
 import json
+import logging
 import os
 import re
 import shlex
@@ -68,6 +69,30 @@ from fire import parser
 from fire import trace
 from fire import value_types
 from fire.console import console_io
+
+logger = logging.getLogger(__name__)
+
+
+class _StderrLogHandler(logging.Handler):
+  """Log handler that always writes to the current sys.stderr (test-friendly)."""
+
+  def emit(self, record):
+    try:
+      msg = self.format(record)
+      sys.stderr.write(msg + '\n')
+    except Exception:  # pylint: disable=broad-except
+      self.handleError(record)
+
+
+def _ConfigureLogging():
+  """Configure Fire's logger if the application has not configured logging."""
+  if logger.handlers:
+    return
+  handler = _StderrLogHandler()
+  handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+  logger.addHandler(handler)
+  logger.setLevel(logging.INFO)
+  logger.propagate = False
 
 
 def Fire(component=None, command=None, name=None, serialize=None):
@@ -103,6 +128,8 @@ def Fire(component=None, command=None, name=None, serialize=None):
         code 2. When used with the help or trace flags, Fire will raise a
         FireExit with code 0 if successful.
   """
+  _ConfigureLogging()
+
   name = name or os.path.basename(sys.argv[0])
 
   # Get args as a list.
@@ -231,8 +258,7 @@ def _IsHelpShortcut(component_trace, remaining_args):
   if show_help:
     component_trace.show_help = True
     command = f'{component_trace.GetCommand()} -- --help'
-    print(f'INFO: Showing help with the command {shlex.quote(command)}.\n',
-          file=sys.stderr)
+    logger.info('Showing help with the command %s.', shlex.quote(command))
   return show_help
 
 
@@ -287,8 +313,7 @@ def _DisplayError(component_trace):
 
   if show_help:
     command = f'{component_trace.GetCommand()} -- --help'
-    print(f'INFO: Showing help with the command {shlex.quote(command)}.\n',
-          file=sys.stderr)
+    logger.info('Showing help with the command %s.', shlex.quote(command))
     help_text = helptext.HelpText(result, trace=component_trace,
                                   verbose=component_trace.verbose)
     output.append(help_text)
