@@ -96,7 +96,7 @@ def _LiteralEval(value):
     SyntaxError: If the value string has a syntax error.
   """
   root = ast.parse(value, mode='eval')
-  if isinstance(root.body, ast.BinOp):
+  if _ContainsDisallowedBinOp(root):
     raise ValueError(value)
 
   for node in ast.walk(root):
@@ -114,6 +114,30 @@ def _LiteralEval(value):
   # strings, bytes, numbers, tuples, lists, dicts, sets, booleans, and None
   # (bytes and set literals only starting with Python 3.2)
   return ast.literal_eval(root)
+
+
+def _ContainsDisallowedBinOp(node):
+  """Returns whether the AST contains BinOps other than complex literals."""
+  for child in ast.walk(node):
+    if isinstance(child, ast.BinOp) and not _IsComplexLiteralBinOp(child):
+      return True
+  return False
+
+
+def _IsComplexLiteralBinOp(node):
+  """Returns whether a BinOp is used to express a complex literal, e.g. 2+3j."""
+  if not isinstance(node.op, (ast.Add, ast.Sub)):
+    return False
+  return (_HasImaginaryLiteral(node.left) or
+          _HasImaginaryLiteral(node.right))
+
+
+def _HasImaginaryLiteral(node):
+  if isinstance(node, ast.Constant) and isinstance(node.value, complex):
+    return True
+  if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+    return _HasImaginaryLiteral(node.operand)
+  return False
 
 
 def _Replacement(node):

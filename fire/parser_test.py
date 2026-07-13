@@ -135,6 +135,12 @@ class ParserTest(testutils.BaseTestCase):
   def testDefaultParseValueIgnoreBinOp(self):
     self.assertEqual(parser.DefaultParseValue('2017-10-10'), '2017-10-10')
     self.assertEqual(parser.DefaultParseValue('1+1'), '1+1')
+    self.assertEqual(parser.DefaultParseValue('[1+1]'), '[1+1]')
+    self.assertEqual(parser.DefaultParseValue('{key: 1+1}'), '{key: 1+1}')
+
+  def testDefaultParseValueComplexLiterals(self):
+    self.assertEqual(parser.DefaultParseValue('2+3j'), 2 + 3j)
+    self.assertEqual(parser.DefaultParseValue('(2+3j)'), 2 + 3j)
 
 if __name__ == '__main__':
   testutils.main()
