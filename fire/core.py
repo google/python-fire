@@ -935,6 +935,9 @@ def _ParseKeywordArgs(args, fn_spec):
           remaining_kwargs.append(args[index + 1])
     else:  # not _IsFlag(argument)
       remaining_args.append(argument)
+      # Flags after a positional token belong to later commands in a chain.
+      remaining_args.extend(args[index + 1:])
+      break
 
   return kwargs, remaining_kwargs, remaining_args
 

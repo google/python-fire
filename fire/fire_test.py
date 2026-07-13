@@ -712,6 +712,27 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(0):
       fire.Fire(tc.decorated_method, command=['--help'])
 
+  def testChainedKwargsWithSameParameterName(self):
+    class ChainKwargFoo:
+      def __init__(self):
+        self.log = []
+
+      def bar(self, param=0):
+        self.log.append(('bar', param))
+        return self
+
+      def baz(self, param=0):
+        self.log.append(('baz', param))
+        return self
+
+      def end(self):
+        return self.log
+
+    obj = ChainKwargFoo()
+    result = fire.Fire(
+        obj, command=['bar', '--param=3', 'baz', '--param=5', 'end'])
+    self.assertEqual(result, [('bar', 3), ('baz', 5)])
+
   def testFireAsyncio(self):
     self.assertEqual(fire.Fire(tc.py3.WithAsyncio,
                                command=['double', '--count', '10']), 20)
