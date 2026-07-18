@@ -597,6 +597,14 @@ def _google_section_permitted(line_info, state):
   """
   if state.section.indentation is None:  # We're not in a section yet.
     return True
+  if state.section.format == Formats.NUMPY:
+    colon_index = line_info.remaining.find(':')
+    if colon_index > 0 and line_info.remaining[colon_index - 1].isspace():
+      # Numpy-style parameter lines have a space before the colon (e.g.
+      # "argument : int"), unlike Google section headers (e.g. "Args:"). Such
+      # a line is a parameter, not a new section, even if the parameter's name
+      # matches a section title (e.g. an argument named "argument").
+      return False
   return (line_info.indentation <= state.section.indentation
           or line_info.indentation < state.section.line1_indentation)
 
