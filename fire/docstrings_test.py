@@ -258,6 +258,28 @@ class DocstringsTest(testutils.BaseTestCase):
     )
     self.assertEqual(expected_docstring_info, docstring_info)
 
+  def test_numpy_format_arg_name_matches_section_title(self):
+    docstring = """Run.
+
+    Parameters
+    ----------
+    executable :
+            Executable to run
+    argument :
+            Positional argument to the executable
+    """
+    docstring_info = docstrings.parse(docstring)
+    expected_docstring_info = DocstringInfo(
+        summary='Run.',
+        args=[
+            ArgInfo(name='executable', type='',
+                    description='Executable to run'),
+            ArgInfo(name='argument', type='',
+                    description='Positional argument to the executable'),
+        ],
+    )
+    self.assertEqual(expected_docstring_info, docstring_info)
+
   def test_multisection_docstring(self):
     docstring = """Docstring summary.
 
