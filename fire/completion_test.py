@@ -36,6 +36,15 @@ class TabCompletionTest(testutils.BaseTestCase):
     for last_command in ['command', 'halt']:
       self.assertIn(f'{last_command})', script)
 
+  def testCompletionBashScriptSanitizesUnsafeName(self):
+    # Regression test: a maliciously crafted name (e.g. derived from a
+    # `.py` filename containing shell metacharacters) must not be able to
+    # inject commands into the generated script.
+    script = completion.Script('$(touch /tmp/pwned)', {'run': 0})
+    self.assertNotIn('$(touch', script)
+    self.assertNotIn('`touch', script)
+    self.assertIn('touch/tmp/pwned', script)
+
   def testCompletionFishScript(self):
     # A sanity check test to make sure the fish completion script satisfies
     # some basic assumptions.

@@ -16,6 +16,7 @@
 """General console printing utilities used by the Cloud SDK."""
 
 import os
+import shlex
 import signal
 import subprocess
 import sys
@@ -97,7 +98,8 @@ def More(contents, out, prompt=None, check_pager=True):
       # Ignore SIGINT while the pager is running.
       # We don't want to terminate the parent while the child is still alive.
       signal.signal(signal.SIGINT, signal.SIG_IGN)
-      p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
+      p = subprocess.Popen(
+          shlex.split(pager), stdin=subprocess.PIPE, shell=False)
       enc = console_attr.GetConsoleAttr().GetEncoding()
       p.communicate(input=contents.encode(enc))
       p.wait()

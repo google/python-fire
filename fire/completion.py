@@ -21,11 +21,20 @@ from __future__ import print_function
 import collections
 import copy
 import inspect
+import re
 
 from fire import inspectutils
 
+# Characters that are safe to embed unquoted in the generated Bash/Fish
+# completion scripts. Anything else (e.g. '$', '`', '(', ')', ';', '|',
+# whitespace) is stripped so that a maliciously named component (for
+# example a `.py` file whose basename contains shell metacharacters)
+# cannot inject commands that run when the script is sourced.
+_UNSAFE_NAME_CHARS_RE = re.compile(r'[^\w./,@:%+=-]')
+
 
 def Script(name, component, default_options=None, shell='bash'):
+  name = _UNSAFE_NAME_CHARS_RE.sub('', name)
   if shell == 'fish':
     return _FishScript(name, _Commands(component), default_options)
   return _BashScript(name, _Commands(component), default_options)
