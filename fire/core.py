@@ -103,7 +103,14 @@ def Fire(component=None, command=None, name=None, serialize=None):
         code 2. When used with the help or trace flags, Fire will raise a
         FireExit with code 0 if successful.
   """
-  name = name or os.path.basename(sys.argv[0])
+  if not name:
+    script_name = sys.argv[0]
+    if os.path.basename(script_name) == '__main__.py':
+      # If invoked via `python -m package`, use the package name rather than
+      # the generic `__main__.py` filename.
+      name = os.path.basename(os.path.dirname(os.path.abspath(script_name)))
+    else:
+      name = os.path.basename(script_name)
 
   # Get args as a list.
   if isinstance(command, str):

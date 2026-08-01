@@ -57,6 +57,17 @@ class FireTest(testutils.BaseTestCase):
                                     stderr=None):
         fire.Fire(tc.Empty)
 
+  def testFireDefaultNameDunderMain(self):
+    # When invoked as `python -m package`, sys.argv[0] is the path to the
+    # package's __main__.py file. The package name should be used instead of
+    # `__main__.py` in the usage output.
+    with mock.patch.object(sys, 'argv',
+                           [os.path.join('python-fire', 'fire', 'mypackage',
+                                         '__main__.py')]):
+      with self.assertOutputMatches(stdout='SYNOPSIS.*mypackage',
+                                    stderr=None):
+        fire.Fire(tc.Empty)
+
   def testFireNoArgs(self):
     self.assertEqual(fire.Fire(tc.MixedDefaults, command=['ten']), 10)
 
