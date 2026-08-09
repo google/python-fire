@@ -50,13 +50,19 @@ def import_from_file_path(path):
 
   Returns:
     Tuple[ModuleType, str]: returns the imported module and the module name,
-      usually extracted from the path itself.
+      usually extracted from the path itself. If the file is __main__.py, the
+      package name (parent directory) is used instead.
   """
 
   if not os.path.exists(path):
     raise OSError('Given file path does not exist.')
 
   module_name = os.path.basename(path)
+
+  # If the file is __main__.py, use the parent directory name as the module name
+  # This fixes the issue where "python -m mypackage" shows "__main__.py" in usage
+  if module_name == '__main__.py':
+    module_name = os.path.basename(os.path.dirname(path))
 
   spec = util.spec_from_file_location(module_name, path)
 

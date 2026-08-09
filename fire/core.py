@@ -105,6 +105,10 @@ def Fire(component=None, command=None, name=None, serialize=None):
   """
   name = name or os.path.basename(sys.argv[0])
 
+  # If the script name is __main__.py (python -m package), use the package name instead
+  if name == '__main__.py':
+    name = os.path.basename(os.path.dirname(sys.argv[0]))
+
   # Get args as a list.
   if isinstance(command, str):
     args = shlex.split(command)
