@@ -18,10 +18,7 @@ import argparse
 import ast
 import sys
 
-if sys.version_info[0:2] < (3, 8):
-  _StrNode = ast.Str  # type: ignore  # pylint: disable=no-member  # deprecated but needed for Python < 3.8
-else:
-  _StrNode = ast.Constant
+_StrNode = ast.Constant
 
 
 def CreateParser():
