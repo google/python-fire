@@ -44,7 +44,7 @@ class ParserFuzzTest(testutils.BaseTestCase):
   @example('{test:a,b:(c,d)}')  # Note: Edit distance may be high for dicts.
   @example('0,')
   @example('#')
-  @example('A#00000')  # Note: '#'' is treated as a comment.
+  @example('A#00000')  # Kept as a string; '#' is not stripped.
   @example('\x80')  # Note: Causes UnicodeDecodeError.
   @example(100 * '[' + '0')  # Note: Causes MemoryError.
   @example('\r\r\r\r1\r\r')

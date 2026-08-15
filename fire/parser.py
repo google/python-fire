@@ -16,7 +16,9 @@
 
 import argparse
 import ast
+import io
 import sys
+import tokenize
 
 if sys.version_info[0:2] < (3, 8):
   _StrNode = ast.Str  # type: ignore  # pylint: disable=no-member  # deprecated but needed for Python < 3.8
@@ -68,12 +70,29 @@ def DefaultParseValue(value):
   Returns:
     The parsed value, of the type determined most appropriate.
   """
-  # Note: _LiteralEval will treat '#' as the start of a comment.
   try:
-    return _LiteralEval(value)
+    parsed = _LiteralEval(value)
   except (SyntaxError, ValueError):
     # If _LiteralEval can't parse the value, treat it as a string.
     return value
+  # ast.parse treats '#' as a comment, so 'hi#there' would become 'hi'.
+  # CLI values like hashes and fragments should keep the '#'. If a '#' was
+  # tokenized as a comment rather than as part of a string literal, keep the
+  # original value. Quoted forms such as '"0#comments"' still parse as usual.
+  if _HasCommentToken(value):
+    return value
+  return parsed
+
+
+def _HasCommentToken(value):
+  """Return whether tokenize treats a '#' in value as a Python comment."""
+  if '#' not in value:
+    return False
+  try:
+    tokens = tokenize.generate_tokens(io.StringIO(value).readline)
+    return any(token.type == tokenize.COMMENT for token in tokens)
+  except (tokenize.TokenError, IndentationError, SyntaxError):
+    return False
 
 
 def _LiteralEval(value):

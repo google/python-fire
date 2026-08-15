@@ -119,8 +119,12 @@ class ParserTest(testutils.BaseTestCase):
 
   def testDefaultParseValueComments(self):
     self.assertEqual(parser.DefaultParseValue('"0#comments"'), '0#comments')
-    # Comments are stripped. This behavior may change in the future.
-    self.assertEqual(parser.DefaultParseValue('0#comments'), 0)
+    # A '#' outside a string used to be stripped as a Python comment
+    # ('0#comments' -> 0, 'hi#there' -> 'hi'). Keep the original value so
+    # CLI args with hashes are not truncated. See issue #338.
+    self.assertEqual(parser.DefaultParseValue('0#comments'), '0#comments')
+    self.assertEqual(parser.DefaultParseValue('hi#there'), 'hi#there')
+    self.assertEqual(parser.DefaultParseValue('path#ref'), 'path#ref')
 
   def testDefaultParseValueBadLiteral(self):
     # If it can't be parsed, we treat it as a string. This behavior may change.
