@@ -105,10 +105,15 @@ def _LiteralEval(value):
         for index, subchild in enumerate(child):
           if isinstance(subchild, ast.Name):
             child[index] = _Replacement(subchild)
+          elif _IsNegativeBareword(subchild):
+            child[index] = _StrNode('-' + subchild.operand.id)
 
       elif isinstance(child, ast.Name):
         replacement = _Replacement(child)
         setattr(node, field, replacement)
+
+      elif _IsNegativeBareword(child):
+        setattr(node, field, _StrNode('-' + child.operand.id))
 
   # ast.literal_eval supports the following types:
   # strings, bytes, numbers, tuples, lists, dicts, sets, booleans, and None
@@ -130,3 +135,25 @@ def _Replacement(node):
   if value in ('True', 'False', 'None'):
     return node
   return _StrNode(value)
+
+
+def _IsNegativeBareword(node):
+  """Returns whether node is a unary minus applied to a bare identifier.
+
+  For example, the token '-b' in '[a,-b,c]' parses as
+  ast.UnaryOp(op=USub, operand=ast.Name('b')). Since ast.literal_eval
+  can't negate a string, this can't simply be handled by replacing the
+  inner Name node with a string Constant (as _Replacement does) -- the
+  whole UnaryOp node needs to be replaced with a single string Constant
+  of '-' + the identifier's name.
+
+  Args:
+    node: An AST node.
+  Returns:
+    True if node is ast.UnaryOp(ast.USub, ast.Name) where the Name isn't
+    one of the builtin constants supported by literal_eval.
+  """
+  return (isinstance(node, ast.UnaryOp)
+          and isinstance(node.op, ast.USub)
+          and isinstance(node.operand, ast.Name)
+          and node.operand.id not in ('True', 'False', 'None'))

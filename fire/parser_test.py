@@ -96,6 +96,12 @@ class ParserTest(testutils.BaseTestCase):
   def testDefaultParseValueBareWordsLists(self):
     self.assertEqual(parser.DefaultParseValue('[one, 2, "3"]'), ['one', 2, '3'])
 
+  def testDefaultParseValueBareWordsListsWithLeadingHyphen(self):
+    self.assertEqual(parser.DefaultParseValue('[a,-b,c]'), ['a', '-b', 'c'])
+    self.assertEqual(parser.DefaultParseValue('[1,-2,3]'), [1, -2, 3])
+    self.assertIsInstance(parser.DefaultParseValue('[1,-2,3]')[1], int)
+    self.assertEqual(parser.DefaultParseValue('-b'), '-b')
+
   def testDefaultParseValueDict(self):
     self.assertEqual(
         parser.DefaultParseValue('{"abc": 5, "123": 1}'), {'abc': 5, '123': 1})
