@@ -44,11 +44,20 @@ class MainModuleFileTest(testutils.BaseTestCase):
 
   def setUp(self):
     super().setUp()
-    self.file = tempfile.NamedTemporaryFile(suffix='.py')  # pylint: disable=consider-using-with
+    # NamedTemporaryFile is opened with delete=False and closed explicitly
+    # here (with cleanup deferred to addCleanup) because on Windows the
+    # underlying file cannot be reopened by name while still open, and both
+    # __main__.main() (import) and testFileNameModuleDuplication() (a second
+    # open()) need to reopen these files by path.
+    self.file = tempfile.NamedTemporaryFile(  # pylint: disable=consider-using-with
+        suffix='.py', delete=False)
     self.file.write(b'class Foo:\n  def double(self, n):\n    return 2 * n\n')
-    self.file.flush()
+    self.file.close()
+    self.addCleanup(os.unlink, self.file.name)
 
-    self.file2 = tempfile.NamedTemporaryFile()  # pylint: disable=consider-using-with
+    self.file2 = tempfile.NamedTemporaryFile(delete=False)  # pylint: disable=consider-using-with
+    self.file2.close()
+    self.addCleanup(os.unlink, self.file2.name)
 
   def testFileNameFire(self):
     # Confirm that the file is correctly imported and doubles the number.
