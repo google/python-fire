@@ -342,6 +342,33 @@ def GetClassAttrsDict(component):
   }
 
 
+def GetMembers(component):
+  """Returns a list of (name, member) pairs for the members of component.
+
+  Reading a member can run arbitrary code, such as a property getter, which may
+  raise an exception. inspect.getmembers aborts on any exception that is not an
+  AttributeError, which would crash Fire while it only intends to enumerate the
+  members of the component, for example to build help text. This falls back to
+  reading the members one at a time and skipping any that cannot be read, so a
+  single broken member does not prevent the rest from being listed.
+
+  Args:
+    component: The object whose members to list.
+  Returns:
+    A list of (name, value) pairs for the readable members of component.
+  """
+  try:
+    return inspect.getmembers(component)
+  except Exception:  # pylint: disable=broad-except
+    members = []
+    for name in dir(component):
+      try:
+        members.append((name, getattr(component, name)))
+      except Exception:  # pylint: disable=broad-except
+        continue
+    return members
+
+
 def IsCoroutineFunction(fn):
   try:
     return inspect.iscoroutinefunction(fn)
