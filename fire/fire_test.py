@@ -556,6 +556,35 @@ class FireTest(testutils.BaseTestCase):
     with self.assertRaisesFireExit(0, 'Fire trace:\n.*SYNOPSIS'):
       fire.Fire(tc.BoolConverter, command=['--', '-h', '--trace'])
 
+  def testHelpWithRaisingProperty(self):
+    # A property whose getter raises should not prevent help from being shown.
+    # See https://github.com/google/python-fire/issues/672.
+    class Component(object):
+
+      @property
+      def broken(self):
+        raise RuntimeError('backend unavailable')
+
+      def works(self, value):
+        return value
+
+    component = Component()
+
+    # Bare invocation prints the component's help without crashing.
+    with self.assertOutputMatches(stdout='.*works.*'):
+      result = fire.Fire(component, command=[])
+    self.assertEqual(result, component)
+
+    # Both the --help flag and the --help shortcut list the working command.
+    with self.assertRaisesFireExit(0, 'works'):
+      fire.Fire(component, command=['--', '--help'])
+    with self.assertRaisesFireExit(0, 'works'):
+      fire.Fire(component, command=['--help'])
+
+    # The broken property is still usable directly, but raises on access.
+    with self.assertRaises(RuntimeError):
+      component.broken  # pylint: disable=pointless-statement
+
   def testTabCompletionNoName(self):
     completion_script = fire.Fire(tc.NoDefaults, command=['--', '--completion'])
     self.assertIn('double', completion_script)
