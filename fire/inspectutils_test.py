@@ -14,6 +14,7 @@
 
 """Tests for the inspectutils module."""
 
+import inspect
 import os
 
 from fire import inspectutils
@@ -51,6 +52,35 @@ class InspectUtilsTest(testutils.BaseTestCase):
     self.assertEqual(spec.kwonlyargs, [])
     self.assertEqual(spec.kwonlydefaults, {})
     self.assertEqual(spec.annotations, {})
+
+  def testGetFullArgSpecPositionalOnlyDefault(self):
+    spec = inspectutils.GetFullArgSpec(dict.get)
+    self.assertEqual(spec.args, ['self', 'key', 'default'])
+    self.assertEqual(spec.defaults, (None,))
+
+  def testGetFullArgSpecBoundPositionalOnlyDefault(self):
+    spec = inspectutils.GetFullArgSpec({}.get)
+    self.assertEqual(spec.args, ['key', 'default'])
+    self.assertEqual(spec.defaults, (None,))
+
+  def testGetFullArgSpecMixedPositionalDefaults(self):
+    def function(*args, **kwargs):
+      del args, kwargs
+
+    # Use a signature object so this test also parses on Python 3.7.
+    function.__signature__ = inspect.Signature([
+        inspect.Parameter('required', inspect.Parameter.POSITIONAL_ONLY),
+        inspect.Parameter('first', inspect.Parameter.POSITIONAL_ONLY,
+                          default=1),
+        inspect.Parameter('second', inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                          default=2),
+        inspect.Parameter('third', inspect.Parameter.KEYWORD_ONLY, default=3),
+    ])
+    spec = inspectutils.GetFullArgSpec(function)
+    self.assertEqual(spec.args, ['required', 'first', 'second'])
+    self.assertEqual(spec.defaults, (1, 2))
+    self.assertEqual(spec.kwonlyargs, ['third'])
+    self.assertEqual(spec.kwonlydefaults, {'third': 3})
 
   def testGetFullArgSpecFromSlotWrapper(self):
     spec = inspectutils.GetFullArgSpec(tc.NoDefaults)

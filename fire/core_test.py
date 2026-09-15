@@ -24,6 +24,18 @@ from fire import trace
 
 class CoreTest(testutils.BaseTestCase):
 
+  def testBuiltinPositionalOnlyDefault(self):
+    with self.assertOutputMatches(stdout='   hi', stderr=None):
+      self.assertEqual(core.Fire('hi'.rjust, command=['5']), '   hi')
+
+  def testBuiltinPositionalOnlyDefaultOverride(self):
+    with self.assertOutputMatches(stdout='___hi', stderr=None):
+      self.assertEqual(core.Fire('hi'.rjust, command=['5', '_']), '___hi')
+
+  def testBuiltinPositionalOnlyRequiredArgument(self):
+    with self.assertRaisesFireExit(2, 'required argument: width'):
+      core.Fire('hi'.rjust, command=[])
+
   def testOneLineResult(self):
     self.assertEqual(core._OneLineResult(1), '1')  # pylint: disable=protected-access
     self.assertEqual(core._OneLineResult('hello'), 'hello')  # pylint: disable=protected-access

@@ -128,9 +128,10 @@ def Py3GetFullArgSpec(fn):
     name = param.name
 
     # pylint: disable=protected-access
-    if kind is inspect._POSITIONAL_ONLY:  # type: ignore
-      args.append(name)
-    elif kind is inspect._POSITIONAL_OR_KEYWORD:  # type: ignore
+    if kind in (
+        inspect._POSITIONAL_ONLY,
+        inspect._POSITIONAL_OR_KEYWORD,
+    ):  # type: ignore
       args.append(name)
       if param.default is not param.empty:
         defaults += (param.default,)
