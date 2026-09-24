@@ -134,6 +134,9 @@ class TabCompletionTest(testutils.BaseTestCase):
 
   def testFnFishScript(self):
     script = completion.Script('identity', tc.identity, shell='fish')
+    self.assertIn(
+        "complete -c identity -n '__fish_using_command identity;", script
+    )
     self.assertIn('arg1', script)
     self.assertIn('arg2', script)
     self.assertIn('arg3', script)
