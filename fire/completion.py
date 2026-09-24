@@ -259,7 +259,11 @@ end
                    "__option_entered_check --{option}' -l {option}\n")
 
   prev_global_check = ' and __is_prev_global;'
-  for command in set(subcommands_map.keys()).union(set(options_map.keys())):
+  commands_set = set()
+  commands_set.add(name)
+  commands_set = commands_set.union(set(subcommands_map.keys()))
+  commands_set = commands_set.union(set(options_map.keys()))
+  for command in commands_set:
     for subcommand in subcommands_map[command]:
       fish_source += subcommand_template.format(
           name=name,
