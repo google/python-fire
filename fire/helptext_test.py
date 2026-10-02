@@ -430,6 +430,13 @@ VALUES
 
 class UsageTest(testutils.BaseTestCase):
 
+  def testAvailabilityLineWithLongFirstCommand(self):
+    # pylint: disable=protected-access
+    availability_line = helptext._CreateAvailabilityLine(
+        'COMMANDS', ['long_command'], line_length=30)
+    self.assertEqual(
+        '  COMMANDS' + ' ' * 15 + 'long_command\n', availability_line)
+
   def testUsageOutput(self):
     component = tc.NoDefaults()
     t = trace.FireTrace(component, name='NoDefaults')

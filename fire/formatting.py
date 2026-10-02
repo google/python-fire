@@ -50,13 +50,15 @@ def WrappedJoin(items, separator=' | ', width=80):
       if len(current_line) + len(item) <= width:
         current_line += item
       else:
-        lines.append(current_line.rstrip())
+        if current_line:
+          lines.append(current_line.rstrip())
         current_line = item
     else:
       if len(current_line) + len(item) + len(separator) <= width:
         current_line += item + separator
       else:
-        lines.append(current_line.rstrip())
+        if current_line:
+          lines.append(current_line.rstrip())
         current_line = item + separator
 
   lines.append(current_line)

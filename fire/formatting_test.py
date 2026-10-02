@@ -49,6 +49,19 @@ class FormattingTest(testutils.BaseTestCase):
                       'chicken |',
                       'cheese'], lines)
 
+  def test_wrap_first_item_longer_than_width(self):
+    self.assertEqual(
+        ['long_command'],
+        formatting.WrappedJoin(['long_command'], width=5))
+    self.assertEqual(
+        ['long_command |', 'next'],
+        formatting.WrappedJoin(['long_command', 'next'], width=5))
+
+  def test_wrap_first_item_separator_exceeds_width(self):
+    self.assertEqual(
+        ['first |', 'next'],
+        formatting.WrappedJoin(['first', 'next'], width=5))
+
   def test_ellipsis_truncate(self):
     text = 'This is a string'
     truncated_text = formatting.EllipsisTruncate(
