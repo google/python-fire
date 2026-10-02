@@ -128,6 +128,15 @@ class ParserTest(testutils.BaseTestCase):
         parser.DefaultParseValue('[(A, 2, "3"), 5'), '[(A, 2, "3"), 5')
     self.assertEqual(parser.DefaultParseValue('x=10'), 'x=10')
 
+  def testDefaultParseValueUnhashableLiteral(self):
+    for value in ('{{name}}', '{[1]}', '{[1]: 2}', '{{a: 1}: 2}'):
+      with self.subTest(value=value):
+        self.assertEqual(parser.DefaultParseValue(value), value)
+
+  def testDefaultParseValueHashableContainers(self):
+    self.assertEqual(parser.DefaultParseValue('{one, two}'), {'one', 'two'})
+    self.assertEqual(parser.DefaultParseValue('{(1, 2): [3]}'), {(1, 2): [3]})
+
   def testDefaultParseValueSyntaxError(self):
     # If it can't be parsed, we treat it as a string.
     self.assertEqual(parser.DefaultParseValue('"'), '"')

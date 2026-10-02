@@ -71,7 +71,7 @@ def DefaultParseValue(value):
   # Note: _LiteralEval will treat '#' as the start of a comment.
   try:
     return _LiteralEval(value)
-  except (SyntaxError, ValueError):
+  except (SyntaxError, ValueError, TypeError):
     # If _LiteralEval can't parse the value, treat it as a string.
     return value
 
