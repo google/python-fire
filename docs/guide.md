@@ -616,6 +616,10 @@ command line: numbers, strings, tuples, lists, dictionaries, (sets are only
 supported in some versions of Python). You can also nest the collections
 arbitrarily as long as they only contain literals.
 
+Complex numbers such as `1+2j` are parsed as numbers, including when passed
+without a surrounding collection. Arithmetic expressions such as `1+1`
+are kept as strings rather than evaluated.
+
 To demonstrate this, we'll make a small example program that tells us the type
 of any argument we give it:
 
