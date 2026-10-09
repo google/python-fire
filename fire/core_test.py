@@ -24,6 +24,11 @@ from fire import trace
 
 class CoreTest(testutils.BaseTestCase):
 
+  def testComplexArgument(self):
+    with self.assertOutputMatches('complex'):
+      result = core.Fire(lambda value: type(value).__name__, command=['1+2j'])
+    self.assertEqual(result, 'complex')
+
   def testOneLineResult(self):
     self.assertEqual(core._OneLineResult(1), '1')  # pylint: disable=protected-access
     self.assertEqual(core._OneLineResult('hello'), 'hello')  # pylint: disable=protected-access

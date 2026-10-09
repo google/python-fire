@@ -86,6 +86,20 @@ class ParserTest(testutils.BaseTestCase):
   def testDefaultParseValueOtherNumbers(self):
     self.assertEqual(parser.DefaultParseValue('1e5'), 100000.0)
 
+  def testDefaultParseValueComplexNumbers(self):
+    for value, expected in [('1+2j', 1 + 2j), ('1-2j', 1 - 2j),
+                            ('-1+2j', -1 + 2j), ('2j', 2j)]:
+      with self.subTest(value=value):
+        self.assertEqual(parser.DefaultParseValue(value), expected)
+        self.assertEqual(parser.DefaultParseValue('[' + value + ']'),
+                         [expected])
+
+  def testDefaultParseValueNonLiteralExpressions(self):
+    for value in ['1+1', '[1+1]', '{key: 1+1}', '2017-10-10',
+                  '1+2j+3j', 'complex(1, 2)', 'abs(-1)', '1j*2']:
+      with self.subTest(value=value):
+        self.assertEqual(parser.DefaultParseValue(value), value)
+
   def testDefaultParseValueLists(self):
     self.assertEqual(parser.DefaultParseValue('[1, 2, 3]'), [1, 2, 3])
     self.assertEqual(parser.DefaultParseValue('[1, "2", 3]'), [1, '2', 3])
