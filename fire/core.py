@@ -50,6 +50,7 @@ The available flags for all Fire CLIs are:
 """
 
 import asyncio
+import functools
 import inspect
 import json
 import os
@@ -454,7 +455,10 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
     handled = False
     candidate_errors = []
 
-    is_callable = inspect.isclass(component) or inspect.isroutine(component)
+    # Keep partials on the callable-object path, including on Python 3.14.
+    is_callable = (
+        inspect.isclass(component) or inspect.isroutine(component)
+    ) and not isinstance(component, functools.partial)
     is_callable_object = callable(component) and not is_callable
     is_sequence = isinstance(component, (list, tuple))
     is_map = isinstance(component, dict) or inspectutils.IsNamedTuple(component)
@@ -677,7 +681,10 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
   (varargs, kwargs), consumed_args, remaining_args, capacity = parse(args)
 
   # Call the function.
-  if inspectutils.IsCoroutineFunction(fn):
+  coroutine_fn = component if isinstance(component, functools.partial) else fn
+  while isinstance(coroutine_fn, functools.partial):
+    coroutine_fn = coroutine_fn.func
+  if inspectutils.IsCoroutineFunction(coroutine_fn):
     try:
       loop = asyncio.get_running_loop()
     except RuntimeError:
