@@ -14,6 +14,8 @@
 
 """Tests for the fire module."""
 
+import functools
+import inspect
 import os
 import sys
 from unittest import mock
@@ -715,6 +717,31 @@ class FireTest(testutils.BaseTestCase):
   def testFireAsyncio(self):
     self.assertEqual(fire.Fire(tc.py3.WithAsyncio,
                                command=['double', '--count', '10']), 20)
+
+  def testFireAsyncPartial(self):
+    double = tc.py3.WithAsyncio().double
+    inner = functools.partial(double)
+    vars(inner)['description'] = 'Keep the nested partial intact.'
+    cases = [
+        (functools.partial(double, count=3), [], 6),
+        (functools.partial(double), ['7'], 14),
+        (functools.partial(double, count=3), ['--count', '10'], 20),
+        (functools.partial(inner, 5), [], 10),
+    ]
+    for component, command, expected in cases:
+      with self.subTest(command=command, expected=expected):
+        result = fire.Fire(component, command=command)
+        if inspect.iscoroutine(result):
+          result.close()
+        self.assertEqual(result, expected)
+
+  def testFireSyncPartial(self):
+    double = tc.WithDefaults().double
+    self.assertEqual(fire.Fire(functools.partial(double, count=3), []), 6)
+    self.assertEqual(fire.Fire(functools.partial(double), ['7']), 14)
+    self.assertEqual(fire.Fire(functools.partial(double, count=3),
+                               ['--count', '10']), 20)
+    self.assertEqual(fire.Fire(functools.partial(max, 0), ['5', '3']), 5)
 
 
 if __name__ == '__main__':
