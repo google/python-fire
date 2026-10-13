@@ -189,6 +189,12 @@ class CoreTest(testutils.BaseTestCase):
         7,
     )
 
+  def testStaticAndClassMethodsSkipConstructor(self):
+    component = tc.ErrorInConstructorWithStaticAndClassMethods
+    self.assertEqual(core.Fire(component, command=['static_fn', 'alpha']),
+                     'alpha')
+    self.assertEqual(core.Fire(component, command=['class-fn', '6']), 7)
+
   def testCustomSerialize(self):
     def serialize(x):
       if isinstance(x, list):

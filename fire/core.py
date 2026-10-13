@@ -456,6 +456,11 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
 
     is_callable = inspect.isclass(component) or inspect.isroutine(component)
     is_callable_object = callable(component) and not is_callable
+    if (inspect.isclass(component)
+        and _IsClassOrStaticMethodAccess(component, remaining_args)):
+      # Classmethods and staticmethods don't need an instance, so skip __init__
+      # and let the object handler below access the method on the class.
+      is_callable = False
     is_sequence = isinstance(component, (list, tuple))
     is_map = isinstance(component, dict) or inspectutils.IsNamedTuple(component)
 
@@ -617,6 +622,19 @@ def _Fire(component, args, parsed_flag_args, context, name=None):
     component_trace.AddInteractiveMode()
 
   return component_trace
+
+
+def _IsClassOrStaticMethodAccess(cls, args):
+  """Returns whether the next arg names a classmethod or staticmethod of cls."""
+  if not args:
+    return False
+  for name in (args[0], args[0].replace('-', '_')):
+    try:
+      attr = inspect.getattr_static(cls, name)
+    except AttributeError:
+      continue
+    return isinstance(attr, (classmethod, staticmethod))
+  return False
 
 
 def _GetMember(component, args):
