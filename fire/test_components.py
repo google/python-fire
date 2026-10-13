@@ -64,6 +64,20 @@ class ErrorInConstructor:
     raise ValueError('Error in constructor')
 
 
+class ErrorInConstructorWithStaticAndClassMethods:
+
+  def __init__(self):
+    raise ValueError('Error in constructor')
+
+  @staticmethod
+  def static_fn(args):
+    return args
+
+  @classmethod
+  def class_fn(cls, args):
+    return args + 1
+
+
 class WithHelpArg:
   """Test class for testing when class has a help= arg."""
 
