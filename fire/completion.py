@@ -437,7 +437,23 @@ def _FormatForCommand(token):
   return token.replace('_', '-')
 
 
-def _Commands(component, depth=3):
+def _IsUnboundMethod(owner, name):
+  """Returns whether owner.name is an instance method accessed via its class.
+
+  Accessing such a method on the class yields a plain function whose first
+  argument (usually `self`) is bound when the class is instantiated by Fire, so
+  it must not be offered as a flag.
+  """
+  if not inspect.isclass(owner):
+    return False
+  try:
+    attr = inspect.getattr_static(owner, name)
+  except AttributeError:
+    return False
+  return inspect.isfunction(attr)
+
+
+def _Commands(component, depth=3, skip_first_arg=False):
   """Yields tuples representing commands.
 
   To use the command from Python, insert '.' between each element of the tuple.
@@ -452,7 +468,12 @@ def _Commands(component, depth=3):
     Only traverses the member DAG up to a depth of depth.
   """
   if inspect.isroutine(component) or inspect.isclass(component):
-    for completion in Completions(component, verbose=False):
+    completions = Completions(component, verbose=False)
+    if (skip_first_arg and inspect.isroutine(component)
+        and inspectutils.GetFullArgSpec(component).args):
+      # Drop the flag for the implicit `self` argument of an instance method.
+      completions = completions[1:]
+    for completion in completions:
       yield (completion,)
   if inspect.isroutine(component):
     return  # Don't descend into routines.
@@ -464,11 +485,13 @@ def _Commands(component, depth=3):
   for member_name, member in VisibleMembers(component, class_attrs={},
                                             verbose=False):
     # TODO(dbieber): Also skip components we've already seen.
+    member_name_raw = member_name
     member_name = _FormatForCommand(member_name)
 
     yield (member_name,)
 
-    for command in _Commands(member, depth - 1):
+    skip_first_arg = _IsUnboundMethod(component, member_name_raw)
+    for command in _Commands(member, depth - 1, skip_first_arg):
       yield (member_name,) + command
 
 
