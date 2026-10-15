@@ -49,6 +49,30 @@ class TabCompletionTest(testutils.BaseTestCase):
     self.assertIn('halt', script)
     self.assertIn('-l now', script)
 
+  def testInstanceMethodCompletionsOmitSelf(self):
+    class Foo:
+
+      def bar(self):
+        return 'bar'
+
+      def do_stuff(self, arg1):
+        return arg1
+
+      @staticmethod
+      def static(x):
+        return x
+
+      @classmethod
+      def klass(cls, y):
+        return y
+
+    commands = list(completion._Commands(Foo))  # pylint: disable=protected-access
+    self.assertNotIn(('bar', '--self'), commands)
+    self.assertNotIn(('do-stuff', '--self'), commands)
+    self.assertIn(('do-stuff', '--arg1'), commands)
+    self.assertIn(('static', '--x'), commands)
+    self.assertIn(('klass', '--y'), commands)
+
   def testFnCompletions(self):
     def example(one, two, three):
       return one, two, three
