@@ -136,5 +136,26 @@ class ParserTest(testutils.BaseTestCase):
     self.assertEqual(parser.DefaultParseValue('2017-10-10'), '2017-10-10')
     self.assertEqual(parser.DefaultParseValue('1+1'), '1+1')
 
+  def testDefaultParseValueIgnoreNestedBinOp(self):
+    # Binary operations are not literals, wherever they appear.
+    self.assertEqual(parser.DefaultParseValue('[1+1]'), '[1+1]')
+    self.assertEqual(parser.DefaultParseValue('{key: 1+1}'), '{key: 1+1}')
+    self.assertEqual(parser.DefaultParseValue('(1+1,)'), '(1+1,)')
+    self.assertEqual(parser.DefaultParseValue('[[2017-10-10]]'),
+                     '[[2017-10-10]]')
+    self.assertEqual(parser.DefaultParseValue('{1: [a*b]}'), '{1: [a*b]}')
+    self.assertEqual(parser.DefaultParseValue('1+1+2j'), '1+1+2j')
+
+  def testDefaultParseValueComplexNumbers(self):
+    # The + and - of a complex number are literals, and are still parsed.
+    self.assertEqual(parser.DefaultParseValue('2j'), 2j)
+    self.assertEqual(parser.DefaultParseValue('1+2j'), 1 + 2j)
+    self.assertEqual(parser.DefaultParseValue('-1.5-2j'), -1.5 - 2j)
+    self.assertEqual(parser.DefaultParseValue('[1+2j]'), [1 + 2j])
+    self.assertEqual(parser.DefaultParseValue('{alpha: 1+2j}'),
+                     {'alpha': 1 + 2j})
+    # The real part must come first, as it must for ast.literal_eval.
+    self.assertEqual(parser.DefaultParseValue('2j+1'), '2j+1')
+
 if __name__ == '__main__':
   testutils.main()

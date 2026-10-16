@@ -79,9 +79,10 @@ def DefaultParseValue(value):
 def _LiteralEval(value):
   """Parse value as a Python literal, or container of containers and literals.
 
-  First the AST of the value is updated so that bare-words are turned into
-  strings. Then the resulting AST is evaluated as a literal or container of
-  only containers and literals.
+  First the AST of the value is checked for binary operations, which are not
+  literals. Then the AST is updated so that bare-words are turned into strings.
+  Then the resulting AST is evaluated as a literal or container of only
+  containers and literals.
 
   This allows for the YAML-like syntax {a: b} to represent the dict {'a': 'b'}
 
@@ -96,8 +97,13 @@ def _LiteralEval(value):
     SyntaxError: If the value string has a syntax error.
   """
   root = ast.parse(value, mode='eval')
-  if isinstance(root.body, ast.BinOp):
-    raise ValueError(value)
+  for node in ast.walk(root):
+    # Binary operations are not literals, so they are rejected wherever they
+    # appear. Note that some versions of ast.literal_eval evaluate them
+    # instead, e.g. turning '[1+1]' into [2]. The only exception is the + or -
+    # used to write a complex number, which is a literal.
+    if isinstance(node, ast.BinOp) and not _IsComplexLiteral(node):
+      raise ValueError(value)
 
   for node in ast.walk(root):
     for field, child in ast.iter_fields(node):
@@ -114,6 +120,30 @@ def _LiteralEval(value):
   # strings, bytes, numbers, tuples, lists, dicts, sets, booleans, and None
   # (bytes and set literals only starting with Python 3.2)
   return ast.literal_eval(root)
+
+
+def _IsComplexLiteral(node):
+  """Returns whether a binary operation expresses a complex number literal.
+
+  Python has no single-token syntax for a complex number with both a real and
+  an imaginary part, so such numbers are written as the sum or difference of a
+  real number and an imaginary one, e.g. 1+2j. These are the only binary
+  operations ast.literal_eval accepts, so they are the only ones Fire accepts.
+
+  Args:
+    node: A node of type BinOp.
+  Returns:
+    True if the node has the form <real number> + <imaginary number>, with
+    either + or -, False otherwise.
+  """
+  if not isinstance(node.op, (ast.Add, ast.Sub)):
+    return False
+  try:
+    real = ast.literal_eval(node.left)
+    imaginary = ast.literal_eval(node.right)
+  except (TypeError, ValueError):
+    return False
+  return isinstance(real, (int, float)) and isinstance(imaginary, complex)
 
 
 def _Replacement(node):
