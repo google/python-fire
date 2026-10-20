@@ -14,6 +14,7 @@
 
 """Tests for the fire module."""
 
+import asyncio
 import os
 import sys
 from unittest import mock
@@ -715,6 +716,23 @@ class FireTest(testutils.BaseTestCase):
   def testFireAsyncio(self):
     self.assertEqual(fire.Fire(tc.py3.WithAsyncio,
                                command=['double', '--count', '10']), 20)
+
+  def testFireAsyncioFromRunningLoop(self):
+    async def main():
+      return fire.Fire(tc.py3.WithAsyncio,
+                       command=['double', '--count', '10'])
+
+    self.assertEqual(asyncio.run(main()), 20)
+
+  def testFireAsyncioFromRunningLoopRaises(self):
+    async def raiser(count=0):
+      raise ValueError('boom')
+
+    async def main():
+      return fire.Fire(raiser, command=['--count', '3'])
+
+    with self.assertRaises(ValueError):
+      asyncio.run(main())
 
 
 if __name__ == '__main__':

@@ -50,6 +50,7 @@ The available flags for all Fire CLIs are:
 """
 
 import asyncio
+import concurrent.futures
 import inspect
 import json
 import os
@@ -649,6 +650,30 @@ def _GetMember(component, args):
   raise FireError('Could not consume arg:', arg)
 
 
+def _RunCoroutine(coro):
+  """Runs a coroutine, blocking until it completes.
+
+  Args:
+    coro: The coroutine to run.
+
+  Returns:
+    The value the coroutine returns.
+
+  Raises:
+    Exception: Whatever the coroutine raises.
+  """
+  try:
+    asyncio.get_running_loop()
+  except RuntimeError:
+    return asyncio.run(coro)
+  # asyncio.run refuses to be called while this thread already runs a loop,
+  # which happens when Fire is called from async code. Drive the coroutine
+  # from a loop belonging to a worker thread instead, so the call still
+  # blocks here until the coroutine completes.
+  with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+    return pool.submit(asyncio.run, coro).result()
+
+
 def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
                         target=None):
   """Call the component by consuming args from args, and update the FireTrace.
@@ -678,14 +703,7 @@ def _CallAndUpdateTrace(component, args, component_trace, treatment='class',
 
   # Call the function.
   if inspectutils.IsCoroutineFunction(fn):
-    try:
-      loop = asyncio.get_running_loop()
-    except RuntimeError:
-      # No event loop running, create a new one
-      component = asyncio.run(fn(*varargs, **kwargs))
-    else:
-      # Event loop is already running
-      component = loop.run_until_complete(fn(*varargs, **kwargs))
+    component = _RunCoroutine(fn(*varargs, **kwargs))
   else:
     component = fn(*varargs, **kwargs)
 
