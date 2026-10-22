@@ -16,7 +16,7 @@ To install Python Fire from pypi, run:
 
 Alternatively, to install Python Fire from source, clone the source and run:
 
-`python setup.py install`
+`python -m pip install .`
 
 ### Hello World
 
