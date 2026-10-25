@@ -49,6 +49,15 @@ class FormattingTest(testutils.BaseTestCase):
                       'chicken |',
                       'cheese'], lines)
 
+  def test_wrap_oversized_first_item(self):
+    self.assertEqual(['long_command'],
+                     formatting.WrappedJoin(['long_command'], width=5))
+    self.assertEqual(['first |', 'next'],
+                     formatting.WrappedJoin(['first', 'next'], width=5))
+
+  def test_wrap_empty_items(self):
+    self.assertEqual([''], formatting.WrappedJoin([], width=5))
+
   def test_ellipsis_truncate(self):
     text = 'This is a string'
     truncated_text = formatting.EllipsisTruncate(
