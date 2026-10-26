@@ -96,13 +96,14 @@ def More(contents, out, prompt=None, check_pager=True):
       encoding.SetEncodedValue(os.environ, 'LESS', less)
       # Ignore SIGINT while the pager is running.
       # We don't want to terminate the parent while the child is still alive.
-      signal.signal(signal.SIGINT, signal.SIG_IGN)
-      p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
-      enc = console_attr.GetConsoleAttr().GetEncoding()
-      p.communicate(input=contents.encode(enc))
-      p.wait()
-      # Start using default signal handling for SIGINT again.
-      signal.signal(signal.SIGINT, signal.SIG_DFL)
+      original_sigint = signal.signal(signal.SIGINT, signal.SIG_IGN)
+      try:
+        p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
+        enc = console_attr.GetConsoleAttr().GetEncoding()
+        p.communicate(input=contents.encode(enc))
+        p.wait()
+      finally:
+        signal.signal(signal.SIGINT, original_sigint)
       if less_orig is None:
         encoding.SetEncodedValue(os.environ, 'LESS', None)
       return
