@@ -67,6 +67,18 @@ class FormattingTest(testutils.BaseTestCase):
         text=text, available_space=7, line_length=LINE_LENGTH)
     self.assertEqual('10...0L', truncated_text)
 
+  def test_ellipsis_middle_truncate_ellipsis_only(self):
+    self.assertEqual('...', formatting.EllipsisMiddleTruncate(
+        'abcdefghij', available_space=3, line_length=LINE_LENGTH))
+
+  def test_ellipsis_middle_truncate_exact_fit(self):
+    self.assertEqual('abcd', formatting.EllipsisMiddleTruncate(
+        'abcd', available_space=4, line_length=LINE_LENGTH))
+
+  def test_ellipsis_middle_truncate_short_width(self):
+    self.assertEqual('...j', formatting.EllipsisMiddleTruncate(
+        'abcdefghij', available_space=4, line_length=LINE_LENGTH))
+
   def test_ellipsis_middle_truncate_not_enough_space(self):
     text = '1000000000L'
     truncated_text = formatting.EllipsisMiddleTruncate(
