@@ -73,6 +73,30 @@ class FormattingTest(testutils.BaseTestCase):
         text=text, available_space=2, line_length=LINE_LENGTH)
     self.assertEqual('1000000000L', truncated_text)
 
+  def test_ellipsis_middle_truncate_only_ellipsis_fits(self):
+    self.assertEqual('...', formatting.EllipsisMiddleTruncate(
+        'abcdefghij', 3, LINE_LENGTH))
+
+  def test_ellipsis_middle_truncate_text_fits(self):
+    for text, width in [('', 3), ('ab', 3), ('abc', 3), ('abcd', 4)]:
+      with self.subTest(text=text, width=width):
+        self.assertEqual(text, formatting.EllipsisMiddleTruncate(
+            text, width, LINE_LENGTH))
+
+  def test_ellipsis_middle_truncate_retains_ends(self):
+    for width, expected in [(4, '...j'), (5, 'a...j'),
+                            (6, 'a...ij'), (7, 'ab...ij')]:
+      with self.subTest(width=width):
+        self.assertEqual(expected, formatting.EllipsisMiddleTruncate(
+            'abcdefghij', width, LINE_LENGTH))
+
+  def test_ellipsis_middle_truncate_fallback_boundaries(self):
+    for text, line_length, expected in [('abcdefghij', 3, '...'),
+                                      ('abcd', 4, 'abcd')]:
+      with self.subTest(text=text, line_length=line_length):
+        self.assertEqual(expected, formatting.EllipsisMiddleTruncate(
+            text, 2, line_length))
+
 
 if __name__ == '__main__':
   testutils.main()

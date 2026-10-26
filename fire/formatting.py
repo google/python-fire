@@ -81,12 +81,13 @@ def EllipsisMiddleTruncate(text, available_space, line_length):
   """Truncates text from the middle with ellipsis."""
   if available_space < len(ELLIPSIS):
     available_space = line_length
-  if len(text) < available_space:
+  if len(text) <= available_space:
     return text
   available_string_len = available_space - len(ELLIPSIS)
   first_half_len = int(available_string_len / 2)  # start from middle
   second_half_len = available_string_len - first_half_len
-  return text[:first_half_len] + ELLIPSIS + text[-second_half_len:]
+  suffix = text[-second_half_len:] if second_half_len else ''
+  return text[:first_half_len] + ELLIPSIS + suffix
 
 
 def DoubleQuote(text):
