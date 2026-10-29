@@ -17,7 +17,6 @@
 import ctypes
 import os
 import platform
-import subprocess
 import sys
 
 try:
@@ -25,6 +24,8 @@ try:
   HAS_COLORAMA = True
 except ImportError:
   HAS_COLORAMA = False
+
+STD_OUTPUT_HANDLE = -11
 
 
 def initialize_or_disable():
@@ -40,7 +41,7 @@ def initialize_or_disable():
       wrap = False
       kernel32 = ctypes.windll.kernel32
       enable_virtual_terminal_processing = 0x04
-      out_handle = kernel32.GetStdHandle(subprocess.STD_OUTPUT_HANDLE)  # pylint: disable=line-too-long,
+      out_handle = kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
       # GetConsoleMode fails if the terminal isn't native.
       mode = ctypes.wintypes.DWORD()
       if kernel32.GetConsoleMode(out_handle, ctypes.byref(mode)) == 0:
