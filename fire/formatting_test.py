@@ -14,7 +14,10 @@
 
 """Tests for formatting.py."""
 
+from unittest import mock
+
 from fire import formatting
+from fire import formatting_windows
 from fire import testutils
 
 LINE_LENGTH = 80
@@ -72,6 +75,45 @@ class FormattingTest(testutils.BaseTestCase):
     truncated_text = formatting.EllipsisMiddleTruncate(
         text=text, available_space=2, line_length=LINE_LENGTH)
     self.assertEqual('1000000000L', truncated_text)
+
+
+class FormattingWindowsTest(testutils.BaseTestCase):
+
+  def test_std_output_handle_constant(self):
+    self.assertEqual(formatting_windows.STD_OUTPUT_HANDLE, -11)
+
+  @mock.patch.object(formatting_windows, 'HAS_COLORAMA', True)
+  @mock.patch.object(formatting_windows, 'colorama', create=True)
+  @mock.patch('platform.release', return_value='10')
+  @mock.patch('sys.stdout.isatty', return_value=True)
+  def test_initialize_or_disable_windows_10(
+      self, mock_isatty, mock_release, mock_colorama
+  ):
+    fake_kernel32 = mock.MagicMock()
+    fake_kernel32.GetStdHandle.return_value = 42
+    fake_kernel32.GetConsoleMode.return_value = 1
+    fake_kernel32.SetConsoleMode.return_value = 1
+
+    with mock.patch.object(
+        formatting_windows.ctypes, 'windll', create=True
+    ) as mock_windll:
+      mock_windll.kernel32 = fake_kernel32
+      with mock.patch.object(
+          formatting_windows.ctypes, 'wintypes', create=True
+      ) as mock_wintypes:
+        with mock.patch.object(
+            formatting_windows.ctypes, 'byref', return_value=mock.MagicMock()
+        ):
+          mock_dword = mock.MagicMock()
+          mock_dword.value = 0
+          mock_wintypes.DWORD.return_value = mock_dword
+
+          formatting_windows.initialize_or_disable()
+
+          fake_kernel32.GetStdHandle.assert_called_once_with(
+              formatting_windows.STD_OUTPUT_HANDLE
+          )
+          mock_colorama.init.assert_called_once_with(wrap=False)
 
 
 if __name__ == '__main__':
