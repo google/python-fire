@@ -37,7 +37,12 @@ def SetParseFn(fn, *arguments):
     The decorated function, which now has metadata telling Fire how to perform.
   """
   def _Decorator(func):
-    parse_fns = GetParseFns(func)
+    existing = GetParseFns(func)
+    parse_fns = {
+        'default': existing.get('default'),
+        'positional': list(existing.get('positional', [])),
+        'named': dict(existing.get('named', {})),
+    }
     if not arguments:
       parse_fns['default'] = fn
     else:
@@ -66,8 +71,12 @@ def SetParseFns(*positional, **named):
     The decorated function, which now has metadata telling Fire how to perform.
   """
   def _Decorator(fn):
-    parse_fns = GetParseFns(fn)
-    parse_fns['positional'] = positional
+    existing = GetParseFns(fn)
+    parse_fns = {
+        'default': existing.get('default'),
+        'positional': positional if positional else tuple(existing.get('positional', ())),
+        'named': dict(existing.get('named', {})),
+    }
     parse_fns['named'].update(named)
     _SetMetadata(fn, FIRE_PARSE_FNS, parse_fns)
     return fn
@@ -76,7 +85,7 @@ def SetParseFns(*positional, **named):
 
 
 def _SetMetadata(fn, attribute, value):
-  metadata = GetMetadata(fn)
+  metadata = dict(GetMetadata(fn))
   metadata[attribute] = value
   setattr(fn, FIRE_METADATA, metadata)
 

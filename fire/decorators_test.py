@@ -14,6 +14,7 @@
 
 """Tests for the decorators module."""
 
+import functools
 from fire import core
 from fire import decorators
 from fire import testutils
@@ -164,6 +165,32 @@ class FireDecoratorsTest(testutils.BaseTestCase):
         core.Fire(WithVarArgs,
                   command=['example7', '1', '--arg2=2', '3', '4', '--kwarg=5']),
         ('1', '2', ('3', '4'), {'kwarg': '5'}))
+
+  def testSetParseFnsFunctoolsWraps(self):
+    @decorators.SetParseFns(value=int)
+    def original(value):
+      return type(value).__name__
+
+    @decorators.SetParseFns(value=str)
+    @functools.wraps(original)
+    def wrapped(value):
+      return original(value)
+
+    self.assertEqual(core.Fire(original, command=['01']), 'int')
+    self.assertEqual(core.Fire(wrapped, command=['01']), 'str')
+
+  def testSetParseFnFunctoolsWraps(self):
+    @decorators.SetParseFn(int, 'value')
+    def original(value):
+      return type(value).__name__
+
+    @decorators.SetParseFn(str, 'value')
+    @functools.wraps(original)
+    def wrapped(value):
+      return original(value)
+
+    self.assertEqual(core.Fire(original, command=['01']), 'int')
+    self.assertEqual(core.Fire(wrapped, command=['01']), 'str')
 
 
 if __name__ == '__main__':
