@@ -119,8 +119,15 @@ class ParserTest(testutils.BaseTestCase):
 
   def testDefaultParseValueComments(self):
     self.assertEqual(parser.DefaultParseValue('"0#comments"'), '0#comments')
-    # Comments are stripped. This behavior may change in the future.
-    self.assertEqual(parser.DefaultParseValue('0#comments'), 0)
+    self.assertEqual(parser.DefaultParseValue('0#comments'), '0#comments')
+    self.assertEqual(parser.DefaultParseValue('qgm#123'), 'qgm#123')
+    self.assertEqual(parser.DefaultParseValue('#literal'), '#literal')
+    self.assertEqual(parser.DefaultParseValue('a#b#c'), 'a#b#c')
+
+  def testDefaultParseValueQuotedHashesInContainers(self):
+    self.assertEqual(parser.DefaultParseValue('["a#b", 2]'), ['a#b', 2])
+    self.assertEqual(parser.DefaultParseValue('{"key": "a#b"}'),
+                     {'key': 'a#b'})
 
   def testDefaultParseValueBadLiteral(self):
     # If it can't be parsed, we treat it as a string. This behavior may change.

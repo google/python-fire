@@ -16,7 +16,9 @@
 
 import argparse
 import ast
+import io
 import sys
+import tokenize
 
 if sys.version_info[0:2] < (3, 8):
   _StrNode = ast.Str  # type: ignore  # pylint: disable=no-member  # deprecated but needed for Python < 3.8
@@ -68,7 +70,17 @@ def DefaultParseValue(value):
   Returns:
     The parsed value, of the type determined most appropriate.
   """
-  # Note: _LiteralEval will treat '#' as the start of a comment.
+  # Keep unquoted hash characters intact rather than letting Python's AST
+  # parser silently drop a trailing comment from command-line arguments.
+  # Quoted hashes remain valid parts of Python literals.
+  if '#' in value:
+    try:
+      tokens = tokenize.generate_tokens(io.StringIO(value).readline)
+      if any(token.type == tokenize.COMMENT for token in tokens):
+        return value
+    except tokenize.TokenError:
+      # Let the existing literal parser handle incomplete expressions.
+      pass
   try:
     return _LiteralEval(value)
   except (SyntaxError, ValueError):
