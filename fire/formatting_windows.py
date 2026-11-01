@@ -29,6 +29,10 @@ except ImportError:
 
 def initialize_or_disable():
   """Enables ANSI processing on Windows or disables it as needed."""
+  # Git Bash's MinGW terminals already handle ANSI sequences. Initializing
+  # Colorama would unnecessarily wrap stdout and can interfere with colors.
+  if os.environ.get('MSYSTEM', '').upper().startswith(('MINGW', 'MSYS')):
+    return
   if HAS_COLORAMA:
     wrap = True
     if (hasattr(sys.stdout, 'isatty')
