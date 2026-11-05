@@ -18,6 +18,7 @@
 import os
 import signal
 import subprocess
+import shlex
 import sys
 
 from fire.console import console_attr
@@ -69,7 +70,7 @@ def More(contents, out, prompt=None, check_pager=True):
   """Run a user specified pager or fall back to the internal pager.
 
   Args:
-    contents: The entire contents of the text lines to page.
+    contents: The entire contents of the text to page.
     out: The output stream.
     prompt: The page break prompt.
     check_pager: Checks the PAGER env var and uses it if True.
@@ -97,7 +98,7 @@ def More(contents, out, prompt=None, check_pager=True):
       # Ignore SIGINT while the pager is running.
       # We don't want to terminate the parent while the child is still alive.
       signal.signal(signal.SIGINT, signal.SIG_IGN)
-      p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
+      p = subprocess.Popen(shlex.split(pager), stdin=subprocess.PIPE, shell=False)
       enc = console_attr.GetConsoleAttr().GetEncoding()
       p.communicate(input=contents.encode(enc))
       p.wait()
