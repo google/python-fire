@@ -80,8 +80,8 @@ def _LiteralEval(value):
   """Parse value as a Python literal, or container of containers and literals.
 
   First the AST of the value is checked for binary operations, which are not
-  literals. Then the AST is updated so that bare-words are turned into strings.
-  Then the resulting AST is evaluated as a literal or container of only
+  literals, and updated so that bare-words are turned into strings, in a single
+  walk. Then the resulting AST is evaluated as a literal or container of only
   containers and literals.
 
   This allows for the YAML-like syntax {a: b} to represent the dict {'a': 'b'}
@@ -105,7 +105,6 @@ def _LiteralEval(value):
     if isinstance(node, ast.BinOp) and not _IsComplexLiteral(node):
       raise ValueError(value)
 
-  for node in ast.walk(root):
     for field, child in ast.iter_fields(node):
       if isinstance(child, list):
         for index, subchild in enumerate(child):
