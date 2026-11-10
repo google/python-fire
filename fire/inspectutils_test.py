@@ -15,6 +15,7 @@
 """Tests for the inspectutils module."""
 
 import os
+import typing
 
 from fire import inspectutils
 from fire import test_components as tc
@@ -124,6 +125,23 @@ class InspectUtilsTest(testutils.BaseTestCase):
   def testInfoNoDocstring(self):
     info = inspectutils.Info(tc.NoDefaults)
     self.assertEqual(info['docstring'], None, 'Docstring should be None')
+
+  def testIsStringAnnotation(self):
+    self.assertTrue(inspectutils.IsStringAnnotation(str))
+    self.assertTrue(inspectutils.IsStringAnnotation('str'))
+    self.assertTrue(inspectutils.IsStringAnnotation(typing.Optional[str]))
+    self.assertTrue(inspectutils.IsStringAnnotation('Optional[str]'))
+    self.assertTrue(inspectutils.IsStringAnnotation('str | None'))
+    self.assertFalse(inspectutils.IsStringAnnotation(int))
+    self.assertFalse(inspectutils.IsStringAnnotation('int'))
+    self.assertFalse(inspectutils.IsStringAnnotation(None))
+
+  def testAllowsNone(self):
+    self.assertFalse(inspectutils.AllowsNone(str))
+    self.assertTrue(inspectutils.AllowsNone(typing.Optional[str]))
+    self.assertTrue(inspectutils.AllowsNone('Optional[str]'))
+    self.assertTrue(inspectutils.AllowsNone('str | None'))
+    self.assertTrue(inspectutils.AllowsNone(None))
 
 
 if __name__ == '__main__':

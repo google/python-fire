@@ -715,6 +715,7 @@ def _MakeParseFn(fn, metadata):
     the leftover args from the arguments to the parse function.
   """
   fn_spec = inspectutils.GetFullArgSpec(fn)
+  annotations = fn_spec.annotations
 
   # Note: num_required_args is the number of positional arguments without
   # default values. All of these arguments are required.
@@ -728,7 +729,7 @@ def _MakeParseFn(fn, metadata):
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
         fn_spec.args, fn_spec.defaults, num_required_args, kwargs,
-        remaining_args, metadata)
+        remaining_args, metadata, annotations)
 
     if fn_spec.varargs or fn_spec.varkw:
       # If we're allowed *varargs or **kwargs, there's always capacity.
@@ -749,7 +750,8 @@ def _MakeParseFn(fn, metadata):
       varargs = []
 
     for index, value in enumerate(varargs):
-      varargs[index] = _ParseValue(value, None, None, metadata)
+      varargs[index] = _ParseValue(value, None, fn_spec.varargs, metadata,
+                                   annotations)
 
     varargs = parsed_args + varargs
     remaining_args += remaining_kwargs
@@ -761,7 +763,7 @@ def _MakeParseFn(fn, metadata):
 
 
 def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
-               remaining_args, metadata):
+               remaining_args, metadata, annotations=None):
   """Parses the positional and named arguments from the available supplied args.
 
   Modifies kwargs, removing args as they are used.
@@ -777,6 +779,7 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
     remaining_args: The remaining command line arguments, which may still be
         used as positional arguments.
     metadata: Metadata about the function, typically from Fire decorators.
+    annotations: The type annotations dict from the function's argspec.
   Returns:
     parsed_args: A list of values to be used as positional arguments for calling
         the target function.
@@ -795,13 +798,13 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
   for index, arg in enumerate(fn_args):
     value = kwargs.pop(arg, None)
     if value is not None:  # A value is specified at the command line.
-      value = _ParseValue(value, index, arg, metadata)
+      value = _ParseValue(value, index, arg, metadata, annotations)
       parsed_args.append(value)
     else:  # No value has been explicitly specified.
       if remaining_args and accepts_positional_args:
         # Use a positional arg.
         value = remaining_args.pop(0)
-        value = _ParseValue(value, index, arg, metadata)
+        value = _ParseValue(value, index, arg, metadata, annotations)
         parsed_args.append(value)
       elif index < num_required_args:
         raise FireError(
@@ -814,7 +817,7 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
         parsed_args.append(fn_defaults[default_index])
 
   for key, value in kwargs.items():
-    kwargs[key] = _ParseValue(value, None, key, metadata)
+    kwargs[key] = _ParseValue(value, None, key, metadata, annotations)
 
   return parsed_args, kwargs, remaining_args, capacity
 
@@ -962,7 +965,7 @@ def _IsMultiCharFlag(argument):
   return argument.startswith('--') or re.match('^-[a-zA-Z]', argument)
 
 
-def _ParseValue(value, index, arg, metadata):
+def _ParseValue(value, index, arg, metadata, annotations=None):
   """Parses value, a string, into the appropriate type.
 
   The function used to parse value is determined by the remaining arguments.
@@ -972,10 +975,12 @@ def _ParseValue(value, index, arg, metadata):
     index: The index of the value in the function's argspec.
     arg: The name of the argument the value is being parsed for.
     metadata: Metadata about the function, typically from Fire decorators.
+    annotations: The type annotations dict from the function's argspec.
   Returns:
     value, parsed into the appropriate type for calling a function.
   """
   parse_fn = parser.DefaultParseValue
+  has_custom_parse_fn = False
 
   # We check to see if any parse function from the fn metadata applies here.
   parse_fns = metadata.get(decorators.FIRE_PARSE_FNS)
@@ -986,9 +991,22 @@ def _ParseValue(value, index, arg, metadata):
 
     if index is not None and 0 <= index < len(positional):
       parse_fn = positional[index]
+      has_custom_parse_fn = True
     elif arg in named:
       parse_fn = named[arg]
+      has_custom_parse_fn = True
     elif default is not None:
       parse_fn = default
+      has_custom_parse_fn = True
+
+  if not has_custom_parse_fn and annotations and arg:
+    annotation = annotations.get(arg)
+    if inspectutils.IsStringAnnotation(annotation):
+      parsed = parse_fn(value)
+      if isinstance(parsed, str):
+        return parsed
+      if parsed is None and inspectutils.AllowsNone(annotation):
+        return None
+      return value
 
   return parse_fn(value)
