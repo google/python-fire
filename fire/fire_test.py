@@ -16,6 +16,7 @@
 
 import os
 import sys
+import typing
 from unittest import mock
 
 import fire
@@ -177,6 +178,26 @@ class FireTest(testutils.BaseTestCase):
   def testFireAnnotatedArgs(self):
     self.assertEqual(fire.Fire(tc.Annotations, command=['double', '5']), 10)
     self.assertEqual(fire.Fire(tc.Annotations, command=['triple', '5']), 15)
+
+  def testFireStringHintedArgs(self):
+    def echo_version(ver: str):
+      return ver
+
+    def echo_optional(ver: typing.Optional[str] = None):
+      return ver
+
+    # Strings containing numeric or float representations are preserved.
+    self.assertEqual(fire.Fire(echo_version, command=['1.10']), '1.10')
+    self.assertEqual(
+        fire.Fire(echo_version, command=['--ver=1.10']), '1.10')
+    self.assertEqual(fire.Fire(echo_version, command=['123']), '123')
+    self.assertEqual(fire.Fire(echo_version, command=['True']), 'True')
+
+    # Optional string annotations allow None while preserving strings.
+    self.assertIsNone(fire.Fire(echo_optional, command=['None']))
+    self.assertEqual(fire.Fire(echo_optional, command=['1.10']), '1.10')
+    self.assertEqual(
+        fire.Fire(echo_optional, command=['--ver=1.10']), '1.10')
 
   def testFireKeywordOnlyArgs(self):
     with self.assertRaisesFireExit(2):

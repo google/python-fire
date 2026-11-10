@@ -347,3 +347,61 @@ def IsCoroutineFunction(fn):
     return inspect.iscoroutinefunction(fn)
   except:  # pylint: disable=bare-except
     return False
+
+
+def IsStringAnnotation(annotation):
+  """Returns True if the annotation indicates a string type."""
+  if annotation is None:
+    return False
+  if annotation is str or annotation == 'str':
+    return True
+  if isinstance(annotation, type) and issubclass(annotation, str):
+    return True
+  if getattr(annotation, '__name__', None) == 'Text':
+    return True
+
+  origin = getattr(annotation, '__origin__', None)
+  if origin is not None:
+    args = getattr(annotation, '__args__', ())
+    non_none_args = [a for a in args if a is not type(None)]
+    if len(non_none_args) == 1 and IsStringAnnotation(non_none_args[0]):
+      return True
+
+  union_type = getattr(types, 'UnionType', None)
+  if union_type is not None and isinstance(annotation, union_type):
+    args = getattr(annotation, '__args__', ())
+    non_none_args = [a for a in args if a is not type(None)]
+    if len(non_none_args) == 1 and IsStringAnnotation(non_none_args[0]):
+      return True
+
+  if isinstance(annotation, str):
+    cleaned = annotation.replace(' ', '')
+    if cleaned in ('str', 'Optional[str]', 'Union[str,None]', 'Union[None,str]',
+                   'str|None', 'None|str', 'Text', 'Optional[Text]'):
+      return True
+
+  return False
+
+
+def AllowsNone(annotation):
+  """Returns True if the annotation permits None."""
+  if annotation is None:
+    return True
+  origin = getattr(annotation, '__origin__', None)
+  if origin is not None:
+    args = getattr(annotation, '__args__', ())
+    if type(None) in args:
+      return True
+
+  union_type = getattr(types, 'UnionType', None)
+  if union_type is not None and isinstance(annotation, union_type):
+    args = getattr(annotation, '__args__', ())
+    if type(None) in args:
+      return True
+
+  if isinstance(annotation, str):
+    cleaned = annotation.replace(' ', '')
+    if any(pattern in cleaned for pattern in ('None', 'Optional')):
+      return True
+  return False
+
