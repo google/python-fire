@@ -728,7 +728,7 @@ def _MakeParseFn(fn, metadata):
     # Note: _ParseArgs modifies kwargs.
     parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
         fn_spec.args, fn_spec.defaults, num_required_args, kwargs,
-        remaining_args, metadata)
+        remaining_args, metadata, fn_spec.annotations)
 
     if fn_spec.varargs or fn_spec.varkw:
       # If we're allowed *varargs or **kwargs, there's always capacity.
@@ -761,7 +761,7 @@ def _MakeParseFn(fn, metadata):
 
 
 def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
-               remaining_args, metadata):
+               remaining_args, metadata, annotations=None):
   """Parses the positional and named arguments from the available supplied args.
 
   Modifies kwargs, removing args as they are used.
@@ -777,6 +777,7 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
     remaining_args: The remaining command line arguments, which may still be
         used as positional arguments.
     metadata: Metadata about the function, typically from Fire decorators.
+    annotations: Type annotations declared by the function.
   Returns:
     parsed_args: A list of values to be used as positional arguments for calling
         the target function.
@@ -795,7 +796,8 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
   for index, arg in enumerate(fn_args):
     value = kwargs.pop(arg, None)
     if value is not None:  # A value is specified at the command line.
-      value = _ParseValue(value, index, arg, metadata)
+      value = _ParseValue(value, index, arg, metadata,
+                          (annotations or {}).get(arg))
       parsed_args.append(value)
     else:  # No value has been explicitly specified.
       if remaining_args and accepts_positional_args:
@@ -814,7 +816,8 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs,
         parsed_args.append(fn_defaults[default_index])
 
   for key, value in kwargs.items():
-    kwargs[key] = _ParseValue(value, None, key, metadata)
+    kwargs[key] = _ParseValue(value, None, key, metadata,
+                                (annotations or {}).get(key))
 
   return parsed_args, kwargs, remaining_args, capacity
 
@@ -962,7 +965,7 @@ def _IsMultiCharFlag(argument):
   return argument.startswith('--') or re.match('^-[a-zA-Z]', argument)
 
 
-def _ParseValue(value, index, arg, metadata):
+def _ParseValue(value, index, arg, metadata, annotation=None):
   """Parses value, a string, into the appropriate type.
 
   The function used to parse value is determined by the remaining arguments.
@@ -975,6 +978,12 @@ def _ParseValue(value, index, arg, metadata):
   Returns:
     value, parsed into the appropriate type for calling a function.
   """
+  # Explicit string annotations preserve the command-line token verbatim.
+  # In particular, numeric-looking strings such as version '1.10' must not
+  # be converted to floats.
+  if annotation is str or annotation in ('str', 'builtins.str'):
+    return value
+
   parse_fn = parser.DefaultParseValue
 
   # We check to see if any parse function from the fn metadata applies here.
