@@ -24,6 +24,13 @@ from fire import trace
 
 class CoreTest(testutils.BaseTestCase):
 
+  def testStringAnnotationPreservesNumericLookingValues(self):
+    def main(arg: str):
+      return arg
+
+    self.assertEqual(core.Fire(main, command=['1.10']), '1.10')
+    self.assertEqual(core.Fire(main, command=['--arg=1.10']), '1.10')
+
   def testOneLineResult(self):
     self.assertEqual(core._OneLineResult(1), '1')  # pylint: disable=protected-access
     self.assertEqual(core._OneLineResult('hello'), 'hello')  # pylint: disable=protected-access
